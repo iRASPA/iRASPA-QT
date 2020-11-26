@@ -1,0 +1,75 @@
+#!/usr/bin/make -f
+APPNAME := iraspa
+builddir:
+	mkdir -p builddir
+	cp -r iraspa/datafiles/* builddir
+	cp ./debian/changelog ./debian/changelog.Debian 
+	rm -f ./debian/changelog.Debian.gz
+	gzip -n --best ./debian/changelog.Debian
+
+builddir/Makefile: builddir
+	cd builddir && qmake PREFIX=/usr ../$(APPNAME).pro
+
+build: build-stamp
+
+build-stamp: builddir/Makefile
+	dh_testdir
+	# Add here commands to compile the package.
+	cd builddir && $(MAKE)
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	# Add here commands to clean up after the build process.
+	rm -rf builddir
+	dh_clean
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	#iraspa
+	install -D -m 755 builddir/iraspa/iraspa $(CURDIR)/debian/iraspa/usr/bin/iraspa
+	install -D -m 755 debian/changelog.Debian.gz $(CURDIR)/debian/iraspa/usr/share/doc/iraspa
+	install -D -m 644 builddir/databasecoremof.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
+	install -D -m 644 builddir/databasecoremofddec.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
+	install -D -m 644 builddir/databaseiza.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
+	install -D -m 644 builddir/libraryofstructures.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
+	install -D -m 644 builddir/acknowledgedlicenses.pdf $(CURDIR)/debian/iraspa/usr/share/iraspa
+	install -D -m 644 builddir/license-gpl.pdf $(CURDIR)/debian/iraspa/usr/share/iraspa
+	install -D -m 644 builddir/iraspa.desktop $(CURDIR)/debian/iraspa/usr/share/applications
+	install -D -m 644 builddir/iraspa.png $(CURDIR)/debian/iraspa/usr/share/pixmaps
+	install -D -m 644 builddir/iraspa.iconset/icon_16x16.png $(CURDIR)/debian/iraspa/usr/share/icons/hicolor/16x16/apps/iraspa.png
+	install -D -m 644 builddir/iraspa.iconset/icon_32x32.png $(CURDIR)/debian/iraspa/usr/share/icons/hicolor/32x32/apps/iraspa.png
+	install -D -m 644 builddir/iraspa.iconset/icon_64x64.png $(CURDIR)/debian/iraspa/usr/share/icons/hicolor/64x64/apps/iraspa.png
+	install -D -m 644 builddir/iraspa.iconset/icon_128x128.png $(CURDIR)/debian/iraspa/usr/share/icons/hicolor/128x128/apps/iraspa.png
+	install -D -m 644 builddir/iraspa.iconset/icon_256x256.png $(CURDIR)/debian/iraspa/usr/share/icons/hicolor/256x256/apps/iraspa.png
+	install -D -m 644 builddir/iraspa.iconset/icon_512x512.png $(CURDIR)/debian/iraspa/usr/share/icons/hicolor/512x512/apps/iraspa.png
+
+	# Add here commands to install the package into debian/your_appname
+	cd builddir && $(MAKE) INSTALL_ROOT=$(CURDIR)/debian/$(APPNAME) install
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+	dh_installexamples
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

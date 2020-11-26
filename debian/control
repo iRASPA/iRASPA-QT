@@ -1,0 +1,18 @@
+Source: iraspa
+Section: science
+Priority: optional
+Maintainer: David Dubbeldam <d.dubbeldam@uva.nl>
+Build-Depends: debhelper (>= 9), build-essential, dbus, qtdeclarative5-dev-tools, qt5-default, qtbase5-dev, liblzma-dev, ocl-icd-opencl-dev, python3-dev, zlib1g-dev, libqt5opengl5-dev, libswscale-dev, libavformat-dev,  qtwebengine5-dev | libqt5webkit5-dev
+Standards-Version: 3.9.6
+Homepage: https://github.com/iRASPA/iRASPA-QT
+
+Package: iraspa
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Molecular visualizer/editor
+ iRASPA is a visualization package (with editing capabilities) aimed at
+ material science. Examples of materials are metals, metal-oxides, ceramics,
+ biomaterials, zeolites, clays, and metal-organic frameworks. iRASPA leverages
+ the latest visualization technologies with high performance. It can
+ handle large structures (hundreds of thousands of atoms), including ambient
+ occlusion, with high frame rates.

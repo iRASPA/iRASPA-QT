@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/iraspa">
+        <file>iraspa-icon-512x512.png</file>
+        <file>rightpanelcollapse.png</file>
+        <file>leftpanelcollapse.png</file>
+        <file>bottompanelcollapse.png</file>
+        <file>projectlistcontroller.png</file>
+        <file>framelistcontroller.png</file>
+        <file>movielistcontroller.png</file>
+        <file>expanded.png</file>
+        <file>collapsed.png</file>
+        <file>nsaddtemplate.png</file>
+        <file>nsremovetemplate.png</file>
+        <file>singlebond.png</file>
+        <file>triplebond.png</file>
+        <file>doublebond.png</file>
+        <file>partialdoublebond.png</file>
+        <file>genericfoldericon.png</file>
+    </qresource>
+    <qresource prefix="/"/>
+</RCC>

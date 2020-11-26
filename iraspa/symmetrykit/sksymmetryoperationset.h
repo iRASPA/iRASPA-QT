@@ -1,0 +1,42 @@
+/********************************************************************************************************************
+    iRASPA: GPU-accelated visualisation software for materials scientists
+    Copyright (c) 2016-2021 David Dubbeldam, Sofia Calero, Thijs J.H. Vlugt.
+    D.Dubbeldam@uva.nl            https://www.uva.nl/en/profile/d/u/d.dubbeldam/d.dubbeldam.html
+    S.Calero@tue.nl               https://www.tue.nl/en/research/researchers/sofia-calero/
+    t.j.h.vlugt@tudelft.nl        http://homepage.tudelft.nl/v9k6y
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ********************************************************************************************************************/
+
+#pragma once
+
+#include <unordered_set>
+#include <vector>
+#include "skseitzmatrix.h"
+#include "skdefinitions.h"
+
+class SKSymmetryOperationSet
+{
+public:
+  SKSymmetryOperationSet();
+  SKSymmetryOperationSet(std::unordered_set<SKSeitzMatrix> operations);
+  SKSymmetryOperationSet(std::vector<SKSeitzMatrix> operations);
+
+  size_t size() {return _operations.size();}
+  SKSymmetryOperationSet fullSeitzMatrices();
+  std::unordered_set<SKSeitzMatrix> operations() {return _operations;}
+private:
+  std::unordered_set<SKSeitzMatrix> _operations;
+  Centring _centring;
+};

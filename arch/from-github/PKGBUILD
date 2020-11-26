@@ -1,0 +1,42 @@
+# Maintainer: David Dubbeldam <d.dubbeldam@uva.nl>
+pkgname=iraspa
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="Molecular visualizer/editor"
+arch=('x86_64')
+url="https://www.iraspa.org"
+license=('GPL3')
+makedepends=('qt5-base' 'qt5-webengine' 'opencl-headers' 'zlib' 'xz' 'python' 'ffmpeg')
+depends=('qt5-base' 'qt5-webengine' 'ocl-icd' 'zlib' 'xz' 'python' 'ffmpeg')
+source=("https://github.com/iRASPA/iRASPA-QT/archive/${pkgver}.tar.gz")
+md5sums=('da50dca69316995ad51870a42b3b7e3f')
+
+build() {
+        cd iRASPA-QT-${pkgver}
+	qmake-qt5 iraspa.pro
+	make PREFIX=/usr
+}
+
+package() {
+	cd iRASPA-QT-${pkgver}
+        mkdir -p "${pkgdir}/usr/bin"
+        mkdir -p "${pkgdir}/usr/share/applications"
+        mkdir -p "${pkgdir}/usr/share/pixmaps"
+        mkdir -p "${pkgdir}/usr/share/iraspa"
+        install -Dm755 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/iraspa" "${pkgdir}/usr/bin/iraspa"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/libraryofstructures.irspdoc" "${pkgdir}/usr/share/iraspa/"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/databasecoremof.irspdoc" "${pkgdir}/usr/share/iraspa/"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/databasecoremofddec.irspdoc" "${pkgdir}/usr/share/iraspa/"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/databaseiza.irspdoc" "${pkgdir}/usr/share/iraspa/"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/acknowledgedlicenses.pdf" "${pkgdir}/usr/share/iraspa/"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/license-gpl.pdf" "${pkgdir}/usr/share/iraspa/"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.desktop" "${pkgdir}/usr/share/applications/"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.png" "${pkgdir}/usr/share/pixmaps/"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.iconset/icon_16x16.png" "${pkgdir}/usr/share/icons/hicolor/16x16/apps/iraspa.png"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.iconset/icon_32x32.png" "${pkgdir}/usr/share/icons/hicolor/32x32/apps/iraspa.png"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.iconset/icon_48x48.png" "${pkgdir}/usr/share/icons/hicolor/48x48/apps/iraspa.png"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.iconset/icon_64x64.png" "${pkgdir}/usr/share/icons/hicolor/64x64/apps/iraspa.png"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.iconset/icon_128x128.png" "${pkgdir}/usr/share/icons/hicolor/128x128/apps/iraspa.png"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.iconset/icon_256x256.png" "${pkgdir}/usr/share/icons/hicolor/256x256/apps/iraspa.png"
+        install -Dm644 "${srcdir}/iRASPA-QT-${pkgver}/iraspa/datafiles/iraspa.iconset/icon_512x512.png" "${pkgdir}/usr/share/icons/hicolor/512x512/apps/iraspa.png"
+}

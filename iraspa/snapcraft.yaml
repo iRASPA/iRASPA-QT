@@ -1,0 +1,98 @@
+name: iraspa
+version: 2.0.0
+summary: A molecular visualizer/editor
+icon: datafiles/iraspa.png
+description: |
+  iRASPA is a visualization package (with editing capabilities) aimed at 
+  material science. Examples of materials are metals, metal-oxides, ceramics,
+  biomaterials, zeolites, clays, and metal-organic frameworks. iRASPA leverages
+  the latest visualization technologies with stunning performance. It can 
+  handle large structures (hundreds of thousands of atoms), including ambient 
+  occlusion, with high frame rates.
+grade : stable
+confinement: strict
+base: core18
+
+apps:
+  iraspa:
+    command: usr/bin/iraspa
+    command-chain:
+      - bin/desktop-launch
+    desktop: usr/share/applications/iraspa.desktop
+    plugs: [unity7, x11, home, opengl, network, browser-support, desktop ]
+
+layout:
+  /usr/share/qt5:
+    bind: $SNAP/usr/share/qt5
+
+parts:
+  iraspa:
+    source: .
+    plugin: qmake
+    qt-version: qt5
+    project-files: [ iraspa.pro]
+    override-build: |
+      snapcraftctl build
+      install -D iraspa $SNAPCRAFT_PART_INSTALL/usr/bin
+    options: ["CONFIG+=release", "DEFINES += USE_SNAP"]
+    build-packages: [build-essential, dbus, qtdeclarative5-dev-tools, qt5-default, qtbase5-dev, liblzma-dev, libqt5webkit5-dev, ocl-icd-opencl-dev, python3-dev, zlib1g-dev, qtwebengine5-dev, libqt5opengl5-dev, libswscale-dev, libavformat-dev  ]
+    stage-packages: [libqt5gui5, libqt5core5a, libqt5printsupport5, libqt5qml5, libqt5quick5, libqt5webkit5, libqt5opengl5, ocl-icd-libopencl1, libasound2,libavcodec57,libavformat57,libavutil55,libbluray2,libchromaprint1,libcrystalhd3,libevent-2.1-6,libgme0,libgomp1,libgsm1,liblcms2-2,libminizip1,libmp3lame0,libmpg123-0,libnspr4,libnss3,libnuma1,libogg0,libopenjp2-7,libopenmpt0,libopus0,libpython3.6,libqt5quickwidgets5,libqt5webenginecore5,libqt5webenginewidgets5,libre2-4,libshine3,libsnappy1v5,libsoxr0,libspeex1,libssh-gcrypt-4,libswresample2,libswscale4,libtheora0,libtwolame0,libva-drm2,libva-x11-2,libva2,libvdpau1,libvorbis0a,libvorbisenc2,libvorbisfile3,libvpx5,libwavpack1,libwebpdemux2,libwebpmux3,libx264-152,libx265-146,libxss1,libxtst6,libxvidcore4,libzvbi0]
+    after: [desktop-qt5]
+  iraspa-copy-files:
+    plugin: dump
+    source: datafiles
+    stage:
+      - usr/share/pixmaps/iraspa.png
+      - usr/share/icons/hicolor/16x16/apps/iraspa.png
+      - usr/share/icons/hicolor/32x32/apps/iraspa.png
+      - usr/share/icons/hicolor/48x38/apps/iraspa.png
+      - usr/share/icons/hicolor/64x64/apps/iraspa.png
+      - usr/share/icons/hicolor/128x128/apps/iraspa.png
+      - usr/share/icons/hicolor/256x256/apps/iraspa.png
+      - usr/share/icons/hicolor/512x512/apps/iraspa.png
+      - usr/share/applications/iraspa.desktop
+      - usr/share/iraspa/license-gpl.pdf
+      - usr/share/iraspa/acknowledgedlicenses.pdf
+      - usr/share/iraspa/libraryofstructures.irspdoc
+      - usr/share/iraspa/databasecoremof.irspdoc
+      - usr/share/iraspa/databasecoremofddec.irspdoc
+      - usr/share/iraspa/databaseiza.irspdoc
+    organize:
+      iraspa.png: usr/share/pixmaps/iraspa.png
+      iraspa.iconset/icon_16x16.png : usr/share/icons/hicolor/16x16/apps/iraspa.png
+      iraspa.iconset/icon_32x32.png : usr/share/icons/hicolor/32x32/apps/iraspa.png
+      iraspa.iconset/icon_48x48.png : usr/share/icons/hicolor/48x38/apps/iraspa.png
+      iraspa.iconset/icon_64x64.png : usr/share/icons/hicolor/64x64/apps/iraspa.png
+      iraspa.iconset/icon_128x128.png : usr/share/icons/hicolor/128x128/apps/iraspa.png
+      iraspa.iconset/icon_256x256.png : usr/share/icons/hicolor/256x256/apps/iraspa.png
+      iraspa.iconset/icon_512x512.png : usr/share/icons/hicolor/512x512/apps/iraspa.png
+      iraspa.desktop: usr/share/applications/iraspa.desktop
+      license-gpl.pdf: usr/share/iraspa/license-gpl.pdf
+      acknowledgedlicenses.pdf: usr/share/iraspa/acknowledgedlicenses.pdf
+      libraryofstructures.irspdoc: usr/share/iraspa/libraryofstructures.irspdoc
+      databasecoremof.irspdoc: usr/share/iraspa/databasecoremof.irspdoc
+      databasecoremofddec.irspdoc: usr/share/iraspa/databasecoremofddec.irspdoc
+      databaseiza.irspdoc: usr/share/iraspa/databaseiza.irspdoc
+
+  desktop-qt5:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: qt
+    plugin: make
+    make-parameters: ["FLAVOR=qt5"]
+    build-packages:
+      - qtbase5-dev
+      - dpkg-dev
+    stage-packages:
+      - libxkbcommon0
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libqt5gui5
+      - libgdk-pixbuf2.0-0
+      - libgtk2.0-0
+      - libqt5svg5 # for loading icon themes which are svg
+      - try: [appmenu-qt5] # not available on core18
+      - locales-all

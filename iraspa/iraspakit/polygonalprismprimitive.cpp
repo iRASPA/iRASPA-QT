@@ -1,0 +1,371 @@
+/********************************************************************************************************************
+    iRASPA: GPU-accelated visualisation software for materials scientists
+    Copyright (c) 2016-2021 David Dubbeldam, Sofia Calero, Thijs J.H. Vlugt.
+    D.Dubbeldam@uva.nl            https://www.uva.nl/en/profile/d/u/d.dubbeldam/d.dubbeldam.html
+    S.Calero@tue.nl               https://www.tue.nl/en/research/researchers/sofia-calero/
+    t.j.h.vlugt@tudelft.nl        http://homepage.tudelft.nl/v9k6y
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ********************************************************************************************************************/
+
+#include "crystal.h"
+#include "molecule.h"
+#include "molecularcrystal.h"
+#include "proteincrystal.h"
+#include "protein.h"
+#include "ellipsoidprimitive.h"
+#include "cylinderprimitive.h"
+#include "polygonalprismprimitive.h"
+#include "crystalellipsoidprimitive.h"
+#include "crystalcylinderprimitive.h"
+#include "crystalpolygonalprismprimitive.h"
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive()
+{
+
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const PolygonalPrismPrimitive &polygonalPrismPrimitive): Structure(polygonalPrismPrimitive)
+{
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(std::shared_ptr<Structure> s): Structure(s)
+{
+  _cell = std::make_shared<SKCell>(*s->cell());
+
+  if(dynamic_cast<Crystal*>(s.get()) ||
+     dynamic_cast<CrystalEllipsoidPrimitive*>(s.get()) ||
+     dynamic_cast<CrystalCylinderPrimitive*>(s.get()) ||
+     dynamic_cast<CrystalPolygonalPrismPrimitive*>(s.get()))
+  {
+    convertAsymmetricAtomsToFractional();
+  }
+
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+std::shared_ptr<Structure> PolygonalPrismPrimitive::clone()
+{
+  return std::make_shared<PolygonalPrismPrimitive>(static_cast<const PolygonalPrismPrimitive&>(*this));
+}
+
+// MARK: Rendering
+// =====================================================================
+
+std::vector<RKInPerInstanceAttributesAtoms> PolygonalPrismPrimitive::renderPrimitivePolygonalPrismObjects() const
+{
+  std::vector<RKInPerInstanceAttributesAtoms> atomData;
+  double3 contentShift = _cell->contentShift();
+  bool3 contentFlip = _cell->contentFlip();
+
+  std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+
+  uint32_t asymmetricAtomIndex = 0;
+  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  {
+    if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+    {
+      bool isVisible = atom->isVisible();
+
+      if(isVisible)
+      {
+        for (std::shared_ptr<SKAtomCopy> copy : atom->copies())
+        {
+          if (copy->type() == SKAtomCopy::AtomCopyType::copy)
+          {
+            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+            QColor color = atom->color();
+
+            float4 position = float4(copyPosition, 1.0);
+
+            float4 ambient = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+            float4 diffuse = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+
+            float4 specular = float4(1.0, 1.0, 1.0, 1.0);
+
+            double radius = atom->drawRadius() * atom->occupancy();
+            float4 scale = float4(radius, radius, radius, 1.0);
+
+            RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+            atomData.push_back(atom1);
+          }
+        }
+      }
+    }
+    asymmetricAtomIndex++;
+  }
+
+  return atomData;
+}
+
+
+
+// MARK: Rendering selection
+// =====================================================================
+
+std::vector<RKInPerInstanceAttributesAtoms> PolygonalPrismPrimitive::renderSelectedPrimitivePolygonalPrismObjects() const
+{
+  std::vector<RKInPerInstanceAttributesAtoms> atomData;
+  double3 contentShift = _cell->contentShift();
+  bool3 contentFlip = _cell->contentFlip();
+
+  std::set<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->selectedTreeNodes();
+
+  uint32_t asymmetricAtomIndex = 0;
+  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  {
+    if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+    {
+      bool isVisible = atom->isVisible();
+
+      if(isVisible)
+      {
+        for (std::shared_ptr<SKAtomCopy> copy : atom->copies())
+        {
+          if (copy->type() == SKAtomCopy::AtomCopyType::copy)
+          {
+            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+            QColor color = atom->color();
+
+            float4 position = float4(copyPosition, 1.0);
+
+            float4 ambient = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+            float4 diffuse = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+
+            float4 specular = float4(1.0, 1.0, 1.0, 1.0);
+
+            double radius = atom->drawRadius() * atom->occupancy();
+            float4 scale = float4(radius, radius, radius, 1.0);
+
+            RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+            atomData.push_back(atom1);
+          }
+        }
+      }
+    }
+    asymmetricAtomIndex++;
+  }
+
+  return atomData;
+}
+
+
+// MARK: Filtering
+// =====================================================================
+
+// MARK: Bounding box
+// =====================================================================
+
+SKBoundingBox PolygonalPrismPrimitive::boundingBox() const
+{
+  double3 minimum = double3(1e10, 1e10, 1e10);
+  double3 maximum = double3(-1e10, -1e10, -1e10);
+
+  std::vector<std::shared_ptr<SKAtomCopy>> atoms = _atomsTreeController->atomCopies();
+
+  if (atoms.empty())
+  {
+    return SKBoundingBox(double3(0.0,0.0,0.0), double3(0.0, 0.0, 0.0));
+  }
+
+  for (std::shared_ptr<SKAtomCopy> atom : atoms)
+  {
+    double3 CartesianPosition = atom->position();
+    minimum.x = std::min(minimum.x, CartesianPosition.x);
+    minimum.y = std::min(minimum.y, CartesianPosition.y);
+    minimum.z = std::min(minimum.z, CartesianPosition.z);
+    maximum.x = std::max(maximum.x, CartesianPosition.x);
+    maximum.y = std::max(maximum.y, CartesianPosition.y);
+    maximum.z = std::max(maximum.z, CartesianPosition.z);
+  }
+
+  return SKBoundingBox(minimum, maximum);
+}
+
+// MARK: Symmetry
+// =====================================================================
+
+void PolygonalPrismPrimitive::expandSymmetry()
+{
+  std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+
+  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  {
+    std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
+    if (std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
+    {
+      std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
+
+      std::shared_ptr<SKAtomCopy> newAtom = std::make_shared<SKAtomCopy>(asymmetricAtom, asymmetricAtom->position());
+      newAtom->setType(SKAtomCopy::AtomCopyType::copy);
+      atomCopies.push_back(newAtom);
+
+      asymmetricAtom->setCopies(atomCopies);
+    }
+  }
+}
+
+std::shared_ptr<Structure> PolygonalPrismPrimitive::flattenHierarchy() const
+{
+  std::shared_ptr<PolygonalPrismPrimitive> polygonalPrism = std::make_shared<PolygonalPrismPrimitive>(static_cast<const PolygonalPrismPrimitive&>(*this));
+
+  const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+
+  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  {
+    if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
+    {
+      std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
+      for(std::shared_ptr<SKAtomCopy> atomCopy : asymmetricAtom->copies())
+      {
+        std::shared_ptr<SKAtomCopy> newAtomCopy = std::make_shared<SKAtomCopy>(newAsymmetricAtom, atomCopy->position());
+        newAsymmetricAtom->copies().push_back(newAtomCopy);
+      }
+      std::shared_ptr<SKAtomTreeNode> atomTreeNode = std::make_shared<SKAtomTreeNode>(newAsymmetricAtom);
+      polygonalPrism->atomsTreeController()->appendToRootnodes(atomTreeNode);
+    }
+  }
+
+  polygonalPrism->atomsTreeController()->setTags();
+  polygonalPrism->reComputeBoundingBox();
+  polygonalPrism->computeBonds();
+
+  return polygonalPrism;
+}
+
+
+std::optional<std::pair<std::shared_ptr<SKCell>, double3>> PolygonalPrismPrimitive::cellForFractionalPositions()
+{
+  SKBoundingBox boundingBox = _cell->boundingBox() + SKBoundingBox(double3(-2,-2,-2), double3(2,2,2));
+  SKCell cell = SKCell(boundingBox);
+  return std::make_pair(std::make_shared<SKCell>(cell), cell.inverseUnitCell() * (boundingBox.minimum()));
+}
+
+std::optional<std::pair<std::shared_ptr<SKCell>, double3>> PolygonalPrismPrimitive::cellForCartesianPositions()
+{
+  return std::nullopt;
+}
+
+std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::asymmetricAtomsCopiedAndTransformedToFractionalPositions()
+{
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
+
+  SKBoundingBox boundingBox = _cell->boundingBox() + SKBoundingBox(double3(-2,-2,-2), double3(2,2,2));
+  double3x3 inverseUnitCell = SKCell(boundingBox).inverseUnitCell();
+  const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  {
+    if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
+    {
+      std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
+      newAsymmetricAtom->setPosition(inverseUnitCell * asymmetricAtom->position());
+      atoms.push_back(newAsymmetricAtom);
+    }
+  }
+
+  return atoms;
+}
+
+std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::asymmetricAtomsCopiedAndTransformedToCartesianPositions()
+{
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
+
+  const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  {
+    if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
+    {
+      atoms.push_back(std::make_shared<SKAsymmetricAtom>(*asymmetricAtom));
+    }
+  }
+
+  return atoms;
+}
+
+std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::atomsCopiedAndTransformedToFractionalPositions()
+{
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
+
+  SKBoundingBox boundingBox = _cell->boundingBox() + SKBoundingBox(double3(-2,-2,-2), double3(2,2,2));
+  double3x3 inverseUnitCell = SKCell(boundingBox).inverseUnitCell();
+  const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  {
+    if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
+    {
+      for (std::shared_ptr<SKAtomCopy> copy : asymmetricAtom->copies())
+      {
+        if (copy->type() == SKAtomCopy::AtomCopyType::copy)
+        {
+          std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
+          newAsymmetricAtom->setPosition(inverseUnitCell * copy->position());
+          atoms.push_back(newAsymmetricAtom);
+        }
+      }
+    }
+  }
+
+  return atoms;
+}
+
+std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::atomsCopiedAndTransformedToCartesianPositions()
+{
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
+
+  const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  {
+    if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
+    {
+      for (std::shared_ptr<SKAtomCopy> copy : asymmetricAtom->copies())
+      {
+        if (copy->type() == SKAtomCopy::AtomCopyType::copy)
+        {
+          std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
+          newAsymmetricAtom->setPosition(copy->position());
+          atoms.push_back(newAsymmetricAtom);
+        }
+      }
+    }
+  }
+
+  return atoms;
+}
+
+
+// MARK: bond-computations
+// =====================================================================
+
+
+
+
+QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<PolygonalPrismPrimitive> &primitive)
+{
+  stream << primitive->_versionNumber;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, std::shared_ptr<PolygonalPrismPrimitive> &primitive)
+{
+  qint64 versionNumber;
+  stream >> versionNumber;
+  if(versionNumber > primitive->_versionNumber)
+  {
+    throw InvalidArchiveVersionException(__FILE__, __LINE__, "PolygonalPrismPrimitive");
+  }
+  return stream;
+}

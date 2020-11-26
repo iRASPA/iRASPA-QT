@@ -1,0 +1,2493 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="iraspagui\aboutdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\appearanceadsorptionsurfaceform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\appearanceannotationform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\appearanceatomsform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\appearancebondsform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\appearanceprimitiveform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\appearancetreewidgetcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\appearanceunitcellform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\arithmetic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangechargecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangedisplaynamecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangeelementcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangepositionxcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangepositionycommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangepositionzcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangeselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewcopyselectiontonewmoviecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewdeleteselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewdropcopycommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewdropmovecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewfindprimitivecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewfindsymmetrycommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewflattenhierarchycommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewinsertatomcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewinsertatomgroupcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewinvertselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewmakesupercellcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewmodel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewmoveselectiontonewmoviecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewpushbuttonstyleditemdelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewremovesymmetrycommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewwrapatomstocellcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="foundationkit\binpacker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\bondlistpushbuttonstyleditemdelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\bondlistview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\bondlistviewchangebondlengthcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\bondlistviewchangeselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\bondlistviewcomboboxstyleditemdelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\bondlistviewdeleteselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\bondlistviewmodel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\bondlistviewsliderstyleditemdelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\bool3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\camerabackgroundform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\cameracameraform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\cameralightsform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\camerapicturesform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\cameraselectionform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\cameratreewidgetcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\cappedcylinderdoublebondgeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\cappedcylindergeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\cappedcylinderpartialdoublebondgeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\cappedcylindersinglebondgeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\cappedcylindertriplebondgeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\cappednsidedprismgeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\cell.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\cellcellform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\cellstructuralform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\cellsymmetryform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\celltransformcontentform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\celltreewidgetappliedcellcontentshiftcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\celltreewidgetchangespacegroupcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\celltreewidgetchangestructurecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\celltreewidgetcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="foundationkit\characterset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationkit\constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\crystal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\crystalcylinderprimitive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\crystalellipsoidprimitive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\crystalpolygonalprismprimitive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\cubegeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\customdoublespinbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\customintspinbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\cylindergeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\cylinderprimitive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\debug.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\delaunay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\detailtabviewcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\determination.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\documentdata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\double2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\double3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\double3x3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\double4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\double4x4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\elementlistwidgetcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\elementsform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\ellipsoidprimitive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\fixedaspectratiolayoutitem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\float2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\float3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\float3x3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\float4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\float4x4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationkit\forcefieldset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationkit\forcefieldsets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationkit\forcefieldtype.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\frameliststyleditemdelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewchangedisplaynamecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewchangeselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewdeleteselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewdropcopycommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewdropmovecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewinsertcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewmodel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewpastecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\framelistviewproxystyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\glgeterror.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\glwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\hall_symbol.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\helpbrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\helpwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\importfiledialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="foundationkit\indexpath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\infochemicalform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\infocitationform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\infocreationform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\infocreatorform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\informationpanelview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\infotreewidgetcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\int3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\int3x3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\iraspaproject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\iraspastructure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\iraspatoolbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\iraspatreeview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\kgrid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\kpoint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\linenumberplaintextedit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="foundationkit\lodepng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\logviewcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\mainwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\masterstackedwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\mastertoolbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\mathfunc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\molecularcrystal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\molecule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\movie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\moviemaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\niggli.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\nsidedprismgeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\nsrect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\nssize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglambientocclusionshadowmapshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomorthographicimpostershader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomperspectiveimpostershader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatompickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomselectionshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomselectionstripesorthographicimpostershader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomselectionstripesperspectiveimpostershader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomselectionworleynoise3dorthographicimpostershader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomselectionworleynoise3dperspectiveimpostershader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglatomsphereshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglbackgroundshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglblurshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglbondselectionshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglbondshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglboundingboxcylindershader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglboundingboxshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglboundingboxsphereshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalcylinderobjectpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalcylinderobjectselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalcylinderobjectselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalcylinderobjectselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalcylinderobjectshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalcylinderselectioninstanceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalellipseobjectpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalellipseobjectshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalellipsoidobjectselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalellipsoidobjectselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalellipsoidobjectselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalellipsoidselectioninstanceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalpolygonalprismobjectpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalpolygonalprismobjectselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalpolygonalprismobjectselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalpolygonalprismobjectselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalpolygonalprismobjectshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcrystalpolygonalprismselectioninstanceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcylinderobjectpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcylinderobjectselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcylinderobjectselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcylinderobjectselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcylinderobjectshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglcylinderselectioninstanceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglellipseobjectpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglellipseobjectshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglellipsoidobjectselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglellipsoidobjectselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglellipsoidobjectselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglellipsoidselectioninstanceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglenergysurface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglexternalbondpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglexternalbondselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglexternalbondselectioninstanceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglexternalbondselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglexternalbondselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglexternalbondshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglinternalbondpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglinternalbondselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglinternalbondselectioninstanceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglinternalbondselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglinternalbondselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglinternalbondshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglobjectselectionshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglobjectshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglpolygonalprismobjectpickingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglpolygonalprismobjectselectionglowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglpolygonalprismobjectselectionstripesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglpolygonalprismobjectselectionworleynoise3dshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglpolygonalprismobjectshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglpolygonalprismselectioninstanceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglselectionshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\opengltextrenderingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglunitcellcylindershader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglunitcellshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\openglunitcellsphereshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\openiraspaformatdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\overlap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\pointgroup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\polygonalprismprimitive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\primitive.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\project.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\projectgroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\projectstructure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\projecttreecontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\projecttreenode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewchangedisplaynamecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewchangeselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewdeleteselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewdropcopycommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewdropmovecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewinsertprojectgroupcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewinsertprojectstructurecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewmodel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewpasteprojectscommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewproxystyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\projecttreeviewstyleditemdelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\protein.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\proteincrystal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\pythonviewcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\qdoubledial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\qdoubleslider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\qtsegmentcontrol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\quadgeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\refinement.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderstackedwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewchangeselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewchangeselectionsubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewdeleteselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewdeleteselectionsubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewrotatepositionsbodyframecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewrotatepositionsbodyframesubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewrotatepositionscartesiancommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewrotatepositionscartesiansubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewtranslatepositionsbodyframecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewtranslatepositionsbodyframesubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewtranslatepositionscartesiancommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\renderviewtranslatepositionscartesiansubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\rkcamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\rkfontatlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\rklight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\rkrenderkitprotocols.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\rkrenderuniforms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\savecifformatdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\saveiraspaformatdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\savemmcifformatdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\savemoviedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\savepdbformatdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\savepicturedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\saveposcarformatdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\savexyzformatdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="foundationkit\scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\scenelist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewchangemoviedisplaynamecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewchangescenedisplaynamecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewchangeselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewdeletemoviesubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewdeleteselectioncommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewdraganddropinsertmoviesubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewdraganddropinsertscenesubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewdraganddropmovemoviesubcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewdropcopycommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewdropmovecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewinsertinitialscenecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewinsertmoviecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewmodel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewpasteprojectscommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewproxystyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\scenetreeviewstyleditemdelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\selectcolorbutton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\simd_quatd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\site_symmetry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\sitesym_database.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skasymmetricatom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skasymmetricbond.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skatomcopy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skatomtreecontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skatomtreenode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skbond.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skbondsetcontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skboundingbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skcell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skcifparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skcifwriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skcolorset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skcolorsets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skelement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skmmcifparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skmmcifwriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skonethirdseitzmatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationkit\skopenclenergygridunitcell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationkit\skopenclfindminmumenergygridunitcell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationkit\skopenclmarchingcubes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationkit\skopenclvoidfractionunitcell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skpdbparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skpdbwriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skpointgroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skposcarparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skposcarwriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skrotationaloccurancetable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skrotationmatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skseitzmatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skspacegroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skspacegroupsetting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\sksymmetryoperationset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skxyzparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skxyzwriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\spacegroup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\spg_database.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\spglib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\spheregeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\spin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspakit\structure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spglib\symmetry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\symmetrykitprotocols.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\textfield.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\trackball.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\uncappedcylindergeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="foundationkit\zip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="iraspagui\aboutdialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\appearanceadsorptionsurfaceform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\appearanceannotationform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\appearanceatomsform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\appearancebondsform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\appearanceprimitiveform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\appearancetreewidgetcontroller.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\appearanceunitcellform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="spglib\arithmetic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\aspectratiosingleitemlayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\atomtreeview.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\atomtreeviewchangechargecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewchangedisplaynamecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewchangeelementcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewchangepositionxcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewchangepositionycommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewchangepositionzcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewchangeselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewcopyselectiontonewmoviecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewdeleteselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewdropcopycommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewdropmovecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewfindprimitivecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewfindsymmetrycommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewflattenhierarchycommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewinsertatomcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewinsertatomgroupcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewinvertselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewmakesupercellcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\atomtreeviewmodel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\atomtreeviewmoveselectiontonewmoviecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\atomtreeviewpushbuttonstyleditemdelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\atomtreeviewremovesymmetrycommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewwrapatomstocellcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\binpacker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\bondlistpushbuttonstyleditemdelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\bondlistview.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\bondlistviewchangebondlengthcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\bondlistviewchangeselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\bondlistviewcomboboxstyleditemdelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\bondlistviewdeleteselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\bondlistviewmodel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\bondlistviewsliderstyleditemdelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="mathkit\bool3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\camerabackgroundform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\cameracameraform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\cameralightsform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\camerapicturesform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\cameraselectionform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\cameratreewidgetcontroller.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="renderkit\cappedcylinderdoublebondgeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\cappedcylindergeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\cappedcylinderpartialdoublebondgeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\cappedcylindersinglebondgeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\cappedcylindertriplebondgeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\cappednsidedprismgeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\cell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\cellcellform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\cellstructuralform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\cellsymmetryform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\celltransformcontentform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\celltreewidgetappliedcellcontentshiftcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\celltreewidgetchangespacegroupcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\celltreewidgetchangestructurecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\celltreewidgetcontroller.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="foundationkit\characterset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\crystal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\crystalcylinderprimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\crystalellipsoidprimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\crystalpolygonalprismprimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\cubegeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\customdoublespinbox.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\customintspinbox.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="renderkit\cylindergeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\cylinderprimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\delaunay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\detailtabviewcontroller.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="spglib\determination.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\documentdata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\double2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\double3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\double3x3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\double4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\double4x4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\elementlistwidgetcontroller.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\elementsform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspakit\ellipsoidprimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\fixedaspectratiolayoutitem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\flatten.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\float2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\float3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\float3x3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\float4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\float4x4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\forcefieldset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\forcefieldsets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\forcefieldtype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\foundationkit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\frameliststyleditemdelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\framelistview.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\framelistviewchangedisplaynamecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\framelistviewchangeselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\framelistviewdeleteselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\framelistviewdropcopycommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\framelistviewdropmovecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\framelistviewinsertcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\framelistviewmodel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\framelistviewpastecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\framelistviewproxystyle.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="renderkit\glgeterror.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="renderkit\glwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="spglib\hall_symbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\helpbrowser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\helpwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\importfiledialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\indexpath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\infochemicalform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\infocitationform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\infocreationform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\infocreatorform.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\informationpanelview.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\infotreewidgetcontroller.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="mathkit\int3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\int3x3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\iraspakit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\iraspakitprotocols.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\iraspamainwindowconsumerprotocol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\iraspaproject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\iraspastructure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\iraspatoolbar.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\iraspatreeview.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="spglib\kgrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\kpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\linenumberplaintextedit.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="foundationkit\lodepng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\logreporting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\logviewcontroller.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\mainwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\masterstackedwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\mastertoolbar.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="spglib\mathfunc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\mathkit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\molecularcrystal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\molecule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\movie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\moviemaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\niggli.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\nsidedprismgeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\nsrect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\nssize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglambientocclusionshadowmapshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomorthographicimpostershader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomperspectiveimpostershader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatompickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomselectionshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomselectionstripesorthographicimpostershader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomselectionstripesperspectiveimpostershader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomselectionworleynoise3dorthographicimpostershader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomselectionworleynoise3dperspectiveimpostershader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglatomsphereshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglbackgroundshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglblurshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglbondselectionshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglbondshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglboundingboxcylindershader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglboundingboxshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglboundingboxsphereshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalcylinderobjectpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalcylinderobjectselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalcylinderobjectselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalcylinderobjectselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalcylinderobjectshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalcylinderselectioninstanceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalellipseobjectpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalellipseobjectshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalellipsoidobjectselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalellipsoidobjectselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalellipsoidobjectselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalellipsoidselectioninstanceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalpolygonalprismobjectpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalpolygonalprismobjectselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalpolygonalprismobjectselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalpolygonalprismobjectselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalpolygonalprismobjectshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcrystalpolygonalprismselectioninstanceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcylinderobjectpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcylinderobjectselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcylinderobjectselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcylinderobjectselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcylinderobjectshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglcylinderselectioninstanceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglellipseobjectpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglellipseobjectshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglellipsoidobjectselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglellipsoidobjectselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglellipsoidobjectselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglellipsoidselectioninstanceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglenergysurface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglexternalbondpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglexternalbondselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglexternalbondselectioninstanceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglexternalbondselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglexternalbondselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglexternalbondshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglinternalbondpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglinternalbondselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglinternalbondselectioninstanceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglinternalbondselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglinternalbondselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglinternalbondshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglobjectselectionshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglobjectshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglpolygonalprismobjectpickingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglpolygonalprismobjectselectionglowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglpolygonalprismobjectselectionstripesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglpolygonalprismobjectselectionworleynoise3dshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglpolygonalprismobjectshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglpolygonalprismselectioninstanceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglselectionshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\opengltextrenderingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglunitcellcylindershader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglunitcellshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\openglunitcellsphereshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\openiraspaformatdialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\overlap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\pointgroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\polygonalprismprimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\primitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\project.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\projectgroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\projectstructure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\projecttreecontroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\projecttreenode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\projecttreeview.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\projecttreeviewchangedisplaynamecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\projecttreeviewchangeselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\projecttreeviewdeleteselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\projecttreeviewdropcopycommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\projecttreeviewdropmovecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\projecttreeviewinsertprojectgroupcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\projecttreeviewinsertprojectstructurecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\projecttreeviewmodel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\projecttreeviewpasteprojectscommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\projecttreeviewproxystyle.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\projecttreeviewstyleditemdelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspakit\protein.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\proteincrystal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\pythonviewcontroller.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\qcolorhash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\qdoubledial.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\qdoubleslider.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\qtsegmentcontrol.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="renderkit\quadgeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\refinement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\renderkit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\renderstackedwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\renderviewchangeselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewchangeselectionsubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewdeleteselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewdeleteselectionsubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewrotatepositionsbodyframecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewrotatepositionsbodyframesubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewrotatepositionscartesiancommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewrotatepositionscartesiansubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewtranslatepositionsbodyframecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewtranslatepositionsbodyframesubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewtranslatepositionscartesiancommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\renderviewtranslatepositionscartesiansubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\rkcamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\rkfontatlas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\rklight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\rkrenderkitprotocols.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\rkrenderuniforms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\savecifformatdialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\saveiraspaformatdialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\savemmcifformatdialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\savemoviedialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\savepdbformatdialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\savepicturedialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\saveposcarformatdialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\savexyzformatdialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\scanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\scenelist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\scenetreeview.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\scenetreeviewchangemoviedisplaynamecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewchangescenedisplaynamecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewchangeselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewdeletemoviesubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewdeleteselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewdraganddropinsertmoviesubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewdraganddropinsertscenesubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewdraganddropmovemoviesubcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewdropcopycommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewdropmovecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewinsertinitialscenecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\scenetreeviewinsertmoviecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\scenetreeviewmodel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="iraspagui\scenetreeviewpasteprojectscommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\scenetreeviewproxystyle.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\scenetreeviewstyleditemdelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="iraspagui\selectcolorbutton.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="foundationkit\serialization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\signalblocker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\simd_quatd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\simulationkit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\site_symmetry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\sitesym_database.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skasymmetricatom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skasymmetricbond.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skatomcopy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skatomtreecontroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skatomtreenode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skbond.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skbondsetcontroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skboundingbox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skcell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skcifparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skcifwriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skcolorset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skcolorsets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skdefinitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skelement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skmmcifparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skmmcifwriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skonethirdseitzmatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\skopenclenergygridunitcell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\skopenclfindminmumenergygridunitcell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\skopenclmarchingcubes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationkit\skopenclvoidfractionunitcell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skpdbparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skpdbwriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skpointgroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skposcarparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skposcarwriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skrotationaloccurancetable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skrotationmatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skseitzmatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skspacegroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skspacegroupsetting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skstructure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\sksymmetryoperationset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skxyzparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skxyzwriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\spacegroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\spg_database.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\spglib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\spheregeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\spin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspakit\structure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\symmetry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\symmetrykit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\symmetrykitprotocols.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="iraspagui\textfield.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="renderkit\trackball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\uncappedcylindergeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spglib\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\zipreader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foundationkit\zipwriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="iraspagui\aboutdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\appearanceadsorptionsurfaceform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\appearanceannotationform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\appearanceatomsform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\appearancebondsform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\appearanceprimitiveform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\appearanceunitcellform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\camerabackgroundform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\cameracameraform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\cameralightsform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\camerapicturesform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\cameraselectionform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\cellcellform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\cellstructuralform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\cellsymmetryform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\celltransformcontentform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\elementsform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\infochemicalform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\infocitationform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\infocreationform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\infocreatorform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="iraspagui\mainwindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="iraspagui\bottompanelcollapse.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\collapsed.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\doublebond.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\expanded.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\framelistcontroller.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\genericfoldericon.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\iraspa-icon-512x512.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <QtRcc Include="iraspagui\iraspa-resources.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+    <None Include="iraspagui\leftpanelcollapse.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\movielistcontroller.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\nsaddtemplate.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\nsremovetemplate.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\partialdoublebond.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\projectlistcontroller.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\rightpanelcollapse.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\singlebond.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="iraspagui\triplebond.png">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

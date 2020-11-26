@@ -1,0 +1,11 @@
+#ifndef BONDLISTVIEWCHANGEBONDLENGTHCOMMAND_H
+#define BONDLISTVIEWCHANGEBONDLENGTHCOMMAND_H
+
+
+class BondListViewChangeBondLengthCommand
+{
+public:
+  BondListViewChangeBondLengthCommand();
+};
+
+#endif // BONDLISTVIEWCHANGEBONDLENGTHCOMMAND_H
