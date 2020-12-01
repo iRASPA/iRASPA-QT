@@ -63,10 +63,13 @@
     _textShader(_atomShader),
     _controlPanel(new QStackedWidget(this)),
     _controlPanelCartesian(new QFrame(this)),
-    _controlPanelBodyFrame(new QFrame(this))
+    _controlPanelBodyFrame(new QFrame(this)),
+    _timer(new QTimer(parent))
 {
   setAttribute( Qt::WA_OpaquePaintEvent );
   setFocusPolicy(Qt::StrongFocus);
+
+  connect(_timer, &QTimer::timeout, this, &GLWidget::timeoutEventHandler);
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,4,0))
   QGLFormat format;
@@ -582,13 +585,35 @@ void GLWidget::initializeGL()
 
   _pickingShader.generateFrameBuffers();
 
-  #if defined (Q_OS_OSX)
-    initializeCL_Mac(_clContext, _clDeviceId, _clCommandQueue);
-  #elif defined(Q_OS_WIN)
-    initializeCL_Windows(_clContext, _clDeviceId, _clCommandQueue);
-  #elif defined(Q_OS_LINUX)
-    initializeCL_Linux(_clContext, _clDeviceId, _clCommandQueue);
-  #endif
+  cl_int err;
+  cl_uint n;
+  err = clGetPlatformIDs(0, nullptr, &n);
+  QString platformNumberMessage = QString("Number of OpenCL platforms found: %1").arg(QString::number(n));
+  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, platformNumberMessage);
+  if (n > 0)
+  {
+    QVector<cl_platform_id> platformIds;
+    platformIds.resize(n);
+    if (clGetPlatformIDs(n, platformIds.data(), 0) == CL_SUCCESS)
+    {
+      for (cl_uint i = 0; i < n; ++i)
+      {
+        QByteArray name;
+        name.resize(1024);
+        clGetPlatformInfo(platformIds[i], CL_PLATFORM_NAME, name.size(), name.data(), 0);
+        QString platformNameMessage = QString("platform found: %1").arg(QString(name.constData()));
+        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, platformNameMessage);
+      }
+    }
+
+    #if defined (Q_OS_OSX)
+      initializeCL_Mac(_clContext, _clDeviceId, _clCommandQueue);
+    #elif defined(Q_OS_WIN)
+      initializeCL_Windows(_clContext, _clDeviceId, _clCommandQueue);
+    #elif defined(Q_OS_LINUX)
+      initializeCL_Linux(_clContext, _clDeviceId, _clCommandQueue);
+    #endif
+  }
 
   _energySurfaceShader.initializeOpenCL(_isOpenCLInitialized, _clContext, _clDeviceId, _clCommandQueue);
 
@@ -691,6 +716,7 @@ void GLWidget::initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceI
       if(err==CL_SUCCESS)
       {
         _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL initialized");
+        printDeviceInformation(_clDeviceId);
         _isOpenCLInitialized = true;
       }
       else
@@ -1183,7 +1209,7 @@ void GLWidget::resizeGL( int w, int h )
 
 void GLWidget::paintGL()
 {
-    glGetError();
+  glGetError();
   updateStructureUniforms();
   glGetError();
   updateTransformUniforms();
@@ -1440,6 +1466,8 @@ void GLWidget::keyPressEvent( QKeyEvent* e )
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+  _timer->stop();
+
   makeCurrent();
   _startPoint = event->pos();
   _origin = event->pos();
@@ -1560,11 +1588,20 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
+  _quality = RKRenderQuality::medium;
+  _timer->start(500);
   makeCurrent();
   if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
     camera->increaseDistance(event->angleDelta().y()/40.0);
   }
+  update();
+}
+
+void GLWidget::timeoutEventHandler()
+{
+  _timer->stop();
+  _quality = RKRenderQuality::high;
   update();
 }
 

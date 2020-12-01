@@ -31,6 +31,7 @@
 #else
   #include <QGLWidget>
 #endif
+#include <QTimer>
 #include <QPoint>
 #include <QCache>
 #include <QOpenGLTexture>
@@ -241,39 +242,42 @@ private:
   QToolButton *_buttonBodyFramePlusRy;
   QToolButton *_buttonBodyFrameMinusRz;
   QToolButton *_buttonBodyFramePlusRz;
-protected:
-   void initializeGL() final override;
-   void resizeGL( int w, int h ) final override;
-   void paintGL() final override;
-   void keyPressEvent( QKeyEvent* e ) final override;
-   void mousePressEvent(QMouseEvent *event) final override;
-   void mouseMoveEvent(QMouseEvent *event) final override;
-   void mouseReleaseEvent(QMouseEvent *event) final override;
-   void wheelEvent(QWheelEvent *event ) final override;
-signals:
-   void pressedTranslateCartesianMinusX();
-   void pressedTranslateCartesianPlusX();
-   void pressedTranslateCartesianMinusY();
-   void pressedTranslateCartesianPlusY();
-   void pressedTranslateCartesianMinusZ();
-   void pressedTranslateCartesianPlusZ();
-   void pressedRotateCartesianMinusX();
-   void pressedRotateCartesianPlusX();
-   void pressedRotateCartesianMinusY();
-   void pressedRotateCartesianPlusY();
-   void pressedRotateCartesianMinusZ();
-   void pressedRotateCartesianPlusZ();
 
-   void pressedTranslateBodyFrameMinusX();
-   void pressedTranslateBodyFramePlusX();
-   void pressedTranslateBodyFrameMinusY();
-   void pressedTranslateBodyFramePlusY();
-   void pressedTranslateBodyFrameMinusZ();
-   void pressedTranslateBodyFramePlusZ();
-   void pressedRotateBodyFrameMinusX();
-   void pressedRotateBodyFramePlusX();
-   void pressedRotateBodyFrameMinusY();
-   void pressedRotateBodyFramePlusY();
-   void pressedRotateBodyFrameMinusZ();
-   void pressedRotateBodyFramePlusZ();
+  QTimer *_timer;
+  void timeoutEventHandler();
+protected:
+  void initializeGL() final override;
+  void resizeGL( int w, int h ) final override;
+  void paintGL() final override;
+  void keyPressEvent( QKeyEvent* e ) final override;
+  void mousePressEvent(QMouseEvent *event) final override;
+  void mouseMoveEvent(QMouseEvent *event) final override;
+  void mouseReleaseEvent(QMouseEvent *event) final override;
+  void wheelEvent(QWheelEvent *event ) final override;
+signals:
+  void pressedTranslateCartesianMinusX();
+  void pressedTranslateCartesianPlusX();
+  void pressedTranslateCartesianMinusY();
+  void pressedTranslateCartesianPlusY();
+  void pressedTranslateCartesianMinusZ();
+  void pressedTranslateCartesianPlusZ();
+  void pressedRotateCartesianMinusX();
+  void pressedRotateCartesianPlusX();
+  void pressedRotateCartesianMinusY();
+  void pressedRotateCartesianPlusY();
+  void pressedRotateCartesianMinusZ();
+  void pressedRotateCartesianPlusZ();
+
+  void pressedTranslateBodyFrameMinusX();
+  void pressedTranslateBodyFramePlusX();
+  void pressedTranslateBodyFrameMinusY();
+  void pressedTranslateBodyFramePlusY();
+  void pressedTranslateBodyFrameMinusZ();
+  void pressedTranslateBodyFramePlusZ();
+  void pressedRotateBodyFrameMinusX();
+  void pressedRotateBodyFramePlusX();
+  void pressedRotateBodyFrameMinusY();
+  void pressedRotateBodyFramePlusY();
+  void pressedRotateBodyFrameMinusZ();
+  void pressedRotateBodyFramePlusZ();
 };

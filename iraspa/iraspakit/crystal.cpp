@@ -912,7 +912,7 @@ std::pair<std::vector<int>, std::vector<double3>> Crystal::atomSymmetryData() co
   std::vector<double3> fractionalPositions{};
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -1721,9 +1721,9 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Crystal::rota
   double3 comFrac = centerOfMassOfSelectionAsymmetricAtoms(atoms);
   double3x3 rotationMatrix = double3x3(rotation);
 
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions{};
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositions{};
 
-  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(translatedPositions),
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(rotatedPositions),
                  [this,comFrac,rotationMatrix](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
                  {
                    double3 ds = double3::fract(atom->position()) - comFrac;
@@ -1735,7 +1735,7 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Crystal::rota
                    return std::make_pair(atom, _cell->convertToFractional(position) + comFrac);
                  });
 
-  return translatedPositions;
+  return rotatedPositions;
 }
 
 
@@ -1744,9 +1744,9 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Crystal::rota
   double3 comFrac = centerOfMassOfSelectionAsymmetricAtoms(atoms);
   double3x3 rotationMatrix =  _selectionBodyFixedBasis * double3x3(rotation) * double3x3::inverse(_selectionBodyFixedBasis);
 
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions{};
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositions{};
 
-  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(translatedPositions),
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(rotatedPositions),
                  [this,comFrac,rotationMatrix](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
                  {
                    double3 ds = double3::fract(atom->position()) - comFrac;
@@ -1758,7 +1758,7 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Crystal::rota
                    return std::make_pair(atom, _cell->convertToFractional(position) + comFrac);
                  });
 
-  return translatedPositions;
+  return rotatedPositions;
 }
 
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Crystal> &crystal)
