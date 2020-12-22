@@ -87,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   ui->detailTabViewController->setStyleSheet("QTabWidget::tab-bar { left: 0;}");
 
   // connect the project-toolbar to the stackedWidget
-  QObject::connect(ui->masterToolBar->mapper(), static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mapped),ui->masterStackedWidget, &MasterStackedWidget::reloadTab);
+  QObject::connect(ui->masterToolBar->mapper(), static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt),ui->masterStackedWidget, &MasterStackedWidget::reloadTab);
 
   // connect the sceneTreeView
   QObject::connect(ui->sceneTreeView, &SceneTreeView::updateRenderer,ui->stackedRenderers, &RenderStackedWidget::reloadData);
@@ -801,7 +801,7 @@ void MainWindow::importFile()
       bool onlyAsymmetricUnit=dialog.checkboxOnlyAsymmetricUnitCell->checkState() == Qt::CheckState::Checked;
       bool asMolecule=dialog.checkboxImportAsMolecule->checkState() == Qt::CheckState::Checked;
 
-      ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(ui->projectTreeView->model());
+      [[maybe_unused]] ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(ui->projectTreeView->model());
 
       QModelIndex rootLocalProjectsParentIndex = ui->projectTreeView->model()->index(2,0,QModelIndex());
       QModelIndex localProjectsParentIndex = ui->projectTreeView->model()->index(0,0,rootLocalProjectsParentIndex);
@@ -809,14 +809,14 @@ void MainWindow::importFile()
       std::shared_ptr<ProjectTreeNode> localProjects =  _documentData->projectTreeController()->localProjects();
 
       QAbstractItemModel* model = ui->projectTreeView->model();
-      QModelIndex index = ui->projectTreeView->selectionModel()->currentIndex();
+      [[maybe_unused]] QModelIndex index = ui->projectTreeView->selectionModel()->currentIndex();
       //int insertionIndex = index.row() + 1;
 
       QString fileName = fileURLs.first().toString();
 
 
       QFileInfo fileInfo(fileName);
-      QModelIndex insertedIndex = model->index(0,0,localProjectsParentIndex);
+      [[maybe_unused]] QModelIndex insertedIndex = model->index(0,0,localProjectsParentIndex);
 
       ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
 

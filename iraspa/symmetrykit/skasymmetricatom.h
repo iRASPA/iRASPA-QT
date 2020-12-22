@@ -136,7 +136,7 @@ private:
     double2 _potentialParameters = double2(0.0,0.0);
 
     qint64 _tag = 0;
-    SKAsymmetricAtomType _symmetryType = SKAsymmetricAtomType::asymmetric;
+    [[maybe_unused]] SKAsymmetricAtomType _symmetryType = SKAsymmetricAtomType::asymmetric;
     Hybridization _hybridization = Hybridization::untyped;
 
     // atom properties (bonds are visible depending on whether the atoms of the bonds are visible)

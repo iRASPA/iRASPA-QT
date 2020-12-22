@@ -41,7 +41,6 @@ public:
   void append(SKColorSet colorSet) { _colorSets.push_back(colorSet);}
 private:
   qint64 _versionNumber{1};
-  size_t _numberOfPredefinedSets = 4;
   std::vector<SKColorSet> _colorSets;
 
   friend QDataStream &operator<<(QDataStream &, const SKColorSets &);

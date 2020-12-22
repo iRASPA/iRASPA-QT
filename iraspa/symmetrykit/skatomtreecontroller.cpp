@@ -301,11 +301,11 @@ double SKAtomTreeController::netCharge()
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = flattenedLeafNodes();
 
   double net_charge=0.0;
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
-      for(const std::shared_ptr<SKAtomCopy> atomCopy : asymmetricAtom->copies())
+      for(const std::shared_ptr<SKAtomCopy> &atomCopy : asymmetricAtom->copies())
       {
         if(atomCopy->type() == SKAtomCopy::AtomCopyType::copy)
         {

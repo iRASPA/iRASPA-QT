@@ -61,7 +61,7 @@ Package creation:
 * Windows-10:
    * the 'iraspa.vcxproj' has been generated using the pro-file import in visual studio 2019.
    * to run, copy the content of the directory 'datafiles' to the 'debug' or 'release' visual studio directories.
-* Windows-10 store ('windowwsstore' directory): 
+* Windows-10 store ('windowsstore' directory): 
    * add the directory 'iraspa' that contains all the required Qt files, license and acknowledgement pdfs, and structure databases that will be copied into the appx windows-10 package. 
    * add the directory 'Images' with all the various icons.
    * add 'IRASPAPackaging_StoreKey.pfx'.

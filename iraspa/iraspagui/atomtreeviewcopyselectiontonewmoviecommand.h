@@ -42,7 +42,7 @@ public:
   void undo() override final;
 private:
   MainWindow *_mainWindow;
-  AtomTreeViewModel* _atomTreeViewModel;
+  [[maybe_unused]] AtomTreeViewModel* _atomTreeViewModel;
   SceneTreeViewModel* _sceneTreeViewModel;
   std::shared_ptr<SceneList> _sceneList;
   std::shared_ptr<iRASPAStructure> _iraspaStructure;

@@ -244,7 +244,8 @@ int kpt_get_irreducible_reciprocal_mesh(int grid_address[][3],
                                                      is_shift,
                                                      rot_reciprocal);
 
-  for (i = 0; i < mesh[0] * mesh[1] * mesh[2]; i++) {
+  for (i = 0; i < (size_t)(mesh[0] * mesh[1] * mesh[2]); i++)
+  {
     ir_mapping_table[i] = dense_ir_mapping_table[i];
   }
 
@@ -299,7 +300,7 @@ int kpt_get_stabilized_reciprocal_mesh(int grid_address[][3],
                                                     num_q,
                                                     qpoints);
 
-  for (i = 0; i < mesh[0] * mesh[1] * mesh[2]; i++) {
+  for (i = 0; i < (size_t)(mesh[0] * mesh[1] * mesh[2]); i++) {
     ir_mapping_table[i] = dense_ir_mapping_table[i];
   }
 
@@ -399,8 +400,10 @@ int kpt_relocate_BZ_grid_address(int bz_grid_address[][3],
                                  SPGCONST double rec_lattice[3][3],
                                  const int is_shift[3])
 {
-  int i, num_bz_map, num_bzgp;
+  int num_bzgp;
+  size_t i;
   size_t *dense_bz_map;
+  size_t num_bz_map;
 
   num_bz_map = mesh[0] * mesh[1] * mesh[2] * 8;
 
@@ -545,7 +548,8 @@ static MatINT *get_point_group_reciprocal_with_q(const MatINT * rot_reciprocal,
                                                  const size_t num_q,
                                                  SPGCONST double qpoints[][3])
 {
-  int i, j, k, l, is_all_ok, num_rot;
+  int i, l, is_all_ok, num_rot;
+  size_t j,k;
   int *ir_rot;
   double q_rot[3], diff[3];
   MatINT * rot_reciprocal_q;

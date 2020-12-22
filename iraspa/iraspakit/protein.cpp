@@ -261,37 +261,40 @@ std::set<int> Protein::filterCartesianAtomPositions(std::function<bool(double3)>
 {
   std::set<int> data;
 
-  double4x4 rotationMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(_orientation), boundingBox().center());
-  double3 contentShift = _cell->contentShift();
-  bool3 contentFlip = _cell->contentFlip();
-
-  std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-
-  uint32_t asymmetricAtomIndex = 0;
-  for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  if(_isVisible)
   {
-    if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+    double4x4 rotationMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(_orientation), boundingBox().center());
+    double3 contentShift = _cell->contentShift();
+    bool3 contentFlip = _cell->contentFlip();
+
+    std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+
+    uint32_t asymmetricAtomIndex = 0;
+    for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
     {
-      if (atom->isVisible())
+      if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
-        for(std::shared_ptr<SKAtomCopy> copy : atom->copies())
+        if (atom->isVisible())
         {
-          if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+          for(std::shared_ptr<SKAtomCopy> copy : atom->copies())
           {
-            double3 CartesianPosition = double3::flip(copy->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
-
-            double4 position = rotationMatrix * double4(CartesianPosition.x, CartesianPosition.y, CartesianPosition.z, 1.0);
-
-            double3 absoluteCartesianPosition = double3(position.x,position.y,position.z) + _origin;
-            if(closure(absoluteCartesianPosition))
+            if(copy->type() == SKAtomCopy::AtomCopyType::copy)
             {
-              data.insert(asymmetricAtomIndex);
+              double3 CartesianPosition = double3::flip(copy->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+
+              double4 position = rotationMatrix * double4(CartesianPosition.x, CartesianPosition.y, CartesianPosition.z, 1.0);
+
+              double3 absoluteCartesianPosition = double3(position.x,position.y,position.z) + _origin;
+              if(closure(absoluteCartesianPosition))
+              {
+                data.insert(asymmetricAtomIndex);
+              }
             }
           }
         }
       }
+      asymmetricAtomIndex++;
     }
-    asymmetricAtomIndex++;
   }
 
   return data;
@@ -302,36 +305,39 @@ std::set<int> Protein::filterCartesianBondPositions(std::function<bool(double3)>
 {
   std::set<int> data;
 
-  const std::vector<std::shared_ptr<SKAsymmetricBond>> asymmetricBonds = _bondSetController->arrangedObjects();
-  double3 contentShift = _cell->contentShift();
-  bool3 contentFlip = _cell->contentFlip();
-
-  double4x4 rotationMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(_orientation), boundingBox().center());
-
-  uint32_t asymmetricBondIndex = 0;
-  for(std::shared_ptr<SKAsymmetricBond> asymmetricBond : asymmetricBonds)
+  if(_isVisible)
   {
-    bool isVisible = asymmetricBond->isVisible() && asymmetricBond->atom1()->isVisible()  && asymmetricBond->atom2()->isVisible();
+    const std::vector<std::shared_ptr<SKAsymmetricBond>> asymmetricBonds = _bondSetController->arrangedObjects();
+    double3 contentShift = _cell->contentShift();
+    bool3 contentFlip = _cell->contentFlip();
 
-    if (isVisible)
+    double4x4 rotationMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(_orientation), boundingBox().center());
+
+    uint32_t asymmetricBondIndex = 0;
+    for(std::shared_ptr<SKAsymmetricBond> asymmetricBond : asymmetricBonds)
     {
-      const std::vector<std::shared_ptr<SKBond>> bonds = asymmetricBond->copies();
-      for(std::shared_ptr<SKBond> bond : bonds)
+      bool isVisible = asymmetricBond->isVisible() && asymmetricBond->atom1()->isVisible()  && asymmetricBond->atom2()->isVisible();
+
+      if (isVisible)
       {
-        double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
-        double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
-
-        double3 cartesianPosition = 0.5 * (pos1 + pos2);
-
-        double4 position = rotationMatrix * double4(cartesianPosition.x, cartesianPosition.y, cartesianPosition.z, 1.0);
-        double3 absoluteCartesianPosition = double3(position.x,position.y,position.z) + _origin;
-        if (closure(absoluteCartesianPosition))
+        const std::vector<std::shared_ptr<SKBond>> bonds = asymmetricBond->copies();
+        for(std::shared_ptr<SKBond> bond : bonds)
         {
-          data.insert(asymmetricBondIndex);
+          double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+          double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+
+          double3 cartesianPosition = 0.5 * (pos1 + pos2);
+
+          double4 position = rotationMatrix * double4(cartesianPosition.x, cartesianPosition.y, cartesianPosition.z, 1.0);
+          double3 absoluteCartesianPosition = double3(position.x,position.y,position.z) + _origin;
+          if (closure(absoluteCartesianPosition))
+          {
+            data.insert(asymmetricBondIndex);
+          }
         }
       }
+      asymmetricBondIndex++;
     }
-    asymmetricBondIndex++;
   }
 
   return data;
@@ -377,7 +383,6 @@ void Protein::expandSymmetry()
 {
   std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-  int index = 0;
   for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
   {
     std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
@@ -411,7 +416,7 @@ std::shared_ptr<Structure> Protein::flattenHierarchy() const
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -450,7 +455,7 @@ std::shared_ptr<Structure> Protein::appliedCellContentShift() const
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = protein->atomsTreeController()->flattenedLeafNodes();
 
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -489,7 +494,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> Protein::asymmetricAtomsCopiedAnd
   SKBoundingBox boundingBox = _cell->boundingBox() + SKBoundingBox(double3(-2,-2,-2), double3(2,2,2));
   double3x3 inverseUnitCell = SKCell(boundingBox).inverseUnitCell();
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -507,7 +512,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> Protein::asymmetricAtomsCopiedAnd
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -525,7 +530,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> Protein::atomsCopiedAndTransforme
   SKBoundingBox boundingBox = _cell->boundingBox() + SKBoundingBox(double3(-2,-2,-2), double3(2,2,2));
   double3x3 inverseUnitCell = SKCell(boundingBox).inverseUnitCell();
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -549,7 +554,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> Protein::atomsCopiedAndTransforme
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {

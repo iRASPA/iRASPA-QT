@@ -711,11 +711,13 @@ void Structure::expandSymmetry()
 
 double3x3 Structure::matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const
 {
+  Q_UNUSED(atoms);
   return double3x3();
 }
 
 double3 Structure::centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const
 {
+  Q_UNUSED(atoms);
   return double3();
 }
 
@@ -779,27 +781,36 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> Structure::atomsCopiedAndTransfor
 
 std::vector<RKInPerInstanceAttributesText> Structure::atomTextData(RKFontAtlas *fontAtlas) const
 {
+  Q_UNUSED(fontAtlas);
   return {};
 }
 
 
 std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Structure::translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const
 {
+  Q_UNUSED(atoms);
+  Q_UNUSED(translation);
   return {};
 }
 
 std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Structure::translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const
 {
+  Q_UNUSED(atoms);
+  Q_UNUSED(translation);
   return {};
 }
 
 std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Structure::rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const
 {
+  Q_UNUSED(atoms);
+  Q_UNUSED(rotation);
   return {};
 }
 
 std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Structure::rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const
 {
+  Q_UNUSED(atoms);
+  Q_UNUSED(rotation);
   return {};
 }
 
@@ -879,6 +890,7 @@ double Structure::bondLength(std::shared_ptr<SKBond> bond) const
 
 double3 Structure::bondVector(std::shared_ptr<SKBond> bond) const
 {
+  Q_UNUSED(bond);
   return double3();
 }
 
@@ -1439,6 +1451,8 @@ void Structure::updateForceField(ForceFieldSets &forceFieldSets)
           }
         }
       }
+      break;
+    case ForceFieldSet::ForceFieldSchemeOrder::multiple_values:
       break;
     }
   }

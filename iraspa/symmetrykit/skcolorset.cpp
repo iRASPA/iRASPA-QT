@@ -24,7 +24,7 @@
 
 SKColorSet::SKColorSet(QString name, SKColorSet& from, bool editable): _displayName(name), _editable(editable)
 {
-  for(auto const [key, value]: from._colors)
+  for(auto const &[key, value]: from._colors)
   {
     this->_colors[key] = value;
   }

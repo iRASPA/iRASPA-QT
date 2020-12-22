@@ -75,40 +75,34 @@ MasterToolBar::MasterToolBar(QWidget * parent):QToolBar(parent)
   QObject::connect(buttonFrameViewTab, &QToolButton::clicked, _mapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
 }
 
-void MasterToolBar::reactToProjectToggled(bool checked)
+void MasterToolBar::reactToProjectToggled([[maybe_unused]] bool checked)
 {
-
-    buttonToProjectTab->setDown(true);
-    buttonToMovieViewTab->setDown(false);
-    buttonFrameViewTab->setDown(false);
-    buttonToProjectTab->setChecked(true);
-    buttonToMovieViewTab->setChecked(false);
-    buttonFrameViewTab->setChecked(false);
-
+  buttonToProjectTab->setDown(true);
+  buttonToMovieViewTab->setDown(false);
+  buttonFrameViewTab->setDown(false);
+  buttonToProjectTab->setChecked(true);
+  buttonToMovieViewTab->setChecked(false);
+  buttonFrameViewTab->setChecked(false);
 }
 
-void MasterToolBar::reactToMovieToggled(bool checked)
+void MasterToolBar::reactToMovieToggled([[maybe_unused]] bool checked)
 {
-
-    buttonToProjectTab->setDown(false);
-    buttonToMovieViewTab->setDown(true);
-    buttonFrameViewTab->setDown(false);
-    buttonToProjectTab->setChecked(false);
-    buttonToMovieViewTab->setChecked(true);
-    buttonFrameViewTab->setChecked(false);
-
+  buttonToProjectTab->setDown(false);
+  buttonToMovieViewTab->setDown(true);
+  buttonFrameViewTab->setDown(false);
+  buttonToProjectTab->setChecked(false);
+  buttonToMovieViewTab->setChecked(true);
+  buttonFrameViewTab->setChecked(false);
 }
 
-void MasterToolBar::reactToFrameToggled(bool checked)
+void MasterToolBar::reactToFrameToggled([[maybe_unused]] bool checked)
 {
-
-    buttonToProjectTab->setDown(false);
-    buttonToMovieViewTab->setDown(false);
-    buttonFrameViewTab->setDown(true);
-    buttonToProjectTab->setChecked(false);
-    buttonToMovieViewTab->setChecked(false);
-    buttonFrameViewTab->setChecked(true);
-
+  buttonToProjectTab->setDown(false);
+  buttonToMovieViewTab->setDown(false);
+  buttonFrameViewTab->setDown(true);
+  buttonToProjectTab->setChecked(false);
+  buttonToMovieViewTab->setChecked(false);
+  buttonFrameViewTab->setChecked(true);
 }
 
 QSize MasterToolBar::sizeHint() const

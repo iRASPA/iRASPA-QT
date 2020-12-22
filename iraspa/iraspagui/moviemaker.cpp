@@ -286,8 +286,6 @@ void MovieWriter::encodeFrame(AVFrame *frame)
 
 void MovieWriter::addFrame(const uint8_t* pixels, int iframe)
 {
-  int ret;
-
   memcpy(_rgbpic->data[0], pixels, _width * _height * 4);
 
   sws_scale(_swsCtx, _rgbpic->data, _rgbpic->linesize, 0, _height, _frame->data, _frame->linesize);
@@ -299,7 +297,7 @@ void MovieWriter::addFrame(const uint8_t* pixels, int iframe)
 
 int MovieWriter::finalize()
 {
-    #if(LIBAVUTIL_VERSION_MAJOR >= 56)
+  #if(LIBAVUTIL_VERSION_MAJOR >= 56)
   _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "ffmpeg finalizing movie");
   
   encodeFrame(NULL);

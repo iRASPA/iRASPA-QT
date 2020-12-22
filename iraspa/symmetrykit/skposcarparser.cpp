@@ -62,7 +62,7 @@ bool SKPOSCARParser::startParsing()
 
   // read first lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+  termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
   if(termsScannedLined.size()<3)
   {
     if (_log)
@@ -103,7 +103,7 @@ bool SKPOSCARParser::startParsing()
 
   // read second lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+  termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
   if(termsScannedLined.size()<3)
   {
     if (_log)
@@ -143,7 +143,7 @@ bool SKPOSCARParser::startParsing()
 
   // read first lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+  termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
   if(termsScannedLined.size()<3)
   {
     if (_log)
@@ -186,7 +186,7 @@ bool SKPOSCARParser::startParsing()
 
   // read elements
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  QStringList elementList = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+  QStringList elementList = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
   if(elementList.empty())
   {
     if (_log)
@@ -198,7 +198,7 @@ bool SKPOSCARParser::startParsing()
 
   // read amount of atoms per element
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  QStringList amountList = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+  QStringList amountList = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
   if(amountList.empty())
   {
     if (_log)
@@ -218,11 +218,11 @@ bool SKPOSCARParser::startParsing()
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  QStringList directOrCartesian = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+  QStringList directOrCartesian = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
   if(elementList[0].toLower() == "selective") // skip Selective dynamics line
   {
     _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-    directOrCartesian = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+    directOrCartesian = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
   }
 
   bool cartesian = false;
@@ -242,7 +242,7 @@ bool SKPOSCARParser::startParsing()
 
       // read atom
       _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-      termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+      termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
       if(termsScannedLined.empty())
       {
         if (_log)

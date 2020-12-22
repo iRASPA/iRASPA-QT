@@ -45,14 +45,14 @@ public:
   bool startParsing() override final;
 private:
   Scanner _scanner;
-  bool _onlyAsymmetricUnitCell;
-  bool _asMolecule;
+  [[maybe_unused]] bool _onlyAsymmetricUnitCell;
+  [[maybe_unused]] bool _asMolecule;
   LogReporting *_log;
-  QString::const_iterator _previousScanLocation;
+  [[maybe_unused]] QString::const_iterator _previousScanLocation;
 
-  int _numberOfAtoms = 0;
-  int _numberOfAminoAcidAtoms = 0;
+  [[maybe_unused]] int _numberOfAtoms = 0;
+  [[maybe_unused]] int _numberOfAminoAcidAtoms = 0;
   std::shared_ptr<SKStructure> _frame;
   std::optional<SKCell> _cell;
-  int _spaceGroupHallNumber;
+  [[maybe_unused]] int _spaceGroupHallNumber;
 };

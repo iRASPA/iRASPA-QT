@@ -49,7 +49,6 @@ private:
   CharacterSet _charactersToBeSkipped;
   QString _string;
   QString::const_iterator _scanLocation;
-  int _previousScanLocation;
 
   QString::const_iterator find_first_not_of(const QString & chars, const QString & text, QString::const_iterator location);
   QString::const_iterator find_first_of(const QString & chars, const QString & text, QString::const_iterator location);

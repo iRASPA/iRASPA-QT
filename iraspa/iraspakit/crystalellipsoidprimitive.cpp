@@ -210,6 +210,72 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderSel
 // MARK: Filtering
 // =====================================================================
 
+std::set<int> CrystalEllipsoidPrimitive::filterCartesianAtomPositions(std::function<bool(double3)> & closure)
+{
+  std::set<int> data;
+
+  if(_isVisible)
+  {
+    int minimumReplicaX = _cell->minimumReplicaX();
+    int minimumReplicaY = _cell->minimumReplicaY();
+    int minimumReplicaZ = _cell->minimumReplicaZ();
+
+    int maximumReplicaX = _cell->maximumReplicaX();
+    int maximumReplicaY = _cell->maximumReplicaY();
+    int maximumReplicaZ = _cell->maximumReplicaZ();
+
+    double3 contentShift = _cell->contentShift();
+    bool3 contentFlip = _cell->contentFlip();
+
+    double4x4 rotationMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(_orientation), boundingBox().center());
+
+    std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+
+    uint32_t asymmetricAtomIndex = 0;
+
+    for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+    {
+      if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+      {
+        if (atom->isVisible())
+        {
+          for(std::shared_ptr<SKAtomCopy> copy : atom->copies())
+          {
+            if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+            {
+              double3 pos = double3::flip(copy->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+              for(int k1=minimumReplicaX;k1<=maximumReplicaX;k1++)
+              {
+                for(int k2=minimumReplicaY;k2<=maximumReplicaY;k2++)
+                {
+                  for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
+                  {
+                    double3 fractionalPosition = pos + double3(k1,k2,k3);
+                    double3 cartesianPosition = _cell->convertToCartesian(fractionalPosition);
+
+                    double4 position = rotationMatrix * double4(cartesianPosition.x, cartesianPosition.y, cartesianPosition.z, 1.0);
+
+                    double3 absoluteCartesianPosition = double3(position.x,position.y,position.z) + _origin;
+
+                    if(closure(absoluteCartesianPosition))
+                    {
+                      data.insert(asymmetricAtomIndex);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      asymmetricAtomIndex++;
+    }
+  }
+
+  return data;
+}
+
+
 // MARK: Bounding box
 // =====================================================================
 
@@ -260,7 +326,7 @@ void CrystalEllipsoidPrimitive::expandSymmetry()
 
       for(double3 image : images)
       {
-        std::shared_ptr<SKAtomCopy> newAtom = std::make_shared<SKAtomCopy>(asymmetricAtom, double3::fract(image));
+        std::shared_ptr<SKAtomCopy> newAtom = std::make_shared<SKAtomCopy>(asymmetricAtom, image);
         newAtom->setType(SKAtomCopy::AtomCopyType::copy);
         atomCopies.push_back(newAtom);
       }
@@ -285,7 +351,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> CrystalEllipsoidPrimitive::asymme
 
   double3x3 unitCell = _cell->unitCell();
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -305,7 +371,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> CrystalEllipsoidPrimitive::asymme
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -321,7 +387,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> CrystalEllipsoidPrimitive::atomsC
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -346,7 +412,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> CrystalEllipsoidPrimitive::atomsC
 
   double3x3 unitCell = _cell->unitCell();
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -394,11 +460,11 @@ std::shared_ptr<Structure> CrystalEllipsoidPrimitive::superCell() const
       for(int k3=0;k3<=dz;k3++)
       {
 
-        for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+        for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
         {
           if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
           {
-            for(const std::shared_ptr<SKAtomCopy> atomCopy : asymmetricAtom->copies())
+            for(const std::shared_ptr<SKAtomCopy> &atomCopy : asymmetricAtom->copies())
             {
               if(atomCopy->type() == SKAtomCopy::AtomCopyType::copy)
               {
@@ -433,7 +499,7 @@ std::shared_ptr<Structure> CrystalEllipsoidPrimitive::flattenHierarchy() const
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -472,7 +538,7 @@ std::shared_ptr<Structure> CrystalEllipsoidPrimitive::appliedCellContentShift() 
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = ellipsoidCrystal->atomsTreeController()->flattenedLeafNodes();
 
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -495,6 +561,141 @@ std::shared_ptr<Structure> CrystalEllipsoidPrimitive::appliedCellContentShift() 
 
 // MARK: bond-computations
 // =====================================================================
+
+// MARK: Translation operations
+// =====================================================================
+
+double3 CrystalEllipsoidPrimitive::centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms) const
+{
+  double3  centerOfMassCosTheta = double3(0.0, 0.0, 0.0);
+  double3 centerOfMassSinTheta = double3(0.0, 0.0, 0.0);
+  double M = 0.0;
+
+  for(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom : asymmetricAtoms)
+  {
+    for(std::shared_ptr<SKAtomCopy> copy : asymmetricAtom->copies())
+    {
+      if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+      {
+        double3 pos = copy->position() * 2.0 * M_PI;
+        double3 cosTheta = double3(cos(pos.x), cos(pos.y), cos(pos.z));
+        double3 sinTheta = double3(sin(pos.x), sin(pos.y), sin(pos.z));
+        centerOfMassCosTheta = centerOfMassCosTheta + cosTheta;
+        centerOfMassSinTheta = centerOfMassSinTheta + sinTheta;
+        M += 1.0;
+      }
+    }
+  }
+  centerOfMassCosTheta = centerOfMassCosTheta / M;
+  centerOfMassSinTheta = centerOfMassSinTheta / M;
+
+  double3 com = double3((atan2(-centerOfMassSinTheta.x, -centerOfMassCosTheta.x) + M_PI)/(2.0 * M_PI),
+                        (atan2(-centerOfMassSinTheta.y, -centerOfMassCosTheta.y) + M_PI)/(2.0 * M_PI),
+                        (atan2(-centerOfMassSinTheta.z, -centerOfMassCosTheta.z) + M_PI)/(2.0 * M_PI));
+
+  return  com;
+}
+
+double3x3 CrystalEllipsoidPrimitive::matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const
+{
+  double3x3 inertiaMatrix = double3x3();
+  double3 comFrac = centerOfMassOfSelectionAsymmetricAtoms(atoms);
+
+  for(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom : atoms)
+  {
+    for(std::shared_ptr<SKAtomCopy> copy : asymmetricAtom->copies())
+    {
+      if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+      {
+        double3 ds = copy->position() - comFrac;
+        ds.x -= std::rint(ds.x);
+        ds.y -= std::rint(ds.y);
+        ds.z -= std::rint(ds.z);
+        double3 dr = _cell->convertToCartesian(ds);
+
+        inertiaMatrix.ax += dr.y * dr.y + dr.z * dr.z;
+        inertiaMatrix.ay -= dr.x * dr.y;
+        inertiaMatrix.az -= dr.x * dr.z;
+        inertiaMatrix.bx -= dr.y * dr.x;
+        inertiaMatrix.by += dr.x * dr.x + dr.z * dr.z;
+        inertiaMatrix.bz -= dr.y * dr.z;
+        inertiaMatrix.cx -= dr.z * dr.x;
+        inertiaMatrix.cy -= dr.z * dr.y;
+        inertiaMatrix.cz += dr.x * dr.x + dr.y * dr.y;
+      }
+    }
+  }
+  return inertiaMatrix;
+}
+
+
+std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> CrystalEllipsoidPrimitive::translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const
+{
+  double3 fractionalTranslation = _cell->convertToFractional(translation);
+
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions{};
+
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(translatedPositions),
+                 [fractionalTranslation](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                    {return std::make_pair(atom, atom->position() + fractionalTranslation);});
+
+  return translatedPositions;
+}
+
+
+std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> CrystalEllipsoidPrimitive::translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const
+{
+  double3 translationBodyFrame = _selectionBodyFixedBasis * translation;
+  double3 fractionalTranslation = _cell->convertToFractional(translationBodyFrame);
+
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions{};
+
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(translatedPositions),
+                 [fractionalTranslation](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                    {return std::make_pair(atom, atom->position() + fractionalTranslation);});
+
+  return translatedPositions;
+}
+
+
+std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> CrystalEllipsoidPrimitive::rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const
+{
+  double3 comFrac = centerOfMassOfSelectionAsymmetricAtoms(atoms);
+  double3x3 rotationMatrix = double3x3(rotation);
+
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositions{};
+
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(rotatedPositions),
+                 [this,comFrac,rotationMatrix](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                 {
+                   double3 ds = double3::fract(atom->position()) - comFrac;
+                   double3 translatedPositionCartesian = _cell->convertToCartesian(ds);
+                   double3 position = rotationMatrix * translatedPositionCartesian;
+                   return std::make_pair(atom, _cell->convertToFractional(position) + comFrac);
+                 });
+
+  return rotatedPositions;
+}
+
+
+std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> CrystalEllipsoidPrimitive::rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const
+{
+  double3 comFrac = centerOfMassOfSelectionAsymmetricAtoms(atoms);
+  double3x3 rotationMatrix =  _selectionBodyFixedBasis * double3x3(rotation) * double3x3::inverse(_selectionBodyFixedBasis);
+
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositions{};
+
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(rotatedPositions),
+                 [this,comFrac,rotationMatrix](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                 {
+                   double3 ds = double3::fract(atom->position()) - comFrac;
+                   double3 translatedPositionCartesian = _cell->convertToCartesian(ds);
+                   double3 position = rotationMatrix * translatedPositionCartesian;
+                   return std::make_pair(atom, _cell->convertToFractional(position) + comFrac);
+                 });
+
+  return rotatedPositions;
+}
 
 
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<CrystalEllipsoidPrimitive> &primitive)

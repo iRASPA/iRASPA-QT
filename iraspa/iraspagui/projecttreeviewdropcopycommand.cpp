@@ -45,7 +45,7 @@ void ProjectTreeViewDropCopyCommand::redo()
   if(std::shared_ptr<ProjectTreeController> projectTreeController = _projectTreeController.lock())
   {
     _projectTreeViewModel->layoutAboutToBeChanged();
-    for(auto const [projectTreeNode, indexPath] : _nodes.second)
+    for(auto const &[projectTreeNode, indexPath] : _nodes.second)
     {
       int row = indexPath.lastIndex();
       std::shared_ptr<ProjectTreeNode> parentNode = projectTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
@@ -72,7 +72,7 @@ void ProjectTreeViewDropCopyCommand::undo()
   if(std::shared_ptr<ProjectTreeController> projectTreeController = _projectTreeController.lock())
   {
     _projectTreeViewModel->layoutAboutToBeChanged();
-    for(const auto [projectTreeNode, indexPath] : _reversedNodes.second)
+    for(const auto &[projectTreeNode, indexPath] : _reversedNodes.second)
     {
       int row = indexPath.lastIndex();
       std::shared_ptr<ProjectTreeNode> parentNode = projectTreeController->nodeAtIndexPath(indexPath.removingLastIndex());

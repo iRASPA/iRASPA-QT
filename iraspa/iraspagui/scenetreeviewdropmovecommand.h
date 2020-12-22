@@ -48,7 +48,7 @@ private:
   std::weak_ptr<FrameListViewModel> _frameListViewModel;
   std::shared_ptr<SceneList> _sceneList;
   std::shared_ptr<Scene> _parent;
-  int _row;
+  [[maybe_unused]] int _row;
   std::vector<std::shared_ptr<Movie>> _movies;
   SceneListSelection _selection;
   std::shared_ptr<Scene> _newParent;

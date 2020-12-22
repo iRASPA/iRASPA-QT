@@ -52,8 +52,8 @@ public:
 
   void reloadData();
 private:
-  OpenGLBoundingBoxCylinderShader _boundingBoxCylinderShader;
   OpenGLBoundingBoxSphereShader _boundingBoxSphereShader;
+  OpenGLBoundingBoxCylinderShader _boundingBoxCylinderShader;
 
   friend GLWidget;
 };

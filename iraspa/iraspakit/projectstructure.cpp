@@ -112,7 +112,7 @@ std::vector<size_t> ProjectStructure::numberOfScenes() const
 }
 
 
-int ProjectStructure::numberOfMovies(int sceneIndex) const
+int ProjectStructure::numberOfMovies([[maybe_unused]] int sceneIndex) const
 {
   return 0;
 }

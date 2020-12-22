@@ -32,8 +32,6 @@ public:
     simd_quatd rollToTrackball(double x, double y);
 private:
   double _kTol = 0.001;
-  double _kRad2Deg = 180.0 / M_PI;
-  double _kDeg2Rad = M_PI / 180.0;
 
   double _gRadiusTrackball = 0.0;
   double3 _gStartPtTrackball = double3();

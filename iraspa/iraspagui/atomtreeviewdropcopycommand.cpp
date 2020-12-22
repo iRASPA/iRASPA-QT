@@ -44,7 +44,7 @@ void AtomTreeViewDropCopyCommand::redo()
   if(_model->isActive(_iraspaStructure))
   {
     _model->layoutAboutToBeChanged();
-    for(const auto [atom, parentNode, insertionRow] : _moves)
+    for(const auto &[atom, parentNode, insertionRow] : _moves)
     {
       _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
 
@@ -54,7 +54,7 @@ void AtomTreeViewDropCopyCommand::redo()
   }
   else
   {
-    for(const auto [atom, parentNode, insertionRow] : _moves)
+    for(const auto &[atom, parentNode, insertionRow] : _moves)
     {
       _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
       parentNode->insertChild(insertionRow, atom);
@@ -71,7 +71,7 @@ void AtomTreeViewDropCopyCommand::undo()
   if(_model->isActive(_iraspaStructure))
   {
     _model->layoutAboutToBeChanged();
-    for(const auto [atom, parentNode, insertionRow] : _reverseMoves)
+    for(const auto &[atom, parentNode, insertionRow] : _reverseMoves)
     {
       whileBlocking(_model)->removeRow(atom->row(), atom->parent());
     }
@@ -80,7 +80,7 @@ void AtomTreeViewDropCopyCommand::undo()
   }
   else
   {
-    for(const auto [atom, parentNode, insertionRow] : _reverseMoves)
+    for(const auto &[atom, parentNode, insertionRow] : _reverseMoves)
     {
       parentNode->removeChild(insertionRow);
     }

@@ -123,7 +123,7 @@ void CellTreeWidgetChangeStructureCommand::redo()
 
 void CellTreeWidgetChangeStructureCommand::undo()
 {
-  for(const auto [iraspaStructure, structure, type] : _old_structures)
+  for(const auto &[iraspaStructure, structure, type] : _old_structures)
   {
     iraspaStructure->setStructure(structure, type);
   }

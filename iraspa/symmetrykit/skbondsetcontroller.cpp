@@ -181,7 +181,7 @@ BondSelectionNodesAndIndexSet SKBondSetController::selectionNodesAndIndexSet() c
 void  SKBondSetController::setSelection(BondSelectionNodesAndIndexSet selection)
 {
   _selectedIndexSet.clear();
-  for(const auto [bondItem, index] : selection)
+  for(const auto &[bondItem, index] : selection)
   {
     _selectedIndexSet.insert(index);
   }
@@ -190,7 +190,7 @@ void  SKBondSetController::setSelection(BondSelectionNodesAndIndexSet selection)
 void SKBondSetController::insertSelection(BondSelectionNodesAndIndexSet selection)
 {
   _selectedIndexSet.clear();
-  for(const auto [bondItem, index] : selection)
+  for(const auto &[bondItem, index] : selection)
   {
     _arrangedObjects.insert(_arrangedObjects.begin() + index, bondItem);
     _selectedIndexSet.insert(index);
@@ -199,7 +199,7 @@ void SKBondSetController::insertSelection(BondSelectionNodesAndIndexSet selectio
 
 void SKBondSetController::deleteBonds(BondSelectionNodesAndIndexSet selection)
 {
-  for (const auto [bondItem, index] : selection)
+  for (const auto &[bondItem, index] : selection)
   {
     _arrangedObjects.erase(_arrangedObjects.begin() + index);
   }

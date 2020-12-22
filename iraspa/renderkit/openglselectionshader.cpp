@@ -26,7 +26,7 @@
 #include "spheregeometry.h"
 
 
-OpenGLSelectionShader::OpenGLSelectionShader(OpenGLAtomShader &atomShader, OpenGLBondShader &bondShader, OpenGLObjectShader &objectShader):
+OpenGLSelectionShader::OpenGLSelectionShader([[maybe_unused]] OpenGLAtomShader &atomShader, OpenGLBondShader &bondShader, OpenGLObjectShader &objectShader):
                                              _atomSelectionShader(), _bondSelectionShader(bondShader), _objectSelectionShader(objectShader)
 {
 

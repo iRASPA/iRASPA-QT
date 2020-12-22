@@ -70,7 +70,7 @@ void CellTreeWidgetChangeSpaceGroupCommand::redo()
 
 void CellTreeWidgetChangeSpaceGroupCommand::undo()
 {
-  for(const auto [iraspa_structure, structure]: _old_iraspa_structures)
+  for(const auto &[iraspa_structure, structure]: _old_iraspa_structures)
   {
     iraspa_structure->setStructure(structure);
   }

@@ -46,7 +46,7 @@ void RenderViewRotatePositionsBodyFrameSubCommand::redo()
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = _iraspaStructure->structure()->atomsTreeController()->selectedObjects();
   std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions = _iraspaStructure->structure()->rotatedPositionsSelectionBodyFrame(atoms, _rotation);
 
-  for(const auto [atom, translatedPosition] : translatedPositions)
+  for(const auto &[atom, translatedPosition] : translatedPositions)
   {
     atom->setPosition(translatedPosition);
   }
@@ -57,7 +57,7 @@ void RenderViewRotatePositionsBodyFrameSubCommand::redo()
 void RenderViewRotatePositionsBodyFrameSubCommand::undo()
 {
 
-  for(const auto [atom, translatedPosition] : _oldPositions)
+  for(const auto &[atom, translatedPosition] : _oldPositions)
   {
     atom->setPosition(translatedPosition);
   }

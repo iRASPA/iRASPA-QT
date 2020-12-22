@@ -405,7 +405,7 @@ void ProjectTreeNode::setFilteredNodesAsMatching()
 
 
 
-bool ProjectTreeNode::insertChildren(size_t position, size_t count, size_t columns)
+bool ProjectTreeNode::insertChildren(size_t position, size_t count, [[maybe_unused]] size_t columns)
 {
   if (position < 0 || position > _childNodes.size())
     return false;

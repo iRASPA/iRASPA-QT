@@ -60,7 +60,7 @@ void CellTreeWidgetAppliedCellContentShiftCommand::redo()
 
 void CellTreeWidgetAppliedCellContentShiftCommand::undo()
 {
-  for(const auto [iraspa_structure, structure]: _old_iraspa_structures)
+  for(const auto &[iraspa_structure, structure]: _old_iraspa_structures)
   {
     iraspa_structure->setStructure(structure);
   }

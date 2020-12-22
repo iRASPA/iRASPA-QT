@@ -60,7 +60,7 @@
     _unitCellShader(),
     _selectionShader(_atomShader, _bondShader, _objectShader),
     _pickingShader(_atomShader, _bondShader, _objectShader),
-    _textShader(_atomShader),
+    _textShader(),
     _controlPanel(new QStackedWidget(this)),
     _controlPanelCartesian(new QFrame(this)),
     _controlPanelBodyFrame(new QFrame(this)),

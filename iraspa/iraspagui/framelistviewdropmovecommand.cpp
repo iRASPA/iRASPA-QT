@@ -61,7 +61,7 @@ void FrameListViewDropMoveCommand::redo()
 
   // update selection of moved nodes _after_ all is moved
   // (indexPaths have been changed, including the indexPath of the parentNode)
-  for(const auto [iraspStructure, insertionRow] : _nodes)
+  for(const auto &[iraspStructure, insertionRow] : _nodes)
   {
     _newSelection.insert(iraspStructure->row());
   }
@@ -78,7 +78,7 @@ void FrameListViewDropMoveCommand::redo()
 void FrameListViewDropMoveCommand::undo()
 {
   _frameListViewModel->layoutAboutToBeChanged();
-  for(const auto [iraspStructure, insertionRow] : _reverseMoves)
+  for(const auto &[iraspStructure, insertionRow] : _reverseMoves)
   {
     whileBlocking(_frameListViewModel)->removeRow(iraspStructure->row());
 

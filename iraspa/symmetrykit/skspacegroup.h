@@ -37,6 +37,7 @@ public:
   static std::vector<QString> latticeTranslationStrings(int HallNumber);
   static QString inversionCenterString(int HallNumber);
   static std::optional<int> HallNumberFromHMString(QString inputString);
+  static std::optional<int> HallNumberFromSpaceGroupNumber(int);
   static std::optional<int> HallNumber(QString inputString);
   static const std::array<SKSpaceGroupSetting,531>& spaceGroupData() {return SKSpaceGroup::_spaceGroupData;}
   static const std::vector<std::vector<int>>  spaceGroupHallData;

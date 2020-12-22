@@ -28,7 +28,7 @@
 #include "glgeterror.h"
 
 
-OpenGLTextRenderingShader::OpenGLTextRenderingShader(OpenGLAtomShader &shader): _atomShader(shader._atomShader), _width(256), _height(256), _cachedFontAtlas()
+OpenGLTextRenderingShader::OpenGLTextRenderingShader(): _cachedFontAtlas()
 {
 
 }

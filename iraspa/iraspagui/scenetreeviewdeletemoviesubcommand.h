@@ -41,7 +41,7 @@ public:
   void redo() override final;
   void undo() override final;
 private:
-  MainWindow *_mainWindow;
+  [[maybe_unused]] MainWindow *_mainWindow;
   SceneTreeView *_sceneTreeView;
   std::shared_ptr<SceneList> _sceneList;
   std::shared_ptr<Scene> _scene;

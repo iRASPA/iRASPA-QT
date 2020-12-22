@@ -455,6 +455,9 @@ bool SceneTreeViewModel::removeRows(int position, int count, const QModelIndex &
 
 bool SceneTreeViewModel::insertRows(int position, int rows, const QModelIndex &parent)
 {
+  Q_UNUSED(position);
+  Q_UNUSED(rows);
+  Q_UNUSED(parent);
   qFatal("fatal error");
   return false;
 }
@@ -492,8 +495,8 @@ bool SceneTreeViewModel::removeRow(int position)
 
 bool SceneTreeViewModel::removeRow(int position, std::shared_ptr<Scene> scene, std::shared_ptr<Movie> movie)
 {
+  Q_UNUSED(movie);
   QModelIndex parent = indexForItem(scene);
-  //checkIndex(parent);
 
   beginRemoveRows(parent, position, position);
   bool success = scene->removeChild(position);

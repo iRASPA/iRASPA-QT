@@ -92,7 +92,7 @@ private:
   Movie(std::shared_ptr<iRASPAStructure> structure);
   qint64 _versionNumber{1};
   bool _isVisible = true;
-  bool _isLoading = false;
+  [[maybe_unused]] bool _isLoading = false;
   QString _displayName = QString("Movie");
 
   std::weak_ptr<Scene> _parent{};

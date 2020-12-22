@@ -450,7 +450,7 @@ double4x4 RKCamera::glFrustumfPerspective(double left, double right, double bott
 
 
 
-double4x4 RKCamera::glFrustumfPerspective(double fov, double aspectratio, double boundingBoxAspectRatio, double near, double far)
+double4x4 RKCamera::glFrustumfPerspective(double fov, double aspectratio, [[maybe_unused]] double boundingBoxAspectRatio, double near, double far)
 {
   double4x4 m;
   double _1over_fmn = 1.0 / (near - far);

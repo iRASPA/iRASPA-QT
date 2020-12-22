@@ -102,6 +102,19 @@ std::optional<int> SKSpaceGroup::HallNumberFromHMString(QString string)
   return std::nullopt;
 }
 
+std::optional<int> SKSpaceGroup::HallNumberFromSpaceGroupNumber([[maybe_unused]] int number)
+{
+  if(number > 0 && number <= 230)
+  {
+    std::vector<int> hall_numbers = SKSpaceGroup::spaceGroupHallData[number];
+    if(hall_numbers.size()> 0)
+    {
+      return hall_numbers.front();
+    }
+  }
+  return std::nullopt;
+}
+
 
 std::vector<double3> SKSpaceGroup::listOfSymmetricPositions(double3 pos)
 {

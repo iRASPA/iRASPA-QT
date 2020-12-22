@@ -107,7 +107,8 @@ void BondListViewSliderStyledItemDelegate::cellEntered(const QModelIndex &index)
 
 void BondListViewSliderStyledItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    editor->setGeometry(option.rect);
+  Q_UNUSED(index);
+  editor->setGeometry(option.rect);
 }
 
 QWidget * BondListViewSliderStyledItemDelegate::createEditor(QWidget *parent,
@@ -127,11 +128,8 @@ QWidget * BondListViewSliderStyledItemDelegate::createEditor(QWidget *parent,
     QSize size = option.rect.size();
     realSlider->resize(size);
 
-    //connect(realSlider, static_cast<void (QDoubleSlider::*)()>(&QDoubleSlider::sliderReleased), realSlider,
-    //        [this, realSlider, index](){ setModelData(realSlider, treeView->model(), index);});
-
     connect(realSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), realSlider,
-            [this, realSlider, index](double value){ setModelData(realSlider, treeView->model(), index);});
+            [this, realSlider, index]([[maybe_unused]] double value){ setModelData(realSlider, treeView->model(), index);});
 
     return realSlider;
   }
@@ -140,15 +138,14 @@ QWidget * BondListViewSliderStyledItemDelegate::createEditor(QWidget *parent,
 
 void BondListViewSliderStyledItemDelegate::setSliderValue(double level)
 {
+  Q_UNUSED(level);
 }
 
 
 void BondListViewSliderStyledItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-  //qDebug() << "setEditorData " << index.row();
-    ////setup the editor - your data are in index.data(Qt::DataRoles) - stored in a QVariant;
-    //QString value = index.model()->data(index,Qt::EditRole).toString();
-    //SubscriberForm *subscriberForm =  static_cast<SubscriberForm*>(editor);
+  Q_UNUSED(editor);
+  Q_UNUSED(index);
 }
 
 void BondListViewSliderStyledItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,

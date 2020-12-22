@@ -36,7 +36,7 @@ public:
   QString string();
 private:
   QString _displayName;
-  SKSpaceGroup &_spacegroup;
+  [[maybe_unused]] SKSpaceGroup &_spacegroup;
   std::shared_ptr<SKCell> _cell;
   double3 _origin;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> _atoms;

@@ -43,6 +43,8 @@ public:
   std::vector<RKInPerInstanceAttributesAtoms> renderCrystalPrimitivePolygonalPrismObjects() const override;
   std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitivePolygonalPrismObjects() const override;
 
+  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
+
   SKBoundingBox boundingBox() const override final;
   void expandSymmetry() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
@@ -91,6 +93,14 @@ public:
   double primitiveBackSideDiffuseIntensity() const override  {return _primitiveBackSideDiffuseIntensity;}
   double primitiveBackSideSpecularIntensity() const override  {return _primitiveBackSideSpecularIntensity;}
   double primitiveBackSideShininess() const override  {return _primitiveBackSideShininess;}
+
+  double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const override final;
+  double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
+
 private:
   qint64 _versionNumber{1};
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<CrystalPolygonalPrismPrimitive> &);

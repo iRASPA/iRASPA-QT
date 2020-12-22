@@ -34,7 +34,7 @@
 class OpenGLTextRenderingShader: public OpenGLShader
 {
 public:
-  OpenGLTextRenderingShader(OpenGLAtomShader &shader);
+  OpenGLTextRenderingShader();
   ~OpenGLTextRenderingShader();
   void loadShader(void) override final;
   void paintGL(GLuint structureUniformBuffer);
@@ -49,7 +49,6 @@ public:
   GLuint program() {return _program;}
 private:
   GLuint _program;
-  OpenGLAtomSphereShader &_atomShader;
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
 
   GLint _instancePositionAttributeLocation;
@@ -58,8 +57,6 @@ private:
   GLint _instanceTextureUVAttributeLocation;
   GLint _fontAtlasTextureUniformLocation;
 
-  int _width;
-  int _height;
   GLuint _fontAtlasTexture;
 
   std::vector<std::vector<size_t>> _numberOfDrawnAtoms;

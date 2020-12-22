@@ -54,7 +54,7 @@ void FrameListViewInsertCommand::redo()
     // update selection of moved nodes _after_ all is moved
     // (indexPaths have been changed, including the indexPath of the parentNode)
     _newSelection.clear();
-    for(const auto [iraspStructure, insertionRow] : _oldSelection)
+    for(const auto &[iraspStructure, insertionRow] : _oldSelection)
     {
       _newSelection.insert(iraspStructure->row());
     }

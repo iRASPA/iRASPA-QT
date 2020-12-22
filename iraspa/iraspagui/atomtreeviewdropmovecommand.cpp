@@ -46,7 +46,7 @@ void AtomTreeViewDropMoveCommand::redo()
   if(_model->isActive(_iraspaStructure))
   {
     _model->layoutAboutToBeChanged();
-    for(const auto [atom, parentNode, insertionRow]  : _moves)
+    for(const auto &[atom, parentNode, insertionRow]  : _moves)
     {
       _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
 
@@ -68,7 +68,7 @@ void AtomTreeViewDropMoveCommand::redo()
 
     // update selection of moved nodes _after_ all is moved
     // (indexPaths have been changed, including the indexPath of the parentNode)
-    for(const auto [projectTreeNode, parentNode, insertionRow] : _moves)
+    for(const auto &[projectTreeNode, parentNode, insertionRow] : _moves)
     {
       _newSelection.second.insert(projectTreeNode->indexPath());
     }
@@ -80,7 +80,7 @@ void AtomTreeViewDropMoveCommand::redo()
   }
   else
   {
-    for(const auto [atom, parentNode, insertionRow]  : _moves)
+    for(const auto &[atom, parentNode, insertionRow]  : _moves)
     {
       atom->parent()->removeChild(atom->row());
       parentNode->insertChild(insertionRow, atom);
@@ -89,7 +89,7 @@ void AtomTreeViewDropMoveCommand::redo()
 
     // update selection of moved nodes _after_ all is moved
     // (indexPaths have been changed, including the indexPath of the parentNode)
-    for(const auto [projectTreeNode, parentNode, insertionRow] : _moves)
+    for(const auto &[projectTreeNode, parentNode, insertionRow] : _moves)
     {
       _newSelection.second.insert(projectTreeNode->indexPath());
     }
@@ -105,7 +105,7 @@ void AtomTreeViewDropMoveCommand::undo()
   if(_model->isActive(_iraspaStructure))
   {
     _model->layoutAboutToBeChanged();
-    for(const auto [atom, parentNode, insertionRow]  : _reverseMoves)
+    for(const auto &[atom, parentNode, insertionRow]  : _reverseMoves)
     {
       whileBlocking(_model)->removeRow(atom->row(), atom->parent());
 
@@ -126,7 +126,7 @@ void AtomTreeViewDropMoveCommand::undo()
   }
   else
   {
-    for(const auto [atom, parentNode, insertionRow]  : _reverseMoves)
+    for(const auto &[atom, parentNode, insertionRow]  : _reverseMoves)
     {
       atom->parent()->removeChild(atom->row());
       parentNode->insertChild(insertionRow, atom);

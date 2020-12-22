@@ -31,8 +31,6 @@ public:
   std::vector<RKVertex> vertices() {return _vertexes;}
   std::vector<short> indices() {return _indices;}
 private:
-  int _numberOfIndices = 34;
-  int _numberOfVertexes = 24;
 
   std::vector<short> _indices =
     {

@@ -38,7 +38,7 @@ public:
   void undo() override final;
   void redo() override final;
 private:
-  MainWindow *_main_window;
+  [[maybe_unused]] MainWindow *_main_window;
   SceneTreeView *_sceneTreeView;
   SceneListSelection  _newSelection;
   SceneListSelection  _oldSelection;

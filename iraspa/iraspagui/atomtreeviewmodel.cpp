@@ -283,7 +283,6 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
   {
     case 0:
     {
-      bool success;
       QString newValue = value.toString();
       AtomTreeViewChangeDisplayNameCommand*changeDisplayNameCommand = new AtomTreeViewChangeDisplayNameCommand(_mainWindow, this, _iraspaStructure, item->shared_from_this(), newValue, nullptr);
       _projectTreeNode->representedObject()->undoManager().push(changeDisplayNameCommand);
@@ -444,12 +443,16 @@ bool AtomTreeViewModel::removeRow(int position, std::shared_ptr<SKAtomTreeNode> 
 
 bool AtomTreeViewModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
 {
-  std::cout << "MOVE ROWS!!!!!" << std::endl;
+  Q_UNUSED(sourceParent);
+  Q_UNUSED(sourceRow);
+  Q_UNUSED(count);
+  Q_UNUSED(destinationParent);
+  Q_UNUSED(destinationChild);
   return true;
 
-  SKAtomTreeNode *sourceParentNode = static_cast<SKAtomTreeNode*>(sourceParent.internalPointer());
-  SKAtomTreeNode *destinationParentNode = static_cast<SKAtomTreeNode*>(destinationParent.internalPointer());
-  std::shared_ptr<SKAtomTreeNode> childNode = sourceParentNode->getChildNode(sourceRow);
+  //SKAtomTreeNode *sourceParentNode = static_cast<SKAtomTreeNode*>(sourceParent.internalPointer());
+  //SKAtomTreeNode *destinationParentNode = static_cast<SKAtomTreeNode*>(destinationParent.internalPointer());
+  //std::shared_ptr<SKAtomTreeNode> childNode = sourceParentNode->getChildNode(sourceRow);
 
   /*
       // if source and destination parents are the same, move elements locally
@@ -516,6 +519,7 @@ bool AtomTreeViewModel::hasChildren(const QModelIndex &parent) const
 
 bool AtomTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
+  Q_UNUSED(column);
   if(_iraspaStructure)
   {
     if(action == Qt::IgnoreAction)

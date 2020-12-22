@@ -30,7 +30,7 @@
 
 #define sqr( x ) (( x )*( x ))
 #define SIGN(a,b) ((b)>=0.0?fabs(a):-fabs(a))
-#define MAX(x,y) (((x)>(y))?(x):(y))
+//#define MAX(x,y) (((x)>(y))?(x):(y))
 
 // dlambda_limit, below which two lambdas are relatively equal
 double dlambda_limit = 1.0E-3;
@@ -295,8 +295,9 @@ int solve_type( double3 lambdas)
 }
 
 
-void double3x3::solve_angles_0( double3 &res, double3 lambdas )
-{ res[0] = 0.0;
+void double3x3::solve_angles_0( double3 &res, [[maybe_unused]] double3 lambdas )
+{
+  res[0] = 0.0;
   res[1] = 0.0;
   res[2] = 0.0;
 }

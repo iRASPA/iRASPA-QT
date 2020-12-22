@@ -45,7 +45,7 @@ void ProjectTreeViewDropMoveCommand::redo()
   _newSelection.second.clear();
 
   _projectTreeViewModel->layoutAboutToBeChanged();
-  for(const auto [projectTreeNode, parentNode, insertionRow, moved] : _nodes)
+  for(const auto &[projectTreeNode, parentNode, insertionRow, moved] : _nodes)
   {
     _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(projectTreeNode, projectTreeNode->parent(), projectTreeNode->row(), moved));
 
@@ -67,7 +67,7 @@ void ProjectTreeViewDropMoveCommand::redo()
 
   // update selection of moved nodes _after_ all is moved
   // (indexPaths have been changed, including the indexPath of the parentNode)
-  for(const auto [projectTreeNode, parentNode, insertionRow, moved] : _nodes)
+  for(const auto &[projectTreeNode, parentNode, insertionRow, moved] : _nodes)
   {
     _newSelection.second.insert(projectTreeNode->indexPath());
   }
@@ -91,7 +91,7 @@ void ProjectTreeViewDropMoveCommand::redo()
 void ProjectTreeViewDropMoveCommand::undo()
 {
   _projectTreeViewModel->layoutAboutToBeChanged();
-  for(const auto [projectTreeNode, parentNode, insertionRow, moved] : _reverseMoves)
+  for(const auto &[projectTreeNode, parentNode, insertionRow, moved] : _reverseMoves)
   {
     whileBlocking(_projectTreeViewModel)->removeRow(projectTreeNode->row(), projectTreeNode->parent());
 

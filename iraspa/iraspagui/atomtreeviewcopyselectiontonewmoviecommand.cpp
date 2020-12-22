@@ -58,7 +58,7 @@ void AtomTreeViewCopySelectionToNewMovieCommand::redo()
       std::shared_ptr<iRASPAStructure> newiRASPAStructure = std::make_shared<iRASPAStructure>(newStructure);
       std::shared_ptr<Movie> _newMovie = Movie::create(newiRASPAStructure);
 
-      for(const IndexPath indexPath : _atomSelection.second)
+      for(const IndexPath &indexPath : _atomSelection.second)
       {
         const std::shared_ptr<SKAtomTreeNode> atomTreeNode = _iraspaStructure->structure()->atomsTreeController()->nodeAtIndexPath(indexPath);
         if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = atomTreeNode->representedObject())

@@ -111,9 +111,9 @@ void BondListViewComboBoxStyledItemDelegate::cellEntered(const QModelIndex &inde
   }
 }
 
-void BondListViewComboBoxStyledItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void BondListViewComboBoxStyledItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, [[maybe_unused]] const QModelIndex &index) const
 {
-    editor->setGeometry(option.rect);
+  editor->setGeometry(option.rect);
 }
 
 QWidget * BondListViewComboBoxStyledItemDelegate::createEditor(QWidget *parent,
@@ -137,19 +137,16 @@ QWidget * BondListViewComboBoxStyledItemDelegate::createEditor(QWidget *parent,
     realCombobox->setCurrentIndex(value);
 
     connect(realCombobox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), realCombobox,
-            [this, realCombobox, index](int value){ setModelData(realCombobox, treeView->model(), index);});
+            [this, realCombobox, index]([[maybe_unused]] int value){ setModelData(realCombobox, treeView->model(), index);});
 
     return realCombobox;
   }
   return nullptr;
 }
 
-void BondListViewComboBoxStyledItemDelegate::setEditorData([[maybe_unused]] QWidget *editor, const QModelIndex &index) const
+void BondListViewComboBoxStyledItemDelegate::setEditorData([[maybe_unused]] QWidget *editor, [[maybe_unused]] const QModelIndex &index) const
 {
-  //qDebug() << "setEditorData " << index.row();
-    ////setup the editor - your data are in index.data(Qt::DataRoles) - stored in a QVariant;
-    //QString value = index.model()->data(index,Qt::EditRole).toString();
-    //SubscriberForm *subscriberForm =  static_cast<SubscriberForm*>(editor);
+
 }
 
 void BondListViewComboBoxStyledItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,

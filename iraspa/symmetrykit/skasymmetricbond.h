@@ -79,7 +79,7 @@ private:
   bool _isVisible;
   SKBondType _bondType;
   int _asymmetricIndex = 0;
-  int _bondOrder = 0;
+  [[maybe_unused]] int _bondOrder = 0;
 
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<SKAsymmetricBond> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<SKAsymmetricBond> &);

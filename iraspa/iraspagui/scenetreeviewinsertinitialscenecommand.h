@@ -45,5 +45,5 @@ private:
   std::shared_ptr<SceneList> _sceneList;
   std::shared_ptr<Scene> _scene;
   std::shared_ptr<Movie> _movie;
-  int _row;
+  [[maybe_unused]] int _row;
 };

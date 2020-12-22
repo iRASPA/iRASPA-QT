@@ -86,12 +86,12 @@ QString Scene::displayName() const
  return _displayName;
 }
 
-Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, LogReporting *log, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule)
+Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, LogReporting *log, [[maybe_unused]] bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule)
 {
-	QFile file(url.toLocalFile());
-	QFileInfo info(file);
-	if (file.open(QIODevice::ReadOnly))
-	{
+  QFile file(url.toLocalFile());
+  QFileInfo info(file);
+  if (file.open(QIODevice::ReadOnly))
+  {
     QTextStream in(&file);
 
     _displayName = info.baseName();

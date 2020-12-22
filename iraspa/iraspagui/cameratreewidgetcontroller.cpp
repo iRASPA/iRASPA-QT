@@ -360,7 +360,7 @@ void CameraTreeWidgetController::expandBackgroundItem()
   }
 }
 
-void CameraTreeWidgetController::renderWidgetResize(QSize size)
+void CameraTreeWidgetController::renderWidgetResize([[maybe_unused]] QSize size)
 {
 
 }

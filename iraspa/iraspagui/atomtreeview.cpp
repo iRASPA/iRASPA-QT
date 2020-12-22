@@ -380,6 +380,7 @@ void AtomTreeView::dragMoveEvent(QDragMoveEvent *event)
 
 QAbstractItemView::DropIndicatorPosition AtomTreeView::position(QPoint pos, QRect rect, QModelIndex index)
 {
+  Q_UNUSED(index);
   QAbstractItemView::DropIndicatorPosition r = OnViewport;
 
   //  margin*2 must be smaller than row height, or the drop onItem rect won't show
@@ -711,13 +712,13 @@ void AtomTreeView::visibilityMatchSelection()
         std::transform(flattenedNodes.begin(),flattenedNodes.end(), std::inserter(asymmetricAtoms, asymmetricAtoms.begin()),
                            [](std::shared_ptr<SKAtomTreeNode> treeNode) -> std::shared_ptr<SKAsymmetricAtom>
                            {return treeNode->representedObject();});
-        for(const std::shared_ptr<SKAsymmetricAtom> atom : asymmetricAtoms)
+        for(const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
         {
           atom->setVisibility(false);
         }
 
         AtomSelectionNodesAndIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
-        for(const auto [atom, indexPath] : atomSelection.second)
+        for(const auto &[atom, indexPath] : atomSelection.second)
         {
           atom->representedObject()->setVisibility(true);
         }
@@ -741,7 +742,7 @@ void AtomTreeView::visibilityInvert()
         std::transform(flattenedNodes.begin(),flattenedNodes.end(), std::inserter(asymmetricAtoms, asymmetricAtoms.begin()),
                            [](std::shared_ptr<SKAtomTreeNode> treeNode) -> std::shared_ptr<SKAsymmetricAtom>
                            {return treeNode->representedObject();});
-        for(const std::shared_ptr<SKAsymmetricAtom> atom : asymmetricAtoms)
+        for(const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
         {
           atom->toggleVisibility();
         }

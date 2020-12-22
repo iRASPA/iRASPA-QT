@@ -21,7 +21,8 @@
 
 #include "skrotationaloccurancetable.h"
 
-SKRotationalOccuranceTable::SKRotationalOccuranceTable(int axis_6m, int axis_4m, int axis_3m, int axis_2m, int axis_1m, int axis_1,int axis_2,int axis_3,int axis_4, int axis_6)
+SKRotationalOccuranceTable::SKRotationalOccuranceTable([[maybe_unused]] int axis_6m, [[maybe_unused]] int axis_4m, [[maybe_unused]] int axis_3m,
+              [[maybe_unused]] int axis_2m, [[maybe_unused]] int axis_1m, [[maybe_unused]] int axis_1,
+              [[maybe_unused]] int axis_2, [[maybe_unused]] int axis_3, [[maybe_unused]] int axis_4, [[maybe_unused]] int axis_6)
 {
-
 }

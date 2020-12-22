@@ -177,6 +177,7 @@ Qt::ItemFlags BondListViewModel::flags(const QModelIndex &index) const
 
 QVariant BondListViewModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+  Q_UNUSED(orientation);
   if (role != Qt::DisplayRole)
     return QVariant();
 

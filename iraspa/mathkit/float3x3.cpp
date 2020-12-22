@@ -275,7 +275,9 @@ int solve_type( float3 lambdas)
 
 
 void float3x3::solve_angles_0( float3 &res, float3 lambdas )
-{ res[0] = 0.0;
+{
+  Q_UNUSED(lambdas);
+  res[0] = 0.0;
   res[1] = 0.0;
   res[2] = 0.0;
 }

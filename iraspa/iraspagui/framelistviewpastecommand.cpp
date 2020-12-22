@@ -50,7 +50,7 @@ void FrameListViewPasteCommand::redo()
   emit _frameListViewModel->invalidateCachedAmbientOcclusionTexture(_sceneList->allIRASPAStructures());
 
   _frameListViewModel->layoutAboutToBeChanged();
-  for(const auto [iraspStructure, insertionRow] : _nodes)
+  for(const auto &[iraspStructure, insertionRow] : _nodes)
   {
     _reverseMoves.push_back(std::make_pair(iraspStructure, iraspStructure->row()));
 
@@ -60,7 +60,7 @@ void FrameListViewPasteCommand::redo()
 
   // update selection of moved nodes _after_ all is moved
   // (indexPaths have been changed, including the indexPath of the parentNode)
-  for(const auto [iraspStructure, insertionRow] : _nodes)
+  for(const auto &[iraspStructure, insertionRow] : _nodes)
   {
     _newSelection.insert(iraspStructure->row());
   }
@@ -77,7 +77,7 @@ void FrameListViewPasteCommand::redo()
 void FrameListViewPasteCommand::undo()
 {
   _frameListViewModel->layoutAboutToBeChanged();
-  for(const auto [iraspStructure, insertionRow] : _reverseMoves)
+  for(const auto &[iraspStructure, insertionRow] : _reverseMoves)
   {
     whileBlocking(_frameListViewModel)->removeRow(iraspStructure->row());
   }

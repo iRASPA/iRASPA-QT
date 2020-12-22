@@ -50,7 +50,7 @@ void CustomIntSpinBox::privateEditingFinished()
   }
 }
 
-bool CustomIntSpinBox::focusNextPrevChild(bool next)
+bool CustomIntSpinBox::focusNextPrevChild([[maybe_unused]] bool next)
 {
   return false;
 }

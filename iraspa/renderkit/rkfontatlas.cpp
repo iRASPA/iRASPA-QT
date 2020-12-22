@@ -309,7 +309,7 @@ int RKFontAtlas::save_png_SDFont(
   {
     fprintf( fp, "info face=\"%s\"\n",
         font_name  );
-    fprintf( fp, "chars count=%i\n", packed_glyphs.size() );
+    fprintf( fp, "chars count=%i\n", int(packed_glyphs.size()) );
     for( unsigned int i = 0; i < packed_glyphs.size(); ++i )
     {
       fprintf( fp, "char id=%-6ix=%-6iy=%-6iwidth=%-6iheight=%-6i",

@@ -106,7 +106,7 @@ public:
 
   double3 contentShift() {return _contentShift;}
   void setContentShift(double3 value) {_contentShift = value;}
-  void setContentShiftX(double value) {_contentShift.x = value; qDebug() << "Content shift";}
+  void setContentShiftX(double value) {_contentShift.x = value;}
   void setContentShiftY(double value) {_contentShift.y = value;}
   void setContentShiftZ(double value) {_contentShift.z = value;}
   bool3 contentFlip() {return _contentFlip;}

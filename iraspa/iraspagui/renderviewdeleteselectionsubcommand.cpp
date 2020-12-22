@@ -59,7 +59,7 @@ void RenderViewDeleteSelectionSubCommand::redo()
   if(_bondModel->isActive(_iraspaStructure))
   {
     _bondModel->layoutAboutToBeChanged();
-    for(const auto [bondItem, row] : _reverseBondSelection)
+    for(const auto &[bondItem, row] : _reverseBondSelection)
     {
       whileBlocking(_bondModel)->removeRow(row);
     }
@@ -67,7 +67,7 @@ void RenderViewDeleteSelectionSubCommand::redo()
   }
   else
   {
-    for(const auto [bondItem, row] : _reverseBondSelection)
+    for(const auto &[bondItem, row] : _reverseBondSelection)
     {
       _iraspaStructure->structure()->bondSetController()->removeBond(row);
     }
@@ -76,7 +76,7 @@ void RenderViewDeleteSelectionSubCommand::redo()
   if(_atomModel->isActive(_iraspaStructure))
   {
     _atomModel->layoutAboutToBeChanged();
-    for(const auto [projectNode, parentNode, row] : _reverseSelectedAtomNodes)
+    for(const auto &[projectNode, parentNode, row] : _reverseSelectedAtomNodes)
     {
       whileBlocking(_atomModel)->removeRow(row, parentNode);
     }
@@ -84,7 +84,7 @@ void RenderViewDeleteSelectionSubCommand::redo()
   }
   else
   {
-    for(const auto [projectNode, parentNode, row] : _reverseSelectedAtomNodes)
+    for(const auto &[projectNode, parentNode, row] : _reverseSelectedAtomNodes)
     {
       parentNode->removeChild(row);
     }
@@ -102,7 +102,7 @@ void RenderViewDeleteSelectionSubCommand::undo()
   if(_atomModel->isActive(_iraspaStructure))
   {
     _atomModel->layoutAboutToBeChanged();
-    for(const auto [projectNode, parentNode, row] : _selectedAtomNodes)
+    for(const auto &[projectNode, parentNode, row] : _selectedAtomNodes)
     {
       whileBlocking(_atomModel)->insertRow(row, parentNode, projectNode);
     }
@@ -110,7 +110,7 @@ void RenderViewDeleteSelectionSubCommand::undo()
   }
   else
   {
-    for(const auto [projectNode, parentNode, row] : _selectedAtomNodes)
+    for(const auto &[projectNode, parentNode, row] : _selectedAtomNodes)
     {
       parentNode->insertChild(row, projectNode);
     }
@@ -119,7 +119,7 @@ void RenderViewDeleteSelectionSubCommand::undo()
   if(_bondModel->isActive(_iraspaStructure))
   {
     _bondModel->layoutAboutToBeChanged();
-    for(const auto [bondItem, row] : _bondSelection)
+    for(const auto &[bondItem, row] : _bondSelection)
     {
       whileBlocking(_bondModel)->insertRow(row, bondItem);
     }
@@ -127,7 +127,7 @@ void RenderViewDeleteSelectionSubCommand::undo()
   }
   else
   {
-    for(const auto [bondItem, row] : _bondSelection)
+    for(const auto &[bondItem, row] : _bondSelection)
     {
       _iraspaStructure->structure()->bondSetController()->insertBond(bondItem, row);
     }

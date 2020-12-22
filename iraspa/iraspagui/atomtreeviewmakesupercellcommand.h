@@ -39,7 +39,7 @@ public:
   void undo() override final;
 private:
   MainWindow *_mainWindow;
-  AtomTreeViewModel *_model;
+  [[maybe_unused]] AtomTreeViewModel *_model;
   std::shared_ptr<iRASPAStructure> _iraspa_structure;
   std::shared_ptr<Structure> _structure;
 };

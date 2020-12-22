@@ -40,7 +40,7 @@ public:
   void undo() override final;
   void redo() override final;
 private:
-  MainWindow *_mainWindow;
+  [[maybe_unused]] MainWindow *_mainWindow;
   AtomTreeViewModel *_atomModel;
   BondListViewModel *_bondModel;
   std::shared_ptr<iRASPAStructure> _iraspaStructure;

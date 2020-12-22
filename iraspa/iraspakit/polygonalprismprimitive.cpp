@@ -167,6 +167,50 @@ std::vector<RKInPerInstanceAttributesAtoms> PolygonalPrismPrimitive::renderSelec
 // MARK: Filtering
 // =====================================================================
 
+std::set<int> PolygonalPrismPrimitive::filterCartesianAtomPositions(std::function<bool(double3)> & closure)
+{
+  std::set<int> data;
+
+  if(_isVisible)
+  {
+    double4x4 rotationMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(_orientation), boundingBox().center());
+    double3 contentShift = _cell->contentShift();
+    bool3 contentFlip = _cell->contentFlip();
+
+    std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+
+    uint32_t asymmetricAtomIndex = 0;
+    for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+    {
+      if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+      {
+        if (atom->isVisible())
+        {
+          for(std::shared_ptr<SKAtomCopy> copy : atom->copies())
+          {
+            if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+            {
+              double3 cartesianPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+
+              double4 position = rotationMatrix * double4(cartesianPosition.x, cartesianPosition.y, cartesianPosition.z, 1.0);
+
+              double3 absoluteCartesianPosition = double3(position.x,position.y,position.z) + _origin;
+              if(closure(absoluteCartesianPosition))
+              {
+                data.insert(asymmetricAtomIndex);
+              }
+            }
+          }
+        }
+      }
+      asymmetricAtomIndex++;
+    }
+  }
+
+  return data;
+}
+
+
 // MARK: Bounding box
 // =====================================================================
 
@@ -225,7 +269,7 @@ std::shared_ptr<Structure> PolygonalPrismPrimitive::flattenHierarchy() const
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -267,7 +311,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::asymmetr
   SKBoundingBox boundingBox = _cell->boundingBox() + SKBoundingBox(double3(-2,-2,-2), double3(2,2,2));
   double3x3 inverseUnitCell = SKCell(boundingBox).inverseUnitCell();
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -285,7 +329,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::asymmetr
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -303,7 +347,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::atomsCop
   SKBoundingBox boundingBox = _cell->boundingBox() + SKBoundingBox(double3(-2,-2,-2), double3(2,2,2));
   double3x3 inverseUnitCell = SKCell(boundingBox).inverseUnitCell();
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -327,7 +371,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::atomsCop
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms{};
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-  for(const std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -350,6 +394,118 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> PolygonalPrismPrimitive::atomsCop
 // MARK: bond-computations
 // =====================================================================
 
+// MARK: Translation operations
+// =====================================================================
+
+double3 PolygonalPrismPrimitive::centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms) const
+{
+  double3  com = double3(0.0, 0.0, 0.0);
+  double M = 0.0;
+
+  for(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom : asymmetricAtoms)
+  {
+    for(std::shared_ptr<SKAtomCopy> copy : asymmetricAtom->copies())
+    {
+      if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+      {
+        double3 pos = copy->position();
+        com = com + pos;
+        M += 1.0;
+      }
+    }
+  }
+  com = com / M;
+
+  return  com;
+}
+
+double3x3 PolygonalPrismPrimitive::matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const
+{
+  double3x3 inertiaMatrix = double3x3();
+  double3 com = centerOfMassOfSelectionAsymmetricAtoms(atoms);
+
+  for(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom : atoms)
+  {
+    for(std::shared_ptr<SKAtomCopy> copy : asymmetricAtom->copies())
+    {
+      if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+      {
+        double3 dr = copy->position() - com;
+
+        inertiaMatrix.ax += dr.y * dr.y + dr.z * dr.z;
+        inertiaMatrix.ay -= dr.x * dr.y;
+        inertiaMatrix.az -= dr.x * dr.z;
+        inertiaMatrix.bx -= dr.y * dr.x;
+        inertiaMatrix.by += dr.x * dr.x + dr.z * dr.z;
+        inertiaMatrix.bz -= dr.y * dr.z;
+        inertiaMatrix.cx -= dr.z * dr.x;
+        inertiaMatrix.cy -= dr.z * dr.y;
+        inertiaMatrix.cz += dr.x * dr.x + dr.y * dr.y;
+      }
+    }
+  }
+  return inertiaMatrix;
+}
+
+std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> PolygonalPrismPrimitive::translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const
+{
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions{};
+
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(translatedPositions),
+                 [translation](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                    {return std::make_pair(atom, atom->position() + translation);});
+
+  return translatedPositions;
+}
+
+std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> PolygonalPrismPrimitive::translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const
+{
+  double3 translationBodyFrame = double3x3::inverse(_selectionBodyFixedBasis) * translation;
+
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions{};
+
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(translatedPositions),
+                 [translationBodyFrame](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                    {return std::make_pair(atom, atom->position() + translationBodyFrame);});
+
+  return translatedPositions;
+}
+
+std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> PolygonalPrismPrimitive::rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const
+{
+  double3 com = centerOfMassOfSelectionAsymmetricAtoms(atoms);
+  double3x3 rotationMatrix = double3x3(rotation);
+
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions{};
+
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(translatedPositions),
+                 [com,rotationMatrix](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                 {
+                   double3 ds = atom->position() - com;
+                   double3 position = rotationMatrix * ds;
+                   return std::make_pair(atom, position + com);
+                 });
+
+  return translatedPositions;
+}
+
+std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> PolygonalPrismPrimitive::rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const
+{
+  double3 com = centerOfMassOfSelectionAsymmetricAtoms(atoms);
+  double3x3 rotationMatrix =  _selectionBodyFixedBasis * double3x3(rotation) * double3x3::inverse(_selectionBodyFixedBasis);
+
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions{};
+
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(translatedPositions),
+                 [com,rotationMatrix](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                 {
+                   double3 ds = atom->position() - com;
+                   double3 position = rotationMatrix * ds;
+                   return std::make_pair(atom, position + com);
+                 });
+
+  return translatedPositions;
+}
 
 
 

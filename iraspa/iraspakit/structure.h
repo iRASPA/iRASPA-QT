@@ -72,7 +72,7 @@ public:
   virtual std::shared_ptr<Structure> flattenHierarchy() const {return nullptr;}
   virtual std::shared_ptr<Structure> appliedCellContentShift() const {return nullptr;}
   virtual std::pair<std::vector<int>, std::vector<double3>> atomSymmetryData() const {return {};}
-  virtual void setAtomSymmetryData(double3x3 unitCell, std::vector<std::pair<int, double3>> atomData) {};
+  virtual void setAtomSymmetryData(double3x3 unitCell, std::vector<std::pair<int, double3>> atomData) {Q_UNUSED(unitCell); Q_UNUSED(atomData);};
 
 
   enum class StructureType: qint64

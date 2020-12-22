@@ -185,7 +185,7 @@ void SKCIFParser::parseSymmetry(QString& string)
        (string == QString("_symmetry.Int_Tables_number").toLower()))
     {
       int spaceGroupNumber = scanInt();
-      //_spaceGroupHallNumber = SKSpaceGroup::HallNumberFromSpaceGrouprNumber(spaceGroupNumber);
+      _spaceGroupHallNumber = SKSpaceGroup::HallNumberFromSpaceGroupNumber(spaceGroupNumber);
     }
   }
 }
@@ -226,6 +226,7 @@ std::optional<QString> SKCIFParser::parseValue()
 
 void SKCIFParser::parseLoop(QString& string)
 {
+  Q_UNUSED(string);
   QString tempString;
   QString::const_iterator previousScanLocation;
   std::vector<QString> tags;
