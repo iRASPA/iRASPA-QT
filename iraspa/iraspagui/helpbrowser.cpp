@@ -31,7 +31,7 @@
   HelpBrowser::HelpBrowser(QWidget* parent): QWebView(parent)
 #endif
 {
-  _home = QUrl(QStringLiteral("http://www.iraspa.org/iRASPA/iraspa.html"));
+  _home = QUrl(QStringLiteral("https://help.iraspa.org/index.html"));
   setUrl(_home);
 }
 
