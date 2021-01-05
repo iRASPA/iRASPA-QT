@@ -61,6 +61,9 @@ private:
   OpenGLAtomPerspectiveImposterShader _atomPerspectiveImposterShader;
   OpenGLAmbientOcclusionShadowMapShader _atomAmbientOcclusionShader;
 
+  size_t _numberOfAtoms = 0;
+  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+
   friend OpenGLAtomPickingShader;
   friend OpenGLTextRenderingShader;
 };

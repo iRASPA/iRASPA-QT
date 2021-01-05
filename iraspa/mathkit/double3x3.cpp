@@ -30,7 +30,6 @@
 
 #define sqr( x ) (( x )*( x ))
 #define SIGN(a,b) ((b)>=0.0?fabs(a):-fabs(a))
-//#define MAX(x,y) (((x)>(y))?(x):(y))
 
 // dlambda_limit, below which two lambdas are relatively equal
 double dlambda_limit = 1.0E-3;
@@ -598,7 +597,7 @@ void double3x3::SingularValueDecomposition(double3x3 &a,double3 &w,double3x3 &v)
                     a.mm[i][k] = (float)((double)a.mm[i][k]*scale);
             }
         }
-        anorm = MAX(anorm, (fabs((double)w[i]) + fabs(rv1[i])));
+        anorm = std::max(anorm, (fabs((double)w[i]) + fabs(rv1[i])));
     }
 
     /* accumulate the right-hand transformation */

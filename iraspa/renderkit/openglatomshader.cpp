@@ -51,16 +51,29 @@ void OpenGLAtomShader::invalidateCachedAmbientOcclusionTexture(std::vector<std::
 
 void OpenGLAtomShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
 {
+  _renderStructures = structures;
   _atomShader.setRenderStructures(structures);
   _atomOrthographicImposterShader.setRenderStructures(structures);
   _atomPerspectiveImposterShader.setRenderStructures(structures);
   _atomAmbientOcclusionShader.setRenderStructures(structures);
+
+  _numberOfAtoms = 0;
+  for(size_t i=0;i<_renderStructures.size();i++)
+  {
+    for(size_t j=0;j<_renderStructures[i].size();j++)
+    {
+      if(_renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible())
+      {
+         _numberOfAtoms += _renderStructures[i][j]->renderAtoms().size();
+      }
+    }
+  }
 }
 
 
 void OpenGLAtomShader::paintGL(std::shared_ptr<RKCamera> camera, RKRenderQuality quality, GLuint structureUniformBuffer)
 {
-  if(quality == RKRenderQuality:: high || quality == RKRenderQuality:: picture)
+  if((quality == RKRenderQuality:: high && _numberOfAtoms < 10000) || quality == RKRenderQuality:: picture)
   {
     _atomShader.paintGL(_atomAmbientOcclusionShader.generatedAmbientOcclusionTextures(), structureUniformBuffer);
   }
@@ -90,6 +103,18 @@ void OpenGLAtomShader::reloadData()
   _atomShader.reloadData();
   _atomOrthographicImposterShader.reloadData();
   _atomPerspectiveImposterShader.reloadData();
+
+  _numberOfAtoms = 0;
+  for(size_t i=0;i<_renderStructures.size();i++)
+  {
+    for(size_t j=0;j<_renderStructures[i].size();j++)
+    {
+      if(_renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible())
+      {
+         _numberOfAtoms += _renderStructures[i][j]->renderAtoms().size();
+      }
+    }
+  }
 }
 
 void OpenGLAtomShader::reloadAmbientOcclusionData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality)
