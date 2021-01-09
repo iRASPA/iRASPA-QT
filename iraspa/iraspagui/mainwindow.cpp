@@ -23,7 +23,6 @@
 #include "ui_mainwindow.h"
 #include "aboutdialog.h"
 
-
 #include <QUrl>
 #include <QTimer>
 #include <QFile>
@@ -31,6 +30,7 @@
 #include <QByteArray>
 #include <QtConcurrent>
 #include <QDesktopServices>
+#include <QtGlobal>
 #include <iraspakit.h>
 #include <foundationkit.h>
 #include <renderkit.h>
@@ -87,7 +87,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   ui->detailTabViewController->setStyleSheet("QTabWidget::tab-bar { left: 0;}");
 
   // connect the project-toolbar to the stackedWidget
-  QObject::connect(ui->masterToolBar->mapper(), static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt),ui->masterStackedWidget, &MasterStackedWidget::reloadTab);
+  #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0) 
+    QObject::connect(ui->masterToolBar->mapper(), static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mapped),ui->masterStackedWidget, &MasterStackedWidget::reloadTab);
+  #else
+    QObject::connect(ui->masterToolBar->mapper(), static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt),ui->masterStackedWidget, &MasterStackedWidget::reloadTab);
+  #endif
 
   // connect the sceneTreeView
   QObject::connect(ui->sceneTreeView, &SceneTreeView::updateRenderer,ui->stackedRenderers, &RenderStackedWidget::reloadData);
