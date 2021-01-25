@@ -588,7 +588,6 @@ bool SceneTreeViewModel::canDropMimeData(const QMimeData *data, Qt::DropAction a
 
   //qDebug() << "Can drop on row: " << row << ", " << column << ", " << parent;
 
-
   return true;
 }
 
@@ -658,12 +657,10 @@ bool SceneTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
       stream >> nodePtr;
       Movie *moviePtr = reinterpret_cast<Movie *>(nodePtr);
       std::shared_ptr<Movie> copiedMovie = moviePtr->shallowClone();
-      // FIX
-      //std::optional<int> selectionIndex = _sceneList->selectedFrameIndex();
-      //if(selectionIndex)
-      //{
-      //  copiedMovie->setSelectedFrameIndex(*selectionIndex);
-      //}
+
+      // set inital selected frame
+      copiedMovie->selectedFrameIndex(0);
+
       movies.push_back(copiedMovie);
     }
 
@@ -742,8 +739,10 @@ bool SceneTreeViewModel::pasteMimeData(const QMimeData *data, int row, int colum
   {
     std::shared_ptr<Movie> copiedMovie = std::make_shared<Movie>();
     stream >> copiedMovie;
-    // FIX
-    //copiedMovie->setSelectedFrameIndex(copiedMovie->selectedFrameIndex());
+
+    // set inital selected frame
+    copiedMovie->selectedFrameIndex(0);
+
     movies.push_back(copiedMovie);
   }
 

@@ -237,9 +237,8 @@ void OpenGLExternalBondShader::paintGL(GLuint structureUniformBuffer)
         glDrawElements(GLenum(GL_TRIANGLE_STRIP), 34, GLenum(GL_UNSIGNED_SHORT), nullptr);
         glBindVertexArray(0);
         glUseProgram(0);
-
-        index += 1;
       }
+      index += 1;
     }
   }
 
