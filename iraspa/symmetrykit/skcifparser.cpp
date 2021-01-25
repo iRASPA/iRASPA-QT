@@ -275,32 +275,41 @@ void SKCIFParser::parseLoop(QString& string)
           chemicalElement.replace(0, 1, chemicalElement[0].toUpper());
         }
 
-       std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+        std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
 
-       if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site_label")); (index != dictionary.end()))
-       {
-         atom->setDisplayName(chemicalElement);
-       }
+        if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site_label")); (index != dictionary.end()))
+        {
+          atom->setDisplayName(chemicalElement);
+        }
 
-       std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site_fract_x"));
-       std::map<QString,QString>::iterator atom_site_y = dictionary.find(QString("_atom_site_fract_y"));
-       std::map<QString,QString>::iterator atom_site_z = dictionary.find(QString("_atom_site_fract_z"));
-       if ((atom_site_x != dictionary.end()) && (atom_site_y != dictionary.end()) && (atom_site_z != dictionary.end()))
-       {
-         double3 position;
-         bool succes = false;
-         position.x = atom_site_x->second.split('(').at(0).toDouble(&succes);
-         position.y = atom_site_y->second.split('(').at(0).toDouble(&succes);
-         position.z = atom_site_z->second.split('(').at(0).toDouble(&succes);
-         atom->setPosition(position);
-       }
+        std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site_fract_x"));
+        std::map<QString,QString>::iterator atom_site_y = dictionary.find(QString("_atom_site_fract_y"));
+        std::map<QString,QString>::iterator atom_site_z = dictionary.find(QString("_atom_site_fract_z"));
+        if ((atom_site_x != dictionary.end()) && (atom_site_y != dictionary.end()) && (atom_site_z != dictionary.end()))
+        {
+          double3 position;
+          bool succes = false;
+          position.x = atom_site_x->second.split('(').at(0).toDouble(&succes);
+          position.y = atom_site_y->second.split('(').at(0).toDouble(&succes);
+          position.z = atom_site_z->second.split('(').at(0).toDouble(&succes);
+          atom->setPosition(position);
+        }
 
-       if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(chemicalElement); index != PredefinedElements::atomicNumberData.end())
-       {
+        std::map<QString,QString>::iterator atom_charge = dictionary.find(QString("_atom_site_charge"));
+        if (atom_charge != dictionary.end())
+        {
+          double charge=0.0;
+          bool succes = false;
+          charge = atom_charge->second.split('(').at(0).toDouble(&succes);
+          atom->setCharge(charge);
+        }
+
+        if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(chemicalElement); index != PredefinedElements::atomicNumberData.end())
+        {
           atom->setElementIdentifier(index->second);
-       }
+        }
 
-       _atoms.push_back(atom);
+        _atoms.push_back(atom);
       }
       else if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site.type_symbol")); (index != dictionary.end()))
       {
@@ -322,6 +331,15 @@ void SKCIFParser::parseLoop(QString& string)
           position.y = atom_site_y->second.split('(').at(0).toDouble(&succes);
           position.z = atom_site_z->second.split('(').at(0).toDouble(&succes);
           atom->setPosition(position);
+        }
+
+        std::map<QString,QString>::iterator atom_charge = dictionary.find(QString("_atom_site_charge"));
+        if (atom_charge != dictionary.end())
+        {
+          double charge=0.0;
+          bool succes = false;
+          charge = atom_charge->second.split('(').at(0).toDouble(&succes);
+          atom->setCharge(charge);
         }
 
         _atoms.push_back(atom);
