@@ -35,42 +35,39 @@ SKPDBParser::SKPDBParser(QString fileContent, bool onlyAsymmetricUnitCell, bool 
 
 void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
 {
-  if (_frame->atoms.size() > 0)
+  if (currentMovie >= _movies.size())
   {
-    if (currentMovie >= _movies.size())
-    {
-      std::vector<std::shared_ptr<SKStructure>> movie = std::vector<std::shared_ptr<SKStructure>>();
-      _movies.push_back(movie);
-    }
+    std::vector<std::shared_ptr<SKStructure>> movie = std::vector<std::shared_ptr<SKStructure>>();
+    _movies.push_back(movie);
+  }
 
-    if (currentFrame >= _movies[currentMovie].size())
+  if (currentFrame >= _movies[currentMovie].size())
+  {
+    if(double(_numberOfAminoAcidAtoms)/double(_numberOfAtoms) > 0.5)
     {
+      _frame->kind = SKStructure::Kind::protein;
+      _frame->spaceGroupHallNumber = 1;
+    }
+    if(_cell && !_asMolecule)
+    {
+      _frame->cell = std::make_shared<SKCell>(*_cell);
+      _frame->spaceGroupHallNumber = _spaceGroupHallNumber;
       if(double(_numberOfAminoAcidAtoms)/double(_numberOfAtoms) > 0.5)
       {
-        _frame->kind = SKStructure::Kind::protein;
-        _frame->spaceGroupHallNumber = 1;
+        _frame->kind = SKStructure::Kind::proteinCrystal;
       }
-      if(_cell && !_asMolecule)
+      else
       {
-        _frame->cell = std::make_shared<SKCell>(*_cell);
-        _frame->spaceGroupHallNumber = _spaceGroupHallNumber;
-        if(double(_numberOfAminoAcidAtoms)/double(_numberOfAtoms) > 0.5)
-        {
-          _frame->kind = SKStructure::Kind::proteinCrystal;
-        }
-        else
-        {
-          _frame->kind = SKStructure::Kind::molecularCrystal;
-        }
+        _frame->kind = SKStructure::Kind::molecularCrystal;
       }
-
-      _movies[currentMovie].push_back(_frame);
-
-      _frame = std::make_shared<SKStructure>();
-      _frame->kind = SKStructure::Kind::molecule;
-      _numberOfAminoAcidAtoms=0;
-      _numberOfAtoms=0;
     }
+
+    _movies[currentMovie].push_back(_frame);
+
+    _frame = std::make_shared<SKStructure>();
+    _frame->kind = SKStructure::Kind::molecule;
+    _numberOfAminoAcidAtoms=0;
+    _numberOfAtoms=0;
   }
 }
 

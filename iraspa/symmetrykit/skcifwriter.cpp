@@ -65,7 +65,13 @@ QString SKCIFWriter::string()
 
     QString name = atom->displayName().leftJustified(8, ' ');
     QString chemicalElement =  element._chemicalSymbol.leftJustified(4, ' ', true);
-    QString forcefieldName = atom->uniqueForceFieldName().leftJustified(5, ' ');
+
+    QString forcefieldName = chemicalElement.leftJustified(5, ' ');
+    if(!atom->uniqueForceFieldName().isEmpty())
+    {
+      QString forcefieldName = atom->uniqueForceFieldName().leftJustified(5, ' ');
+    }
+
     QString positionX = QString("%1").arg(atom->position().x - _origin.x, 12, 'f', 8, ' ');
     QString positionY = QString("%1").arg(atom->position().y - _origin.y, 12, 'f', 8, ' ');
     QString positionZ = QString("%1").arg(atom->position().z - _origin.z, 12, 'f', 8, ' ');
