@@ -53,9 +53,9 @@ void AtomTreeViewCopySelectionToNewMovieCommand::redo()
     if((_scene = movie->parent().lock()))
     {
       _row = _scene->movies().size();
-      std::shared_ptr<Structure> newStructure = _iraspaStructure->structure()->clone();
-      newStructure->setSpaceGroupHallNumber(_iraspaStructure->structure()->spaceGroup().spaceGroupSetting().HallNumber());
-      std::shared_ptr<iRASPAStructure> newiRASPAStructure = std::make_shared<iRASPAStructure>(newStructure);
+
+      std::shared_ptr<iRASPAStructure> newiRASPAStructure = _iraspaStructure->clone();
+      newiRASPAStructure->structure()->setSpaceGroupHallNumber(_iraspaStructure->structure()->spaceGroup().spaceGroupSetting().HallNumber());
       std::shared_ptr<Movie> _newMovie = Movie::create(newiRASPAStructure);
 
       for(const IndexPath &indexPath : _atomSelection.second)
@@ -65,13 +65,15 @@ void AtomTreeViewCopySelectionToNewMovieCommand::redo()
         {
           std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
           std::shared_ptr<SKAtomTreeNode> newAtomTreeNode = std::make_shared<SKAtomTreeNode>(newAsymmetricAtom);
-          newStructure->atomsTreeController()->appendToRootnodes(newAtomTreeNode);
+          newiRASPAStructure->structure()->atomsTreeController()->appendToRootnodes(newAtomTreeNode);
         }
 
       }
-      newStructure->expandSymmetry();
-      newStructure->reComputeBoundingBox();
-      newStructure->computeBonds();
+      newiRASPAStructure->structure()->expandSymmetry();
+      newiRASPAStructure->structure()->reComputeBoundingBox();
+      newiRASPAStructure->structure()->computeBonds();
+      newiRASPAStructure->structure()->atomsTreeController()->setTags();
+      newiRASPAStructure->structure()->bondSetController()->setTags();
 
       _sceneTreeViewModel->insertRow(_row, _scene, _newMovie);
 
