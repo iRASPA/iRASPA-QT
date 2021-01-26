@@ -177,17 +177,17 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
 
         iraspastructures.push_back(iraspastructure);
       }
-      std::shared_ptr<Movie> movie = std::make_shared<Movie>(info.baseName(), iraspastructures);
+      std::shared_ptr<Movie> movie = Movie::create(info.baseName(), iraspastructures);
       _movies.push_back(movie);
     }
   }
-	else
-	{
-		if (log)
-		{
-			log->logMessage(LogReporting::ErrorLevel::error, "File not found!");
-		}
-	}
+  else
+  {
+    if (log)
+    {
+      log->logMessage(LogReporting::ErrorLevel::error, "File not found!");
+    }
+  }
 }
 
 

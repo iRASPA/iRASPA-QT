@@ -24,6 +24,13 @@
 
 char iRASPAStructure::mimeType[] = "application/x-qt-iraspa-structure-mime";
 
+std::shared_ptr<iRASPAStructure> iRASPAStructure::clone()
+{
+  std::shared_ptr<iRASPAStructure> structure = std::make_shared<iRASPAStructure>();
+  structure->_rawValue = this->_rawValue;
+  structure->_structure = this->_structure->clone();
+  return structure;
+}
 
 void iRASPAStructure::swapRepresentedObjects(std::shared_ptr<iRASPAStructure> s1, std::shared_ptr<iRASPAStructure> s2)
 {
@@ -57,7 +64,8 @@ std::shared_ptr<iRASPAStructure> iRASPAStructure::create(iRASPAStructureType typ
   case iRASPAStructureType::none:
     return nullptr;
   case iRASPAStructureType::structure:
-    return std::make_shared<iRASPAStructure>(std::make_shared<Structure>());
+    return nullptr;
+    //return std::make_shared<iRASPAStructure>(std::make_shared<Structure>());
   case iRASPAStructureType::crystal:
     return std::make_shared<iRASPAStructure>(std::make_shared<Crystal>());
   case iRASPAStructureType::molecularCrystal:
@@ -69,11 +77,11 @@ std::shared_ptr<iRASPAStructure> iRASPAStructure::create(iRASPAStructureType typ
   case iRASPAStructureType::protein:
     return std::make_shared<iRASPAStructure>(std::make_shared<Protein>());
   case iRASPAStructureType::proteinCrystalSolvent:
-    return std::make_shared<iRASPAStructure>(std::make_shared<Structure>());
+    return nullptr;
   case iRASPAStructureType::crystalSolvent:
-    return std::make_shared<iRASPAStructure>(std::make_shared<Structure>());
+    return nullptr;
   case iRASPAStructureType::molecularCrystalSolvent:
-    return std::make_shared<iRASPAStructure>(std::make_shared<Structure>());
+    return nullptr;
   case iRASPAStructureType::crystalEllipsoidPrimitive:
     return std::make_shared<iRASPAStructure>(std::make_shared<CrystalEllipsoidPrimitive>());
   case iRASPAStructureType::crystalCylinderPrimitive:

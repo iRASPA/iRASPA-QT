@@ -46,7 +46,6 @@ public:
   static char mimeType[];
 
   iRASPAStructure():_rawValue(iRASPAStructureType::none), _structure(std::make_shared<Structure>()) {}
-  iRASPAStructure(std::shared_ptr<Structure> structure):_rawValue(iRASPAStructureType::structure), _structure(structure) {}
   iRASPAStructure(std::shared_ptr<Crystal> crystal):_rawValue(iRASPAStructureType::crystal), _structure(crystal) {}
   iRASPAStructure(std::shared_ptr<MolecularCrystal> molecularCrystal):_rawValue(iRASPAStructureType::molecularCrystal), _structure(molecularCrystal) {}
   iRASPAStructure(std::shared_ptr<ProteinCrystal> proteinCrystal):_rawValue(iRASPAStructureType::proteinCrystal), _structure(proteinCrystal) {}
@@ -59,6 +58,7 @@ public:
   iRASPAStructure(std::shared_ptr<CrystalCylinderPrimitive> crystalCylinderPrimitive):_rawValue(iRASPAStructureType::crystalCylinderPrimitive), _structure(crystalCylinderPrimitive) {}
   iRASPAStructure(std::shared_ptr<CrystalPolygonalPrismPrimitive> crystalPolygonalPrismPrimitive):_rawValue(iRASPAStructureType::crystalPolygonalPrismPrimitive), _structure(crystalPolygonalPrismPrimitive) {}
 
+  std::shared_ptr<iRASPAStructure> clone();
 
   size_t row() const;
   static std::shared_ptr<iRASPAStructure> create(iRASPAStructureType type);
@@ -70,6 +70,9 @@ public:
   void setParent(std::weak_ptr<Movie> parent) {_parent = parent;}
   std::weak_ptr<Movie> parent() {return _parent;}
   virtual ~iRASPAStructure() {}
+private:
+  // bug: avoid accidental constructure of a structure without a type, so disable this
+  // iRASPAStructure(std::shared_ptr<Structure> structure):_rawValue(iRASPAStructureType::structure), _structure(structure) {}
 protected:
   iRASPAStructureType _rawValue;
   std::weak_ptr<Movie> _parent{};

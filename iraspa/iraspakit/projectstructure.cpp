@@ -38,8 +38,11 @@ ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, For
   if (url.isValid())
   {
     std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, log, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+    for(std::shared_ptr<Movie> movie : scene->movies())
+    {
+      movie->setParent(scene);
+    }
     _sceneList->appendScene(scene);
-
     _camera->resetForNewBoundingBox(this->renderBoundingBox());
   }
 
@@ -56,6 +59,10 @@ ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets
     if (url.isValid())
     {
       std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, log, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+      for(std::shared_ptr<Movie> movie : scene->movies())
+      {
+        movie->setParent(scene);
+      }
       _sceneList->appendScene(scene);
     }
   }

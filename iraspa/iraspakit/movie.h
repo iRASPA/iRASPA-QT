@@ -56,9 +56,9 @@ public:
   static char mimeType[];
 
   Movie();
-  Movie(QString displayName, std::vector<std::shared_ptr<iRASPAStructure>> iraspaStructures);
 
   static std::shared_ptr<Movie> create(std::shared_ptr<iRASPAStructure> structure);
+  static std::shared_ptr<Movie> create(QString displayName, std::vector<std::shared_ptr<iRASPAStructure>> iraspaStructures);
   virtual ~Movie() {}
   std::shared_ptr<Movie> shallowClone();
 
@@ -90,6 +90,7 @@ public:
 private:
   iRASPAStructureType _movieType;
   Movie(std::shared_ptr<iRASPAStructure> structure);
+  Movie(std::vector<std::shared_ptr<iRASPAStructure>> structures);
   qint64 _versionNumber{1};
   bool _isVisible = true;
   [[maybe_unused]] bool _isLoading = false;
@@ -101,5 +102,7 @@ private:
 
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Movie> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Movie> &);
+
+  friend QDebug operator<< (QDebug dbg, const std::shared_ptr<Movie> &);
 };
 

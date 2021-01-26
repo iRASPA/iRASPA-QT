@@ -27,22 +27,18 @@ char Movie::mimeType[] = "application/x-qt-iraspa-movie-mime";
 // _movieType is to set the type of the movie based on the type of the first frame.
 // In this way, an empty movie (after deleting all its frames) can create a frame of the correct type.
 
-Movie::Movie(QString displayName, std::vector<std::shared_ptr<iRASPAStructure>> iraspaStructures): _displayName(displayName), _frames(iraspaStructures)
-{
-  if(!_frames.empty())
-  {
-    _movieType = _frames.front()->type();
-  }
-}
-
-
-Movie::Movie()
+Movie::Movie(): _displayName("movie"), _frames{}
 {
 
 }
 
 // private constructor, parent of structure needs to be set
 Movie::Movie(std::shared_ptr<iRASPAStructure> structure): _movieType(structure->type()), _frames{structure}
+{
+}
+
+// private constructor, parent of structure needs to be set
+Movie::Movie(std::vector<std::shared_ptr<iRASPAStructure>> structures): _frames{structures}
 {
 }
 
@@ -56,7 +52,24 @@ std::shared_ptr<Movie> Movie::create(std::shared_ptr<iRASPAStructure> structure)
   return movie;
 }
 
+std::shared_ptr<Movie> Movie::create(QString displayName, std::vector<std::shared_ptr<iRASPAStructure>> iraspaStructures)
+{
+  std::shared_ptr<Movie> movie =  std::shared_ptr<Movie>( new Movie( std::forward<Movie>(iraspaStructures)));
+  movie->setDisplayName(displayName);
 
+  if(!movie->_frames.empty())
+  {
+    movie->_movieType = movie->_frames.front()->type();
+    movie->addSelectedFrameIndex(0);
+  }
+
+  for(std::shared_ptr<iRASPAStructure> frame : movie->_frames)
+  {
+    frame->setParent(movie);
+  }
+
+  return movie;
+}
 
 void Movie::append(std::shared_ptr<iRASPAStructure> structure)
 {
@@ -202,7 +215,23 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Movie> &movie
   stream << movie->_versionNumber;
   stream << movie->_displayName;
   stream << movie->_frames;
+
   return stream;
+}
+
+QDebug operator<< (QDebug dbg, const std::shared_ptr<Movie> & movie)
+{
+  QDebugStateSaver stateSaver(dbg);
+  dbg.noquote() << "Movie displayname: " + movie->displayName() + "\n";
+  dbg.noquote() << "Movie number of frames: " <<  QString::number(movie->frames().size()) + "\n";
+  for(std::shared_ptr<iRASPAStructure> frame: movie->frames())
+  {
+    dbg.noquote() << "\tFrame displayName: " <<  frame->structure()->displayName() << " nr atoms: "
+                  << QString::number(frame->structure()->atomsTreeController()->flattenedLeafNodes().size())
+                  << "Expired parent: " << frame->parent().expired() <<
+                     + "\n";
+  }
+  return dbg;
 }
 
 QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Movie> &movie)
@@ -215,11 +244,6 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Movie> &movie)
   }
   stream >> movie->_displayName;
   stream >> movie->_frames;
-
-  //for(int i=0; i < movie->_frames.size(); i++)
-  //{
-  //  movie->_frames[i]->setDisplayName(QString::number(i));
-  //}
 
   for(std::shared_ptr<iRASPAStructure> frame : movie->_frames)
   {
