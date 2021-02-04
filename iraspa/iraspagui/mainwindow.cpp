@@ -805,30 +805,61 @@ void MainWindow::importFile()
       bool onlyAsymmetricUnit=dialog.checkboxOnlyAsymmetricUnitCell->checkState() == Qt::CheckState::Checked;
       bool asMolecule=dialog.checkboxImportAsMolecule->checkState() == Qt::CheckState::Checked;
 
-      [[maybe_unused]] ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(ui->projectTreeView->model());
+      ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(ui->projectTreeView->model());
+      std::shared_ptr<ProjectTreeNode> localProjects = _documentData->projectTreeController()->localProjects();
+      QModelIndex insertionParentIndex = pModel->indexForNode(localProjects.get());
+      int insertRow = 0;
 
-      QModelIndex rootLocalProjectsParentIndex = ui->projectTreeView->model()->index(2,0,QModelIndex());
-      QModelIndex localProjectsParentIndex = ui->projectTreeView->model()->index(0,0,rootLocalProjectsParentIndex);
+      QModelIndex index = ui->projectTreeView->selectionModel()->currentIndex();
+      if(index.isValid())
+      {
+        if(ProjectTreeNode* node = pModel->nodeForIndex(index))
+        {
+          if (node->isDescendantOfNode(localProjects.get()))
+          {
+            // a project is selected
+              qDebug() << "YEAH";
+            insertionParentIndex = index.parent();
+            insertRow = index.row() + 1;
+          }
+        }
+      }
 
-      std::shared_ptr<ProjectTreeNode> localProjects =  _documentData->projectTreeController()->localProjects();
+      qDebug() << "row: " << insertRow;
 
-      QAbstractItemModel* model = ui->projectTreeView->model();
-      [[maybe_unused]] QModelIndex index = ui->projectTreeView->selectionModel()->currentIndex();
-      //int insertionIndex = index.row() + 1;
+      if(asSeparateProject)
+      {
+        for(QUrl url : fileURLs)
+        {
+          QString fileName = url.toString();
 
-      QString fileName = fileURLs.first().toString();
+          QFileInfo fileInfo(fileName);
 
 
-      QFileInfo fileInfo(fileName);
-      [[maybe_unused]] QModelIndex insertedIndex = model->index(0,0,localProjectsParentIndex);
+          ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
 
-      ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
+          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), ui->logPlainTextEdit, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+          std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
+          std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 
-      std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), ui->logPlainTextEdit, asSeparateProject, onlyAsymmetricUnit, asMolecule);
-      std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
-      std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
+          ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
+          insertRow++;
+        }
+      }
+      else
+      {
+        QString fileName = fileURLs.first().toString();
 
-      ui->projectTreeView->insertRows(0, 1, localProjectsParentIndex, newProject);
+        QFileInfo fileInfo(fileName);
+
+        ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
+
+        std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), ui->logPlainTextEdit, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+        std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
+        std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
+
+        ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
+      }
     }
   }
 }
