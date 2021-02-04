@@ -21,8 +21,31 @@
 
 #pragma once
 
-class SKXYZParser
+#include <QString>
+#include <string>
+#include <vector>
+#include <map>
+#include <cwctype>
+#include <cmath>
+#include <optional>
+#include <foundationkit.h>
+#include "skparser.h"
+#include "skasymmetricatom.h"
+#include "skatomtreenode.h"
+#include "skatomtreecontroller.h"
+#include "logreporting.h"
+
+class SKXYZParser: public SKParser
 {
 public:
-  SKXYZParser();
+  SKXYZParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
+  bool startParsing() override final;
+private:
+  Scanner _scanner;
+  bool _onlyAsymmetricUnitCell;
+  bool _asMolecule;
+  LogReporting *_log;
+  QString::const_iterator _previousScanLocation;
+  std::optional<int> _spaceGroupHallNumber;
+  std::shared_ptr<SKStructure> _frame;
 };

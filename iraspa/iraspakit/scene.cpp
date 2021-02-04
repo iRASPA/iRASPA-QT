@@ -27,6 +27,7 @@
 #include "skposcarparser.h"
 #include "skpdbparser.h"
 #include "skcifparser.h"
+#include "skxyzparser.h"
 
 Scene::Scene()
 {
@@ -113,6 +114,10 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
     else if (info.suffix().toLower() == "pdb")
     {
       parser = std::make_shared<SKPDBParser>(fileContent, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
+    }
+    else if (info.suffix().toLower() == "xyz")
+    {
+      parser = std::make_shared<SKXYZParser>(fileContent, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), log);
     }
 
     bool success = parser->startParsing();

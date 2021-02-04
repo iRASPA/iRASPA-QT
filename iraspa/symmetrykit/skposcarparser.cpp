@@ -150,7 +150,7 @@ bool SKPOSCARParser::startParsing()
     }
   }
 
-  // read first lattice vector
+  // read third lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
   #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
     termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
