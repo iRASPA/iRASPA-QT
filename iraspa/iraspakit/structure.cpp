@@ -1440,6 +1440,7 @@ void Structure::setAtomForceFieldIdentifier(QString identifier, ForceFieldSets& 
 
 void Structure::updateForceField(ForceFieldSets &forceFieldSets)
 {
+  qDebug() << "Structure::updateForceField";
   if(ForceFieldSet* forceField = forceFieldSets[_atomForceFieldIdentifier])
   {
     std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
@@ -1472,11 +1473,24 @@ void Structure::updateForceField(ForceFieldSets &forceFieldSets)
           {
             atom->setPotentialParameters(forceFieldType->potentialParameters());
             atom->setBondDistanceCriteria(forceFieldType->userDefinedRadius());
+            break;
+          }
+          else
+          {
+            SKElement& element = PredefinedElements::predefinedElements[atom->elementIdentifier()];
+            const QString chemicalElement = element._chemicalSymbol;
+            ForceFieldType* forceFieldType = (*forceField)[chemicalElement];
+            if(forceFieldType)
+            {
+              atom->setPotentialParameters(forceFieldType->potentialParameters());
+              atom->setBondDistanceCriteria(forceFieldType->userDefinedRadius());
+            }
           }
         }
       }
       break;
     case ForceFieldSet::ForceFieldSchemeOrder::forceFieldOnly:
+        qDebug() << "ForceFieldSet::ForceFieldSchemeOrder::forceFieldOnly";
       for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
       {
         if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
@@ -1484,8 +1498,13 @@ void Structure::updateForceField(ForceFieldSets &forceFieldSets)
           ForceFieldType* forceFieldType = (*forceField)[atom->uniqueForceFieldName()];
           if(forceFieldType)
           {
+            qDebug() << "Setting force field for " << atom->uniqueForceFieldName() << " to: " << forceFieldType->potentialParameters().x;
             atom->setPotentialParameters(forceFieldType->potentialParameters());
             atom->setBondDistanceCriteria(forceFieldType->userDefinedRadius());
+          }
+          else
+          {
+            atom->setPotentialParameters(double2(0.0, 1.0));
           }
         }
       }

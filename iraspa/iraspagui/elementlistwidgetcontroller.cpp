@@ -37,12 +37,6 @@ ElementListWidgetController::ElementListWidgetController(QWidget* parent): QList
   this->setSelectionMode(QAbstractItemView::SingleSelection);
 }
 
-void ElementListWidgetController::setStructures(std::vector<std::shared_ptr<iRASPAStructure>> structures)
-{
-  _structures = structures;
-  reloadData();
-}
-
 void ElementListWidgetController::setColorComboBoxIndex(size_t type)
 {
   if(_mainWindow)
@@ -110,7 +104,7 @@ void ElementListWidgetController::setProject(std::shared_ptr<ProjectTreeNode> pr
         if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
         {
           _projectStructure = projectStructure;
-          _structures = projectStructure->sceneList()->flattenedAllIRASPAStructures();
+          _structures = projectStructure->sceneList()->allIRASPAStructures();
         }
       }
     }
@@ -164,7 +158,6 @@ void ElementListWidgetController::reloadData()
       this->clearSelection();
       this->setSelectionMode(QAbstractItemView::NoSelection);
     }
-
 
 
     for(ForceFieldType& atomType : atomTypeList)
@@ -264,8 +257,6 @@ void ElementListWidgetController::reloadData()
        double userDefinedRadius = atomType.userDefinedRadius();
        whileBlocking(form->userDefinedRadiusDoubleSpinBox)->setValue(userDefinedRadius);
        form->userDefinedRadiusDoubleSpinBox->setReadOnly(!forceFieldEditable);
-
-
 
        this->setItemWidget(mainItem, form);
        addItem(mainItem);
@@ -445,6 +436,21 @@ void ElementListWidgetController::addNewForceFieldAtomType()
     whileBlocking(form->userDefinedRadiusDoubleSpinBox)->setValue(userDefinedRadius);
     form->userDefinedRadiusDoubleSpinBox->setReadOnly(false);
 
+    QObject::connect(form->colorPushButton,static_cast<void (SelectColorButton::*)(void)>(&SelectColorButton::pressed),this,&ElementListWidgetController::selectColorButton, Qt::UniqueConnection);
+    QObject::connect(form->epsilonDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&ElementListWidgetController::setEpsilonParameter, Qt::UniqueConnection);
+    QObject::connect(form->sigmaDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&ElementListWidgetController::setSigmaParameter, Qt::UniqueConnection);
+    QObject::connect(form->atomicMassDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&ElementListWidgetController::setMass, Qt::UniqueConnection);
+
+    for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
+    {
+      for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+      {
+        iraspa_structure->structure()->updateForceField(forceFieldSets);
+      }
+    }
+
+    emit invalidateCachedIsoSurfaces(_structures);
+    emit rendererReloadData();
     _mainWindow->documentWasModified();
   }
 }
@@ -479,6 +485,8 @@ void ElementListWidgetController::removeForceFieldAtomType()
         }
       }
 
+      emit invalidateCachedIsoSurfaces(_structures);
+
       _mainWindow->documentWasModified();
     }
 
@@ -488,7 +496,7 @@ void ElementListWidgetController::removeForceFieldAtomType()
 void ElementListWidgetController::selectColorButton()
 {
   SelectColorButton *button = static_cast<SelectColorButton *>(sender());
-   std::optional<size_t> row = rowForItem(button->parent());
+  std::optional<size_t> row = rowForItem(button->parent());
 
   if(_mainWindow)
   {
@@ -514,10 +522,13 @@ void ElementListWidgetController::selectColorButton()
                       QString::number(color.green()) + QString(",")  + QString::number(color.blue()) + QString(");  border: 1px solid black;}");
           button->setStyleSheet(style);
 
-          for(std::shared_ptr<iRASPAStructure> iraspa_structure : _structures)
+          for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
           {
-            QString colorScheme = iraspa_structure->structure()->atomColorSchemeIdentifier();
-            iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(colorScheme, _mainWindow->colorSets());
+            for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+            {
+              QString colorScheme = iraspa_structure->structure()->atomColorSchemeIdentifier();
+              iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(colorScheme, _mainWindow->colorSets());
+            }
           }
 
           emit rendererReloadData();
@@ -533,7 +544,7 @@ void ElementListWidgetController::selectColorButton()
 void ElementListWidgetController::setEpsilonParameter(double parameter)
 {
   SelectColorButton *button = static_cast<SelectColorButton *>(sender());
-   std::optional<size_t> row = rowForItem(button->parent());
+  std::optional<size_t> row = rowForItem(button->parent());
 
   if(_mainWindow)
   {
@@ -546,13 +557,16 @@ void ElementListWidgetController::setEpsilonParameter(double parameter)
 
       atomTypeList[*row].setEpsilonPotentialParameter(parameter);
 
-      for(std::shared_ptr<iRASPAStructure> iraspa_structure : _structures)
+      for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
       {
-         iraspa_structure->structure()->updateForceField(forceFieldSets);
+        for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+        {
+          qDebug() << "Updating epsilon";
+          iraspa_structure->structure()->updateForceField(forceFieldSets);
+        }
       }
 
-      // FIX!!!
-      //emit invalidateIsosurface(std::vector<std::shared_ptr<RKRenderStructure>>{_structures.begin(), _structures.end()});
+      emit invalidateCachedIsoSurfaces(_structures);
       emit rendererReloadData();
 
       _mainWindow->documentWasModified();
@@ -577,13 +591,15 @@ void ElementListWidgetController::setSigmaParameter(double parameter)
 
       atomTypeList[*row].setSigmaPotentialParameter(parameter);
 
-      for(std::shared_ptr<iRASPAStructure> iraspa_structure : _structures)
+      for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
       {
-         iraspa_structure->structure()->updateForceField(forceFieldSets);
+        for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+        {
+          iraspa_structure->structure()->updateForceField(forceFieldSets);
+        }
       }
 
-      // FIX!!
-      //emit invalidateIsosurface(std::vector<std::shared_ptr<RKRenderStructure>>{_structures.begin(), _structures.end()});
+      emit invalidateCachedIsoSurfaces(_structures);
       emit rendererReloadData();
 
       _mainWindow->documentWasModified();
@@ -607,9 +623,12 @@ void ElementListWidgetController::setMass(double mass)
 
       atomTypeList[*row].setMass(mass);
 
-      for(std::shared_ptr<iRASPAStructure> iraspa_structure : _structures)
+      for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
       {
-         iraspa_structure->structure()->recomputeDensityProperties();
+        for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+        {
+          iraspa_structure->structure()->recomputeDensityProperties();
+        }
       }
 
       _mainWindow->documentWasModified();

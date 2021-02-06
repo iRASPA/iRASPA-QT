@@ -187,7 +187,6 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
     }
     else
     {
-      qDebug() << "Tracking::backgroundClick";
       _tracking = Tracking::backgroundClick;
     }
 

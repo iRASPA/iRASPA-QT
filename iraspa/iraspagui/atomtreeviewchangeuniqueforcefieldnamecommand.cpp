@@ -55,11 +55,12 @@ void AtomTreeViewChangeUniqueForceFieldNameCommand::redo()
 
   _structure->setRepresentationColorSchemeIdentifier(_structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
   _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
+  _structure->updateForceField(_mainWindow->forceFieldSets());
 
   if(_mainWindow)
   {
     emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
-    emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
+    emit _mainWindow->invalidateCachedIsoSurfaces({{_iraspaStructure}});
     emit _mainWindow->rendererReloadData();
 
     _mainWindow->documentWasModified();
@@ -81,11 +82,12 @@ void AtomTreeViewChangeUniqueForceFieldNameCommand::undo()
 
   _structure->setRepresentationColorSchemeIdentifier(_structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
   _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
+  _structure->updateForceField(_mainWindow->forceFieldSets());
 
   if(_mainWindow)
   {
     emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
-    emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
+    emit _mainWindow->invalidateCachedIsoSurfaces({{_iraspaStructure}});
     emit _mainWindow->rendererReloadData();
 
     _mainWindow->documentWasModified();

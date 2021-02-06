@@ -36,7 +36,6 @@ class ElementListWidgetController: public QListWidget, public MainWindowConsumer
 public:
   ElementListWidgetController(QWidget* parent);
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override final;
-  void setStructures(std::vector<std::shared_ptr<iRASPAStructure> > structures);
   void setMainWindow(MainWindow *mainWindow) override final;
   void resetData();
   void reloadData();
@@ -45,7 +44,7 @@ private:
   ElementsForm* _elementsForm;
   MainWindow *_mainWindow;
   std::shared_ptr<ProjectStructure> _projectStructure;
-  std::vector<std::shared_ptr<iRASPAStructure>> _structures{};
+  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _structures{};
   int _selectedColorSetIndex = 0;
   int _selectedForceFieldSetIndex = 0;
 

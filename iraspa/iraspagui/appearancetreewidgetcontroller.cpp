@@ -4364,9 +4364,12 @@ void AppearanceTreeWidgetController::setForceFieldSchemeOrder(int value)
     for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder(value));
+      iraspa_structure->structure()->updateForceField(_mainWindow->forceFieldSets());
       iraspa_structure->structure()->recheckRepresentationStyle();
     }
     reloadAtomProperties();
+
+    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
     emit rendererReloadData();
 
     _mainWindow->documentWasModified();

@@ -167,6 +167,7 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
 
         iraspastructure->structure()->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, colorSets);
         iraspastructure->structure()->setAtomForceFieldIdentifier("Default", forcefieldSets);
+        iraspastructure->structure()->updateForceField(forcefieldSets);
 
         iraspastructure->structure()->computeBonds();
 
