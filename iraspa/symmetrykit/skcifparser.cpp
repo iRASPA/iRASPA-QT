@@ -30,11 +30,6 @@
 #include <cmath>
 #include <qmath.h>
 
-//std::map<QString, double> SKCIFParser::SKCIFParser::scene()
-//{
-//  return std::map<QString, double>();
-//}
-
 bool SKCIFParser::startParsing()
 {
   while(!_scanner.isAtEnd())
@@ -86,7 +81,6 @@ bool SKCIFParser::startParsing()
       };
     }
   }
-
 
   std::vector<std::shared_ptr<SKStructure>> movieFrames{};
   std::shared_ptr<SKStructure> structure = std::make_shared<SKStructure>();
@@ -147,6 +141,11 @@ void SKCIFParser::parseCell(QString& string)
 
 void SKCIFParser::parseSymmetry(QString& string)
 {
+  if(_onlyAsymmetricUnitCell)
+  {
+    return;
+  }
+
   if(string == QString("_symmetry_cell_settings").toLower())
   {
     return;
@@ -159,7 +158,7 @@ void SKCIFParser::parseSymmetry(QString& string)
     std::optional<QString> string = scanString();
 
     if(string)
-    {
+    { 
       _spaceGroupHallNumber = SKSpaceGroup::HallNumber(*string);
     }
   }
@@ -220,7 +219,7 @@ std::optional<QString> SKCIFParser::parseValue()
   }
   else
   {
-     return keyword;
+     return tempString;
   }
 }
 
@@ -279,7 +278,13 @@ void SKCIFParser::parseLoop(QString& string)
 
         if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site_label")); (index != dictionary.end()))
         {
-          atom->setDisplayName(chemicalElement);
+          atom->setDisplayName(index->second);
+          atom->setUniqueForceFieldName(index->second);
+        }
+
+        if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site_forcefield_label")); (index != dictionary.end()))
+        {
+          atom->setUniqueForceFieldName(index->second);
         }
 
         std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site_fract_x"));
@@ -318,11 +323,17 @@ void SKCIFParser::parseLoop(QString& string)
         if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site.id")); (index != dictionary.end()))
         {
           atom->setDisplayName(index->second);
+          atom->setUniqueForceFieldName(index->second);
         }
 
-        std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site_fract_x"));
-        std::map<QString,QString>::iterator atom_site_y = dictionary.find(QString("_atom_site_fract_y"));
-        std::map<QString,QString>::iterator atom_site_z = dictionary.find(QString("_atom_site_fract_z"));
+        if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site.forcefield_label")); (index != dictionary.end()))
+        {
+          atom->setUniqueForceFieldName(index->second);
+        }
+
+        std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site.fract_x"));
+        std::map<QString,QString>::iterator atom_site_y = dictionary.find(QString("_atom_site.fract_y"));
+        std::map<QString,QString>::iterator atom_site_z = dictionary.find(QString("_atom_site.fract_z"));
         if ((atom_site_x != dictionary.end()) && (atom_site_y != dictionary.end()) && (dictionary.find(QString("atom_site_z")) != dictionary.end()))
         {
           double3 position;
@@ -333,7 +344,7 @@ void SKCIFParser::parseLoop(QString& string)
           atom->setPosition(position);
         }
 
-        std::map<QString,QString>::iterator atom_charge = dictionary.find(QString("_atom_site_charge"));
+        std::map<QString,QString>::iterator atom_charge = dictionary.find(QString("_atom_site.charge"));
         if (atom_charge != dictionary.end())
         {
           double charge=0.0;

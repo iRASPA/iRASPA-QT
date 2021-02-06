@@ -36,16 +36,18 @@
 #include "skatomtreecontroller.h"
 #include "skspacegroup.h"
 #include "skstructure.h"
+#include "logreporting.h"
 
 class SKPDBParser: public SKParser
 {
 public:
-  SKPDBParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
+  SKPDBParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
   bool startParsing() override final;
 private:
   Scanner _scanner;
   bool _onlyAsymmetricUnitCell;
   bool _asMolecule;
+  LogReporting *_log;
   QString::const_iterator _previousScanLocation;
 
   int _numberOfAtoms = 0;

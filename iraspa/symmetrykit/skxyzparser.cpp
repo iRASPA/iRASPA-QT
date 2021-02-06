@@ -160,7 +160,10 @@ bool SKXYZParser::startParsing()
         }
       }
 
-      _frame->kind = SKStructure::Kind::molecularCrystal;
+      if(!_asMolecule)
+      {
+        _frame->kind = SKStructure::Kind::molecularCrystal;
+      }
       _frame->cell = std::make_shared<SKCell>(unitCell);
     }
     else
@@ -182,7 +185,8 @@ bool SKXYZParser::startParsing()
 
       // handle reading in all atoms
       double3 position;
-      // read first lattice vector
+
+      // read chemical element, and x,y,z position
       #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
         QStringList termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
       #else
@@ -190,6 +194,7 @@ bool SKXYZParser::startParsing()
       #endif
       if(termsScannedLined.size()<4)
       {
+        // should have at least 4 strings (chemical element and x,yz)
         if (_log)
         {
           _log->logMessage(LogReporting::ErrorLevel::error, "missing data on line " + QString::number(lineNumber));

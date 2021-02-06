@@ -4289,6 +4289,7 @@ void AppearanceTreeWidgetController::setColorSchemeOrder(int value)
     for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setColorSchemeOrder(SKColorSet::ColorSchemeOrder(value));
+      iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(iraspa_structure->structure()->atomColorSchemeIdentifier(), _mainWindow->colorSets());
       iraspa_structure->structure()->recheckRepresentationStyle();
     }
     reloadAtomProperties();

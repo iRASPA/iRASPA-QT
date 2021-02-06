@@ -87,7 +87,7 @@ QString Scene::displayName() const
  return _displayName;
 }
 
-Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, LogReporting *log, [[maybe_unused]] bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule)
+Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, [[maybe_unused]] bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log)
 {
   QFile file(url.toLocalFile());
   QFileInfo info(file);
@@ -109,11 +109,11 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
     }
     else if (info.suffix().toLower() == "cif")
     {
-      parser = std::make_shared<SKCIFParser>(fileContent, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
+      parser = std::make_shared<SKCIFParser>(fileContent, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), log);
     }
     else if (info.suffix().toLower() == "pdb")
     {
-      parser = std::make_shared<SKPDBParser>(fileContent, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
+      parser = std::make_shared<SKPDBParser>(fileContent, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), log);
     }
     else if (info.suffix().toLower() == "xyz")
     {

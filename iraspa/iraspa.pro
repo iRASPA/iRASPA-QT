@@ -19,7 +19,7 @@ include(symmetrykit/symmetrykit.pri)
 include(simulationkit/simulationkit.pri)
 include(renderkit/renderkit.pri)
 include(iraspakit/iraspakit.pri)
-include(iraspagui/iraspa.pri)
+include(iraspagui/iraspagui.pri)
 
 ICON = datafiles/iraspa.icns
 

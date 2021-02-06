@@ -187,6 +187,7 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
     }
     else
     {
+      qDebug() << "Tracking::backgroundClick";
       _tracking = Tracking::backgroundClick;
     }
 
@@ -261,7 +262,12 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
         }
         break;
       default:
-        _tracking =Tracking::other;
+        QPoint location = me->pos();
+        QPoint delta = _origin - location;
+        if(delta != QPoint(0,0))
+        {
+          _tracking =Tracking::other;
+        }
         break;
     }
   }

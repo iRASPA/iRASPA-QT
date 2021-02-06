@@ -27,6 +27,7 @@
 #include "atomtreeviewchangepositionycommand.h"
 #include "atomtreeviewchangepositionzcommand.h"
 #include "atomtreeviewchangechargecommand.h"
+#include "atomtreeviewchangeuniqueforcefieldnamecommand.h"
 #include <vector>
 #include <tuple>
 
@@ -132,7 +133,7 @@ QModelIndex AtomTreeViewModel::parent(const QModelIndex &child) const
 int AtomTreeViewModel::columnCount(const QModelIndex &parent) const
 {
   Q_UNUSED(parent);
-  return 7;
+  return 8;
 }
 
 int AtomTreeViewModel::rowCount(const QModelIndex &parent) const
@@ -169,8 +170,29 @@ QVariant AtomTreeViewModel::data(const QModelIndex &index, int role) const
       return atom->isVisible() ? Qt::Checked : Qt::Unchecked;
     }
 
-   if (role != Qt::DisplayRole)
-     return QVariant();
+    if ( index.isValid() && role == Qt::ForegroundRole )
+    {
+      if ( index.column() == 3 )
+      {
+        if(_mainWindow)
+        {
+          ForceFieldSets& forceFieldSets = _mainWindow->forceFieldSets();
+          QString currentForceFieldName = _iraspaStructure->structure()->atomForceFieldIdentifier();
+          ForceFieldSet* currentForceFieldSet = forceFieldSets[currentForceFieldName];
+          if(currentForceFieldSet)
+          {
+            if((*currentForceFieldSet)[atom->uniqueForceFieldName()])
+            {
+              return QVariant( QColor( Qt::black ) );
+            }
+          }
+        }
+        return QVariant( QColor( Qt::red ) );
+      }
+    }
+
+    if (role != Qt::DisplayRole)
+      return QVariant();
 
     switch(index.column())
     {
@@ -181,12 +203,14 @@ QVariant AtomTreeViewModel::data(const QModelIndex &index, int role) const
     case 2:
       return PredefinedElements::predefinedElements[elementIdentifier]._chemicalSymbol;
     case 3:
-      return QString::number(item->representedObject()->position().x, 'f', 5);
+      return atom->uniqueForceFieldName();
     case 4:
-      return QString::number(item->representedObject()->position().y, 'f', 5);
+      return QString::number(item->representedObject()->position().x, 'f', 5);
     case 5:
-      return QString::number(item->representedObject()->position().z, 'f', 5);
+      return QString::number(item->representedObject()->position().y, 'f', 5);
     case 6:
+      return QString::number(item->representedObject()->position().z, 'f', 5);
+    case 7:
       return QString::number(item->representedObject()->charge(), 'f', 5);
     }
   }
@@ -239,14 +263,16 @@ QVariant AtomTreeViewModel::headerData(int section, Qt::Orientation orientation,
     case 1:
       return QString("atom id.");
     case 2:
-      return QString("type");
+      return QString("el");
     case 3:
-      return QString("x");
+      return QString("ff id.");
     case 4:
-      return QString("y");
+      return QString("x");
     case 5:
-      return QString("z");
+      return QString("y");
     case 6:
+      return QString("z");
+    case 7:
       return QString("q");
   }
 
@@ -290,7 +316,9 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     }
   case 2:
   {
-    std::map<QString, int>::iterator newValue = PredefinedElements::atomicNumberData.find(value.toString());
+    QString newValueString = value.toString();
+    std::map<QString, int>::iterator newValue = PredefinedElements::atomicNumberData.find(newValueString);
+
     if (newValue != PredefinedElements::atomicNumberData.end() )
     {
       AtomTreeViewChangeElementCommand*changeElementCommand = new AtomTreeViewChangeElementCommand(_mainWindow, this, _projectStructure, _iraspaStructure, item->shared_from_this(), newValue->second, nullptr);
@@ -300,6 +328,14 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     break;
   }
   case 3:
+  {
+    QString newValueString = value.toString();
+
+    AtomTreeViewChangeUniqueForceFieldNameCommand *changeUniqueForceFieldNameCommand = new AtomTreeViewChangeUniqueForceFieldNameCommand(_mainWindow, this, _projectStructure, _iraspaStructure, item->shared_from_this(), newValueString, nullptr);
+    _projectTreeNode->representedObject()->undoManager().push(changeUniqueForceFieldNameCommand);
+    return true;
+  }
+  case 4:
   {
     bool success;
     double newValue = value.toDouble(&success);
@@ -311,7 +347,7 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     }
     break;
   }
-  case 4:
+  case 5:
   {
     bool success;
     double newValue = value.toDouble(&success);
@@ -323,7 +359,7 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     }
     break;
   }
-  case 5:
+  case 6:
   {
     bool success;
     double newValue = value.toDouble(&success);
@@ -335,7 +371,7 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     }
     break;
   }
-  case 6:
+  case 7:
   {
     bool success;
     double newValue = value.toDouble(&success);

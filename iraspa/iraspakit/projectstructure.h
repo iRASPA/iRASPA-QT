@@ -37,8 +37,8 @@ class ProjectStructure: public Project, public RKRenderDataSource
 public:
   ProjectStructure();
   ~ProjectStructure() override;
-  ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, LogReporting *log, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule);
-  ProjectStructure(QList<QUrl> fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, LogReporting *log, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule);
+  ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log);
+  ProjectStructure(QList<QUrl> fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log);
 
   std::vector<size_t> numberOfScenes() const override final;
   int numberOfMovies(int sceneIndex) const override final;

@@ -31,13 +31,13 @@ ProjectStructure::ProjectStructure(): _camera(std::make_shared<RKCamera>())
   _backgroundImage.fill(QColor(255,255,255,255));
 }
 
-ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, LogReporting *log,
-                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
+ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
+                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log): _camera(std::make_shared<RKCamera>())
 {
   QUrl url = QUrl::fromLocalFile(filename);
   if (url.isValid())
   {
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, log, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+    std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, asSeparateProject, onlyAsymmetricUnit, asMolecule, log);
     for(std::shared_ptr<Movie> movie : scene->movies())
     {
       movie->setParent(scene);
@@ -51,14 +51,14 @@ ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, For
 
 }
 
-ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, LogReporting *log,
-                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
+ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
+                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log): _camera(std::make_shared<RKCamera>())
 {
   foreach (const QUrl &url, fileURLs)
   {
     if (url.isValid())
     {
-      std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, log, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+      std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, asSeparateProject, onlyAsymmetricUnit, asMolecule, log);
       for(std::shared_ptr<Movie> movie : scene->movies())
       {
         movie->setParent(scene);

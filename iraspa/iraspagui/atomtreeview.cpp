@@ -83,11 +83,12 @@ AtomTreeView::AtomTreeView(QWidget* parent): QTreeView(parent ), _atomModel(std:
   this->header()->setStretchLastSection(true);
   this->setColumnWidth(0,110);
   this->setColumnWidth(1,50);
-  this->setColumnWidth(2,40);
-  this->setColumnWidth(3,70);
-  this->setColumnWidth(4,70);
-  this->setColumnWidth(5,70);
-  this->setColumnWidth(6,70);
+  this->setColumnWidth(2,20);
+  this->setColumnWidth(3,40);
+  this->setColumnWidth(4,65);
+  this->setColumnWidth(5,65);
+  this->setColumnWidth(6,65);
+  this->setColumnWidth(7,65);
 
   QObject::connect(model(),&QAbstractItemModel::modelReset, this, &AtomTreeView::reloadSelection);
   QObject::connect(_atomModel.get(),&AtomTreeViewModel::collapse, this, &AtomTreeView::collapse);

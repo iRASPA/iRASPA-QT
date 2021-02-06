@@ -1381,12 +1381,50 @@ void Structure::setRepresentationColorSchemeIdentifier(const QString colorScheme
     {
       if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
-         QString chemicalElement = PredefinedElements::predefinedElements[atom->elementIdentifier()]._chemicalSymbol;
-         const QColor* color = (*colorSet)[chemicalElement];
-         if(color)
-         {
-           atom->setColor(*color);
-         }
+        switch(_atomColorSchemeOrder)
+        {
+        case SKColorSet::ColorSchemeOrder::elementOnly:
+        {
+          QString chemicalElement = PredefinedElements::predefinedElements[atom->elementIdentifier()]._chemicalSymbol;
+          const QColor* color = (*colorSet)[chemicalElement];
+          if(color)
+          {
+            atom->setColor(*color);
+          }
+          break;
+        }
+        case SKColorSet::ColorSchemeOrder::forceFieldFirst:
+        {
+          const QColor* color = (*colorSet)[atom->uniqueForceFieldName()];
+          if(color)
+          {
+            atom->setColor(*color);
+            break;
+          }
+          QString chemicalElement = PredefinedElements::predefinedElements[atom->elementIdentifier()]._chemicalSymbol;
+          const QColor* color2 = (*colorSet)[chemicalElement];
+          if(color2)
+          {
+            atom->setColor(*color2);
+            break;
+          }
+          atom->setColor(QColor(0,0,0,255));
+        }
+        case SKColorSet::ColorSchemeOrder::forceFieldOnly:
+        {
+          const QColor* color = (*colorSet)[atom->uniqueForceFieldName()];
+          if(color)
+          {
+            atom->setColor(*color);
+            break;
+          }
+          atom->setColor(QColor(0,0,0,255));
+          break;
+        }
+        default:
+          break;
+        }
+
       }
     }
   }

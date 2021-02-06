@@ -19,32 +19,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "importfiledialog.h"
+#pragma once
 
-ImportFileDialog::ImportFileDialog(QWidget *parent) : QFileDialog(parent)
+#include <QUndoCommand>
+#include <set>
+#include <vector>
+#include "iraspakit.h"
+#include "indexpath.h"
+#include "symmetrykit.h"
+#include "mathkit.h"
+#include "mainwindow.h"
+#include "atomtreeviewmodel.h"
+
+class AtomTreeViewChangeUniqueForceFieldNameCommand : public QUndoCommand
 {
-  setWindowTitle("Import structures");
-  setOption(QFileDialog::DontUseNativeDialog);
-  setFileMode(QFileDialog::ExistingFiles);
-
-  setNameFilters(QStringList({"all supported files (*.cif *.pdb *.xyz POSCAR CONTCAR)","CIF files (*.cif)","PDB files (*.pdb)", "XYZ files (*.xyz)", "VASP Files (POSCAR CONTCAR)"}));
-  selectNameFilter(QString("all supported files (*.cif *.pdb *.xyz POSCAR CONTCAR)"));
-
-  checkboxSeperateProjects = new QCheckBox(this);
-  checkboxSeperateProjects->setText("As seperate projects");
-  layout()->addWidget(checkboxSeperateProjects);
-
-
-  QWidget* frame = new QWidget(this);
-  QHBoxLayout* horizontalLayout = new QHBoxLayout();
-  frame->setLayout(horizontalLayout);
-  checkboxOnlyAsymmetricUnitCell = new QCheckBox(frame);
-  checkboxOnlyAsymmetricUnitCell->setText("Only asymmetric unit");
-  horizontalLayout->addWidget(checkboxOnlyAsymmetricUnitCell);
-
-  checkboxImportAsMolecule = new QCheckBox(frame);
-  checkboxImportAsMolecule->setText("As molecule");
-  horizontalLayout->addWidget(checkboxImportAsMolecule);
-
-  layout()->addWidget(frame);
-}
+public:
+  AtomTreeViewChangeUniqueForceFieldNameCommand(MainWindow *mainWindow, AtomTreeViewModel *model,
+                                   std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                   std::shared_ptr<SKAtomTreeNode> atom, QString newValue, QUndoCommand *undoParent = nullptr);
+  void redo() override final;
+  void undo() override final;
+private:
+  MainWindow *_mainWindow;
+  AtomTreeViewModel *_model;
+  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<SKAtomTreeNode> _atomTreeNode;
+  QString _newValue;
+  QString _oldValue;
+  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _structures;
+};

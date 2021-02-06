@@ -33,18 +33,20 @@
 #include "skasymmetricatom.h"
 #include "skatomtreenode.h"
 #include "skatomtreecontroller.h"
+#include "logreporting.h"
 
 class SKCIFParser: public SKParser
 {
 public:
-  SKCIFParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
-    _scanner(fileContent, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule) {}
+  SKCIFParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
+    _scanner(fileContent, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log) {}
   bool startParsing() override final;
   std::optional<int> spaceGroupHallNumber() {return _spaceGroupHallNumber;}
 private:
   Scanner _scanner;
   bool _onlyAsymmetricUnitCell;
   bool _asMolecule;
+  LogReporting *_log;
   QString::const_iterator _previousScanLocation;
   std::vector<QString> _keys;
   std::map<QString,QString> _map;

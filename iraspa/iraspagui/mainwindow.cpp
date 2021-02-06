@@ -818,27 +818,22 @@ void MainWindow::importFile()
           if (node->isDescendantOfNode(localProjects.get()))
           {
             // a project is selected
-              qDebug() << "YEAH";
             insertionParentIndex = index.parent();
             insertRow = index.row() + 1;
           }
         }
       }
 
-      qDebug() << "row: " << insertRow;
-
       if(asSeparateProject)
       {
         for(QUrl url : fileURLs)
         {
           QString fileName = url.toString();
-
           QFileInfo fileInfo(fileName);
-
 
           ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
 
-          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), ui->logPlainTextEdit, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), asSeparateProject, onlyAsymmetricUnit, asMolecule, ui->logPlainTextEdit);
           std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
           std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 
@@ -854,7 +849,7 @@ void MainWindow::importFile()
 
         ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
 
-        std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), ui->logPlainTextEdit, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+        std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), asSeparateProject, onlyAsymmetricUnit, asMolecule, ui->logPlainTextEdit);
         std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
         std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 

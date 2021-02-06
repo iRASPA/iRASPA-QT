@@ -494,31 +494,36 @@ void ElementListWidgetController::selectColorButton()
   {
     if(row)
     {
-      ForceFieldSets& forceFieldSets = _mainWindow->forceFieldSets();
-      ForceFieldSet& forceFieldSet = forceFieldSets[_selectedForceFieldSetIndex];
       SKColorSets& colorSets = _mainWindow->colorSets();
       SKColorSet& colorSet = colorSets[_selectedColorSetIndex];
-      std::vector<ForceFieldType>& atomTypeList = forceFieldSet.atomTypeList();
-      ForceFieldType& forceFieldType = atomTypeList[*row];
-      QString forceFieldStringIdentifier = forceFieldType.forceFieldStringIdentifier();
 
-      QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
-      if(color.isValid())
+      if(colorSet.editable())
       {
-        colorSet[forceFieldStringIdentifier] = color;
-        const QString  style = QString("QPushButton { background-color: rgb(") + QString::number(color.red()) + QString(",") +
-                    QString::number(color.green()) + QString(",")  + QString::number(color.blue()) + QString(");  border: 1px solid black;}");
-        button->setStyleSheet(style);
+        ForceFieldSets& forceFieldSets = _mainWindow->forceFieldSets();
+        ForceFieldSet& forceFieldSet = forceFieldSets[_selectedForceFieldSetIndex];
 
-        for(std::shared_ptr<iRASPAStructure> iraspa_structure : _structures)
+        std::vector<ForceFieldType>& atomTypeList = forceFieldSet.atomTypeList();
+        ForceFieldType& forceFieldType = atomTypeList[*row];
+        QString forceFieldStringIdentifier = forceFieldType.forceFieldStringIdentifier();
+
+        QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
+        if(color.isValid())
         {
-          QString colorScheme = iraspa_structure->structure()->atomColorSchemeIdentifier();
-          iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(colorScheme, _mainWindow->colorSets());
+          colorSet[forceFieldStringIdentifier] = color;
+          const QString  style = QString("QPushButton { background-color: rgb(") + QString::number(color.red()) + QString(",") +
+                      QString::number(color.green()) + QString(",")  + QString::number(color.blue()) + QString(");  border: 1px solid black;}");
+          button->setStyleSheet(style);
+
+          for(std::shared_ptr<iRASPAStructure> iraspa_structure : _structures)
+          {
+            QString colorScheme = iraspa_structure->structure()->atomColorSchemeIdentifier();
+            iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(colorScheme, _mainWindow->colorSets());
+          }
+
+          emit rendererReloadData();
+
+          _mainWindow->documentWasModified();
         }
-
-        emit rendererReloadData();
-
-        _mainWindow->documentWasModified();
       }
     }
   }

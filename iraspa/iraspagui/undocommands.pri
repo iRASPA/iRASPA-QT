@@ -1,6 +1,7 @@
 INCLUDEPATH += $$PWD
 
 SOURCES += \
+    $$PWD/atomtreeviewchangeuniqueforcefieldnamecommand.cpp \
     $$PWD/atomtreeviewchangeselectioncommand.cpp \
     $$PWD/atomtreeviewcopyselectiontonewmoviecommand.cpp \
     $$PWD/atomtreeviewfindprimitivecommand.cpp \
@@ -70,6 +71,7 @@ SOURCES += \
     $$PWD/scenetreeviewpasteprojectscommand.cpp
 
 HEADERS += \
+    $$PWD/atomtreeviewchangeuniqueforcefieldnamecommand.h \
     $$PWD/atomtreeviewchangeselectioncommand.h \
     $$PWD/atomtreeviewcopyselectiontonewmoviecommand.h \
     $$PWD/atomtreeviewfindprimitivecommand.h \
