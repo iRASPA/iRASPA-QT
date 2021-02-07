@@ -42,6 +42,53 @@ bool SKAsymmetricBond::operator==(SKAsymmetricBond const& rhs) const
          (this->atom1().get() == rhs.atom2().get() && this->atom2().get() == rhs.atom1().get());
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAsymmetricBond>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<SKAsymmetricBond>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKAsymmetricBond>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<SKAsymmetricBond> tempVal = std::make_shared<SKAsymmetricBond>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKBond>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<SKBond>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKBond>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<SKBond> tempVal = std::make_shared<SKBond>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
 
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<SKAsymmetricBond> &asymmetricBond)
 {

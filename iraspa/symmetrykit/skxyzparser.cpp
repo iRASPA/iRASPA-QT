@@ -19,6 +19,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
+#include <QtGlobal>
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+  #include <QRegExp>
+#else
+  #include <QRegularExpression>
+#endif
 #include "skxyzparser.h"
 
 SKXYZParser::SKXYZParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
@@ -59,10 +65,12 @@ bool SKXYZParser::startParsing()
     qDebug() << "Yes, starts with Lattice";
 
     // read lattice vectors
-    #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
       QStringList termsScannedLined = simplifiedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-    #else
+    #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
       QStringList termsScannedLined = simplifiedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+    #else
+      QStringList termsScannedLined = simplifiedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
     #endif
 
     if(termsScannedLined.size()>=9)
@@ -187,10 +195,12 @@ bool SKXYZParser::startParsing()
       double3 position;
 
       // read chemical element, and x,y,z position
-      #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+      #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
         QStringList termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-      #else
+      #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         QStringList termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+      #else
+        QStringList termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
       #endif
       if(termsScannedLined.size()<4)
       {

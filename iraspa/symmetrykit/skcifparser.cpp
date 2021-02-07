@@ -20,7 +20,11 @@
  ********************************************************************************************************************/
 
 #include <QDebug>
-#include <QRegExp>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  #include <QRegExp>
+#else
+  #include <QRegularExpression>
+#endif
 #include "skcifparser.h"
 #include "symmetrykitprotocols.h"
 #include "skasymmetricatom.h"
@@ -270,7 +274,12 @@ void SKCIFParser::parseLoop(QString& string)
         if(chemicalElement.size()>0)
         {
           // First character to uppercase
-          chemicalElement.remove(QRegExp("[0123456789+-]."));
+
+          #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            chemicalElement.remove(QRegExp("[0123456789+-]."));
+          #else
+            chemicalElement.remove(QRegularExpression("[0123456789+-]."));
+          #endif
           chemicalElement.replace(0, 1, chemicalElement[0].toUpper());
         }
 

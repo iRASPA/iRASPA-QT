@@ -87,7 +87,11 @@ bool BondListPushButtonStyledItemDelegate::editorEvent(QEvent *event, QAbstractI
     QMouseEvent* pME = static_cast<QMouseEvent*>(event);
     if(pME->button() == Qt::LeftButton)
     {
-      float localXCoordinate = float(pME->localPos().toPoint().x() - option.rect.topLeft().x())/float(option.rect.size().width());
+      #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+        float localXCoordinate = float(pME->localPos().toPoint().x() - option.rect.topLeft().x())/float(option.rect.size().width());
+      #else
+        float localXCoordinate = float(pME->position().toPoint().x() - option.rect.topLeft().x())/float(option.rect.size().width());
+      #endif
       if(SKAsymmetricBond *bond = static_cast<SKAsymmetricBond*>(index.internalPointer()))
       {
         if(localXCoordinate<0.5)

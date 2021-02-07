@@ -26,14 +26,20 @@
 #define GL_GLEXT_PROTOTYPES
 #include <QtOpenGL>
 #include <QOpenGLFunctions_3_3_Core>
-#if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
+#if (QT_VERSION < QT_VERSION_CHECK(5,4,0))
+  #include <QGLWidget>
+#elseif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   #include <QOpenGLWidget>
 #else
-  #include <QGLWidget>
+  #include <QOpenGLWidget>
 #endif
 #include <QTimer>
 #include <QPoint>
 #include <QCache>
+#include <QStringList>
+#include <QToolButton>
+#include <QFrame>
+#include <QStackedWidget>
 #include <QOpenGLTexture>
 #include <foundationkit.h>
 #include <optional>
@@ -133,6 +139,7 @@ private:
   RKRenderQuality _quality = RKRenderQuality::high;
   std::shared_ptr<RKRenderDataSource> _dataSource;
   LogReporting* _logReporter = nullptr;
+  QStringList _logData{};
 
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderStructure>>>{};
   GLuint _sceneFrameBuffer;

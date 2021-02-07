@@ -252,6 +252,30 @@ bool Scene::insertChild(size_t row, std::shared_ptr<Movie> child)
   return true;
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<Movie>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<Movie>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<Movie>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<Movie> tempVal = std::make_shared<Movie>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Scene> &scene)
 {
   stream << scene->_versionNumber;

@@ -43,7 +43,11 @@ private:
   qint64 _versionNumber{1};
   std::vector<SKColorSet> _colorSets;
 
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<SKColorSet>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<SKColorSet>& val);
+
   friend QDataStream &operator<<(QDataStream &, const SKColorSets &);
   friend QDataStream &operator>>(QDataStream &, SKColorSets &);
+
 };
 

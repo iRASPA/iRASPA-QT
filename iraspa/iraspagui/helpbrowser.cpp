@@ -22,16 +22,28 @@
 #include "helpbrowser.h"
 #include <iostream>
 #include <QtGlobal>
+
+
+#if (QT_VERSION < QT_VERSION_CHECK(5,6,0))
 #include <QtNetwork>
 #include <QNetworkConfiguration>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5,6,0))
-  HelpBrowser::HelpBrowser(QWidget* parent): QWebEngineView(parent)
-#else
   HelpBrowser::HelpBrowser(QWidget* parent): QWebView(parent)
-#endif
+  {
+    _home = QUrl(QStringLiteral("https://help.iraspa.org/index.html"));
+    setUrl(_home);
+  }
+
+#elif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+#include <QtNetwork>
+#include <QNetworkConfiguration>
+  HelpBrowser::HelpBrowser(QWidget* parent): QWebEngineView(parent)
+  {
+    _home = QUrl(QStringLiteral("https://help.iraspa.org/index.html"));
+    setUrl(_home);
+  }
+#else
+HelpBrowser::HelpBrowser(QWidget* parent)
 {
-  _home = QUrl(QStringLiteral("https://help.iraspa.org/index.html"));
-  setUrl(_home);
 }
+#endif
 

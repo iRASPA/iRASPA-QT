@@ -32,4 +32,5 @@ class LogViewController: public LineNumberPlainTextEdit, public LogReporting
 public:
   LogViewController(QWidget *parent);
   void logMessage(ErrorLevel level, QString message) override final;
+  void insert(QStringList message) override final;
 };

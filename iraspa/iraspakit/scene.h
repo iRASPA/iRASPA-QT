@@ -68,6 +68,9 @@ private:
   std::shared_ptr<Movie> _selectedMovie{nullptr};
   std::set<std::shared_ptr<Movie>> _selectedMovies;
 
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<Movie>>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<Movie>>& val);
+
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Scene> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Scene> &);
 };

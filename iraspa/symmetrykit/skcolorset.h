@@ -63,6 +63,9 @@ private:
   static std::map<QString, QColor> rasmolModern;
   static std::map<QString, QColor> vesta;
 
+  friend QDataStream &operator<<(QDataStream& stream, const std::map<QString, QColor>& table);
+  friend QDataStream &operator>>(QDataStream& stream, std::map<QString, QColor>& table);
+
   friend QDataStream &operator<<(QDataStream &, const SKColorSet &);
   friend QDataStream &operator>>(QDataStream &, SKColorSet &);
 };

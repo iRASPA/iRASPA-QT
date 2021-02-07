@@ -22,6 +22,9 @@
 #include "atomtreeview.h"
 #include <QPainter>
 #include <QtCore>
+#include <QStyleOption>
+#include <QHeaderView>
+#include <QLineEdit>
 #include <QItemSelection>
 #include "atomtreeviewinsertatomcommand.h"
 #include "atomtreeviewinsertatomgroupcommand.h"
@@ -292,7 +295,11 @@ void AtomTreeView::paintDropIndicator(QPainter& painter)
   if(state() == QAbstractItemView::DraggingState)
   {
     QStyleOption opt = QStyleOption();
-    opt.init(this);
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+      opt.init(this);
+    #else
+      opt.initFrom(this);
+    #endif
     opt.rect = _dropIndicatorRect;
     QRect rect = opt.rect;
 
@@ -343,7 +350,11 @@ void AtomTreeView::startDrag(Qt::DropActions supportedActions)
 
 void AtomTreeView::dragMoveEvent(QDragMoveEvent *event)
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   QPoint pos = event->pos();
+#else
+  QPoint pos = event->position().toPoint();
+#endif
   QModelIndex index = indexAt(mapFromParent(pos));
 
   int columnCount = model()->columnCount();
@@ -352,7 +363,11 @@ void AtomTreeView::dragMoveEvent(QDragMoveEvent *event)
   QRect rect_left = visualRect(index.sibling(index.row(), 0));
   QRect rect_right = visualRect(index.sibling(index.row(), header()->logicalIndex(columnCount - 1)));
 
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   QAbstractItemView::DropIndicatorPosition dropIndicatorPosition = position(event->pos(), rect, index);
+#else
+  QAbstractItemView::DropIndicatorPosition dropIndicatorPosition = position(event->position().toPoint(), rect, index);
+#endif
 
   if (dropIndicatorPosition == AboveItem)
   {
@@ -434,7 +449,11 @@ void AtomTreeView::reloadData()
 
 void AtomTreeView::dropEvent(QDropEvent * event)
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   QModelIndex droppedIndex = indexAt( event->pos() );
+#else
+  QModelIndex droppedIndex = indexAt( event->position().toPoint() );
+#endif
   if( !droppedIndex.isValid() )
     return;
 

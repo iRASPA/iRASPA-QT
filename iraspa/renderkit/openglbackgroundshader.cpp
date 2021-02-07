@@ -19,6 +19,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
+#include <QOpenGLWindow>
+#include <QOpenGLWidget>
+
 #include "openglbackgroundshader.h"
 #include <iostream>
 #include "glgeterror.h"
@@ -59,13 +62,12 @@ void OpenGLBackgroundShader::reload(std::shared_ptr<RKRenderDataSource> source)
   QImage image;
   if(source)
   {
-    image = QGLWidget::convertToGLFormat(source->renderBackgroundCachedImage());
+    image = source->renderBackgroundCachedImage().convertToFormat(QImage::Format_RGBA8888);
   }
   else
   {
-    QImage whiteImage = QImage(QSize(64,64),QImage::Format_ARGB32);
-    whiteImage.fill(QColor(255,255,255,255));
-    image = QGLWidget::convertToGLFormat(whiteImage);
+    image = QImage(QSize(64,64),QImage::Format_RGBA8888);
+    image.fill(QColor(255,255,255,255));
   }
   glBindTexture(GL_TEXTURE_2D, _backgroundTexture);
   check_gl_error();
@@ -113,9 +115,8 @@ void OpenGLBackgroundShader::initializeVertexArrayObject()
   check_gl_error();
   glBindVertexArray(0);
 
-  QImage whiteImage = QImage(QSize(64,64),QImage::Format_ARGB32);
-  whiteImage.fill(QColor(255,255,255,255));
-  QImage image = QGLWidget::convertToGLFormat(whiteImage);
+  QImage image = QImage(QSize(64,64),QImage::Format_RGBA8888);
+  image.fill(QColor(255,255,255,255));
 
   glBindTexture(GL_TEXTURE_2D, _backgroundTexture);
   check_gl_error();

@@ -162,7 +162,11 @@ Qt::ItemFlags BondListViewModel::flags(const QModelIndex &index) const
   if ( index.column() == 0)
   {
     flags |= Qt::ItemIsUserCheckable;
-    flags |= Qt::ItemIsTristate;
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+      flags |= Qt::ItemIsTristate;
+    #else
+      flags |= Qt::ItemIsAutoTristate;
+    #endif
     flags |= Qt::ItemIsEditable;
   }
 

@@ -21,10 +21,8 @@
 
 #pragma once
 
-#include <QGLWidget>
 #include <QTreeView>
 #include <QMimeData>
-
 
 class iRASPATreeView : public QTreeView
 {

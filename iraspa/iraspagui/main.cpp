@@ -21,7 +21,7 @@
 
 #include "mainwindow.h"
 #include <QApplication>
-#include <QGLFormat>
+//#include <QGLFormat>
 #include <QFontDatabase>
 
 int main(int argc, char *argv[])
@@ -37,7 +37,9 @@ int main(int argc, char *argv[])
   #endif
 
   #if (QT_VERSION >= QT_VERSION_CHECK(5,6,0))
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+      QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    #endif
   #endif
 
   // https://vicrucann.github.io/tutorials/osg-qt-high-dpi/

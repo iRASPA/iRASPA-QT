@@ -167,6 +167,9 @@ private:
     // the crystallographic copies of the atom
     std::vector<std::shared_ptr<SKAtomCopy>> _copies;
 
+    friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAtomCopy>>& val);
+    friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKAtomCopy>>& val);
+
     friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<SKAsymmetricAtom> &);
     friend QDataStream &operator>>(QDataStream &, std::shared_ptr<SKAsymmetricAtom> &);
 };

@@ -52,7 +52,7 @@ void OpenGLEnergySurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRen
   }
 }
 
-void OpenGLEnergySurface::initializeOpenCL(bool isOpenCLInitialized, cl_context context, cl_device_id deviceId, cl_command_queue commandQueue)
+void OpenGLEnergySurface::initializeOpenCL(bool isOpenCLInitialized, cl_context context, cl_device_id deviceId, cl_command_queue commandQueue, QStringList &logData)
 {
   _isOpenCLInitialized = isOpenCLInitialized;
 
@@ -60,13 +60,13 @@ void OpenGLEnergySurface::initializeOpenCL(bool isOpenCLInitialized, cl_context 
   _clDeviceId = deviceId;
   _clCommandQueue = commandQueue;
 
-  _energyGridUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue);
+  _energyGridUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
   check_gl_error();
-  _energyGridMarchingCubes.initialize(isOpenCLInitialized, context, deviceId, commandQueue);
+  _energyGridMarchingCubes.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
   check_gl_error();
-  _findMinimumEnergyGridUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue);
+  _findMinimumEnergyGridUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
   check_gl_error();
-  _voidFractionUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue);
+  _voidFractionUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
   check_gl_error();
 }
 

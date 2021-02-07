@@ -31,6 +31,9 @@
 #include <algorithm>
 #include "glgeterror.h"
 #include <QDebug>
+#include <QGridLayout>
+#include <QMessageBox>
+#include <QApplication>
 #include <optional>
 
 #if defined(Q_OS_WIN)
@@ -83,7 +86,6 @@
 #endif
 
   QGridLayout *layoutCartesian = new QGridLayout(this);
-  layoutCartesian->setMargin(4);
   layoutCartesian->setSpacing(4);
   _controlPanelCartesian->setLayout(layoutCartesian);
 
@@ -189,7 +191,6 @@
 
 
   QGridLayout *layoutBodyFrame = new QGridLayout(this);
-  layoutBodyFrame->setMargin(4);
   layoutBodyFrame->setSpacing(4);
   _controlPanelBodyFrame->setLayout(layoutBodyFrame);
 
@@ -330,6 +331,11 @@ void GLWidget::setLogReportingWidget(LogReporting *logReporting)
   _logReporter = logReporting;
 
   _energySurfaceShader.setLogReportingWidget(logReporting);
+
+  if(!_logData.isEmpty())
+  {
+    _logReporter->insert(_logData);
+  }
 }
 
 void GLWidget::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
@@ -450,7 +456,15 @@ void GLWidget::initializeGL()
 
   _textShader.initializeOpenGLFunctions();
 
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL initialized");
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL initialized");
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenGL initialized"));
+  }
+
 
   GLint majorVersion = 0;
   GLint minorVersion = 0;
@@ -461,8 +475,18 @@ void GLWidget::initializeGL()
   glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &profile);
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL major version: " + QString::number(majorVersion));
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL minor version: " + QString::number(minorVersion));
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL major version: " + QString::number(majorVersion));
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL minor version: " + QString::number(minorVersion));
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                    + "OpenGL major version: " + QString::number(majorVersion)));
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                    + "OpenGL major version: " + QString::number(minorVersion)));
+  }
 
   if(majorVersion <= 3 && minorVersion < 3)
   {
@@ -474,14 +498,30 @@ void GLWidget::initializeGL()
 
   if(profile & GL_CONTEXT_CORE_PROFILE_BIT)
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL core profile");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL core profile");
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                        + "OpenGL core profile"));
+    }
   }
 
   // get OpenGL capabilities
   glGetIntegerv(GL_MAX_CLIP_DISTANCES, &_maxNumberOfClipPlanes);
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &_maxTextureSize);
 
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "max texture size: " + QString::number(_maxTextureSize));
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "max texture size: " + QString::number(_maxTextureSize));
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                        + "max texture size: " + QString::number(_maxTextureSize)));
+  }
 
   glGetIntegerv(GLenum(GL_MAX_SAMPLES), &_maxSampleCount);
   glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, &_maxSampleColorCount);
@@ -489,13 +529,29 @@ void GLWidget::initializeGL()
   _maxMultiSampling = std::min(_maxSampleCount, std::min(_maxSampleColorCount, _maxSampleDepthCount));
   _multiSampling = std::max(1,std::min(8, std::min(_maxSampleCount, std::min(_maxSampleColorCount, _maxSampleDepthCount))));
 
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "multisampling: " + QString::number(_multiSampling));
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "multisampling: " + QString::number(_multiSampling));
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                          + "multisampling: " + QString::number(_multiSampling)));
+  }
 
   _devicePixelRatio = QPaintDevice:: devicePixelRatio();
   _width = std::max(512, this->width());
   _height = std::max(512, this->height());
 
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "pixel device ratio: " + QString::number(_devicePixelRatio));
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "pixel device ratio: " + QString::number(_devicePixelRatio));
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                            + "pixel device ratio: " + QString::number(_devicePixelRatio)));
+  }
 
   glGenFramebuffers(1, &_sceneFrameBuffer);
   check_gl_error();
@@ -589,7 +645,14 @@ void GLWidget::initializeGL()
   cl_uint n;
   err = clGetPlatformIDs(0, nullptr, &n);
   QString platformNumberMessage = QString("Number of OpenCL platforms found: %1").arg(QString::number(n));
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, platformNumberMessage);
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, platformNumberMessage);
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + platformNumberMessage));
+  }
   if (n > 0)
   {
     QVector<cl_platform_id> platformIds;
@@ -602,7 +665,14 @@ void GLWidget::initializeGL()
         name.resize(1024);
         clGetPlatformInfo(platformIds[i], CL_PLATFORM_NAME, name.size(), name.data(), 0);
         QString platformNameMessage = QString("platform found: %1").arg(QString(name.constData()));
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, platformNameMessage);
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, platformNameMessage);
+        }
+        else
+        {
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + platformNameMessage));
+        }
       }
     }
 
@@ -615,7 +685,7 @@ void GLWidget::initializeGL()
     #endif
   }
 
-  _energySurfaceShader.initializeOpenCL(_isOpenCLInitialized, _clContext, _clDeviceId, _clCommandQueue);
+  _energySurfaceShader.initializeOpenCL(_isOpenCLInitialized, _clContext, _clDeviceId, _clCommandQueue, _logData);
 
   // Set the clear color to white
   glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -706,7 +776,14 @@ void GLWidget::initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceI
   _clContext = clCreateContext(properties, 0, nullptr, nullptr, nullptr, &err);
   if (err == CL_SUCCESS)
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Create OpenCL context");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Created OpenCL context");
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "Created OpenCL context"));
+    }
 
     if (clGetGLContextInfoAPPLE(_clContext, static_cast<void *>(CGLGetCurrentContext()),
                                  CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE,
@@ -715,23 +792,54 @@ void GLWidget::initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceI
       _clCommandQueue = clCreateCommandQueue(_clContext, _clDeviceId, 0, &err);
       if(err==CL_SUCCESS)
       {
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL initialized");
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL initialized");
+        }
+        else
+        {
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL initialized"));
+        }
         printDeviceInformation(_clDeviceId);
         _isOpenCLInitialized = true;
       }
       else
       {
-        _logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL command-queue creation failed");
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL command-queue creation failed");
+        }
+        else
+        {
+          _logData.append(QString("<font color=\"Red\">error (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                                            + "OpenCL command-queue creation failed"));
+        }
       }
     }
     else
     {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, "Failed to get OpenCL device for current screen, error code: " + QString::number(err));
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, "Failed to get OpenCL device for current screen, error code: " + QString::number(err));
+      }
+      else
+      {
+        _logData.append(QString("<font color=\"Red\">error (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                                            + "Failed to get OpenCL device for current screen, error code: " + QString::number(err)));
+      }
     }
   }
   else
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "Failed to create OpenCL context, error code: " + QString::number(err));
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "Failed to create OpenCL context, error code: " + QString::number(err));
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Red\">error (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                                            + "Failed to create OpenCL context, error code: " + QString::number(err)));
+    }
   }
 }
 #endif
@@ -762,8 +870,16 @@ void GLWidget::initializeCL_Windows(cl_context &_clContext, cl_device_id &_clDev
         _clCommandQueue = clCommandQueue;
         _isOpenCLInitialized = true;
 
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL device context created");
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL command-queue created");
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL device context created");
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL command-queue created");
+        }
+        else
+        {
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL device context created"));
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL command-queue created"));
+        }
         printDeviceInformation(cllDeviceId);
         return;
       }
@@ -789,15 +905,30 @@ void GLWidget::initializeCL_Windows(cl_context &_clContext, cl_device_id &_clDev
         _clCommandQueue = clCommandQueue;
         _isOpenCLInitialized = true;
 
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL device context created");
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL command-queue created");
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL device context created");
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL command-queue created");
+        }
+        else
+        {
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL device context created"));
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL command-queue created"));
+        }
         printDeviceInformation(cllDeviceId);
         return;
       }
       clReleaseContext(context);
     }
   }
-  _logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL no usable devices found");
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL no usable devices found");
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"ForestGreen\">info (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL no usable devices found"));
+  }
 }
 #endif
 
@@ -827,8 +958,16 @@ void GLWidget::initializeCL_Linux(cl_context &_clContext, cl_device_id &_clDevic
         _clCommandQueue = clCommandQueue;
         _isOpenCLInitialized = true;
 
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL device context created");
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL command-queue created");
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL device context created");
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL command-queue created");
+        }
+        else
+        {
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL device context created"));
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL command-queue created"));
+        }
         printDeviceInformation(cllDeviceId);
         return;
       }
@@ -854,8 +993,16 @@ void GLWidget::initializeCL_Linux(cl_context &_clContext, cl_device_id &_clDevic
         _clCommandQueue = clCommandQueue;
         _isOpenCLInitialized = true;
 
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL device context created");
-        _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL command-queue created");
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL device context created");
+          _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenCL command-queue created");
+        }
+        else
+        {
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL device context created"));
+          _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL command-queue created"));
+        }
         printDeviceInformation(cllDeviceId);
         return;
       }
@@ -863,7 +1010,14 @@ void GLWidget::initializeCL_Linux(cl_context &_clContext, cl_device_id &_clDevic
     }
   }
 
-  _logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL no usable devices found");
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL no usable devices found");
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"ForestGreen\">info (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenCL no usable devices found"));
+  }
 }
 #endif
 
@@ -880,7 +1034,14 @@ void GLWidget::printDeviceInformation(cl_device_id &clDeviceId)
   if(err == CL_SUCCESS)
   {
     QString deviceNameMessage = QString("OpenCL device name: %1").arg(QString(deviceName));
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceNameMessage);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceNameMessage);
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + deviceNameMessage));
+    }
   }
 
   // print hardware device version
@@ -891,7 +1052,14 @@ void GLWidget::printDeviceInformation(cl_device_id &clDeviceId)
   if(err == CL_SUCCESS)
   {
     QString deviceVersionMessage = QString("OpenCL device version: %1").arg(QString(deviceVersion));
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceVersionMessage);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceVersionMessage);
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + deviceVersionMessage));
+    }
   }
 
   // print software driver version
@@ -902,7 +1070,14 @@ void GLWidget::printDeviceInformation(cl_device_id &clDeviceId)
   if(err == CL_SUCCESS)
   {
     QString deviceDriverVersionMessage = QString("OpenCL device driver version: %1").arg(QString(deviceDriverVersion));
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceDriverVersionMessage);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceDriverVersionMessage);
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + deviceDriverVersionMessage));
+    }
   }
 
   // print c version supported by compiler for device
@@ -913,7 +1088,14 @@ void GLWidget::printDeviceInformation(cl_device_id &clDeviceId)
   if(err == CL_SUCCESS)
   {
     QString deviceOpenCLVersionMessage = QString("OpenCL OpenCL version: %1").arg(QString(deviceOpenCLVersion));
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceOpenCLVersionMessage);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceOpenCLVersionMessage);
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + deviceOpenCLVersionMessage));
+    }
   }
 
   // print parallel compute units
@@ -922,7 +1104,14 @@ void GLWidget::printDeviceInformation(cl_device_id &clDeviceId)
   if(err == CL_SUCCESS)
   {
     QString deviceMaxComputeUnitsMessage = QString("OpenCL max compute units: %1").arg(QString::number(maxComputeUnits));
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceMaxComputeUnitsMessage);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, deviceMaxComputeUnitsMessage);
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + deviceMaxComputeUnitsMessage));
+    }
   }
 
   // check image support
@@ -933,35 +1122,84 @@ void GLWidget::printDeviceInformation(cl_device_id &clDeviceId)
 
   if(!image_support)
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, imageSupportMessage);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, imageSupportMessage);
+    }
+    else
+    {
+      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + imageSupportMessage));
+    }
     return;
   }
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, imageSupportMessage);
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, imageSupportMessage);
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + imageSupportMessage));
+  }
 
   cl_uint imageMaxRead = 0;
   clGetDeviceInfo(clDeviceId, CL_DEVICE_MAX_READ_IMAGE_ARGS, sizeof(imageMaxRead), &imageMaxRead, nullptr);
   QString imageMaxReadMessage = QString("OpenCL image max read: %1").arg(QString::number(imageMaxRead));
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, imageMaxReadMessage);
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, imageMaxReadMessage);
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + imageMaxReadMessage));
+  }
 
   cl_uint imageMaxWrite = 0;
   clGetDeviceInfo(clDeviceId, CL_DEVICE_MAX_WRITE_IMAGE_ARGS, sizeof(image_support), &imageMaxWrite, nullptr);
   QString imageMaxWriteMessage = QString("OpenCL image max write: %1").arg(QString::number(imageMaxWrite));
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, imageMaxWriteMessage);
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, imageMaxWriteMessage);
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + imageMaxWriteMessage));
+  }
 
   size_t image3dMaxWidth = 0;
   clGetDeviceInfo(clDeviceId, CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(image3dMaxWidth), &image3dMaxWidth, nullptr);
   QString image3dMaxWidthMessage = QString("OpenCL image3D max width: %1").arg(QString::number(image3dMaxWidth));
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, image3dMaxWidthMessage);
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, image3dMaxWidthMessage);
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + image3dMaxWidthMessage));
+  }
 
   size_t image3dMaxHeight = 0;
   clGetDeviceInfo(clDeviceId, CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(image3dMaxHeight), &image3dMaxHeight, nullptr);
   QString image3dMaxHeightMessage = QString("OpenCL image3D max height: %1").arg(QString::number(image3dMaxWidth));
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, image3dMaxWidthMessage);
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, image3dMaxHeightMessage);
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + image3dMaxHeightMessage));
+  }
 
   size_t image3dMaxDepth = 0;
   clGetDeviceInfo(clDeviceId, CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(image3dMaxDepth), &image3dMaxDepth, nullptr);
   QString image3dMaxDepthMessage = QString("OpenCL image3D max depth: %1").arg(QString::number(image3dMaxDepth));
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, image3dMaxDepthMessage);
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, image3dMaxDepthMessage);
+  }
+  else
+  {
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + image3dMaxDepthMessage));
+  }
 }
 
 std::optional<cl_device_id> GLWidget::bestOpenCLDevice(cl_device_type device_type)
@@ -1498,12 +1736,20 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
   else if(event->modifiers()  == Qt::AltModifier) // option, not command
   {
     _tracking = Tracking::measurement;
-    _trackBall.start(event->x(),event->y(), 0, 0, this->width(), this->height());
+    #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+      _trackBall.start(event->pos().x(),event->pos().y(), 0, 0, this->width(), this->height());
+    #else
+      _trackBall.start(event->position().x(),event->position().y(), 0, 0, this->width(), this->height());
+    #endif
   }
   else
   {
     _tracking = Tracking::backgroundClick;
-    _trackBall.start(event->x(),event->y(), 0, 0, this->width(), this->height());
+    #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+      _trackBall.start(event->pos().x(),event->pos().y(), 0, 0, this->width(), this->height());
+    #else
+      _trackBall.start(event->position().x(),event->position().y(), 0, 0, this->width(), this->height());
+    #endif
   }
 
   update();
@@ -1535,7 +1781,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
        _tracking =Tracking::other;
        if(_startPoint)
        {
-         simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->x(), event->y());
+         #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+           simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->pos().x(), event->pos().y());
+         #else
+           simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->position().x(), event->position().y());
+         #endif
 
          if (std::shared_ptr<RKCamera> camera = _camera.lock())
          {
@@ -1569,7 +1819,11 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
     case Tracking::backgroundClick:
       break;
     default:
-      simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->x(), event->y() );
+      #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+        simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->pos().x(), event->pos().y() );
+      #else
+        simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->position().x(), event->position().y() );
+      #endif
 
       if (std::shared_ptr<RKCamera> camera = _camera.lock())
       {
@@ -1774,7 +2028,7 @@ void GLWidget::initializeLightUniforms()
   _selectionShader.initializeLightUniforms();
 
   std::vector<RKLightsUniforms> lightUniforms{RKLightsUniforms()};
-  glBufferData(GL_UNIFORM_BUFFER, sizeof(RKLightsUniforms) * lightUniforms.size(), lightUniforms.data(), GL_DYNAMIC_DRAW);  // FIX
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(RKLightsUniforms) * lightUniforms.size(), lightUniforms.data(), GL_DYNAMIC_DRAW);
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
   check_gl_error();
 }

@@ -63,9 +63,6 @@ void SceneTreeViewModel::setProject(std::shared_ptr<ProjectTreeNode> projectTree
 
 std::shared_ptr<Scene> SceneTreeViewModel::parentForMovie(const std::shared_ptr<Movie> movie) const
 {
-  //return movie->parent().lock();
-
-
   if(_sceneList)
   {
     for(std::shared_ptr<Scene> currentScene: _sceneList->scenes())
@@ -398,14 +395,10 @@ bool SceneTreeViewModel::hasChildren(const QModelIndex &parent) const
 
 bool SceneTreeViewModel::removeRows(int position, int count, const QModelIndex &parent)
 {
-  qDebug() << "SceneTreeViewModel::removeRows";
   if(parent.isValid())
   {
-
     DisplayableProtocol *item = static_cast<DisplayableProtocol*>(parent.internalPointer());
 
-
-    qDebug() << "SceneTreeViewModel::removeRows valid" << item;
     if(Movie* movie = dynamic_cast<Movie*>(item))
     {
       std::shared_ptr<Scene> scene = parentForMovie(movie->shared_from_this());
@@ -530,7 +523,9 @@ QMimeData* SceneTreeViewModel::mimeData(const QModelIndexList &indexes) const
   std::sort(sortedIndexes.begin(), sortedIndexes.end());
 
   stream << QCoreApplication::applicationPid();
-  stream << sortedIndexes.count();
+
+  qulonglong count = static_cast<qulonglong>(sortedIndexes.count());
+  stream << count;
 
   for(const QModelIndex &index: sortedIndexes)
   {
@@ -558,7 +553,9 @@ QMimeData* SceneTreeViewModel::mimeDataLazy(const QModelIndexList &indexes) cons
   std::sort(sortedIndexes.begin(), sortedIndexes.end());
 
   stream << QCoreApplication::applicationPid();
-  stream << sortedIndexes.count();
+
+  qulonglong count = static_cast<qulonglong>(sortedIndexes.count());
+  stream << count;
 
   for(const QModelIndex &index: sortedIndexes)
   {
@@ -620,7 +617,7 @@ bool SceneTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
   DisplayableProtocol *item = static_cast<DisplayableProtocol*>(parent.internalPointer());
   Scene* scene = dynamic_cast<Scene*>(item);
 
-  int count;
+  qulonglong count;
   stream >> count;
 
   int beginRow = row;
@@ -722,7 +719,7 @@ bool SceneTreeViewModel::pasteMimeData(const QMimeData *data, int row, int colum
 
   DisplayableProtocol *parentItem = getItem(parent);
 
-  int count;
+  qulonglong count;
   stream >> count;
 
   int beginRow = row;

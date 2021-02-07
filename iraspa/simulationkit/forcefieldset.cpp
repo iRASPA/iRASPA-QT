@@ -84,6 +84,30 @@ QString ForceFieldSet::uniqueName(int atomicNumber)
   return "new";
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<ForceFieldType>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const ForceFieldType& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<ForceFieldType>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+  ForceFieldType tempVal;
+  while(vecSize--)
+  {
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
+
 QDataStream &operator<<(QDataStream &stream, const ForceFieldSet &forcefieldType)
 {
   stream << forcefieldType._versionNumber;

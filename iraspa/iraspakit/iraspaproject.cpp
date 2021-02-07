@@ -79,7 +79,7 @@ void iRASPAProject::readData(ZipReader& reader)
 }
 
 
-void iRASPAProject::unwrapIfNeeded()
+void iRASPAProject::unwrapIfNeeded(LogReporting *logReporter)
 {
   if(_lazyStatus == LazyStatus::lazy)
   {
@@ -125,19 +125,40 @@ void iRASPAProject::unwrapIfNeeded()
     }
     catch (InvalidArchiveVersionException ex)
     {
-      std::cout << "Error: " << ex.message().toStdString() << std::endl;
-      std::cout << ex.what() << ex.get_file() << std::endl;
-      std::cout << "Function: " << ex.get_func() << std::endl;
+      if(logReporter)
+      {
+        logReporter->logMessage(LogReporting::ErrorLevel::error, "Error: " + ex.message() + " in file " + ex.get_file() + " function " + ex.get_func());
+      }
+      else
+      {
+        std::cout << "Error: " << ex.message().toStdString() << std::endl;
+        std::cout << ex.what() << ex.get_file() << std::endl;
+        std::cout << "Function: " << ex.get_func() << std::endl;
+      }
     }
     catch(InconsistentArchiveException ex)
     {
-      std::cout << "Error: " << ex.message().toStdString() << std::endl;
-      std::cout << ex.what() << ex.get_file() << std::endl;
-      std::cout << "Function: " << ex.get_func() << std::endl;
+      if(logReporter)
+      {
+        logReporter->logMessage(LogReporting::ErrorLevel::error, "Error: " + ex.message() + " in file " + ex.get_file() + " function " + ex.get_func());
+      }
+      else
+      {
+        std::cout << "Error: " << ex.message().toStdString() << std::endl;
+        std::cout << ex.what() << ex.get_file() << std::endl;
+        std::cout << "Function: " << ex.get_func() << std::endl;
+      }
     }
     catch(std::exception e)
     {
-      std::cout << "Error: " << e.what() << std::endl;
+      if(logReporter)
+      {
+        logReporter->logMessage(LogReporting::ErrorLevel::error, "Error: " + QString(e.what()));
+      }
+      else
+      {
+        std::cout << "Error: " << e.what() << std::endl;
+      }
     }
   }
 }
@@ -226,7 +247,7 @@ QDataStream &operator>>(QDataStream& stream, std::shared_ptr<iRASPAProject>& nod
 
 QDataStream &operator<<=(QDataStream& stream, const std::shared_ptr<iRASPAProject>& node)
 {
-  node->unwrapIfNeeded();
+  node->unwrapIfNeeded(nullptr);
 
   stream << node->_versionNumber;
   stream << static_cast<typename std::underlying_type<iRASPAProject::ProjectType>::type>(node->_projectType);

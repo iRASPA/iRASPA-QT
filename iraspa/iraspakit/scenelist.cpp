@@ -277,6 +277,30 @@ void SceneList::setSelection(SceneListSelection selection)
   }
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<Scene>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<Scene>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<Scene>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<Scene> tempVal = std::make_shared<Scene>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
 
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<SceneList> &sceneList)
 {

@@ -54,6 +54,29 @@ const SKColorSet* SKColorSets::operator[] (QString name) const
   return nullptr;
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<SKColorSet>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const SKColorSet& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<SKColorSet>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+  SKColorSet tempVal;
+  while(vecSize--)
+  {
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
 QDataStream &operator<<(QDataStream &stream, const SKColorSets &colorSets)
 {
   stream << colorSets._versionNumber;
@@ -74,3 +97,5 @@ QDataStream &operator>>(QDataStream &stream, SKColorSets &colorSets)
 
   return stream;
 }
+
+

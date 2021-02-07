@@ -23,8 +23,9 @@
 
 #include <iostream>
 #include <QDataStream>
-
+#include <QString>
 #include <vector>
+#include <map>
 #include <memory>
 #include <unordered_set>
 #include <type_traits>
@@ -42,7 +43,7 @@ public:
   {
 
   }
-  QString message() {return "Invalid archive version (upgrade to latest iRASPA version)";}
+  QString message() {return QString("Invalid archive version (upgrade to latest iRASPA version)");}
   const char* get_file() const { return _file; }
   int get_line() const { return _line; }
   const char* get_func() const { return _func; }
@@ -65,7 +66,7 @@ public:
   {
 
   }
-  QString message() {return "Archive is inconsistent (internal bug)";}
+  QString message() {return QString("Archive is inconsistent (internal bug)");}
   const char* get_file() const { return _file; }
   int get_line() const { return _line; }
   const char* get_func() const { return _func; }
@@ -98,6 +99,7 @@ QDataStream& operator>>(QDataStream& stream, Enum& e) {
     return stream;
 }
 
+/*
 template<class T> QDataStream &operator<<(QDataStream& stream, const std::vector<T>& val)
 {
   stream << static_cast<int32_t>(val.size());
@@ -119,7 +121,7 @@ template<class T> QDataStream &operator>>(QDataStream& stream, std::vector<T>& v
     val.push_back(tempVal);
   }
   return stream;
-}
+}*/
 
 template<class T> QDataStream &operator<<(QDataStream& stream, const std::unordered_set<T>& val)
 {
@@ -144,6 +146,7 @@ template<class T> QDataStream &operator>>(QDataStream& stream, std::unordered_se
   return stream;
 }
 
+/*
 template<class T> QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<T>>& val)
 {
   stream << static_cast<int32_t>(val.size());
@@ -166,7 +169,7 @@ template<class T> QDataStream &operator>>(QDataStream& stream, std::vector<std::
     val.push_back(tempVal);
   }
   return stream;
-}
+}*/
 
 template<class Key, class T> QDataStream &operator<<(QDataStream& stream, const std::map<Key, T>& table)
 {

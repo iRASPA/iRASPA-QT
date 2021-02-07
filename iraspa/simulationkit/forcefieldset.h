@@ -61,5 +61,8 @@ private:
 
   friend QDataStream &operator<<(QDataStream &, const ForceFieldSet &);
   friend QDataStream &operator>>(QDataStream &, ForceFieldSet &);
+
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<ForceFieldType>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<ForceFieldType>& val);
 };
 

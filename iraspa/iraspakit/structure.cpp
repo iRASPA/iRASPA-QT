@@ -2221,8 +2221,12 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
     stream >> fontFamilyName;
     stream >> fontStyleName;
 
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
     QFontDatabase database;
     if (!database.families().contains(fontFamilyName))
+#else
+    if (!QFontDatabase::families().contains(fontFamilyName))
+#endif
     {
 #if defined (Q_OS_OSX)
         fontFamilyName = "Helvetica";

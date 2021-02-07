@@ -81,6 +81,12 @@ private:
   int _asymmetricIndex = 0;
   [[maybe_unused]] int _bondOrder = 0;
 
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAsymmetricBond>>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKAsymmetricBond>>& val);
+
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKBond>>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKBond>>& val);
+
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<SKAsymmetricBond> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<SKAsymmetricBond> &);
 };

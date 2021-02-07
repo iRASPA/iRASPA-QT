@@ -399,6 +399,30 @@ int SKAtomTreeNode::row() const
   return 0;
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAtomTreeNode>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<SKAtomTreeNode>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKAtomTreeNode>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<SKAtomTreeNode> tempVal = std::make_shared<SKAtomTreeNode>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
 
 QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<SKAtomTreeNode>& node)
 {

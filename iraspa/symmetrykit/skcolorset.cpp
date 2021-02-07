@@ -64,6 +64,34 @@ SKColorSet::SKColorSet(ColorScheme scheme)
   }
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::map<QString, QColor>& table)
+{
+  stream << static_cast<int32_t>(table.size());
+  for(auto const& [key, val] : table)
+  {
+    stream << key;
+    stream << val;
+  }
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::map<QString, QColor>& table)
+{
+  int32_t vecSize;
+  table.clear();
+  stream >> vecSize;
+  QString key;
+  QColor value;
+
+  while(vecSize--)
+  {
+    stream >> key;
+    stream >> value;
+    table[key] = value;
+  }
+  return stream;
+}
+
 QDataStream &operator<<(QDataStream &stream, const SKColorSet &colorSet)
 {
   stream << colorSet._versionNumber;

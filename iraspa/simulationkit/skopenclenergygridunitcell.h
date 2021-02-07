@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QtGlobal>
+#include <QStringList>
 #include <array>
 #include <vector>
 #include <mathkit.h>
@@ -42,7 +43,7 @@ class SKOpenCLEnergyGridUnitCell: public QOpenGLFunctions_3_3_Core, public LogRe
 {
 public:
   SKOpenCLEnergyGridUnitCell();
-  void initialize(bool isOpenCLInitialized, cl_context context, cl_device_id device_id, cl_command_queue queue);
+  void initialize(bool isOpenCLInitialized, cl_context context, cl_device_id device_id, cl_command_queue queue, QStringList &logData);
   std::vector<cl_float>* ComputeEnergyGrid(int sizeX, int sizeY, int sizeZ, double2 probeParameter,
                                           std::vector<double3> positions, std::vector<double2> potentialParameters,
                                           double3x3 unitCell, int3 numberOfReplicas);

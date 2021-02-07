@@ -100,7 +100,7 @@ bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
   int tin = clock();
   for( unsigned int char_index = 0; char_index < render_list.size(); ++char_index )
   {
-    QVector<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(render_list[char_index]));
+    QVector<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(QChar(render_list[char_index])));
     int glyph_index = glyph_index2[0];
     if( glyph_index )
     {
@@ -219,7 +219,7 @@ bool RKFontAtlas::gen_pack_list(QRawFont &rawFont, int pixel_size, int pack_tex_
   std::vector< std::vector<int> > packed_glyph_info;
   for( unsigned int char_index = 0; char_index < render_list.size(); ++char_index )
   {
-    QVector<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(render_list[char_index]));
+    QVector<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(QChar(render_list[char_index])));
     int glyph_index = glyph_index2[0];
     if( glyph_index )
     {

@@ -19,6 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
+#include <QHeaderView>
 #include "bondlistview.h"
 #include "bondlistviewsliderstyleditemdelegate.h"
 #include "bondlistviewdeleteselectioncommand.h"

@@ -227,7 +227,11 @@ Qt::ItemFlags AtomTreeViewModel::flags(const QModelIndex &index) const
   if ( index.column() == 0 )
   {
     flags |= Qt::ItemIsUserCheckable;
-    flags |= Qt::ItemIsTristate;
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+      flags |= Qt::ItemIsTristate;
+    #else
+      flags |= Qt::ItemIsAutoTristate;
+    #endif
     flags |= Qt::ItemIsEditable;
   }
 
@@ -286,15 +290,18 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
 
   if (role == Qt::CheckStateRole)
   {
+    qDebug() << "role == Qt::CheckStateRole";
     SKAtomTreeNode *item = static_cast<SKAtomTreeNode*>(index.internalPointer());
     if ((Qt::CheckState)value.toInt() == Qt::Checked)
     {
+      qDebug() << "Checked";
       item->representedObject()->setVisibility(true);
       emit rendererReloadData();
       return true;
     }
     else
     {
+      qDebug() << "UNChecked";
       item->representedObject()->setVisibility(false);
       emit rendererReloadData();
       return true;
@@ -527,7 +534,9 @@ QMimeData* AtomTreeViewModel::mimeData(const QModelIndexList &indexes) const
   std::sort(indexes2.begin(), indexes2.end());
 
   stream << QCoreApplication::applicationPid();
-  stream << indexes2.count();
+
+  qulonglong count = static_cast<qulonglong>(indexes2.count());
+  stream << count;
 
   for(auto iter = indexes2.constBegin(); iter != indexes2.constEnd(); ++iter)
   {
@@ -580,7 +589,7 @@ bool AtomTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
       return false;
     }
 
-    int count;
+    qulonglong count;
     stream >> count;
 
     int beginRow = row;
@@ -659,7 +668,7 @@ bool AtomTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
     return false;
   }
 
-  int count;
+  qulonglong count;
   stream >> count;
 
   int beginRow = row;

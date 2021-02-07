@@ -257,10 +257,18 @@ void ProjectTreeView::startDrag(Qt::DropActions supportedActions)
 
 void ProjectTreeView::dragMoveEvent(QDragMoveEvent* event)
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   QModelIndex index = indexAt(event->pos());
+#else
+  QModelIndex index = indexAt(event->position().toPoint());
+#endif
 
   // use the visualRect of the index to avoid dropping on the background left to items
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   if (!index.isValid() || !visualRect(index).contains(event->pos()))
+#else
+  if (!index.isValid() || !visualRect(index).contains(event->position().toPoint()))
+#endif
   {
     setDropIndicatorShown(false);
     event->ignore();
@@ -348,7 +356,7 @@ void ProjectTreeView::selectionChanged(const QItemSelection &selected, const QIt
         qDebug() << "SELECTED PROJECT: " << selectedTreeNode;
         IndexPath selectedTreeNodeIndexPath = IndexPath::indexPath(current);
         _projectTreeController->setSelectionIndexPaths(ProjectSelectionIndexPaths(selectedTreeNodeIndexPath,{selectedTreeNodeIndexPath}));
-        selectedTreeNode->representedObject()->unwrapIfNeeded();
+        selectedTreeNode->representedObject()->unwrapIfNeeded(_logReporting);
 
         if(std::shared_ptr<iRASPAProject> iraspa_project = selectedTreeNode->representedObject())
         {

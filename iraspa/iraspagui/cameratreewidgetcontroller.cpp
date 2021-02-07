@@ -24,6 +24,7 @@
 #include <iostream>
 #include <QLabel>
 #include <QPixmap>
+#include <QColorDialog>
 #include <mathkit.h>
 #include <renderkit.h>
 #include <foundationkit.h>

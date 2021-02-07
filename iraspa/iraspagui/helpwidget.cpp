@@ -27,7 +27,9 @@
 HelpWidget::HelpWidget(QWidget *parent): QMainWindow(parent)
 {
   setAttribute(Qt::WA_DeleteOnClose);
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   setAttribute(Qt::WA_GroupLeader);
+#endif
   setWindowFlags(Qt::WindowStaysOnTopHint);
   setWindowFlags(Qt::Window);
 

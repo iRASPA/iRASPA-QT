@@ -23,6 +23,11 @@
 #include <QDebug>
 #include <QString>
 #include <QtGlobal>
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+  #include <QRegExp>
+#else
+  #include <QRegularExpression>
+#endif
 #include <cmath>
 #include <algorithm>
 #include <qmath.h>
@@ -63,10 +68,12 @@ bool SKPOSCARParser::startParsing()
 
   // read first lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
     termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-  #else
+  #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+  #else
+    termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
   if(termsScannedLined.size()<3)
   {
@@ -108,10 +115,12 @@ bool SKPOSCARParser::startParsing()
 
   // read second lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
     termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-  #else
+  #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+  #else
+    termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
   if(termsScannedLined.size()<3)
   {
@@ -152,10 +161,12 @@ bool SKPOSCARParser::startParsing()
 
   // read third lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
     termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-  #else
+  #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+  #else
+    termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
   if(termsScannedLined.size()<3)
   {
@@ -199,10 +210,12 @@ bool SKPOSCARParser::startParsing()
 
   // read elements
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
     QStringList elementList = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-  #else
+  #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QStringList elementList = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+  #else
+    QStringList elementList = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
   if(elementList.empty())
   {
@@ -215,10 +228,12 @@ bool SKPOSCARParser::startParsing()
 
   // read amount of atoms per element
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
     QStringList amountList = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-  #else
+  #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QStringList amountList = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+  #else
+    QStringList amountList = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
   if(amountList.empty())
   {
@@ -239,18 +254,22 @@ bool SKPOSCARParser::startParsing()
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
     QStringList directOrCartesian = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-  #else
+  #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QStringList directOrCartesian = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+  #else
+    QStringList directOrCartesian = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
   if(elementList[0].toLower() == "selective") // skip Selective dynamics line
   {
     _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-    #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
       directOrCartesian = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-    #else
+    #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
       directOrCartesian = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+    #else
+      directOrCartesian = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
     #endif
   }
 
@@ -271,10 +290,12 @@ bool SKPOSCARParser::startParsing()
 
       // read atom
       _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-      #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+      #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
         termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-      #else
+      #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+      #else
+        termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
       #endif
       if(termsScannedLined.empty())
       {

@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QtGlobal>
+#include <QStringList>
 #include <array>
 #include <vector>
 #include <mathkit.h>
@@ -40,7 +41,7 @@ class SKOpenCLFindMinmumEnergyGridUnitCell: public QOpenGLFunctions_3_3_Core, pu
 {
 public:
   SKOpenCLFindMinmumEnergyGridUnitCell();
-  void initialize(bool isOpenCLInitialized, cl_context context, cl_device_id device_id, cl_command_queue queue);
+  void initialize(bool isOpenCLInitialized, cl_context context, cl_device_id device_id, cl_command_queue queue, QStringList &logData);
   double findMinimumEnergy(std::vector<cl_float> *voxels);
   void setLogReportingWidget(LogReporting *logReporting)  override final {_logReporter = logReporting;}
 private:

@@ -25,7 +25,11 @@
 #include <QCache>
 #define GL_GLEXT_PROTOTYPES
 #include <QtOpenGL>
-#include <QGLFunctions>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  #include <QGLFunctions>
+#else
+  #include <QOpenGLFunctions>
+#endif
 #include "openglshader.h"
 #include "rkrenderkitprotocols.h"
 #include <foundationkit.h>
@@ -44,7 +48,7 @@ public:
   OpenGLEnergySurface();
   ~OpenGLEnergySurface() override final;
   void loadShader(void) override final;
-  void initializeOpenCL(bool isOpenCLInitialized, cl_context _clContext, cl_device_id _clDeviceId, cl_command_queue _clCommandQueue);
+  void initializeOpenCL(bool isOpenCLInitialized, cl_context _clContext, cl_device_id _clDeviceId, cl_command_queue _clCommandQueue, QStringList &logData);
   void deleteBuffers();
   void generateBuffers();
   void paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer);

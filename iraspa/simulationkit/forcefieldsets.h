@@ -39,6 +39,9 @@ private:
   qint64 _numberOfPredefinedSets = 1;
   std::vector<ForceFieldSet> _forceFieldSets;
 
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<ForceFieldSet>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<ForceFieldSet>& val);
+
   friend QDataStream &operator<<(QDataStream &, const ForceFieldSets &);
   friend QDataStream &operator>>(QDataStream &, ForceFieldSets &);
 };

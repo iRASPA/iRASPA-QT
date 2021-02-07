@@ -159,15 +159,15 @@ bool ProjectTreeViewModel::insertRows(int position, int rows, const QModelIndex 
 {
   ProjectTreeNode *parentItem = nodeForIndex(parent);
 
-	beginInsertRows(parent, position, position + rows - 1);
-	for (int row = 0; row < rows; ++row)
-	{
-		if (!parentItem->insertChild(position, item))
-			break;
-	}
-	endInsertRows();
+  beginInsertRows(parent, position, position + rows - 1);
+  for (int row = 0; row < rows; ++row)
+  {
+    if (!parentItem->insertChild(position, item))
+      break;
+  }
+  endInsertRows();
 
-	return true;
+  return true;
 }
 
 bool ProjectTreeViewModel::insertRows(int position, int rows, const QModelIndex &parent)
@@ -398,7 +398,8 @@ QMimeData* ProjectTreeViewModel::mimeDataLazy(const QModelIndexList &indexes) co
   stream << ptrval;
 
   // write the number of objects
-  stream << sortedIndexes.count();
+  qulonglong count = static_cast<qulonglong>(sortedIndexes.count());
+  stream << count;
 
   for(const QModelIndex &index: sortedIndexes)
   {
@@ -496,7 +497,7 @@ bool ProjectTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction ac
   stream >> senderProjectTreeViewId;
 
   // read the number of objects
-  int count;
+  qulonglong count;
   stream >> count;
 
   int beginRow = row;
@@ -537,28 +538,39 @@ bool ProjectTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction ac
       stream >> nodePtr;
       ProjectTreeNode *node = reinterpret_cast<ProjectTreeNode *>(nodePtr);
 
-      if(node->isEditable())
+      if(node)
       {
-        if (static_cast<int>(node->row()) < beginRow && (parentNode == node->parent().get()))
+        if(node->isEditable())
         {
-          beginRow -= 1;
-        }
+          if (static_cast<int>(node->row()) < beginRow && (parentNode == node->parent().get()))
+          {
+            beginRow -= 1;
+          }
 
-        nodes.push_back(std::make_tuple(node->shared_from_this(), parentNode->shared_from_this(), beginRow, true));
+          nodes.push_back(std::make_tuple(node->shared_from_this(), parentNode->shared_from_this(), beginRow, true));
+        }
+        else
+        {
+
+          std::shared_ptr<ProjectTreeNode> copiedProjectTreeNode = node->shallowClone();
+          copiedProjectTreeNode->setIsEditable(true);
+          copiedProjectTreeNode->setIsDropEnabled(true);
+          nodes.push_back(std::make_tuple(copiedProjectTreeNode, parentNode->shared_from_this(), beginRow, false));
+        }
       }
       else
       {
-        std::shared_ptr<ProjectTreeNode> copiedProjectTreeNode = node->shallowClone();
-        copiedProjectTreeNode->setIsEditable(true);
-        copiedProjectTreeNode->setIsDropEnabled(true);
-        nodes.push_back(std::make_tuple(copiedProjectTreeNode, parentNode->shared_from_this(), beginRow, false));
+        qDebug() << "Something went wrong in ProjectTreeViewModel::dropMimeData";
       }
       beginRow += 1;
     }
 
-    ProjectTreeViewDropMoveCommand *moveCommand = new ProjectTreeViewDropMoveCommand(_mainWindow, this, _projectTreeController.get(), nodes,
+    if(nodes.size()>0)
+    {
+      ProjectTreeViewDropMoveCommand *moveCommand = new ProjectTreeViewDropMoveCommand(_mainWindow, this, _projectTreeController.get(), nodes,
                                                                                      _projectTreeController->selectionIndexPaths(), nullptr);
-    _undoStack->push(moveCommand);
+      _undoStack->push(moveCommand);
+    }
   }
 
   return true;
@@ -620,9 +632,12 @@ bool ProjectTreeViewModel::pasteMimeData(const QMimeData *data, int row, int col
       nodes.push_back(copiedProjectTreeNode);
     }
 
-    ProjectTreeViewPasteProjectsCommand *copyCommand = new ProjectTreeViewPasteProjectsCommand(_mainWindow, this, parentNode->shared_from_this(), beginRow, nodes, _projectTreeController->selectionIndexPaths(), nullptr);
-    _undoStack->push(copyCommand);
-    return true;
+    if(nodes.size() > 0)
+    {
+      ProjectTreeViewPasteProjectsCommand *copyCommand = new ProjectTreeViewPasteProjectsCommand(_mainWindow, this, parentNode->shared_from_this(), beginRow, nodes, _projectTreeController->selectionIndexPaths(), nullptr);
+      _undoStack->push(copyCommand);
+      return true;
+    }
   }
 
   return false;

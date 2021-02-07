@@ -45,7 +45,7 @@ public:
 
   void readData(ZipReader& reader);
   void saveData(ZipWriter& writer);
-  void unwrapIfNeeded();
+  void unwrapIfNeeded(LogReporting *logReporter);
   bool isLeaf() {return _nodeType == NodeType::leaf;}
   bool isGroup() {return _nodeType == NodeType::group;}
   void setIsGroup(bool value) {_nodeType = value ? NodeType::group : NodeType::leaf;}

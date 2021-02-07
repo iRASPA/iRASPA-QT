@@ -30,7 +30,7 @@ SKOpenCLEnergyGridUnitCell::SKOpenCLEnergyGridUnitCell(): _isOpenCLInitialized(f
 }
 
 
-void SKOpenCLEnergyGridUnitCell::initialize(bool isOpenCLInitialized, cl_context context, cl_device_id device_id, cl_command_queue queue)
+void SKOpenCLEnergyGridUnitCell::initialize(bool isOpenCLInitialized, cl_context context, cl_device_id device_id, cl_command_queue queue, QStringList &logData)
 {
   cl_int err;
 
@@ -50,7 +50,14 @@ void SKOpenCLEnergyGridUnitCell::initialize(bool isOpenCLInitialized, cl_context
   if (err != CL_SUCCESS)
   {
     QString message = QString("OpenCL energy grid: Failed to create program (error: %1)").arg(QString::number(err));
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+    }
+    else
+    {
+      logData.append(QString("<font color=\"Red\">error (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + message));
+    }
     return;
   }
 
@@ -62,7 +69,14 @@ void SKOpenCLEnergyGridUnitCell::initialize(bool isOpenCLInitialized, cl_context
     char buffer[2048];
     clGetProgramBuildInfo(_program, device_id, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
     QString message = QString("OpenCL energy grid: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+    }
+    else
+    {
+      logData.append(QString("<font color=\"Red\">error (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + message));
+    }
   }
 }
 
@@ -72,51 +86,76 @@ void SKOpenCLEnergyGridUnitCell::callBack(cl_program program, void *user_data)
 
   SKOpenCLEnergyGridUnitCell *ptr = reinterpret_cast<SKOpenCLEnergyGridUnitCell*>(user_data);
 
-  size_t len;
-  char buffer[2048];
-  cl_build_status bldstatus;
-  clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_STATUS, sizeof(bldstatus), (void *)&bldstatus, &len);
-
-  switch(bldstatus)
+  if(ptr)
   {
+    size_t len;
+    char buffer[2048];
+    cl_build_status bldstatus;
+    clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_STATUS, sizeof(bldstatus), (void *)&bldstatus, &len);
+
+    switch(bldstatus)
+    {
     case CL_BUILD_NONE:
-      ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL energy grid: No build was performed");
+      if(ptr->_logReporter)
+      {
+        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL energy grid: No build was performed");
+      }
       break;
     case CL_BUILD_ERROR:
       {
         clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
         QString message = QString("OpenCL energy grid: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
-        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+        if(ptr->_logReporter)
+        {
+          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+        }
       }
       break;
     case CL_BUILD_SUCCESS:
-      ptr->_logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL energy grid: Build success");
+      if(ptr->_logReporter)
+      {
+        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL energy grid: Build success");
+      }
       break;
     case CL_BUILD_IN_PROGRESS:
-      ptr->_logReporter->logMessage(LogReporting::ErrorLevel::warning, "OpenCL energy grid: Build still in progress");
+      if(ptr->_logReporter)
+      {
+        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::warning, "OpenCL energy grid: Build still in progress");
+      }
       break;
-  }
+    }
 
-  ptr->_kernel = clCreateKernel(program, "ComputeEnergyGrid", &err);
-  if (err != CL_SUCCESS)
-  {
-    QString message = QString("OpenCL energy grid: Failed to create OpenCL ComputeEnergyGrid kernel (error: %1)").arg(QString::number(err));
-    ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-    return;
-  }
-
-  err = clGetKernelWorkGroupInfo(ptr->_kernel, ptr->_clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &ptr->_workGroupSize, nullptr);
-  if (err != CL_SUCCESS)
-  {
-      QString message = QString("OpenCL energy grid: Failed in clGetKernelWorkGroupInfo (error: %1)").arg(QString::number(err));
-      ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+    ptr->_kernel = clCreateKernel(program, "ComputeEnergyGrid", &err);
+    if (err != CL_SUCCESS)
+    {
+      QString message = QString("OpenCL energy grid: Failed to create OpenCL ComputeEnergyGrid kernel (error: %1)").arg(QString::number(err));
+      if(ptr->_logReporter)
+      {
+        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return;
+    }
+
+    err = clGetKernelWorkGroupInfo(ptr->_kernel, ptr->_clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &ptr->_workGroupSize, nullptr);
+    if (err != CL_SUCCESS)
+    {
+      QString message = QString("OpenCL energy grid: Failed in clGetKernelWorkGroupInfo (error: %1)").arg(QString::number(err));
+      if(ptr->_logReporter)
+      {
+        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
+      return;
+    }
+
+    QString message = QString("OpenCL energy grid: work-group size set to %1").arg(QString::number(ptr->_workGroupSize));
+
+    if(ptr->_logReporter)
+    {
+      ptr->_logReporter->logMessage(LogReporting::ErrorLevel::verbose, message);
+    }
+
+    ptr->_isOpenCLReady = true;
   }
-
-  QString message = QString("OpenCL energy grid: work-group size set to %1").arg(QString::number(ptr->_workGroupSize));
-  ptr->_logReporter->logMessage(LogReporting::ErrorLevel::verbose, message);
-
-  ptr->_isOpenCLReady = true;
 }
 
 
@@ -130,13 +169,19 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
 
   if(!_isOpenCLInitialized)
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL energy grid: OpenCL not available");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL energy grid: OpenCL not available");
+    }
     return nullptr;
   }
 
   if(!_isOpenCLReady)
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL energy grid: OpenCL not yet ready");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL energy grid: OpenCL not yet ready");
+    }
     return nullptr;
   }
 
@@ -193,7 +238,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clCreateBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -201,7 +249,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clEnqueueWriteBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -209,7 +260,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clCreateBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -217,7 +271,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clEnqueueWriteBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -225,14 +282,20 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clCreateBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
     err = clEnqueueWriteBuffer(_clCommandQueue, inputEpsilon, CL_TRUE, 0, sizeof(cl_float) * epsilon.size(), epsilon.data(), 0, nullptr, nullptr);
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clEnqueueWriteBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -240,7 +303,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clCreateBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -248,7 +314,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clEnqueueWriteBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -278,14 +347,20 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clCreateBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
     err = clEnqueueWriteBuffer(_clCommandQueue, replicaCellBuffer, CL_TRUE, 0, sizeof(cl_float4) * replicaVector.size(), replicaVector.data(), 0, nullptr, nullptr);
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clEnqueueWriteBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -294,7 +369,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clCreateBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -302,7 +380,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clEnqueueWriteBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 
@@ -338,7 +419,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
       if (err != CL_SUCCESS)
       {
         QString message = QString("OpenCL energy grid: error in clEnqueueNDRangeKernel (error: %1)").arg(QString::number(err));
-        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+        }
         return nullptr;
       }
 
@@ -352,7 +436,10 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     if (err != CL_SUCCESS)
     {
       QString message = QString("OpenCL energy grid: error in clEnqueueReadBuffer (error: %1)").arg(QString::number(err));
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+      }
       return nullptr;
     }
 

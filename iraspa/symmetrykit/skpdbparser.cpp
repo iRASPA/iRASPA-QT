@@ -21,6 +21,11 @@
 
 #include "skpdbparser.h"
 #include <QDebug>
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+  #include <QStringRef>
+#else
+  #include<QStringView>
+#endif
 #include <cmath>
 #include <qmath.h>
 #include "symmetrykitprotocols.h"
@@ -73,7 +78,6 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
 
 bool SKPDBParser::startParsing()
 {
-
   int lineNumber = 0;
   int modelNumber = 0;
   size_t currentMovie = 0;
@@ -92,16 +96,20 @@ bool SKPDBParser::startParsing()
       int length = scannedLine.size();
 
       if(length < 3) continue;
-      QStringRef shortKeyword(&scannedLine, 0, 3);
+      #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+        QStringRef shortKeyword(&scannedLine, 0, 3);
+      #else
+        QStringView shortKeyword(&scannedLine[0], 3);
+      #endif
 
-      if(shortKeyword == "END")
+      if(shortKeyword == QString("END"))
       {
         addFrameToStructure(currentMovie,currentFrame);
         currentFrame += 1;
         continue;
       }
 
-      if(shortKeyword == "TER")
+      if(shortKeyword == QString("TER"))
       {
         addFrameToStructure(currentMovie,currentFrame);
         currentMovie += 1;
@@ -109,40 +117,48 @@ bool SKPDBParser::startParsing()
       }
 
       if(length < 6) continue;
-      QStringRef keyword(&scannedLine, 0, 6);
+      #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+        QStringRef keyword(&scannedLine, 0, 6);
+      #else
+        QStringView keyword(&scannedLine[0], 6);
+      #endif
 
 
-      if(keyword == "HEADER")
+      if(keyword == QString("HEADER"))
       {
         continue;
       }
 
-      if(keyword == "AUTHOR")
+      if(keyword == QString("AUTHOR"))
       {
         continue;
       }
 
-      if(keyword == "REVDAT")
+      if(keyword == QString("REVDAT"))
       {
         continue;
       }
 
-      if(keyword == "JRNL  ")
+      if(keyword == QString("JRNL  "))
       {
         continue;
       }
 
-      if(keyword == "REMARK")
+      if(keyword == QString("REMARK"))
       {
         continue;
       }
 
-      if(keyword == "MODEL")
+      if(keyword == QString("MODEL"))
       {
         currentMovie = 0;
 
         if(length <= 10) continue;
-        QStringRef modelString(&scannedLine, 6, length - 6);
+        #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+          QStringRef modelString(&scannedLine, 6, length - 6);
+        #else
+          QStringView modelString(&scannedLine[6], length - 6);
+        #endif
 
         bool success = false;
         int integerValue = modelString.toInt(&success);
@@ -156,26 +172,32 @@ bool SKPDBParser::startParsing()
         continue;
       }
 
-      if(keyword == "SCALE1")
+      if(keyword == QString("SCALE1"))
       {
         continue;
       }
 
-      if(keyword == "SCALE2")
+      if(keyword == QString("SCALE2"))
       {
         continue;
       }
 
-      if(keyword == "SCALE3")
+      if(keyword == QString("SCALE3"))
       {
         continue;
       }
 
-      if(keyword == "CRYST1")
+      if(keyword == QString("CRYST1"))
       {
-        QStringRef lengthAString(&scannedLine, 6, 9);
-        QStringRef lengthBString(&scannedLine, 15, 9);
-        QStringRef lengthCString(&scannedLine, 24, 9);
+        #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+          QStringRef lengthAString(&scannedLine, 6, 9);
+          QStringRef lengthBString(&scannedLine, 15, 9);
+          QStringRef lengthCString(&scannedLine, 24, 9);
+        #else
+          QStringView lengthAString(&scannedLine[6], 9);
+          QStringView lengthBString(&scannedLine[15], 9);
+          QStringView lengthCString(&scannedLine[24], 9);
+        #endif
         bool succes = false;
         _a = lengthAString.toDouble(&succes);
         _b = lengthBString.toDouble(&succes);
@@ -186,9 +208,15 @@ bool SKPDBParser::startParsing()
         _gamma = 90.0;
         if(scannedLine.size()>=54)
         {
-          QStringRef alphaAngleString(&scannedLine, 33, 7);
-          QStringRef betaAngleString(&scannedLine, 40, 7);
-          QStringRef gammaAngleString(&scannedLine, 47, 7);
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QStringRef alphaAngleString(&scannedLine, 33, 7);
+            QStringRef betaAngleString(&scannedLine, 40, 7);
+            QStringRef gammaAngleString(&scannedLine, 47, 7);
+          #else
+            QStringView alphaAngleString(&scannedLine[33], 7);
+            QStringView betaAngleString(&scannedLine[40], 7);
+            QStringView gammaAngleString(&scannedLine[47], 7);
+          #endif
           _alpha = alphaAngleString.toDouble(&succes);
           _beta = betaAngleString.toDouble(&succes);
           _gamma = gammaAngleString.toDouble(&succes);
@@ -200,7 +228,11 @@ bool SKPDBParser::startParsing()
         }
         if(scannedLine.size()>=66)
         {
-          QStringRef spaceGroupString(&scannedLine, 55, 11);
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QStringRef spaceGroupString(&scannedLine, 55, 11);
+          #else
+            QStringView spaceGroupString(&scannedLine[55], 11);
+          #endif
 
           if(_onlyAsymmetricUnitCell)
           {
@@ -214,38 +246,48 @@ bool SKPDBParser::startParsing()
         continue;
       }
 
-      if(keyword == "ORIGX1")
+      if(keyword == QString("ORIGX1"))
       {
         continue;
       }
 
-      if(keyword == "ORIGX2")
+      if(keyword == QString("ORIGX2"))
       {
         continue;
       }
 
-      if(keyword == "ORIGX3")
+      if(keyword == QString("ORIGX3"))
       {
         continue;
       }
 
 
-      if(keyword == "ATOM  " || keyword == "HETATM")
+      if(keyword == QString("ATOM  ") || keyword == QString("HETATM"))
       {
         _numberOfAtoms += 1;
         std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
 
-
-        QStringRef residueName(&scannedLine, 17, 3);
-
-        QStringRef positionsX(&scannedLine, 30, 8);
-        QStringRef positionsY(&scannedLine, 38, 8);
-        QStringRef positionsZ(&scannedLine, 46, 8);
-        QStringRef chemicalElementString(&scannedLine, 76, 2);
+        #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+          QStringRef residueName(&scannedLine, 17, 3);
+          QStringRef positionsX(&scannedLine, 30, 8);
+          QStringRef positionsY(&scannedLine, 38, 8);
+          QStringRef positionsZ(&scannedLine, 46, 8);
+          QStringRef chemicalElementString(&scannedLine, 76, 2);
+        #else
+          QStringView residueName(&scannedLine[17], 3);
+          QStringView positionsX(&scannedLine[30], 8);
+          QStringView positionsY(&scannedLine[38], 8);
+          QStringView positionsZ(&scannedLine[46], 8);
+          QStringView chemicalElementString(&scannedLine[76], 2);
+        #endif
 
         double occupancy = 1.0;
         bool succes = false;
-        QStringRef occupancyString(&scannedLine, 54, 6);
+        #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+          QStringRef occupancyString(&scannedLine, 54, 6);
+        #else
+          QStringView occupancyString(&scannedLine[54], 6);
+        #endif
 
         occupancy = occupancyString.toDouble(&succes);
         if(succes)

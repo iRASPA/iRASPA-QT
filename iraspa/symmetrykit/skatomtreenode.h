@@ -94,6 +94,10 @@ private:
     bool _isEditable = false;
 
     friend SKAtomTreeController ;
+
+    friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAtomTreeNode>>& val);
+    friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKAtomTreeNode>>& val);
+
     friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<SKAtomTreeNode> &);
     friend QDataStream &operator>>(QDataStream &, std::shared_ptr<SKAtomTreeNode> &);
 };

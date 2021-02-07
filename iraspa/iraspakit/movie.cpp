@@ -210,6 +210,30 @@ void Movie::selectedFrameIndex(size_t index)
   }
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<iRASPAStructure>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<iRASPAStructure>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<iRASPAStructure>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<iRASPAStructure> tempVal = std::make_shared<iRASPAStructure>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Movie> &movie)
 {
   stream << movie->_versionNumber;

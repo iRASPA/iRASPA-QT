@@ -76,6 +76,9 @@ private:
   std::set<std::shared_ptr<Scene>> _selectedScenes;
   size_t _selectedFrameIndex = 0;
 
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<Scene>>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<Scene>>& val);
+
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<SceneList> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<SceneList> &);
 };

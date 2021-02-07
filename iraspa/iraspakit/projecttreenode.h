@@ -109,6 +109,10 @@ private:
     bool _isDropEnabled;
 
     friend ProjectTreeController;
+
+    friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<ProjectTreeNode>>& val);
+    friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<ProjectTreeNode>>& val);
+
     friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<ProjectTreeNode> &);
     friend QDataStream &operator>>(QDataStream &, std::shared_ptr<ProjectTreeNode> &);
     friend QDataStream &operator<<=(QDataStream &, const std::shared_ptr<ProjectTreeNode> &);

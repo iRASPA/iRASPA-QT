@@ -22,6 +22,7 @@
 #include "renderstackedwidget.h"
 #include <iostream>
 #include <QMenu>
+#include <QApplication>
 #include <QObject>
 #include <QAction>
 #include <QtDebug>
@@ -284,7 +285,11 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
       case Tracking::newSelection:
         if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
         {
-          pixel = widget->pickTexture(me->x(), me->y(), this->width(), this->height());
+          #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
+          #else
+            pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
+          #endif
 
           int structureIdentifier = pixel[1];
           int movieIdentifier = pixel[2];
@@ -312,7 +317,11 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
       case Tracking::addToSelection:
         if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
         {
-          pixel = widget->pickTexture(me->x(), me->y(), this->width(), this->height());
+          #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
+          #else
+            pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
+          #endif
           int structureIdentifier = pixel[1];
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
@@ -363,7 +372,11 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
         }
         if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
         {
-          pixel = widget->pickTexture(me->x(), me->y(), this->width(), this->height());
+          #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
+          #else
+            pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
+          #endif
 
           int structureIdentifier = pixel[1];
           int movieIdentifier = pixel[2];

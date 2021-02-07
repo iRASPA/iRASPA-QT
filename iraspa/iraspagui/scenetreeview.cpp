@@ -27,6 +27,7 @@
 #include "scenetreeviewdeleteselectioncommand.h"
 #include "scenetreeviewchangeselectioncommand.h"
 #include <QModelIndexList>
+#include <QApplication>
 #include <map>
 #include <unordered_set>
 
@@ -396,10 +397,18 @@ void SceneTreeView::startDrag(Qt::DropActions supportedActions)
 
 void SceneTreeView::dragMoveEvent(QDragMoveEvent* event)
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   QModelIndex index = indexAt(event->pos());
+#else
+  QModelIndex index = indexAt(event->position().toPoint());
+#endif
 
   // use the visualRect of the index to avoid dropping on the background left to items
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   if (index.isValid() && !visualRect(index).contains(event->pos()))
+#else
+  if (index.isValid() && !visualRect(index).contains(event->position().toPoint()))
+#endif
   {
     event->ignore();
   }

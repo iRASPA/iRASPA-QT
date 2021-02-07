@@ -81,6 +81,30 @@ void SKAsymmetricAtom::toggleVisibility()
   _isVisible = !_isVisible;
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAtomCopy>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<SKAtomCopy>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKAtomCopy>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<SKAtomCopy> tempVal = std::make_shared<SKAtomCopy>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<SKAsymmetricAtom> &asymmetricAtom)
 {
   stream << asymmetricAtom->_versionNumber;

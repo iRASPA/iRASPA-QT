@@ -19,6 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
+#include <QApplication>
 #include "framelistview.h"
 #include "frameliststyleditemdelegate.h"
 #include "framelistviewproxystyle.h"
@@ -429,10 +430,18 @@ void FrameListView::startDrag(Qt::DropActions supportedActions)
 
 void FrameListView::dragMoveEvent(QDragMoveEvent* event)
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   QModelIndex index = indexAt(event->pos());
+#else
+  QModelIndex index = indexAt(event->position().toPoint());
+#endif
 
   // use the visualRect of the index to avoid dropping on the background left to items
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   if (!index.isValid() || !visualRect(index).contains(event->pos()))
+#else
+  if (!index.isValid() || !visualRect(index).contains(event->position().toPoint()))
+#endif
   {
     setDropIndicatorShown(false);
     event->ignore();

@@ -24,21 +24,36 @@
 #include <QTextBrowser>
 #include <QUrl>
 #include <QtGlobal>
-#if (QT_VERSION >= QT_VERSION_CHECK(5,6,0))
-  #include <QWebEngineView>
-#else
+#if (QT_VERSION < QT_VERSION_CHECK(5,6,0))
   #include <QWebView>
+#elif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+  #include <QWebEngineView>
 #endif
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,6,0))
-  class HelpBrowser : public QWebEngineView
-#else
+#if (QT_VERSION < QT_VERSION_CHECK(5,6,0))
   class HelpBrowser : public QWebView
+  {
+  public:
+    HelpBrowser(QWidget* parent = nullptr);
+    QUrl _home;
+  //public slots:
+  //  void home();
+  };
+#elif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+  class HelpBrowser : public QWebEngineView
+  {
+  public:
+    HelpBrowser(QWidget* parent = nullptr);
+    QUrl _home;
+  //public slots:
+  //  void home();
+  };
+#else
+  class HelpBrowser: public QWidget
+  {
+  public:
+    HelpBrowser(QWidget* parent = nullptr);
+    QUrl _home;
+  };
 #endif
-{
-public:
-  HelpBrowser(QWidget* parent = nullptr);
-  QUrl _home;
-//public slots:
-//  void home();
-};
+

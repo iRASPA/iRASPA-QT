@@ -658,15 +658,23 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
 
   _appearanceAnnotationForm->styleComboBox->insertItem(0, "Flat billboard");
 
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   QFontDatabase database;
   const QStringList fontFamilies = database.families();
+#else
+  const QStringList fontFamilies = QFontDatabase::families();
+#endif
   for (const QString &family : fontFamilies)
   {
     _appearanceAnnotationForm->fontComboBox->addItem(family);
   }
   _appearanceAnnotationForm->fontComboBox->setCurrentText("Helvetica");
 
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   const QStringList fontStyles = database.styles("Helvetica");
+#else
+  const QStringList fontStyles = QFontDatabase::styles("Helvetica");
+#endif
   for (const QString &style : fontStyles)
   {
     _appearanceAnnotationForm->fontSpecifierComboBox->addItem(style);
@@ -8142,9 +8150,12 @@ void AppearanceTreeWidgetController::reloadAnnotationFont()
         }
         whileBlocking(_appearanceAnnotationForm->fontComboBox)->setCurrentText(familyName);
 
-
-        QFontDatabase database;
-        const QStringList fontStyles = database.styles(familyName);
+        #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+          QFontDatabase database;
+          const QStringList fontStyles = database.styles(familyName);
+        #else
+          const QStringList fontStyles = QFontDatabase::styles(familyName);
+        #endif
         whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->clear();
         for (const QString &style : fontStyles)
         {
@@ -8389,7 +8400,6 @@ void AppearanceTreeWidgetController::setAnnotationFontMember(QString value)
   {
     QString fontName = iraspa_structure->structure()->renderTextFont();
 
-    QFontDatabase database = QFontDatabase();
     QFont font = QFont(fontName);
     QFontInfo fontInfo = QFontInfo(font);
     QString fontFamily = fontInfo.family();

@@ -100,6 +100,9 @@ private:
   std::vector<std::shared_ptr<iRASPAStructure>> _frames{};
   std::set<size_t> _selectedFramesIndexSet;
 
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<iRASPAStructure>>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<iRASPAStructure>>& val);
+
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Movie> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Movie> &);
 

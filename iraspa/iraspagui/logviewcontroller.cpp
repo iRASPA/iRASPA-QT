@@ -50,3 +50,11 @@ void LogViewController::logMessage(ErrorLevel level, QString message)
 
   ensureCursorVisible();
 }
+
+void LogViewController::insert(QStringList message)
+{
+  for(QString &string : message)
+  {
+    appendHtml(string);
+  }
+}

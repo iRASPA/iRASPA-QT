@@ -4,11 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets opengl concurrent
+QT += core gui widgets opengl concurrent
 
-greaterThan (QT_MINOR_VERSION, 5): QT += webenginewidgets
-
-lessThan (QT_MINOR_VERSION, 6): QT += webkitwidgets
+equals(QT_MAJOR_VERSION, 5):lessThan (QT_MINOR_VERSION, 6): QT += webkitwidgets
+equals(QT_MAJOR_VERSION, 5):greaterThan (QT_MINOR_VERSION, 5): QT += webenginewidgets
+equals(QT_MAJOR_VERSION, 6): QT += openglwidgets
 
 CONFIG += c++1z
 

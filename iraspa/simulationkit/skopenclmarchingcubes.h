@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QtGlobal>
+#include <QStringList>
 #include <array>
 #include <vector>
 #include <mathkit.h>
@@ -44,7 +45,7 @@ class SKOpenCLMarchingCubes: protected QOpenGLFunctions_3_3_Core, public LogRepo
 {
 public:
   SKOpenCLMarchingCubes();
-  void initialize(bool isOpenCLInitialized, cl_context context, cl_device_id device_id, cl_command_queue queue);
+  void initialize(bool isOpenCLInitialized, cl_context context, cl_device_id device_id, cl_command_queue queue, QStringList &logData);
   int computeIsosurface(size_t size, std::vector<cl_float>* voxels, double isoValue, cl_GLuint OpenGLVertextBufferObject);
   bool glInteroperability() {return _glInteroperability;}
   void setGLInteroperability(bool interoperability) {_glInteroperability = interoperability;}

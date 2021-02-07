@@ -257,7 +257,6 @@ std::shared_ptr<DocumentData> MainWindow::readDatabase(QString fileName)
 
   if(info.exists())
   {
-
     ZipReader reader = ZipReader(fileURL.toString(), QIODevice::ReadOnly);
 
     QByteArray data = reader.fileData("nl.darkwing.iRASPA_projectData");
@@ -589,11 +588,19 @@ void MainWindow::createMenus()
   QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
   helpMenu->addAction(actionHelpContents);
 
-  QObject::connect(actionHelpContents, &QAction::triggered, [this](bool){
-     HelpWidget* helpWindow = new HelpWidget(this);
-     helpWindow->resize(1200,800);
-     helpWindow->show();
-  });
+
+  #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     QObject::connect(actionHelpContents, &QAction::triggered, [this](bool){
+       HelpWidget* helpWindow = new HelpWidget(this);
+       helpWindow->resize(1200,800);
+       helpWindow->show();
+     });
+   #else
+     QObject::connect(actionHelpContents, &QAction::triggered, [](bool){
+       QDesktopServices::openUrl(QUrl("https://help.iraspa.org"));
+     });
+   #endif
+
 
   ui->addMovieToolButton->setContextMenuPolicy(Qt::CustomContextMenu);
   QObject::connect(ui->addMovieToolButton, &QToolButton::customContextMenuRequested, this, &MainWindow::ShowContextAddStructureMenu);
@@ -1167,87 +1174,72 @@ void MainWindow::openFile(const QString &fileName)
     QGuiApplication::setOverrideCursor(Qt::WaitCursor);
 #endif
 
-    std::shared_ptr<DocumentData> documentData = std::make_shared<DocumentData>();
+  std::shared_ptr<DocumentData> documentData = std::make_shared<DocumentData>();
 
-    qDebug() << "Reading zip-file";
+  ZipReader reader = ZipReader(fileName, QIODevice::ReadOnly);
 
-      ZipReader reader = ZipReader(fileName, QIODevice::ReadOnly);
+  QByteArray colorData = reader.fileData("nl.darkwing.iRASPA_colorData");
+  QDataStream colorStream(&colorData, QIODevice::ReadOnly);
 
-      QByteArray colorData = reader.fileData("nl.darkwing.iRASPA_colorData");
-      QDataStream colorStream(&colorData, QIODevice::ReadOnly);
+  try
+  {
+    qDebug() << "start reading color data: " << colorData.size();
+    colorStream >> documentData->colorSets();
+  }
+  catch(std::exception e)
+  {
+    std::cout << "Error: " << e.what() << std::endl;
+  }
 
-      try
-      {
-        qDebug() << "start reading color data: " << colorData.size();
-        colorStream >> documentData->colorSets();
-      }
-      catch(std::exception e)
-      {
-        std::cout << "Error: " << e.what() << std::endl;
-      }
+  qDebug() << "done reading color data" << colorData.size();
 
-      qDebug() << "done reading color data" << colorData.size();
+  QByteArray forceFieldData = reader.fileData("nl.darkwing.iRASPA_forceFieldData");
+  QDataStream forceFieldStream(&forceFieldData, QIODevice::ReadOnly);
 
-      QByteArray forceFieldData = reader.fileData("nl.darkwing.iRASPA_forceFieldData");
-      QDataStream forceFieldStream(&forceFieldData, QIODevice::ReadOnly);
+  try
+  {
+    qDebug() << "start reading force field data" << forceFieldData.size();
+    forceFieldStream >> documentData->forceFieldSets();
+  }
+  catch(std::exception e)
+  {
+    std::cout << "Error: " << e.what() << std::endl;
+  }
+  qDebug() << "done reading force field data: " << forceFieldData.size();
 
-      try
-      {
-        qDebug() << "start reading force field data" << forceFieldData.size();
-        forceFieldStream >> documentData->forceFieldSets();
-      }
-      catch(std::exception e)
-      {
-        std::cout << "Error: " << e.what() << std::endl;
-      }
-      qDebug() << "done reading force field data: " << forceFieldData.size();
+  QByteArray data = reader.fileData("nl.darkwing.iRASPA_projectData");
+  QDataStream stream(&data, QIODevice::ReadOnly);
 
-      QByteArray data = reader.fileData("nl.darkwing.iRASPA_projectData");
-      QDataStream stream(&data, QIODevice::ReadOnly);
+  try
+  {
+    qDebug() << "start reading document data: " << data.size();
+    stream >> documentData;
+  }
+  catch (InvalidArchiveVersionException ex)
+  {
+    std::cout << "Error: " << ex.message().toStdString() << std::endl;
+    std::cout << ex.what() << ex.get_file() << std::endl;
+    std::cout << "Function: " << ex.get_func() << std::endl;
+  }
+  catch(InconsistentArchiveException ex)
+  {
+    std::cout << "Error: " << ex.message().toStdString() << std::endl;
+    std::cout << ex.what() << ex.get_file() << std::endl;
+    std::cout << "Function: " << ex.get_func() << std::endl;
+  }
+  catch(std::exception e)
+  {
+    std::cout << "Error: " << e.what() << std::endl;
+  }
 
-      try
-      {
-        qDebug() << "start reading document data: " << data.size();
-        stream >> documentData;
-      }
-      catch (InvalidArchiveVersionException ex)
-      {
-        std::cout << "Error: " << ex.message().toStdString() << std::endl;
-        std::cout << ex.what() << ex.get_file() << std::endl;
-        std::cout << "Function: " << ex.get_func() << std::endl;
-      }
-      catch(InconsistentArchiveException ex)
-      {
-        std::cout << "Error: " << ex.message().toStdString() << std::endl;
-        std::cout << ex.what() << ex.get_file() << std::endl;
-        std::cout << "Function: " << ex.get_func() << std::endl;
-      }
-      catch(std::exception e)
-      {
-        std::cout << "Error: " << e.what() << std::endl;
-      }
+  documentData->projectTreeController()->localProjects()->setIsDropEnabled(true);
+  for(std::shared_ptr<ProjectTreeNode> localNode : documentData->projectTreeController()->localProjects()->descendantNodes())
+  {
+    localNode->representedObject()->readData(reader);
+  }
+  reader.close();
 
-      documentData->projectTreeController()->localProjects()->setIsDropEnabled(true);
-      for(std::shared_ptr<ProjectTreeNode> localNode : documentData->projectTreeController()->localProjects()->descendantNodes())
-      {
-        localNode->representedObject()->readData(reader);
-      }
-      reader.close();
-
-      ui->projectTreeView->setDocumentData(documentData);
-
-      /*
-      QModelIndex index1 = ui->projectTreeView->model()->index(0,0,QModelIndex());
-      QModelIndex index2 = ui->projectTreeView->model()->index(2,0,QModelIndex());
-      QModelIndex index3 = ui->projectTreeView->model()->index(4,0,QModelIndex());
-      ui->projectTreeView->expand(index1);
-      ui->projectTreeView->expand(index2);
-      ui->projectTreeView->expand(index3);
-
-      QModelIndex index4 = ui->projectTreeView->model()->index(0,0,index2);
-      ui->projectTreeView->expand(index4);
-*/
-      std::cout << "End openFile" <<  std::endl;
+  ui->projectTreeView->setDocumentData(documentData);
 
 #ifndef QT_NO_CURSOR
     QGuiApplication::restoreOverrideCursor();

@@ -238,7 +238,8 @@ QMimeData* FrameListViewModel::mimeDataLazy(const QModelIndexList &indexes) cons
   stream << ptrval;
 
   // write the number of objects
-  stream << sortedIndexes.count();
+  qulonglong count = static_cast<qulonglong>(sortedIndexes.count());
+  stream << count;
 
   for(const QModelIndex &index: sortedIndexes)
   {
@@ -300,7 +301,7 @@ bool FrameListViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
   stream >> senderProjectTreeViewId;
 
   // read the number of objects
-  int count;
+  qulonglong count;
   stream >> count;
 
   int beginRow = row;

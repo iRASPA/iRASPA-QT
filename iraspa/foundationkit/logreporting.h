@@ -22,7 +22,7 @@
 #pragma once
 
 #include <QString>
-
+#include <QStringList>
 
 class LogReporting
 {
@@ -33,6 +33,7 @@ public:
   };
 
   virtual void logMessage(ErrorLevel level, QString message) = 0;
+  virtual void insert(QStringList messages) = 0;
 };
 
 struct LogReportingConsumer

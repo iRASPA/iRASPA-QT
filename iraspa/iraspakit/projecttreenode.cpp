@@ -439,6 +439,30 @@ std::shared_ptr<ProjectTreeNode> ProjectTreeNode::shallowClone()
   return projectTreeNode;
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<ProjectTreeNode>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<ProjectTreeNode>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<ProjectTreeNode>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<ProjectTreeNode> tempVal = std::make_shared<ProjectTreeNode>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
 QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<ProjectTreeNode>& node)
 {
   stream << node->_versionNumber;

@@ -23,6 +23,7 @@
 #include <QWidget>
 #include <QStyle>
 #include <QPainter>
+#include <QStyleOptionSlider>
 #include <QStylePainter>
 #include <QApplication>
 #include <QPushButton>
@@ -63,7 +64,11 @@ void BondListViewSliderStyledItemDelegate::paint(QPainter *painter, const QStyle
 
     painter->save();
     QStyleOptionSlider opt;
-    opt.init(slider);
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+      opt.init(slider);
+    #else
+      opt.initFrom(slider);
+    #endif
     opt.orientation = Qt::Horizontal;
     opt.minimum = slider->minimum();
     opt.maximum = slider->maximum();

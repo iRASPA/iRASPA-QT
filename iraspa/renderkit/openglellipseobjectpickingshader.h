@@ -25,7 +25,11 @@
 #include <array>
 #define GL_GLEXT_PROTOTYPES
 #include <QtOpenGL>
-#include <QGLFunctions>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  #include <QGLFunctions>
+#else
+  #include <QOpenGLFunctions>
+#endif
 #include "rkrenderkitprotocols.h"
 #include "rkrenderuniforms.h"
 

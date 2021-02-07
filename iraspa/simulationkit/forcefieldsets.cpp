@@ -39,6 +39,29 @@ ForceFieldSet* ForceFieldSets::operator[] (const QString name)
   return nullptr;
 }
 
+QDataStream &operator<<(QDataStream& stream, const std::vector<ForceFieldSet>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const ForceFieldSet& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<ForceFieldSet>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+  ForceFieldSet tempVal;
+  while(vecSize--)
+  {
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
 
 QDataStream &operator<<(QDataStream &stream, const ForceFieldSets &forcefieldTypes)
 {
@@ -62,3 +85,4 @@ QDataStream &operator>>(QDataStream &stream, ForceFieldSets &forcefieldTypes)
 
   return stream;
 }
+
