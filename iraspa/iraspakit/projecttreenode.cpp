@@ -89,7 +89,7 @@ const IndexPath ProjectTreeNode::indexPath()
   if (std::shared_ptr<ProjectTreeNode> lockedParent =  _parent.lock())
   {
     IndexPath indexpath = lockedParent->indexPath();
-    std::optional<int> index = lockedParent->findChildIndex(shared_from_this());
+    std::optional<size_t> index = lockedParent->findChildIndex(shared_from_this());
     if(index)
     {
       if (indexpath.size() > 0)
@@ -114,7 +114,7 @@ void ProjectTreeNode::removeFromParent()
 {
   if(std::shared_ptr<ProjectTreeNode> lockedParent = _parent.lock())
   {
-    std::optional<int> index = lockedParent->findChildIndex(shared_from_this());
+    std::optional<size_t> index = lockedParent->findChildIndex(shared_from_this());
     assert(index);
     if(index)
     {

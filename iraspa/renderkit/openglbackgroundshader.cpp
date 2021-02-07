@@ -19,9 +19,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include <QOpenGLWindow>
-#include <QOpenGLWidget>
-
 #include "openglbackgroundshader.h"
 #include <iostream>
 #include "glgeterror.h"

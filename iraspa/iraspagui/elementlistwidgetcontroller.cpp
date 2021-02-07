@@ -227,7 +227,7 @@ void ElementListWidgetController::reloadData()
        std::vector<int> oxidationStates = element._possibleOxidationStates;
        QString oxidationStatesString = std::accumulate(std::next(oxidationStates.begin()), oxidationStates.end(),
                                           QString::number(oxidationStates[0]), // start with first element
-                                          [](QString& a, int& b) {
+                                          [](QString a, int& b) {
                                               return a + ',' + QString::number(b);
                                           });
 
@@ -394,7 +394,7 @@ void ElementListWidgetController::addNewForceFieldAtomType()
     std::vector<int> oxidationStates = element._possibleOxidationStates;
     QString oxidationStatesString = std::accumulate(std::next(oxidationStates.begin()), oxidationStates.end(),
                                        QString::number(oxidationStates[0]), // start with first element
-                                       [](QString& a, int& b) {
+                                       [](QString a, int& b) {
                                            return a + ',' + QString::number(b);
                                        });
 

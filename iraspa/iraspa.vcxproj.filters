@@ -98,6 +98,9 @@
     <ClCompile Include="iraspagui\atomtreeviewchangeselectioncommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangeuniqueforcefieldnamecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="iraspagui\atomtreeviewcopyselectiontonewmoviecommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1154,6 +1157,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspagui\atomtreeviewchangeselectioncommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewchangeuniqueforcefieldnamecommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspagui\atomtreeviewcopyselectiontonewmoviecommand.h">

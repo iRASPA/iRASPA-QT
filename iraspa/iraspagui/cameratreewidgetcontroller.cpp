@@ -1640,11 +1640,6 @@ void CameraTreeWidgetController::setBackgroundColor()
   }
 }
 
-std::optional<QColor> CameraTreeWidgetController::backgroundColor()
-{
-  return std::nullopt;
-}
-
 void CameraTreeWidgetController::setLinearGradientFromColor()
 {
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");

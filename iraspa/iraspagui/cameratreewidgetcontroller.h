@@ -128,7 +128,6 @@ private slots:
   void setMovieType(int value);
 
   void setBackgroundColor();
-  std::optional<QColor> backgroundColor();
   void setLinearGradientFromColor();
   void setLinearGradientToColor();
   void setLinearGradientAngle(double angle);

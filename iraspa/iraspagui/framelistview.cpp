@@ -211,13 +211,13 @@ void FrameListView::selectionChanged(const QItemSelection &selected, const QItem
     }
 
     _movie->clearSelection();
-    for(QModelIndex index : selectedIndexes())
+    for(const QModelIndex &index : selectedIndexes())
     {
       _movie->addSelectedFrameIndex(index.row());
     }
 
     // set currentIndex for keyboard navigation
-    if (std::optional<int> selectedIndex = _sceneList->selectedFrameIndex())
+    if (std::optional<size_t> selectedIndex = _sceneList->selectedFrameIndex())
     {
       QModelIndex item = model()->index(*selectedIndex, 0, QModelIndex());
       selectionModel()->setCurrentIndex(item, QItemSelectionModel::SelectionFlag::Current);

@@ -28,10 +28,14 @@
 #include <QOpenGLFunctions_3_3_Core>
 #if (QT_VERSION < QT_VERSION_CHECK(5,4,0))
   #include <QGLWidget>
-#elseif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+#elif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   #include <QOpenGLWidget>
 #else
-  #include <QOpenGLWidget>
+  #if defined(Q_OS_WIN)
+    #include <QtOpenGLWidgets/QOpenGLWidget>
+  #else 
+    #include <QOpenGLWidget>
+  #endif
 #endif
 #include <QTimer>
 #include <QPoint>

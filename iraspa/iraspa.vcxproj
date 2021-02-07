@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{36EF0EF9-CBAF-357D-9221-1D07DBB8BE66}</ProjectGuid>
+    <ProjectGuid>{754EA24A-4C59-3B54-99B1-820582FBF2F1}</ProjectGuid>
     <RootNamespace>iraspa</RootNamespace>
     <Keyword>QtVS_v303</Keyword>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
@@ -67,20 +67,20 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QtInstall>msvc2019_64</QtInstall>
-    <QtModules>core;opengl;network;gui;widgets;qml;positioning;printsupport;webchannel;quick;concurrent;webengine;webenginewidgets</QtModules>
+    <QtInstall>msvc2019_64 6.0.1</QtInstall>
+    <QtModules>core;opengl;gui;widgets;concurrent</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>msvc2019_64</QtInstall>
-    <QtModules>core;opengl;network;gui;widgets;qml;positioning;printsupport;webchannel;quick;concurrent;webengine;webenginewidgets</QtModules>
+    <QtInstall>msvc2019_64 6.0.1</QtInstall>
+    <QtModules>core;opengl;gui;widgets;concurrent</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;spglib;mathkit;foundationkit;symmetrykit;simulationkit;renderkit;iraspakit;iraspagui;C:\vcpkg\installed\x64-windows-static\include;C:\vcpkg\installed\x64-windows-static\include\python2.7;release;C:\VulkanSDK\1.2.141.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus /F 4194304 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;spglib;mathkit;foundationkit;symmetrykit;simulationkit;renderkit;iraspakit;iraspagui;..\..\..\..\vcpkg\installed\x64-windows-static\include;..\..\..\..\vcpkg\installed\x64-windows-static\include\python2.7;release;..\..\..\..\VulkanSDK\1.2.141.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr /F 4194304 -utf-8 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -89,7 +89,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ObjectFileName>release\</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;NDEBUG;QT_NO_DEBUG;QT_QMLMODELS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;NDEBUG;QT_NO_DEBUG;QT_OPENGLWIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -98,10 +98,11 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\vcpkg\installed\x64-windows-static\lib\avutil.lib;C:\vcpkg\installed\x64-windows-static\lib\avfilter.lib;C:\vcpkg\installed\x64-windows-static\lib\avformat.lib;C:\vcpkg\installed\x64-windows-static\lib\avresample.lib;C:\vcpkg\installed\x64-windows-static\lib\avdevice.lib;C:\vcpkg\installed\x64-windows-static\lib\avcodec.lib;C:\vcpkg\installed\x64-windows-static\lib\swresample.lib;C:\vcpkg\installed\x64-windows-static\lib\swscale.lib;C:\vcpkg\installed\x64-windows-static\lib\libx264.lib;C:\vcpkg\installed\x64-windows\lib\x265-static.lib;C:\vcpkg\installed\x64-windows-static\lib\vpxmt.lib;C:\vcpkg\installed\x64-windows-static\lib\python27.lib;C:\vcpkg\installed\x64-windows-static\lib\lzma.lib;C:\vcpkg\installed\x64-windows-static\lib\zlib.lib;C:\vcpkg\installed\x64-windows-static\lib\OpenCL.lib;secur32.lib;ws2_32.lib;bcrypt.lib;kernel32.lib;cfgmgr32.lib;user32.lib;ole32.lib;advapi32.lib;$(QTDIR)\lib\Qt5QmlModels.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\openssl\lib;C:\Utils\my_sql\mysql-5.7.25-winx64\lib;C:\Utils\postgresql\pgsql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\vcpkg\installed\x64-windows-static\lib\avutil.lib;C:\vcpkg\installed\x64-windows-static\lib\avfilter.lib;C:\vcpkg\installed\x64-windows-static\lib\avformat.lib;C:\vcpkg\installed\x64-windows-static\lib\avresample.lib;C:\vcpkg\installed\x64-windows-static\lib\avdevice.lib;C:\vcpkg\installed\x64-windows-static\lib\avcodec.lib;C:\vcpkg\installed\x64-windows-static\lib\swresample.lib;C:\vcpkg\installed\x64-windows-static\lib\swscale.lib;C:\vcpkg\installed\x64-windows-static\lib\libx264.lib;C:\vcpkg\installed\x64-windows\lib\x265-static.lib;C:\vcpkg\installed\x64-windows-static\lib\vpxmt.lib;C:\vcpkg\installed\x64-windows-static\lib\python27.lib;C:\vcpkg\installed\x64-windows-static\lib\lzma.lib;C:\vcpkg\installed\x64-windows-static\lib\zlib.lib;C:\vcpkg\installed\x64-windows-static\lib\OpenCL.lib;secur32.lib;ws2_32.lib;bcrypt.lib;kernel32.lib;cfgmgr32.lib;user32.lib;ole32.lib;advapi32.lib;$(QTDIR)\lib\Qt6OpenGLWidgets.lib;$(QTDIR)\lib\Qt6Widgets.lib;$(QTDIR)\lib\Qt6OpenGL.lib;$(QTDIR)\lib\Qt6Gui.lib;$(QTDIR)\lib\Qt6Concurrent.lib;$(QTDIR)\lib\Qt6Core.lib;$(QTDIR)\lib\Qt6EntryPoint.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/MD "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
       <LinkIncremental>false</LinkIncremental>
@@ -118,7 +119,7 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;NDEBUG;QT_NO_DEBUG;QT_OPENGL_LIB;QT_WEBENGINEWIDGETS_LIB;QT_PRINTSUPPORT_LIB;QT_WIDGETS_LIB;QT_WEBENGINECORE_LIB;QT_QUICK_LIB;QT_GUI_LIB;QT_CONCURRENT_LIB;QT_QMLMODELS_LIB;QT_WEBCHANNEL_LIB;QT_QML_LIB;QT_NETWORK_LIB;QT_POSITIONING_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;NDEBUG;QT_NO_DEBUG;QT_OPENGLWIDGETS_LIB;QT_WIDGETS_LIB;QT_OPENGL_LIB;QT_GUI_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <QtMoc>
       <CompilerFlavor>msvc</CompilerFlavor>
@@ -143,8 +144,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;spglib;mathkit;foundationkit;symmetrykit;simulationkit;renderkit;iraspakit;iraspagui;C:\vcpkg\installed\x64-windows-static\include;C:\vcpkg\installed\x64-windows-static\include\python2.7;debug;C:\VulkanSDK\1.2.141.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus /F 4194304 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;spglib;mathkit;foundationkit;symmetrykit;simulationkit;renderkit;iraspakit;iraspagui;..\..\..\..\vcpkg\installed\x64-windows-static\include;..\..\..\..\vcpkg\installed\x64-windows-static\include\python2.7;debug;..\..\..\..\VulkanSDK\1.2.141.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr /F 4194304 -utf-8 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -153,7 +154,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ObjectFileName>debug\</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;QT_QMLMODELS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;QT_OPENGLWIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -162,8 +163,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\vcpkg\installed\x64-windows-static\debug\lib\avutil.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avfilter.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avformat.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avresample.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avdevice.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avcodec.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\swresample.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\swscale.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\libx264.lib;C:\vcpkg\installed\x64-windows\debug\lib\x265-static.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\vpxmtd.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\python27_d.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\lzmad.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\zlibd.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\OpenCL.lib;secur32.lib;ws2_32.lib;bcrypt.lib;kernel32.lib;cfgmgr32.lib;user32.lib;ole32.lib;advapi32.lib;msvcrtd.lib;$(QTDIR)\lib\Qt5QmlModelsd.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\openssl\lib;C:\Utils\my_sql\mysql-5.7.25-winx64\lib;C:\Utils\postgresql\pgsql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\vcpkg\installed\x64-windows-static\debug\lib\avutil.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avfilter.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avformat.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avresample.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avdevice.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\avcodec.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\swresample.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\swscale.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\libx264.lib;C:\vcpkg\installed\x64-windows\debug\lib\x265-static.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\vpxmtd.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\python27_d.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\lzmad.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\zlibd.lib;C:\vcpkg\installed\x64-windows-static\debug\lib\OpenCL.lib;secur32.lib;ws2_32.lib;bcrypt.lib;kernel32.lib;cfgmgr32.lib;user32.lib;ole32.lib;advapi32.lib;msvcrtd.lib;$(QTDIR)\lib\Qt6OpenGLWidgetsd.lib;$(QTDIR)\lib\Qt6Widgetsd.lib;$(QTDIR)\lib\Qt6OpenGLd.lib;$(QTDIR)\lib\Qt6Guid.lib;$(QTDIR)\lib\Qt6Concurrentd.lib;$(QTDIR)\lib\Qt6Cored.lib;$(QTDIR)\lib\Qt6EntryPointd.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/MD "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -181,7 +182,7 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;QT_OPENGL_LIB;QT_WEBENGINEWIDGETS_LIB;QT_PRINTSUPPORT_LIB;QT_WIDGETS_LIB;QT_WEBENGINECORE_LIB;QT_QUICK_LIB;QT_GUI_LIB;QT_CONCURRENT_LIB;QT_QMLMODELS_LIB;QT_WEBCHANNEL_LIB;QT_QML_LIB;QT_NETWORK_LIB;QT_POSITIONING_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;QT_OPENGLWIDGETS_LIB;QT_WIDGETS_LIB;QT_OPENGL_LIB;QT_GUI_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <QtMoc>
       <CompilerFlavor>msvc</CompilerFlavor>
@@ -222,6 +223,7 @@
     <ClCompile Include="iraspagui\atomtreeviewchangepositionycommand.cpp" />
     <ClCompile Include="iraspagui\atomtreeviewchangepositionzcommand.cpp" />
     <ClCompile Include="iraspagui\atomtreeviewchangeselectioncommand.cpp" />
+    <ClCompile Include="iraspagui\atomtreeviewchangeuniqueforcefieldnamecommand.cpp" />
     <ClCompile Include="iraspagui\atomtreeviewcopyselectiontonewmoviecommand.cpp" />
     <ClCompile Include="iraspagui\atomtreeviewdeleteselectioncommand.cpp" />
     <ClCompile Include="iraspagui\atomtreeviewdropcopycommand.cpp" />
@@ -584,6 +586,7 @@
     <ClInclude Include="iraspagui\atomtreeviewchangepositionycommand.h" />
     <ClInclude Include="iraspagui\atomtreeviewchangepositionzcommand.h" />
     <ClInclude Include="iraspagui\atomtreeviewchangeselectioncommand.h" />
+    <ClInclude Include="iraspagui\atomtreeviewchangeuniqueforcefieldnamecommand.h" />
     <ClInclude Include="iraspagui\atomtreeviewcopyselectiontonewmoviecommand.h" />
     <ClInclude Include="iraspagui\atomtreeviewdeleteselectioncommand.h" />
     <ClInclude Include="iraspagui\atomtreeviewdropcopycommand.h" />
@@ -997,14 +1000,14 @@
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\mkspecs\features\data\dummy.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cl -Bx"$(QTDIR)\bin\qmake.exe" -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus /F 4194304 /Zi /MD -Zi -MDd -std:c++17 -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E $(QTDIR)\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;debug\moc_predefs.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cl -Bx"$(QTDIR)\bin\qmake.exe" -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr /F 4194304 /Zi /MD -Zi -MDd -std:c++17 -utf-8 -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E $(QTDIR)\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;debug\moc_predefs.h</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generate moc_predefs.h</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">debug\moc_predefs.h;%(Outputs)</Outputs>
     </CustomBuild>
     <CustomBuild Include="release\moc_predefs.h.cbt">
       <FileType>Document</FileType>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\mkspecs\features\data\dummy.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cl -Bx"$(QTDIR)\bin\qmake.exe" -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus /F 4194304 /Zi /MD -O2 -MD -std:c++17 -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E $(QTDIR)\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;release\moc_predefs.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cl -Bx"$(QTDIR)\bin\qmake.exe" -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr /F 4194304 /Zi /MD -O2 -MD -std:c++17 -utf-8 -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E $(QTDIR)\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;release\moc_predefs.h</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generate moc_predefs.h</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">release\moc_predefs.h;%(Outputs)</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
