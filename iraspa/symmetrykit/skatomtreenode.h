@@ -54,8 +54,8 @@ public:
     inline bool isLeaf() {return !_isGroup;}
     inline bool isGroup() {return _isGroup;}
     void setIsGroup(bool value) {_isGroup = value;}
-    bool insertChild(int row, std::shared_ptr<SKAtomTreeNode> child);
-    void insertInParent(std::shared_ptr<SKAtomTreeNode> parent, int index);
+    bool insertChild(size_t row, std::shared_ptr<SKAtomTreeNode> child);
+    void insertInParent(std::shared_ptr<SKAtomTreeNode> parent, size_t index);
     void appendToParent(std::shared_ptr<SKAtomTreeNode> parent);
     bool removeChild(size_t position);
     bool removeChildren(size_t position, size_t count);

@@ -148,22 +148,22 @@ struct RKStructureUniforms
 {
   int32_t sceneIdentifier = 0;
   int32_t MovieIdentifier = 0;
-  float atomScaleFactor = 1.0;
+  float atomScaleFactor = 1.0f;
   int32_t numberOfMultiSamplePoints = 8;
 
   int32_t ambientOcclusion = GL_FALSE;
   int32_t ambientOcclusionPatchNumber = 64;
-  float ambientOcclusionPatchSize = 16.0;
-  float ambientOcclusionInverseTextureSize = 1.0/1024.0;
+  float ambientOcclusionPatchSize = 16.0f;
+  float ambientOcclusionInverseTextureSize = float(1.0/1024.0);
 
-  float atomHue = 1.0;
-  float atomSaturation = 1.0;
-  float atomValue = 1.0;
-  float pad111 = 1.0;
+  float atomHue = 1.0f;
+  float atomSaturation = 1.0f;
+  float atomValue = 1.0f;
+  float pad111 = 1.0f;
 
   int32_t atomHDR = GL_TRUE;
-  float atomHDRExposure = 1.5;
-  float atomSelectionIntensity = 0.5;
+  float atomHDRExposure = 1.5f;
+  float atomSelectionIntensity = 0.5f;
   int32_t clipAtomsAtUnitCell = GL_FALSE;
 
   float4 atomAmbient = float4(1.0, 1.0, 1.0, 1.0);
@@ -171,15 +171,15 @@ struct RKStructureUniforms
   float4 atomSpecular = float4(1.0, 1.0, 1.0, 1.0);
   float atomShininess = 4.0;
 
-  float bondHue = 0.0;
-  float bondSaturation = 0.0;
-  float bondValue = 0.0;
+  float bondHue = 0.0f;
+  float bondSaturation = 0.0f;
+  float bondValue = 0.0f;
 
   //----------------------------------------  128 bytes boundary
 
   int32_t bondHDR = GL_TRUE;
-  float bondHDRExposure = 1.5;
-  float bondSelectionIntensity = 1.0;
+  float bondHDRExposure = 1.5f;
+  float bondSelectionIntensity = 1.0f;
   int32_t clipBondsAtUnitCell = GL_FALSE;
 
 
@@ -187,11 +187,11 @@ struct RKStructureUniforms
   float4 bondDiffuseColor = float4(1.0, 1.0, 1.0, 1.0);
   float4 bondSpecularColor = float4(1.0, 1.0, 1.0, 1.0);
 
-  float bondShininess = 4.0;
-  float bondScaling = 1.0;
+  float bondShininess = 4.0f;
+  float bondScaling = 1.0f;
   int32_t bondColorMode = 0;
 
-  float unitCellScaling = 1.0;
+  float unitCellScaling = 1.0f;
   float4 unitCellDiffuseColor = float4(1.0, 1.0, 1.0, 1.0);
 
   float4 clipPlaneLeft = float4(1.0, 1.0, 1.0, 1.0);
@@ -210,16 +210,16 @@ struct RKStructureUniforms
   //----------------------------------------  384 bytes boundary
 
   float4x4 boxMatrix = float4x4();
-  float atomSelectionStripesDensity = 0.25;
-  float atomSelectionStripesFrequency = 12.0;
-  float atomSelectionWorleyNoise3DFrequency = 2.0;
-  float atomSelectionWorleyNoise3DJitter = 0.0;
+  float atomSelectionStripesDensity = 0.25f;
+  float atomSelectionStripesFrequency = 12.0f;
+  float atomSelectionWorleyNoise3DFrequency = 2.0f;
+  float atomSelectionWorleyNoise3DJitter = 0.0f;
 
   float4 atomAnnotationTextDisplacement = float4();
   float4 atomAnnotationTextColor = float4(0.0,0.0,0.0,1.0);
-  float atomAnnotationTextScaling = 1.0;
-  float atomSelectionScaling = 1.0;
-  float bondSelectionScaling = 1.25;
+  float atomAnnotationTextScaling = 1.0f;
+  float atomSelectionScaling = 1.0f;
+  float bondSelectionScaling = 1.25f;
   int32_t colorAtomsWithBondColor = GL_FALSE;
 
   //----------------------------------------  512 bytes boundary
@@ -231,47 +231,47 @@ struct RKStructureUniforms
   float4 primitiveDiffuseFrontSide = float4(0.0,0.0,0.0,1.0);
   float4 primitiveSpecularFrontSide = float4(0.0,0.0,0.0,1.0);
   int32_t primitiveFrontSideHDR = GL_TRUE;
-  float primitiveFrontSideHDRExposure = 1.5;
-  float primitiveOpacity = 1.0;
-  float primitiveShininessFrontSide = 4.0;
+  float primitiveFrontSideHDRExposure = 1.5f;
+  float primitiveOpacity = 1.0f;
+  float primitiveShininessFrontSide = 4.0f;
 
   float4 primitiveAmbientBackSide = float4(0.0,0.0,0.0,1.0);
   float4 primitiveDiffuseBackSide = float4(0.0,0.0,0.0,1.0);
   float4 primitiveSpecularBackSide = float4(0.0,0.0,0.0,1.0);
   int32_t primitiveBackSideHDR = GL_TRUE;
-  float primitiveBackSideHDRExposure = 1.5;
-  float pad6;
-  float primitiveShininessBackSide = 4.0;
+  float primitiveBackSideHDRExposure = 1.5f;
+  float pad6 = 0.0f;
+  float primitiveShininessBackSide = 4.0f;
 
   //----------------------------------------  768 bytes boundary
 
-  float bondSelectionStripesDensity = 0.25;
-  float bondSelectionStripesFrequency = 12.0;
-  float bondSelectionWorleyNoise3DFrequency = 2.0;
-  float bondSelectionWorleyNoise3DJitter = 1.0;
+  float bondSelectionStripesDensity = 0.25f;
+  float bondSelectionStripesFrequency = 12.0f;
+  float bondSelectionWorleyNoise3DFrequency = 2.0f;
+  float bondSelectionWorleyNoise3DJitter = 1.0f;
 
-  float primitiveSelectionStripesDensity = 0.25;
-  float primitiveSelectionStripesFrequency = 12.0;
-  float primitiveSelectionWorleyNoise3DFrequency = 2.0;
-  float primitiveSelectionWorleyNoise3DJitter = 1.0;
+  float primitiveSelectionStripesDensity = 0.25f;
+  float primitiveSelectionStripesFrequency = 12.0f;
+  float primitiveSelectionWorleyNoise3DFrequency = 2.0f;
+  float primitiveSelectionWorleyNoise3DJitter = 1.0f;
 
-  float primitiveSelectionScaling = 1.01;
-  float primitiveSelectionIntensity = 0.8;
-  float pad7;
-  float pad8;
+  float primitiveSelectionScaling = 1.01f;
+  float primitiveSelectionIntensity = 0.8f;
+  float pad7 = 0.0f;
+  float pad8 = 0.0f;
 
-  float primitiveHue = 1.0;
-  float primitiveSaturation = 1.0;
-  float primitiveValue = 1.0;
+  float primitiveHue = 1.0f;
+  float primitiveSaturation = 1.0f;
+  float primitiveValue = 1.0f;
   float pad9;
 
-  float4x4 pad10;
-  float4x4 pad11;
-  float4x4 pad12;
+  float4x4 pad10 = 0.0f;
+  float4x4 pad11 = 0.0f;
+  float4x4 pad12 = 0.0f;
 
   RKStructureUniforms() {}
-  RKStructureUniforms(int sceneIdentifier, int movieIdentifier, std::shared_ptr<RKRenderStructure> structure);
-  RKStructureUniforms(int sceneIdentifier, int movieIdentifier, std::shared_ptr<RKRenderStructure> structure, double4x4 inverseModelMatrix);
+  RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure);
+  RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure, double4x4 inverseModelMatrix);
 };
 
 const std::string  OpenGLStructureUniformBlockStringLiteral = R"foo(

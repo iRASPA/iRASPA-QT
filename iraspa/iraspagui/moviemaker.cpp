@@ -284,7 +284,7 @@ void MovieWriter::encodeFrame(AVFrame *frame)
 }
 
 
-void MovieWriter::addFrame(const uint8_t* pixels, int iframe)
+void MovieWriter::addFrame(const uint8_t* pixels, size_t iframe)
 {
   memcpy(_rgbpic->data[0], pixels, _width * _height * 4);
 

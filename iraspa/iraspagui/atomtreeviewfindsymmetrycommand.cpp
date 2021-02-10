@@ -43,7 +43,7 @@ AtomTreeViewFindSymmetryCommand::AtomTreeViewFindSymmetryCommand(MainWindow *mai
 void AtomTreeViewFindSymmetryCommand::redo()
 {
   const std::pair<std::vector<int>, std::vector<double3>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
-  const int num_atom = symmetryData.first.size();
+  const int num_atom = int(symmetryData.first.size());
   const double symprec = 1e-5;
   const double angle_tolerance = 1e-5;
 

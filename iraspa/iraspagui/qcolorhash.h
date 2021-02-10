@@ -31,7 +31,7 @@
 QT_BEGIN_NAMESPACE
 uint qHash(const QColor &c)
 {
-    return qHash(c.rgba());
+    return uint(qHash(c.rgba()));
 }
 QT_END_NAMESPACE
 

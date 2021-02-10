@@ -541,7 +541,7 @@ void ProjectTreeView::addProjectStructure()
       if(parentIndex.isValid())
       {
         ProjectSelectionNodesAndIndexPaths selection = _projectTreeController->selectionNodesAndIndexPaths();
-        ProjectTreeViewInsertProjectStructureCommand *insertProjectCommand = new ProjectTreeViewInsertProjectStructureCommand(_mainWindow, this, parent, parent->childCount(),
+        ProjectTreeViewInsertProjectStructureCommand *insertProjectCommand = new ProjectTreeViewInsertProjectStructureCommand(_mainWindow, this, parent, int(parent->childCount()),
                                                                                                                               selection, nullptr);
         undoManager().push(insertProjectCommand);
       }
@@ -563,7 +563,7 @@ void ProjectTreeView::addStructureProject(QModelIndex index)
         {
           ProjectSelectionNodesAndIndexPaths selection = _projectTreeController->selectionNodesAndIndexPaths();
           ProjectTreeViewInsertProjectStructureCommand *insertProjectCommand = new ProjectTreeViewInsertProjectStructureCommand(_mainWindow, this, item->parent(),
-                                                                                                                               item->row() + 1, selection, nullptr);
+                                                                                                                               int(item->row() + 1), selection, nullptr);
           undoManager().push(insertProjectCommand);
         }
         else
@@ -580,7 +580,7 @@ void ProjectTreeView::addStructureProject(QModelIndex index)
       std::shared_ptr<ProjectTreeNode> parent = _projectTreeController->localProjects();
       ProjectSelectionNodesAndIndexPaths selection = _projectTreeController->selectionNodesAndIndexPaths();
       ProjectTreeViewInsertProjectStructureCommand *insertProjectCommand = new ProjectTreeViewInsertProjectStructureCommand(_mainWindow, this, parent,
-                                                                                                                            parent->childCount(), selection, nullptr);
+                                                                                                                            int(parent->childCount()), selection, nullptr);
       undoManager().push(insertProjectCommand);
     }
   }
@@ -617,7 +617,7 @@ void ProjectTreeView::addGroupProject(QModelIndex index)
       std::shared_ptr<ProjectTreeNode> parent = _projectTreeController->localProjects();
       ProjectSelectionNodesAndIndexPaths selection = _projectTreeController->selectionNodesAndIndexPaths();
       ProjectTreeViewInsertProjectGroupCommand *insertProjectCommand = new ProjectTreeViewInsertProjectGroupCommand(_mainWindow, this, parent,
-                                                                                                                            parent->childCount(), selection, nullptr);
+                                                                                                                            int(parent->childCount()), selection, nullptr);
       undoManager().push(insertProjectCommand);
     }
   }

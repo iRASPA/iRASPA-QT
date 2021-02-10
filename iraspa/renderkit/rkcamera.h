@@ -99,7 +99,7 @@ public:
   static double4x4 glFrustumfPerspective(double left, double right, double bottom, double top, double near, double far);
   static double4x4 glFrustumfPerspective(double fov, double aspectratio, double boundingBoxAspectRatio, double near, double far);
   static double4x4 glFrustumfOrthographic(double left, double right, double  bottom, double top, double near, double far);
-  std::vector<int> selectPositionsInRectangle(std::vector<double3> &positions, QRect rect, double3 origin, QRect viewPortBounds);
+  std::vector<size_t> selectPositionsInRectangle(std::vector<double3> &positions, QRect rect, double3 origin, QRect viewPortBounds);
 private:
   qint64 _versionNumber{1};
   double _zNear=0.0;

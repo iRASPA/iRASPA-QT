@@ -47,7 +47,7 @@ void ProjectTreeViewDeleteSelectionCommand::redo()
   _model->layoutAboutToBeChanged();
   for(const auto &[projectNode, indexPath] : _reversedDeletedSelection.second)
   {
-    int row = indexPath.lastIndex();
+    int row = int(indexPath.lastIndex());
     std::shared_ptr<ProjectTreeNode> parentNode = _projectTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
     whileBlocking(_model)->removeRow(row, parentNode);
   }
@@ -68,7 +68,7 @@ void ProjectTreeViewDeleteSelectionCommand::undo()
   for(const auto &[projectNode, indexPath] : _deletedSelection.second)
   {
     std::shared_ptr<ProjectTreeNode> parentNode = _projectTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-    whileBlocking(_model)->insertRow(indexPath.lastIndex(), parentNode, projectNode);
+    whileBlocking(_model)->insertRow(int(indexPath.lastIndex()), parentNode, projectNode);
   }
   _model->layoutChanged();
 

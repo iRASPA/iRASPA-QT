@@ -56,7 +56,7 @@ void SKAtomTreeController::insertNodeInParent(std::shared_ptr<SKAtomTreeNode> no
 
 void SKAtomTreeController::insertNodeAtIndexPath(std::shared_ptr<SKAtomTreeNode> node, IndexPath path)
 {
-  int index = path.lastIndex();
+  size_t index = path.lastIndex();
   std::shared_ptr<SKAtomTreeNode> parent = _hiddenRootNode->descendantNodeAtIndexPath(path.removingLastIndex());
   node->insertInParent(parent, index);
 }

@@ -34,7 +34,7 @@ const IndexPath SKAtomTreeNode::indexPath()
   {
     IndexPath indexpath = lockedParent->indexPath();
 
-    std::optional<int> index = lockedParent->findChildIndex(shared_from_this());
+    std::optional<size_t> index = lockedParent->findChildIndex(shared_from_this());
     if(index)
     {
       if (indexpath.size() > 0)
@@ -72,9 +72,9 @@ std::shared_ptr<SKAtomTreeNode> SKAtomTreeNode::descendantNodeAtIndexPath(IndexP
   return node;
 }
 
-bool SKAtomTreeNode::insertChild(int row, std::shared_ptr<SKAtomTreeNode> child)
+bool SKAtomTreeNode::insertChild(size_t row, std::shared_ptr<SKAtomTreeNode> child)
 {
-  if (row < 0 || size_t(row) > _childNodes.size())
+  if (row < 0 || row > _childNodes.size())
   {
     qDebug() << "Error insertion at: " << row << ", size: " << _childNodes.size();
     return false;
@@ -85,7 +85,7 @@ bool SKAtomTreeNode::insertChild(int row, std::shared_ptr<SKAtomTreeNode> child)
   return true;
 }
 
-void SKAtomTreeNode::insertInParent(std::shared_ptr<SKAtomTreeNode> parent, int index)
+void SKAtomTreeNode::insertInParent(std::shared_ptr<SKAtomTreeNode> parent, size_t index)
 {
    this->_parent = parent;
    parent->_childNodes.insert(parent->_childNodes.begin() + index, shared_from_this());
@@ -122,7 +122,7 @@ void SKAtomTreeNode::removeFromParent()
 {
   if(std::shared_ptr<SKAtomTreeNode> lockedParent = _parent.lock())
   {
-    std::optional<int> index = lockedParent->findChildIndex(shared_from_this());
+    std::optional<size_t> index = lockedParent->findChildIndex(shared_from_this());
     assert(index);
     if(index)
     {

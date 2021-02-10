@@ -61,6 +61,7 @@ QString SKSpaceGroupSetting::symmorphicityString() const
   case Symmorphicity::hemisymmorphic:
       return "hemisymmorphic";
   }
+  return QString();
 }
 
 QString SKSpaceGroupSetting::centringString() const
@@ -90,6 +91,7 @@ QString SKSpaceGroupSetting::centringString() const
   case Centring::d:
       return "d";
   }
+  return QString();
 }
 
 

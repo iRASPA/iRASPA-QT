@@ -47,6 +47,7 @@ QString SKPointGroup::holohedryString() const
   case Holohedry::cubic:
       return "Cubic";
   }
+  return QString();
 }
 
 QString SKPointGroup::LaueString() const
@@ -78,6 +79,7 @@ QString SKPointGroup::LaueString() const
   case Laue::laue_m3m:
       return "m3m";
   }
+  return QString();
 }
 
 QDataStream &operator<<(QDataStream &stream, const SKPointGroup &pointGroup)

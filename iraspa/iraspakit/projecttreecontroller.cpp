@@ -85,7 +85,7 @@ std::shared_ptr<ProjectTreeNode> ProjectTreeController::nodeAtIndexPath(IndexPat
 
 void ProjectTreeController::insertNodeAtIndexPath(std::shared_ptr<ProjectTreeNode> node, IndexPath path)
 {
-  int index = path.lastIndex();
+  int index = int(path.lastIndex());
   std::shared_ptr<ProjectTreeNode> parent = _hiddenRootNode->descendantNodeAtIndexPath(path.removingLastIndex());
   node->insertInParent(parent, index);
 }

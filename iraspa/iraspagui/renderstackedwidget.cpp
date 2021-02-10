@@ -800,8 +800,8 @@ void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, Movie
         return;
       }
 
-      int numberOfFrames = project->maxNumberOfMoviesFrames();
-      for (int iframe = 0; iframe < numberOfFrames; iframe++)
+      size_t numberOfFrames = project->maxNumberOfMoviesFrames();
+      for (size_t iframe = 0; iframe < numberOfFrames; iframe++)
       {
         project->sceneList()->setSelectedFrameIndex(iframe);
         _mainWindow->propagateProject(_projectTreeNode.lock(), _mainWindow);

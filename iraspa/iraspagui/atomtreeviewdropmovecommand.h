@@ -33,15 +33,15 @@
 class AtomTreeViewDropMoveCommand : public QUndoCommand
 {
 public:
-  AtomTreeViewDropMoveCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure, std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, int>> moves, AtomSelectionIndexPaths oldSelection, QUndoCommand *undoParent = nullptr);
+  AtomTreeViewDropMoveCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure, std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> moves, AtomSelectionIndexPaths oldSelection, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
 private:
   MainWindow *_mainWindow;
   AtomTreeViewModel *_model;
   std::shared_ptr<iRASPAStructure> _iraspaStructure;
-  std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, int>> _moves;
-  std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, int>> _reverseMoves;
+  std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> _moves;
+  std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> _reverseMoves;
   AtomSelectionIndexPaths _oldSelection;
   AtomSelectionIndexPaths _newSelection;
 };

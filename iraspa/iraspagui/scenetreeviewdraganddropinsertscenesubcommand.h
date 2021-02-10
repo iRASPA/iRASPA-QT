@@ -34,11 +34,11 @@
 class SceneTreeViewDragAndDropInsertSceneSubCommand : public QUndoCommand
 {
 public:
-  SceneTreeViewDragAndDropInsertSceneSubCommand(SceneTreeViewModel *sceneTreeViewModel, std::shared_ptr<Scene> scene, int row, QUndoCommand *undoParent = nullptr);
+  SceneTreeViewDragAndDropInsertSceneSubCommand(SceneTreeViewModel *sceneTreeViewModel, std::shared_ptr<Scene> scene, size_t row, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
 private:
   SceneTreeViewModel *_sceneTreeViewModel;
   std::shared_ptr<Scene> _scene;
-  int _row;
+  size_t _row;
 };

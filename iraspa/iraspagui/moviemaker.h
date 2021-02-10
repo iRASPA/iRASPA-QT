@@ -51,10 +51,10 @@ public :
   };
 
   MovieWriter(const unsigned int width, const unsigned int height, int fps, LogReporting *logReporting, Type type);
-   ~MovieWriter();
-   int initialize(const std::string& filename);
-   int finalize();
-  void addFrame(const uint8_t* pixels, int iframe);
+  ~MovieWriter();
+  int initialize(const std::string& filename);
+  int finalize();
+  void addFrame(const uint8_t* pixels, size_t iframe);
 
 
 private:

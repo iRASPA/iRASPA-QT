@@ -24,7 +24,7 @@
 #include <algorithm>
 
 ProjectTreeViewDropMoveCommand::ProjectTreeViewDropMoveCommand(MainWindow *mainWindow, ProjectTreeViewModel *projectTreeViewModel, ProjectTreeController *projectTreeController,
-                                                               std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, int, bool>> nodes,
+                                                               std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, size_t, bool>> nodes,
                                                                ProjectSelectionIndexPaths oldSelection, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
@@ -51,7 +51,7 @@ void ProjectTreeViewDropMoveCommand::redo()
 
     if(moved)
     {
-      whileBlocking(_projectTreeViewModel)->removeRow(projectTreeNode->row(), projectTreeNode->parent());
+      whileBlocking(_projectTreeViewModel)->removeRow(int(projectTreeNode->row()), projectTreeNode->parent());
     }
 
     // workaround qt-bug (the branch is not shown for parents with no children unless it is explicitely set collapsed)
@@ -93,7 +93,7 @@ void ProjectTreeViewDropMoveCommand::undo()
   _projectTreeViewModel->layoutAboutToBeChanged();
   for(const auto &[projectTreeNode, parentNode, insertionRow, moved] : _reverseMoves)
   {
-    whileBlocking(_projectTreeViewModel)->removeRow(projectTreeNode->row(), projectTreeNode->parent());
+    whileBlocking(_projectTreeViewModel)->removeRow(int(projectTreeNode->row()), projectTreeNode->parent());
 
     // workaround qt-bug (the branch is not shown for parents with no children unless it is explicitely set collapsed)
     if(projectTreeNode->parent()->childNodes().empty())

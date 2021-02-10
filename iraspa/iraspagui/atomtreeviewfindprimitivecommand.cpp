@@ -44,7 +44,7 @@ AtomTreeViewFindPrimitiveCommand::AtomTreeViewFindPrimitiveCommand(MainWindow *m
 void AtomTreeViewFindPrimitiveCommand::redo()
 {
   std::pair<std::vector<int>, std::vector<double3>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
-  const int num_atom = symmetryData.first.size();
+  const int num_atom = int(symmetryData.first.size());
   const int to_primitive = 1;
   const int no_idealize = 0;
   const double symprec = 1e-5;

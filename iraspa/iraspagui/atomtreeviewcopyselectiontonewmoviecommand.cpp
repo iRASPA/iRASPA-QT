@@ -52,7 +52,7 @@ void AtomTreeViewCopySelectionToNewMovieCommand::redo()
   {
     if((_scene = movie->parent().lock()))
     {
-      _row = _scene->movies().size();
+      _row = int(_scene->movies().size());
 
       std::shared_ptr<iRASPAStructure> newiRASPAStructure = _iraspaStructure->clone();
       newiRASPAStructure->structure()->setSpaceGroupHallNumber(_iraspaStructure->structure()->spaceGroup().spaceGroupSetting().HallNumber());

@@ -48,7 +48,7 @@ private:
   BondSelectionNodesAndIndexSet _bondSelection;
   std::shared_ptr<SKAtomTreeController> _atomTreeController;
   std::shared_ptr<SKBondSetController> _bondListController;
-  std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>,std::shared_ptr<SKAtomTreeNode>,int>> _selectedAtomNodes;
-  std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>,std::shared_ptr<SKAtomTreeNode>,int>> _reverseSelectedAtomNodes;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricBond>, int>> _reverseBondSelection;
+  std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> _selectedAtomNodes;
+  std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> _reverseSelectedAtomNodes;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricBond>, size_t>> _reverseBondSelection;
 };

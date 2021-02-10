@@ -79,7 +79,7 @@ void AtomTreeViewDeleteSelectionCommand::redo()
     _atomModel->layoutAboutToBeChanged();
     for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
     {
-      int row = indexPath.lastIndex();
+      int row = int(indexPath.lastIndex());
       std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
       whileBlocking(_atomModel)->removeRow(row, parentNode);
     }
@@ -119,7 +119,7 @@ void AtomTreeViewDeleteSelectionCommand::undo()
     for(const auto &[atomNode, indexPath] : _atomSelection.second)
     {
       std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-      whileBlocking(_atomModel)->insertRow(indexPath.lastIndex(), parentNode, atomNode);
+      whileBlocking(_atomModel)->insertRow(int(indexPath.lastIndex()), parentNode, atomNode);
     }
     _atomModel->layoutChanged();
 
@@ -130,7 +130,7 @@ void AtomTreeViewDeleteSelectionCommand::undo()
   {
     for(const auto &[atomNode, indexPath] : _atomSelection.second)
     {
-      int row = indexPath.lastIndex();
+      int row = int(indexPath.lastIndex());
       std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
       parentNode->insertChild(row, atomNode);
     }

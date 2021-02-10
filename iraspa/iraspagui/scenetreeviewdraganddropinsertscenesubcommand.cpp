@@ -24,7 +24,7 @@
 #include <algorithm>
 
 SceneTreeViewDragAndDropInsertSceneSubCommand::SceneTreeViewDragAndDropInsertSceneSubCommand(SceneTreeViewModel *sceneTreeViewModel, std::shared_ptr<Scene> scene,
-                                                                                             int row, QUndoCommand *undoParent):
+                                                                                             size_t row, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _sceneTreeViewModel(sceneTreeViewModel),
   _scene(scene),
@@ -37,10 +37,10 @@ SceneTreeViewDragAndDropInsertSceneSubCommand::SceneTreeViewDragAndDropInsertSce
 
 void SceneTreeViewDragAndDropInsertSceneSubCommand::redo()
 {
-  _sceneTreeViewModel->insertRow(_row, _scene);
+  _sceneTreeViewModel->insertRow(int(_row), _scene);
 }
 
 void SceneTreeViewDragAndDropInsertSceneSubCommand::undo()
 {
-  _sceneTreeViewModel->removeRow(_row);
+  _sceneTreeViewModel->removeRow(int(_row));
 }

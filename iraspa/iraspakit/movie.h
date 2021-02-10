@@ -32,7 +32,7 @@ using FrameSelectionIndexSet = std::set<size_t>;
 
 struct frame_index_compare_less
 {
-  bool operator() (const std::pair<std::shared_ptr<iRASPAStructure>, int>& lhs, const std::pair<std::shared_ptr<iRASPAStructure>, int>& rhs) const
+  bool operator() (const std::pair<std::shared_ptr<iRASPAStructure>, size_t>& lhs, const std::pair<std::shared_ptr<iRASPAStructure>, size_t>& rhs) const
   {
     return lhs.second < rhs.second;
   }
@@ -40,14 +40,14 @@ struct frame_index_compare_less
 
 struct frame_index_compare_greater_than
 {
-  bool operator() (const std::pair<std::shared_ptr<iRASPAStructure>, int>& lhs, const std::pair<std::shared_ptr<iRASPAStructure>, int>& rhs) const
+  bool operator() (const std::pair<std::shared_ptr<iRASPAStructure>, size_t>& lhs, const std::pair<std::shared_ptr<iRASPAStructure>, size_t>& rhs) const
   {
     return lhs.second > rhs.second;
   }
 };
 
-using FrameSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<iRASPAStructure>, int>, frame_index_compare_less>;
-using ReversedFrameSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<iRASPAStructure>, int>, frame_index_compare_greater_than>;
+using FrameSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<iRASPAStructure>, size_t>, frame_index_compare_less>;
+using ReversedFrameSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<iRASPAStructure>, size_t>, frame_index_compare_greater_than>;
 
 class Movie: public std::enable_shared_from_this<Movie>, public DisplayableProtocol
 {
@@ -98,7 +98,7 @@ private:
 
   std::weak_ptr<Scene> _parent{};
   std::vector<std::shared_ptr<iRASPAStructure>> _frames{};
-  std::set<size_t> _selectedFramesIndexSet;
+  FrameSelectionIndexSet _selectedFramesIndexSet;
 
   friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<iRASPAStructure>>& val);
   friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<iRASPAStructure>>& val);

@@ -24,7 +24,7 @@
 #include <algorithm>
 
 AtomTreeViewDropMoveCommand::AtomTreeViewDropMoveCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure,
-                                                         std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, int>> moves,
+                                                         std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> moves,
                                                          AtomSelectionIndexPaths oldSelection,
                                                          QUndoCommand *undoParent):
   QUndoCommand(undoParent),

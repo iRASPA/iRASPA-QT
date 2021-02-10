@@ -199,7 +199,7 @@ Qt::ItemFlags FrameListViewModel::flags(const QModelIndex &index) const
 // Helper functions
 QModelIndex FrameListViewModel::indexForNode(iRASPAStructure *node, int column) const
 {
-  int row = node->row();
+  int row = int(node->row());
   return createIndex(row, column, node);
 }
 
@@ -308,7 +308,7 @@ bool FrameListViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
 
   if(action == Qt::DropAction::CopyAction || (senderProjectTreeViewId != sourceProjectTreeViewId))
   {
-    std::vector<std::pair<std::shared_ptr<iRASPAStructure>, int>> nodes{};
+    std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes{};
 
     while (!stream.atEnd())
     {
@@ -327,7 +327,7 @@ bool FrameListViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
   }
   else if(action == Qt::DropAction::MoveAction && (senderProjectTreeViewId == sourceProjectTreeViewId))
   {
-    std::vector<std::pair<std::shared_ptr<iRASPAStructure>, int>> nodes{};
+    std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes{};
 
     while (!stream.atEnd())
     {
@@ -406,7 +406,7 @@ bool FrameListViewModel::pasteMimeData(const QMimeData *data, int row, int colum
   // determine insertion point
   int beginRow = row;
 
-  std::vector<std::pair<std::shared_ptr<iRASPAStructure>, int>> nodes{};
+  std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes{};
 
   while (!stream.atEnd())
   {

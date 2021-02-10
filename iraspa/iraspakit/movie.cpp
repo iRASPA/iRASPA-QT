@@ -27,7 +27,7 @@ char Movie::mimeType[] = "application/x-qt-iraspa-movie-mime";
 // _movieType is to set the type of the movie based on the type of the first frame.
 // In this way, an empty movie (after deleting all its frames) can create a frame of the correct type.
 
-Movie::Movie(): _displayName("movie"), _frames{}
+Movie::Movie(): _displayName("movie"), _frames{}, _movieType(iRASPAStructureType::crystal)
 {
 
 }
@@ -114,7 +114,7 @@ std::vector<std::shared_ptr<iRASPAStructure>> Movie::selectedFramesiRASPAStructu
 {
   std::vector<std::shared_ptr<iRASPAStructure>> structures = std::vector<std::shared_ptr<iRASPAStructure>>();
 
-  for(int index: _selectedFramesIndexSet)
+  for(size_t index: _selectedFramesIndexSet)
   {
     structures.push_back(_frames[index]);
   }
@@ -156,7 +156,7 @@ void Movie::clearSelection()
 std::vector<std::shared_ptr<iRASPAStructure>> Movie::selectedFrames()
 {
   std::vector<std::shared_ptr<iRASPAStructure>> frames{};
-  for(int index : _selectedFramesIndexSet)
+  for(size_t index : _selectedFramesIndexSet)
   {
     frames.push_back(_frames[index]);
   }
@@ -177,7 +177,7 @@ FrameSelectionNodesAndIndexSet Movie::selectedFramesNodesAndIndexSet()
 {
   FrameSelectionNodesAndIndexSet selection{};
 
-  for(int index : _selectedFramesIndexSet)
+  for(size_t index : _selectedFramesIndexSet)
   {
     selection.insert(std::pair(_frames[index], index));
   }
@@ -188,8 +188,8 @@ void Movie::setSelection(FrameSelectionIndexSet selection)
 {
   _selectedFramesIndexSet.clear();
 
-  int numberOfFrames = _frames.size();
-  std::copy_if (selection.begin(), selection.end(), std::inserter(_selectedFramesIndexSet, _selectedFramesIndexSet.begin()), [numberOfFrames](int i){return i < numberOfFrames;} );
+  size_t numberOfFrames = _frames.size();
+  std::copy_if (selection.begin(), selection.end(), std::inserter(_selectedFramesIndexSet, _selectedFramesIndexSet.begin()), [numberOfFrames](size_t i){return i < numberOfFrames;} );
 }
 
 void Movie::setSelection(FrameSelectionNodesAndIndexSet selection)
@@ -197,7 +197,7 @@ void Movie::setSelection(FrameSelectionNodesAndIndexSet selection)
   _selectedFramesIndexSet.clear();
 
   FrameSelectionIndexSet s{};
-  std::transform(selection.begin(), selection.end(), std::inserter(s, s.begin()), [](std::pair<std::shared_ptr<iRASPAStructure>, int> s) -> int {return s.second;});
+  std::transform(selection.begin(), selection.end(), std::inserter(s, s.begin()), [](std::pair<std::shared_ptr<iRASPAStructure>, size_t> s) -> size_t {return s.second;});
   setSelection(s);
 }
 

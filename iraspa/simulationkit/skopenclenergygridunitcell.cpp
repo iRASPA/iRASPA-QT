@@ -399,7 +399,7 @@ std::vector<cl_float>* SKOpenCLEnergyGridUnitCell::ComputeEnergyGrid(int sizeX, 
     size_t sizeOfWorkBatch = 4096;
     while(unitsOfWorkDone < positions.size())
     {
-      int numberOfAtomsPerThreadgroup = std::min(sizeOfWorkBatch, int(positions.size())-unitsOfWorkDone);
+      size_t numberOfAtomsPerThreadgroup = std::min(sizeOfWorkBatch, int(positions.size())-unitsOfWorkDone);
 
       cl_int startIndex = cl_int(unitsOfWorkDone);
       cl_int endIndex = cl_int(unitsOfWorkDone + numberOfAtomsPerThreadgroup);

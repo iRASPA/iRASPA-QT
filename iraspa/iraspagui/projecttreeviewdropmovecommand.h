@@ -35,7 +35,7 @@ class ProjectTreeViewDropMoveCommand : public QUndoCommand
 {
 public:
   ProjectTreeViewDropMoveCommand(MainWindow *mainWindow, ProjectTreeViewModel *projectTreeViewModel, ProjectTreeController *projectTreeController,
-                                 std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, int, bool>> nodes,
+                                 std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, size_t, bool>> nodes,
                                  ProjectSelectionIndexPaths selection, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
@@ -43,8 +43,8 @@ private:
   MainWindow *_mainWindow;
   ProjectTreeViewModel *_projectTreeViewModel;
   ProjectTreeController *_projectTreeController;
-  std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, int, bool>> _nodes;
-  std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, int, bool>> _reverseMoves;
+  std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, size_t, bool>> _nodes;
+  std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, size_t, bool>> _reverseMoves;
   ProjectSelectionIndexPaths _oldSelection;
   ProjectSelectionIndexPaths _newSelection;
 };

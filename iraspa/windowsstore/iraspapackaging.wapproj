@@ -126,9 +126,6 @@
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="iraspa\D3Dcompiler_47.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="iraspa\avutil-56.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -153,133 +150,58 @@
     <Content Include="iraspa\license-gpl.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Core.dll">
+    <Content Include="iraspa\Qt6Concurrent.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Gui.dll">
+    <Content Include="iraspa\Qt6Core.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Network.dll">
+    <Content Include="iraspa\Qt6Gui.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5OpenGL.dll">
+    <Content Include="iraspa\Qt6OpenGL.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Positioning.dll">
+    <Content Include="iraspa\Qt6OpenGLWidgets.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5PrintSupport.dll">
+    <Content Include="iraspa\Qt6PrintSupport.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Qml.dll">
+    <Content Include="iraspa\Qt6Widgets.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5QmlModels.dll">
+    <Content Include="iraspa\plugins\generic\qtuiotouchplugin.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Quick.dll">
+    <Content Include="iraspa\plugins\iconengines\qsvgicon.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5QuickWidgets.dll">
+    <Content Include="iraspa\plugins\imageformats\qgif.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5SerialPort.dll">
+    <Content Include="iraspa\plugins\imageformats\qico.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Svg.dll">
+    <Content Include="iraspa\plugins\imageformats\qjpeg.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5WebChannel.dll">
+    <Content Include="iraspa\plugins\imageformats\qsvg.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5WebEngineCore.dll">
+    <Content Include="iraspa\plugins\platforms\qdirect2d.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5WebEngineWidgets.dll">
+    <Content Include="iraspa\plugins\platforms\qminimal.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Widgets.dll">
+    <Content Include="iraspa\plugins\platforms\qoffscreen.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\Qt5Concurrent.dll">
+    <Content Include="iraspa\plugins\platforms\qwindows.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\QtWebEngineProcess.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\resources\icudtl.dat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\libEGL.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\libGLESV2.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\opengl32sw.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\bearer\qgenericbearer.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qgif.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qicns.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qico.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qjpeg.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qsvg.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\iconengines\qsvgicon.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qtga.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qtiff.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\position\qtposition_winrt.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\position\qtposition_positionpoll.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\position\qtposition_serialnmea.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\resources\qtwebengine_devtools_resources.pak">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\resources\qtwebengine_resources.pak">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\resources\qtwebengine_resources_100p.pak">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\resources\qtwebengine_resources_200p.pak">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qwbmp.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\imageformats\qwebp.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\platforms\qwindows.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\styles\qwindowsvistastyle.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\printsupport\windowsprintersupport.dll">
+    <Content Include="iraspa\plugins\styles\qwindowsvistastyle.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

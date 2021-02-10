@@ -82,7 +82,7 @@ public:
   // Helper functions
   QModelIndex indexForNode(ProjectTreeNode *node, int column = 0) const;
   ProjectTreeNode *nodeForIndex(const QModelIndex &index) const;
-  int rowForNode(ProjectTreeNode *node) const;
+  size_t rowForNode(ProjectTreeNode *node) const;
 signals:
   void updateSelection();
   void collapse(const QModelIndex &index);

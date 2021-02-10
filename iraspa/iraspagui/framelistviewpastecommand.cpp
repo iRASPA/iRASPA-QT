@@ -25,7 +25,7 @@
 
 FrameListViewPasteCommand::FrameListViewPasteCommand(MainWindow *mainWindow, FrameListViewModel *frameListViewModel,
                                                            std::shared_ptr<SceneList> sceneList, std::shared_ptr<Movie> movie,
-                                                           std::vector<std::pair<std::shared_ptr<iRASPAStructure>, int>> nodes,
+                                                           std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes,
                                                            FrameSelectionIndexSet selection, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
@@ -79,7 +79,7 @@ void FrameListViewPasteCommand::undo()
   _frameListViewModel->layoutAboutToBeChanged();
   for(const auto &[iraspStructure, insertionRow] : _reverseMoves)
   {
-    whileBlocking(_frameListViewModel)->removeRow(iraspStructure->row());
+    whileBlocking(_frameListViewModel)->removeRow(int(iraspStructure->row()));
   }
   _frameListViewModel->layoutChanged();
 

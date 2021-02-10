@@ -34,7 +34,7 @@ RKFontAtlas::RKFontAtlas(QString fontName, int texture_size): width(texture_size
 
   initializeOpenGLFunctions();
 
-  for(size_t i=0; i<characters.size(); i++)
+  for(int i=0; i<characters.size(); i++)
   {
     int index = characters[i].ID;
     characterIndex[index] = i;
@@ -268,7 +268,7 @@ bool RKFontAtlas::gen_pack_list(QRawFont &rawFont, int pixel_size, int pack_tex_
   if( packed_glyph_info.size() == 1 )
   {
     //	it all fit into one!
-    unsigned int lim = packed_glyph_info[0].size();
+    unsigned int lim = uint(packed_glyph_info[0].size());
     for( unsigned int i = 0; i < lim; i += 4 )
     {
       //	index, x, y, rotated
@@ -289,7 +289,7 @@ int RKFontAtlas::save_png_SDFont(
     const std::vector< FontCharacter > &packed_glyphs )
 {
   //	save my image
-  int fn_size = strlen( orig_filename ) + 100;
+  size_t fn_size = strlen( orig_filename ) + 100;
   char *fn = new char[ fn_size ];
   sprintf( fn, "%s_sdf.png", orig_filename );
   printf( "'%s'\n", fn );

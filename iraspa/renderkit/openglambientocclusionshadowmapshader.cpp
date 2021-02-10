@@ -393,7 +393,7 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
 
             for(size_t k=0; k < _renderStructures[i].size(); k++)
             {
-              RKStructureUniforms structureUniform = RKStructureUniforms(i, static_cast<int>(k), _renderStructures[i][k], double4x4::inverse(modelMatrix));
+              RKStructureUniforms structureUniform = RKStructureUniforms(int(i), int(k), _renderStructures[i][k], double4x4::inverse(modelMatrix));
               structureUniforms.push_back(structureUniform);
             }
 

@@ -24,7 +24,7 @@
 #include <algorithm>
 
 ProjectTreeViewInsertProjectGroupCommand::ProjectTreeViewInsertProjectGroupCommand(MainWindow *mainWindow, ProjectTreeView *projectTreeView,
-                                                                                   std::shared_ptr<ProjectTreeNode> parent, int row,
+                                                                                   std::shared_ptr<ProjectTreeNode> parent, size_t row,
                                                                                    ProjectSelectionNodesAndIndexPaths selection,
                                                                                    QUndoCommand *undoParent):
   QUndoCommand(undoParent),
@@ -47,7 +47,7 @@ void ProjectTreeViewInsertProjectGroupCommand::redo()
   {
     if(ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(_projectTreeView->model()))
     {
-      pModel->insertRow(_row, _parent, _newItem);
+      pModel->insertRow(int(_row), _parent, _newItem);
 
       ProjectSelectionIndexPaths newSelection = _projectTreeView->projectTreeController()->updateIndexPathsFromNodes(_selection);
       pModel->projectTreeController()->setSelectionIndexPaths(newSelection);
@@ -64,7 +64,7 @@ void ProjectTreeViewInsertProjectGroupCommand::undo()
   {
     if(ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(_projectTreeView->model()))
     {
-      pModel->removeRow(_row, _parent);
+      pModel->removeRow(int(_row), _parent);
 
       pModel->projectTreeController()->setSelectionIndexPaths(_selection);
     }

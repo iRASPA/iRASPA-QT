@@ -110,7 +110,7 @@ void FrameListView::TabItemWasSelected()
   if(_sceneList)
   {
     // propagates the selected frame to the atom and bond-views
-    int selectedFrameIndex = _sceneList->selectedFrameIndex();
+    size_t selectedFrameIndex = _sceneList->selectedFrameIndex();
 
     if(_movie)
     {
@@ -139,13 +139,13 @@ void FrameListView::reloadSelection()
   {
     whileBlocking(selectionModel())->clearSelection();
 
-    for (int frameIndex : _movie->selectedFramesIndexSet())
+    for (size_t frameIndex : _movie->selectedFramesIndexSet())
     {
-      QModelIndex item = model()->index(frameIndex, 0, QModelIndex());
+      QModelIndex item = model()->index(int(frameIndex), 0, QModelIndex());
       whileBlocking(selectionModel())->select(item, QItemSelectionModel::Select);
     }
 
-    int selectedIndex = _sceneList->selectedFrameIndex();
+    int selectedIndex = int(_sceneList->selectedFrameIndex());
     QModelIndex item = model()->index(selectedIndex, 0, QModelIndex());
 
     if(iRASPAStructure* iraspa_structure = static_cast<iRASPAStructure*>(item.internalPointer()))
@@ -219,7 +219,7 @@ void FrameListView::selectionChanged(const QItemSelection &selected, const QItem
     // set currentIndex for keyboard navigation
     if (std::optional<size_t> selectedIndex = _sceneList->selectedFrameIndex())
     {
-      QModelIndex item = model()->index(*selectedIndex, 0, QModelIndex());
+      QModelIndex item = model()->index(int(*selectedIndex), 0, QModelIndex());
       selectionModel()->setCurrentIndex(item, QItemSelectionModel::SelectionFlag::Current);
     }
 
@@ -272,10 +272,10 @@ void FrameListView::addFrame()
         size_t selectedIndex = _sceneList->selectedFrameIndex();
         if(!_movie->frames().empty())
         {
-          row = selectedIndex + 1;
+          row = int(selectedIndex + 1);
         }
         FrameSelectionNodesAndIndexSet selection = _movie->selectedFramesNodesAndIndexSet();
-        int selectedFrame = _sceneList->selectedFrameIndex();
+        int selectedFrame = int(_sceneList->selectedFrameIndex());
         FrameListViewInsertCommand *addFrameCommand = new FrameListViewInsertCommand(_mainWindow, _sceneList.get(), this, _movie, row, selection, selectedFrame, nullptr);
         _projectTreeNode->representedObject()->undoManager().push(addFrameCommand);
       }

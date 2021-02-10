@@ -34,14 +34,14 @@
 class ProjectTreeViewInsertProjectGroupCommand : public QUndoCommand
 {
 public:
-  ProjectTreeViewInsertProjectGroupCommand(MainWindow *mainWindow, ProjectTreeView *projectTreeView, std::shared_ptr<ProjectTreeNode> parent, int row,
+  ProjectTreeViewInsertProjectGroupCommand(MainWindow *mainWindow, ProjectTreeView *projectTreeView, std::shared_ptr<ProjectTreeNode> parent, size_t row,
                          ProjectSelectionNodesAndIndexPaths selection, QUndoCommand *undoParent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
   MainWindow *_mainWindow;
   ProjectTreeView *_projectTreeView;
-  int _row;
+  size_t _row;
   std::shared_ptr<ProjectTreeNode> _parent;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
   ProjectSelectionNodesAndIndexPaths _selection;

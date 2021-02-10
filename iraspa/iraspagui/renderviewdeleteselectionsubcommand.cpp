@@ -45,7 +45,7 @@ RenderViewDeleteSelectionSubCommand::RenderViewDeleteSelectionSubCommand(MainWin
   _bondListController = iraspaStructure->structure()->bondSetController();
 
   std::transform(atomSelection.second.begin(), atomSelection.second.end(), std::back_inserter(_selectedAtomNodes),
-                 [this](IndexPath indexPath) -> std::tuple< std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, int>
+                 [this](IndexPath indexPath) -> std::tuple< std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>
                  {  std::shared_ptr<SKAtomTreeNode> node = _atomTreeController->nodeAtIndexPath(indexPath);
                     return std::make_tuple(node, node->parent(), indexPath.lastIndex());});
 

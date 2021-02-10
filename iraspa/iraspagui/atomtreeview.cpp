@@ -506,7 +506,7 @@ void AtomTreeView::addAtom()
     if(atomSelection.second.empty())
     {
       SKAtomTreeNode *parentNode = _iraspaStructure->structure()->atomsTreeController()->hiddenRootNode().get();
-      int row = parentNode->childCount();
+      int row = int(parentNode->childCount());
       AtomTreeViewInsertAtomCommand *insertAtomCommand = new AtomTreeViewInsertAtomCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
                                                                                            atomSelection, nullptr);
       _iRASPAProject->undoManager().push(insertAtomCommand);
@@ -523,7 +523,7 @@ void AtomTreeView::addAtomGroup()
     if(atomSelection.second.empty())
     {
       SKAtomTreeNode *parentNode = _iraspaStructure->structure()->atomsTreeController()->hiddenRootNode().get();
-      int row = parentNode->childCount();
+      int row = int(parentNode->childCount());
       AtomTreeViewInsertAtomGroupCommand *insertAtomCommand = new AtomTreeViewInsertAtomGroupCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
                                                                                                      atomSelection, nullptr);
       _iRASPAProject->undoManager().push(insertAtomCommand);

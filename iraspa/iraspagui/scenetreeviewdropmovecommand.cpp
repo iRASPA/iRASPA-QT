@@ -48,7 +48,7 @@ SceneTreeViewDropMoveCommand::SceneTreeViewDropMoveCommand(MainWindow *mainWindo
   if(!_newParent)
   {
     std::shared_ptr<Scene> scene = std::make_shared<Scene>("NEW SCENE");
-    int insertionRow = _sceneList->scenes().size();
+    size_t insertionRow = _sceneList->scenes().size();
     new SceneTreeViewDragAndDropInsertSceneSubCommand(_sceneTreeViewModel, scene, insertionRow, this);
 
     _newParent = scene;

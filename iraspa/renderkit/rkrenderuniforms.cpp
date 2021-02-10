@@ -41,7 +41,7 @@ RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, d
 };
 
 
-RKStructureUniforms::RKStructureUniforms(int sceneIdentifier, int movieIdentifier, std::shared_ptr<RKRenderStructure> structure)
+RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure)
 {
   SKBoundingBox boundingbox = structure->cell()->boundingBox();
   double3 centerOfRotation = boundingbox.center();
@@ -55,9 +55,9 @@ RKStructureUniforms::RKStructureUniforms(int sceneIdentifier, int movieIdentifie
   this->colorAtomsWithBondColor = structure->colorAtomsWithBondColor();
   this->atomScaleFactor = float(structure->atomScaleFactor());
   this->modelMatrix = float4x4(modelMatrix);
-  this->atomHue = structure->atomHue();
-  this->atomSaturation = structure->atomSaturation();
-  this->atomValue = structure->atomValue();
+  this->atomHue = float(structure->atomHue());
+  this->atomSaturation = float(structure->atomSaturation());
+  this->atomValue = float(structure->atomValue());
 
   this->ambientOcclusion = structure->atomAmbientOcclusion() ? GL_TRUE : GL_FALSE;
   this->ambientOcclusionPatchNumber = int32_t(structure->atomAmbientOcclusionPatchNumber());
@@ -184,7 +184,7 @@ RKStructureUniforms::RKStructureUniforms(int sceneIdentifier, int movieIdentifie
   }
 }
 
-RKStructureUniforms::RKStructureUniforms(int sceneIdentifier, int movieIdentifier, std::shared_ptr<RKRenderStructure> structure, double4x4 inverseModelMatrix)
+RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure, double4x4 inverseModelMatrix)
 {
     SKBoundingBox boundingbox = structure->cell()->boundingBox();
     double3 centerOfRotation = boundingbox.center();

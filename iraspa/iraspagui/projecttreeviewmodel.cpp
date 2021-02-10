@@ -60,7 +60,7 @@ void ProjectTreeViewModel::setDocumentData(std::shared_ptr<DocumentData> documen
 void ProjectTreeViewModel::insertGalleryData(std::shared_ptr<DocumentData> database)
 {
   QModelIndex index = indexForNode(_projectTreeController->galleryProjects().get());
-  int numberOfChildren = database->projectTreeController()->localProjects()->childNodes().size();
+  int numberOfChildren = int(database->projectTreeController()->localProjects()->childNodes().size());
   beginInsertRows(index,0,numberOfChildren-1);
   for (std::shared_ptr<ProjectTreeNode> localNode : database->projectTreeController()->localProjects()->childNodes())
   {
@@ -72,7 +72,7 @@ void ProjectTreeViewModel::insertGalleryData(std::shared_ptr<DocumentData> datab
 void ProjectTreeViewModel::insertDatabaseCoReMOFData(std::shared_ptr<DocumentData> database)
 {
   QModelIndex index = indexForNode(_projectTreeController->icloudProjects().get());
-  int numberOfChildren = database->projectTreeController()->localProjects()->childNodes().size();
+  int numberOfChildren = int(database->projectTreeController()->localProjects()->childNodes().size());
   beginInsertRows(index,0,numberOfChildren-1);
   for (std::shared_ptr<ProjectTreeNode> localNode : database->projectTreeController()->localProjects()->childNodes())
   {
@@ -84,7 +84,7 @@ void ProjectTreeViewModel::insertDatabaseCoReMOFData(std::shared_ptr<DocumentDat
 void ProjectTreeViewModel::insertDatabaseCoReMOFDDECData(std::shared_ptr<DocumentData> database)
 {
   QModelIndex index = indexForNode(_projectTreeController->icloudProjects().get());
-  int numberOfChildren = database->projectTreeController()->localProjects()->childNodes().size();
+  int numberOfChildren = int(database->projectTreeController()->localProjects()->childNodes().size());
   beginInsertRows(index,0,numberOfChildren-1);
   for (std::shared_ptr<ProjectTreeNode> localNode : database->projectTreeController()->localProjects()->childNodes())
   {
@@ -96,7 +96,7 @@ void ProjectTreeViewModel::insertDatabaseCoReMOFDDECData(std::shared_ptr<Documen
 void ProjectTreeViewModel::insertDatabaseIZAFData(std::shared_ptr<DocumentData> database)
 {
   QModelIndex index = indexForNode(_projectTreeController->icloudProjects().get());
-  int numberOfChildren = database->projectTreeController()->localProjects()->childNodes().size();
+  int numberOfChildren = int(database->projectTreeController()->localProjects()->childNodes().size());
   beginInsertRows(index,0,numberOfChildren-1);
   for (std::shared_ptr<ProjectTreeNode> localNode : database->projectTreeController()->localProjects()->childNodes())
   {
@@ -119,7 +119,7 @@ QModelIndexList ProjectTreeViewModel::selectedIndexes()
     for(IndexPath indexPath : selectedIndexPaths)
     {
       std::shared_ptr<ProjectTreeNode> node = _projectTreeController->nodeAtIndexPath(indexPath);
-      int localRow = indexPath.lastIndex();
+      int localRow = int(indexPath.lastIndex());
       QModelIndex index = createIndex(localRow,0,node.get());
       list.push_back(index);
     }
@@ -237,9 +237,9 @@ QModelIndex ProjectTreeViewModel::parent(const QModelIndex &child) const
   if (_projectTreeController->isRootNode(parentNode))
     return QModelIndex();
 
-  int row = rowForNode(parentNode);
+  size_t row = rowForNode(parentNode);
   int column = 0;
-  return createIndex(row, column, parentNode);
+  return createIndex(int(row), column, parentNode);
 }
 
 int ProjectTreeViewModel::columnCount(const QModelIndex &parent) const
@@ -530,7 +530,7 @@ bool ProjectTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction ac
   }
   else if(action == Qt::DropAction::MoveAction && (senderProjectTreeViewId == sourceProjectTreeViewId))
   {
-    std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, int, bool>> nodes{};
+    std::vector<std::tuple<std::shared_ptr<ProjectTreeNode>, std::shared_ptr<ProjectTreeNode>, size_t, bool>> nodes{};
 
     while (!stream.atEnd())
     {
@@ -650,8 +650,8 @@ QModelIndex ProjectTreeViewModel::indexForNode(ProjectTreeNode *node, int column
   {
     return QModelIndex();
   }
-  int row = rowForNode(node);
-  return createIndex(row, column, node);
+  size_t row = rowForNode(node);
+  return createIndex(int(row), column, node);
 }
 
 ProjectTreeNode *ProjectTreeViewModel::nodeForIndex(const QModelIndex &index) const
@@ -667,7 +667,7 @@ ProjectTreeNode *ProjectTreeViewModel::nodeForIndex(const QModelIndex &index) co
   return _projectTreeController->hiddenRootNode().get();
 }
 
-int ProjectTreeViewModel::rowForNode(ProjectTreeNode *node) const
+size_t ProjectTreeViewModel::rowForNode(ProjectTreeNode *node) const
 {
   return node->row();
 }

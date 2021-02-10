@@ -72,10 +72,12 @@ double4x4 RKCamera::projectionMatrix()
 {
   switch(_frustrumType)
   {
-    case FrustrumType::orthographic:
-      return RKCamera::glFrustumfOrthographic(_left, _right, _bottom, _top, _zNear, _zFar);
     case FrustrumType::perspective:
       return RKCamera::glFrustumfPerspective(_left, _right, _bottom, _top, _zNear, _zFar);
+    case FrustrumType::orthographic:
+    default:
+      return RKCamera::glFrustumfOrthographic(_left, _right, _bottom, _top, _zNear, _zFar);
+    
   }
 }
 
@@ -103,6 +105,7 @@ simd_quatd RKCamera::referenceDirection()
     case ResetDirectionType::minus_X:
       return simd_quatd(cos(-M_PI / 4.0), double3(0.0, sin(-M_PI / 4.0), 0.0));
    }
+  return simd_quatd(1.0, double3(0.0, 0.0, 0.0));
 }
 
 double3 RKCamera::EulerAngles()
@@ -588,7 +591,7 @@ double3 RKCamera::myGluProject(double3 position, QRect viewPort)
 
 
 // http://www.3dkingdoms.com/selection.html
-std::vector<int> RKCamera::selectPositionsInRectangle(std::vector<double3> &positions, QRect rect, double3 origin, QRect viewPortBounds)
+std::vector<size_t> RKCamera::selectPositionsInRectangle(std::vector<double3> &positions, QRect rect, double3 origin, QRect viewPortBounds)
 {
   qDebug() << "viewPortBounds: " << viewPortBounds;
   qDebug() << "rect: " << rect;
@@ -610,9 +613,9 @@ std::vector<int> RKCamera::selectPositionsInRectangle(std::vector<double3> &posi
   double3 FrustrumPlane2 = double3::cross(Points4 - Points5, Points4 - Points6).normalise();
   double3 FrustrumPlane3 = double3::cross(Points6 - Points7, Points6 - Points0).normalise();
 
-  std::vector<int> indexSet = std::vector<int>();
-  int numberOfObjects = positions.size();
-  for(int j=0;j<numberOfObjects;j++)
+  std::vector<size_t> indexSet = std::vector<size_t>();
+  size_t numberOfObjects = positions.size();
+  for(size_t j=0;j<numberOfObjects;j++)
   {
     double3 position = positions[j] + origin;
     if((double3::dot(position-Points0,FrustrumPlane0)<0) &&

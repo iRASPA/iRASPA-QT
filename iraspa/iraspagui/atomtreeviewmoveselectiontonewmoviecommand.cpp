@@ -63,7 +63,7 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
   {
     if((_scene = movie->parent().lock()))
     {
-      _row = _scene->movies().size();
+      _row = int(_scene->movies().size());
 
       std::shared_ptr<iRASPAStructure> newiRASPAStructure = _iraspaStructure->clone();
       newiRASPAStructure->structure()->setSpaceGroupHallNumber(_iraspaStructure->structure()->spaceGroup().spaceGroupSetting().HallNumber());
@@ -118,7 +118,7 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
         _atomTreeViewModel->layoutAboutToBeChanged();
         for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
         {
-          int row = indexPath.lastIndex();
+          int row = int(indexPath.lastIndex());
           std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
           whileBlocking(_atomTreeViewModel)->removeRow(row, parentNode);
         }
@@ -161,7 +161,7 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::undo()
     for(const auto &[atomNode, indexPath] : _atomSelection.second)
     {
       std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-      whileBlocking(_atomTreeViewModel)->insertRow(indexPath.lastIndex(), parentNode, atomNode);
+      whileBlocking(_atomTreeViewModel)->insertRow(int(indexPath.lastIndex()), parentNode, atomNode);
     }
     _atomTreeViewModel->layoutChanged();
 
@@ -172,7 +172,7 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::undo()
   {
     for(const auto &[atomNode, indexPath] : _atomSelection.second)
     {
-      int row = indexPath.lastIndex();
+      int row = int(indexPath.lastIndex());
       std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
       parentNode->insertChild(row, atomNode);
     }

@@ -299,12 +299,12 @@ std::vector<RKInPerInstanceAttributesBonds> ProteinCrystal::renderUnitCellCylind
         {
           double3 position1 = _cell->unitCell() * double3(k1, k2, k3);
           double3 position2 = _cell->unitCell() * double3(k1, k2, k3 + 1);
-          float4 scale = float4(0.1, 1.0, 0.1, 1.0);
+          float4 scale = float4(0.1f, 1.0f, 0.1f, 1.0f);
           RKInPerInstanceAttributesBonds cylinder =
             RKInPerInstanceAttributesBonds(float4(position1, 1.0),
               float4(position2, 1.0),
-              float4(1.0, 1.0, 1.0, 1.0),
-              float4(1.0, 1.0, 1.0, 1.0),
+              float4(1.0f, 1.0f, 1.0f, 1.0f),
+              float4(1.0f, 1.0f, 1.0f, 1.0f),
               scale,0,0);
           data.push_back(cylinder);
         }

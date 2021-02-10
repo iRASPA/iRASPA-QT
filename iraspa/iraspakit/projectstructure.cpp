@@ -128,7 +128,7 @@ std::vector<std::shared_ptr<RKRenderStructure>> ProjectStructure::renderStructur
 {
   std::vector<std::shared_ptr<RKRenderStructure>> structures = std::vector<std::shared_ptr<RKRenderStructure>>();
 
-  std::optional<int> selectedFrameIndex = _sceneList->selectedFrameIndex();
+  std::optional<size_t> selectedFrameIndex = _sceneList->selectedFrameIndex();
   if(selectedFrameIndex)
   {
     std::shared_ptr<Scene> scene = _sceneList->scenes()[i];
@@ -230,6 +230,7 @@ const QImage ProjectStructure::renderBackgroundCachedImage()
   switch(_backgroundType)
   {
     case RKBackgroundType::color:
+    default:
     {
       QImage image = QImage(QSize(1024,1024), QImage::Format_ARGB32);
       image.fill(_backgroundColor);
@@ -377,6 +378,7 @@ double ProjectStructure::imageDotsPerInchValue()
   case RKImageDPI::dpi_150:
     return 150.0;
   case RKImageDPI::dpi_300:
+  default:
     return 300.0;
   case RKImageDPI::dpi_600:
     return 600.0;

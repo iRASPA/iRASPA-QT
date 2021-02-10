@@ -20,7 +20,7 @@ void BinPacker::Pack(
         if (rects[i] > m_packSize || rects[i + 1] > m_packSize) {
             assert(!"All rect dimensions must be <= the pack size");
         }
-        m_rects.push_back(Rect(0, 0, rects[i], rects[i + 1], i >> 1));
+        m_rects.push_back(Rect(0, 0, rects[i], rects[i + 1], int(i >> 1)));
     }
 
     // Sort from greatest to least area
@@ -28,7 +28,7 @@ void BinPacker::Pack(
 
     // Pack
     while (m_numPacked < (int)m_rects.size()) {
-        int i = m_packs.size();
+        int i = int(m_packs.size());
         m_packs.push_back(Rect(m_packSize));
         m_roots.push_back(i);
         Fill(i, allowRotation);
@@ -72,7 +72,7 @@ void BinPacker::Fill(int pack, bool allowRotation)
             if (Fits(m_rects[j], m_packs[i], allowRotation)) {
                 // Store in lower-left of working area, split, and recurse
                 ++m_numPacked;
-                Split(i, j);
+                Split(i, int(j));
                 Fill(m_packs[i].children[0], allowRotation);
                 Fill(m_packs[i].children[1], allowRotation);
                 return;
@@ -144,8 +144,8 @@ void BinPacker::Split(int pack, int rect)
     m_packs[i].h = m_rects[j].h;
     m_packs[i].ID = m_rects[j].ID;
     m_packs[i].rotated = m_rects[j].rotated;
-    m_packs[i].children[0] = m_packs.size() - 2;
-    m_packs[i].children[1] = m_packs.size() - 1;
+    m_packs[i].children[0] = int(m_packs.size()) - 2;
+    m_packs[i].children[1] = int(m_packs.size()) - 1;
 
     // Done with the rect
     m_rects[j].packed = true;

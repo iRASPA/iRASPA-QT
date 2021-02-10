@@ -37,7 +37,7 @@ class FrameListViewDropCopyCommand : public QUndoCommand
 public:
   FrameListViewDropCopyCommand(MainWindow *mainWindow, FrameListViewModel *frameListViewModel,
                                std::shared_ptr<SceneList> sceneList, std::shared_ptr<Movie> movie,
-                               std::vector<std::pair<std::shared_ptr<iRASPAStructure>, int>> nodes,
+                               std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes,
                                FrameSelectionIndexSet selection, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
@@ -46,8 +46,8 @@ private:
   FrameListViewModel *_frameListViewModel;
   std::shared_ptr<SceneList> _sceneList;
   std::shared_ptr<Movie> _movie;
-  std::vector<std::pair<std::shared_ptr<iRASPAStructure>, int>> _nodes;
-  std::vector<std::pair<std::shared_ptr<iRASPAStructure>, int>> _reverseMoves;
+  std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> _nodes;
+  std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> _reverseMoves;
   FrameSelectionIndexSet _oldSelection;
   FrameSelectionIndexSet _newSelection;
 };

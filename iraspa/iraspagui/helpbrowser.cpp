@@ -44,6 +44,7 @@
 #else
 HelpBrowser::HelpBrowser(QWidget* parent)
 {
+    Q_UNUSED(parent);
 }
 #endif
 
