@@ -251,6 +251,7 @@ bool SKXYZParser::startParsing()
       {
         atom->setPosition(position);
         atom->setElementIdentifier(index->second);
+        atom->setUniqueForceFieldName(chemicalElement);
         atom->setDisplayName(chemicalElement);
       }
       else

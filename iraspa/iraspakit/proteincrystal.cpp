@@ -1259,12 +1259,12 @@ std::pair<double3, double3> ProteinCrystal::computeChangedBondLength(std::shared
 
 void ProteinCrystal::setSpaceGroupHallNumber(int HallNumber)
 {
-	_spaceGroup = SKSpaceGroup(HallNumber);
+  _spaceGroup = SKSpaceGroup(HallNumber);
 
-	expandSymmetry();
+  expandSymmetry();
   _atomsTreeController->setTags();
 
-	computeBonds();
+  computeBonds();
 }
 
 std::vector<RKInPerInstanceAttributesText> ProteinCrystal::atomTextData(RKFontAtlas *fontAtlas) const
