@@ -34,9 +34,11 @@ public:
 
   virtual void logMessage(ErrorLevel level, QString message) = 0;
   virtual void insert(QStringList messages) = 0;
+  virtual ~LogReporting() = 0;
 };
 
 struct LogReportingConsumer
 {
   virtual void setLogReportingWidget(LogReporting *logReporting) = 0;
+  virtual ~LogReportingConsumer() = 0;
 };

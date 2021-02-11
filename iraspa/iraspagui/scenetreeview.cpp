@@ -241,9 +241,9 @@ void SceneTreeView::selectionChanged(const QItemSelection &selected, const QItem
     if(selectedIndexes().size() == 1)
     {
       QModelIndex current = selectedIndexes().front();
-      DisplayableProtocol *item = static_cast<DisplayableProtocol*>(current.internalPointer());
 
-      if(Movie* movie = dynamic_cast<Movie*>(item))
+      DisplayableProtocol *currentItem = static_cast<DisplayableProtocol*>(current.internalPointer());
+      if(Movie* movie = dynamic_cast<Movie*>(currentItem))
       {
         QModelIndex parentItem = current.parent();
         DisplayableProtocol *item = static_cast<DisplayableProtocol*>(parentItem.internalPointer());
@@ -265,9 +265,8 @@ void SceneTreeView::selectionChanged(const QItemSelection &selected, const QItem
     // loop over all selected indexes
     for(QModelIndex index : selectedIndexes())
     {
-      DisplayableProtocol *item = static_cast<DisplayableProtocol*>(index.internalPointer());
-
-      if(Movie* movie = dynamic_cast<Movie*>(item))
+      DisplayableProtocol *currentItem = static_cast<DisplayableProtocol*>(index.internalPointer());
+      if(Movie* movie = dynamic_cast<Movie*>(currentItem))
       {
         QModelIndex parentItem = index.parent();
         DisplayableProtocol *item = static_cast<DisplayableProtocol*>(parentItem.internalPointer());
@@ -309,9 +308,9 @@ void SceneTreeView::selectionChanged(const QItemSelection &selected, const QItem
 
 QString SceneTreeView::nameOfItem(const QModelIndex &current)
 {
-  DisplayableProtocol *item = static_cast<DisplayableProtocol*>(current.internalPointer());
+  DisplayableProtocol *currentItem = static_cast<DisplayableProtocol*>(current.internalPointer());
 
-  if(Movie* movie = dynamic_cast<Movie*>(item))
+  if(Movie* movie = dynamic_cast<Movie*>(currentItem))
   {
     QModelIndex parentItem = current.parent();
     DisplayableProtocol *item = static_cast<DisplayableProtocol*>(parentItem.internalPointer());
@@ -363,12 +362,12 @@ QPixmap SceneTreeView::selectionToPixmap()
       if(DisplayableProtocol* item = pModel->getItem(index))
       {
         QString text = item->displayName();
-        QRect rect = fontMetrics.boundingRect(text);
-        currentHeight += rect.size().height();
+        QRect fontRect = fontMetrics.boundingRect(text);
+        currentHeight += fontRect.size().height();
 
         painter.save();
         painter.translate(QPointF(0,currentHeight));
-        painter.drawText(rect,Qt::AlignLeft|Qt::AlignCenter, text);
+        painter.drawText(fontRect,Qt::AlignLeft|Qt::AlignCenter, text);
         painter.restore();
       }
     }

@@ -789,8 +789,8 @@ std::set<int> Crystal::filterCartesianBondPositions(std::function<bool(double3)>
 
         for(std::shared_ptr<SKBond> bond : bonds)
         {
-          double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
-          double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+          double3 bondpos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+          double3 bondpos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
 
           for(int k1=minimumReplicaX;k1<=maximumReplicaX;k1++)
           {
@@ -798,8 +798,8 @@ std::set<int> Crystal::filterCartesianBondPositions(std::function<bool(double3)>
             {
               for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
               {
-                double3 frac_pos1 = pos1 + double3(k1,k2,k3);
-                double3 frac_pos2 = pos2 + double3(k1,k2,k3);
+                double3 frac_pos1 = bondpos1 + double3(k1,k2,k3);
+                double3 frac_pos2 = bondpos2 + double3(k1,k2,k3);
 
                 double3 dr = frac_pos2 - frac_pos1;
 
@@ -883,7 +883,6 @@ void Crystal::expandSymmetry()
 
   for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
   {
-    std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
     if(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
       std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
@@ -1597,17 +1596,17 @@ std::vector<RKInPerInstanceAttributesText> Crystal::atomTextData(RKFontAtlas *fo
                      break;
                    }
 
-                   for(RKInPerInstanceAttributesText &text: subdata)
+                   for(RKInPerInstanceAttributesText &subdataText: subdata)
                    {
-                     text.vertexCoordinatesData.x -= rect.center().x();
-                     text.vertexCoordinatesData.y -= rect.center().y();
-                     text.vertexCoordinatesData.x += shift.x;
-                     text.vertexCoordinatesData.y += shift.y;
+                     subdataText.vertexCoordinatesData.x -= rect.center().x();
+                     subdataText.vertexCoordinatesData.y -= rect.center().y();
+                     subdataText.vertexCoordinatesData.x += shift.x;
+                     subdataText.vertexCoordinatesData.y += shift.y;
 
-                     text.vertexCoordinatesData.x /= 50.0;
-                     text.vertexCoordinatesData.y /= 50.0;
-                     text.vertexCoordinatesData.z /= 50.0;
-                     text.vertexCoordinatesData.w /= 50.0;
+                     subdataText.vertexCoordinatesData.x /= 50.0;
+                     subdataText.vertexCoordinatesData.y /= 50.0;
+                     subdataText.vertexCoordinatesData.z /= 50.0;
+                     subdataText.vertexCoordinatesData.w /= 50.0;
                    }
 
                    std::copy(subdata.begin(), subdata.end(), std::inserter(atomData, atomData.end()));

@@ -247,8 +247,8 @@ QMimeData* FrameListViewModel::mimeDataLazy(const QModelIndexList &indexes) cons
     {
       if(iRASPAStructure *item = static_cast<iRASPAStructure *>(index.internalPointer()))
       {
-        qulonglong ptrval(reinterpret_cast<qulonglong>(item));
-        stream << ptrval;
+        qulonglong itemPtrval(reinterpret_cast<qulonglong>(item));
+        stream << itemPtrval;
       }
     }
   }

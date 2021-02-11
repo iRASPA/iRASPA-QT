@@ -47,7 +47,7 @@ private:
   Scanner _scanner;
   bool _onlyAsymmetricUnitCell;
   bool _asMolecule;
-  LogReporting *_log;
+  [[maybe_unused]] LogReporting *_log;
   QString::const_iterator _previousScanLocation;
 
   int _numberOfAtoms = 0;

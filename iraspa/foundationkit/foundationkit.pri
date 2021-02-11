@@ -11,6 +11,7 @@ SOURCES += \
     $$PWD/lodepng.cpp \
     $$PWD/scanner.cpp \
     $$PWD/characterset.cpp \
+    $$PWD/logreporting.cpp \
     $$PWD/zip.cpp
 
 HEADERS += \

@@ -255,7 +255,6 @@ QVariant SceneTreeViewModel::data(const QModelIndex &index, int role) const
 
   if (role == Qt::ForegroundRole)
   {
-    DisplayableProtocol *item = static_cast<DisplayableProtocol*>(index.internalPointer());
     if(Scene* scene = dynamic_cast<Scene*>(item))
     {
       return QColor(114,114,114,255);

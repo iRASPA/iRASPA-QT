@@ -48,8 +48,17 @@ PythonViewController::PythonViewController(QWidget *parent): LineNumberPlainText
     }
     #endif
   #else
-    static char name[] = "iRASPA";
-    Py_SetProgramName(name);
+    #if PY_MAJOR_VERSION >= 3
+    {
+      static wchar_t name[] = L"iRASPA";
+      Py_SetProgramName(name);
+    }
+    #else
+    {
+      static char name[] = "iRASPA";
+      Py_SetProgramName(name);
+    }
+    #endif
   #endif
 
 

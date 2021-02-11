@@ -3,7 +3,8 @@ INCLUDEPATH += $$PWD
 include(projects.pri)
 include(structures.pri)
 
-SOURCES +=
+SOURCES += \
+    $$PWD/iraspakitprotocols.cpp
 
 HEADERS += \
     $$PWD/iraspakit.h \

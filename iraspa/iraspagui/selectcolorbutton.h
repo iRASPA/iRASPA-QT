@@ -30,7 +30,7 @@ class SelectColorButton : public QPushButton
 public:
     SelectColorButton( QWidget* parent );
 
-    void setColor( const QColor& color );
+    void setColor(const QColor& newColor );
     const QColor& getColor();
 
 public slots:

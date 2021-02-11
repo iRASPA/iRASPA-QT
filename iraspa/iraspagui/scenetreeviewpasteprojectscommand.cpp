@@ -48,9 +48,9 @@ SceneTreeViewPasteProjectsCommand::SceneTreeViewPasteProjectsCommand(MainWindow 
     _newSelection = oldSelection;
   }
 
-  if(SceneList *sceneList = dynamic_cast<SceneList *>(parentNode))
+  if(SceneList *sceneListFromParent = dynamic_cast<SceneList *>(parentNode))
   {
-    _sceneListParent = sceneList->shared_from_this();
+    _sceneListParent = sceneListFromParent->shared_from_this();
     _row = 0;
     _sceneParent = std::make_shared<Scene>("New scene");
     _sceneParent->setSelectedMovie(nodes.front());

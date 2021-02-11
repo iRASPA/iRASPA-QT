@@ -67,7 +67,7 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
 
       std::shared_ptr<iRASPAStructure> newiRASPAStructure = _iraspaStructure->clone();
       newiRASPAStructure->structure()->setSpaceGroupHallNumber(_iraspaStructure->structure()->spaceGroup().spaceGroupSetting().HallNumber());
-      std::shared_ptr<Movie> _newMovie = Movie::create(newiRASPAStructure);
+      _newMovie = Movie::create(newiRASPAStructure);
 
       for(const auto &[atomNode, indexPath] : _atomSelection.second)
       {

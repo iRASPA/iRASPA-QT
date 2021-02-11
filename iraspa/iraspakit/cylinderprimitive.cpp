@@ -248,7 +248,6 @@ void CylinderPrimitive::expandSymmetry()
 
   for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
   {
-    std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
     if (std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
       std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};

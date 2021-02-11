@@ -41,9 +41,9 @@ void SelectColorButton::changeColor()
   }
 }
 
-void SelectColorButton::setColor( const QColor& color )
+void SelectColorButton::setColor( const QColor& newColor )
 {
-  this->color = color;
+  this->color = newColor;
   updateColor();
 }
 

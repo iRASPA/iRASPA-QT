@@ -156,9 +156,9 @@ void BondListViewSliderStyledItemDelegate::setEditorData(QWidget *editor, const 
 void BondListViewSliderStyledItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                 const QModelIndex &index) const
 {
-  if(QDoubleSlider *slider = qobject_cast<QDoubleSlider *>(editor))
+  if(QDoubleSlider *sliderEditor = qobject_cast<QDoubleSlider *>(editor))
   {
-    model->setData(index, QVariant(slider->doubleValue()), Qt::EditRole);
+    model->setData(index, QVariant(sliderEditor->doubleValue()), Qt::EditRole);
   }
 }
 

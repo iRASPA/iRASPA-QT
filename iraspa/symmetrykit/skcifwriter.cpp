@@ -58,7 +58,7 @@ QString SKCIFWriter::string()
   outputString += QString("_atom_site_charge\n");
 
   int counter = 1;
-  for(std::shared_ptr<SKAsymmetricAtom> atom : _atoms)
+  for(std::shared_ptr<SKAsymmetricAtom> &atom : _atoms)
   {
     int atomicNumber = atom->elementIdentifier();
     SKElement element = PredefinedElements::predefinedElements[atomicNumber];
@@ -69,7 +69,7 @@ QString SKCIFWriter::string()
     QString forcefieldName = chemicalElement.leftJustified(5, ' ');
     if(!atom->uniqueForceFieldName().isEmpty())
     {
-      QString forcefieldName = atom->uniqueForceFieldName().leftJustified(5, ' ');
+      forcefieldName = atom->uniqueForceFieldName().leftJustified(5, ' ');
     }
 
     QString positionX = QString("%1").arg(atom->position().x - _origin.x, 12, 'f', 8, ' ');

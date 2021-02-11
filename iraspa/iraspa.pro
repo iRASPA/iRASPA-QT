@@ -43,6 +43,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 macx{
   #QMAKE_CXXFLAGS += -Wl,--stack,4194304
+  QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
   INCLUDEPATH += $$system(python-config --include | sed -e 's:-I::g')
   QMAKE_LFLAGS += -framework OpenCL -framework Python -framework Accelerate
   LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
@@ -95,7 +96,7 @@ win32{
 }
 
 unix:!macx{
-  QMAKE_CXXFLAGS += -g -std=c++17 -Wl,--stack,4194304 -I/usr/include $$system(python3-config --includes) -I/usr/include/ffmpeg
+  QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wl,--stack,4194304 -I/usr/include $$system(python3-config --includes) -I/usr/include/ffmpeg
   LIBS += -lOpenCL -lavcodec -lavutil -lavformat -lswscale $$system(python3-config --embed > /dev/null 2>&1  && python3-config --embed --libs  || python3-config --libs)  -llzma -lz
 }
 

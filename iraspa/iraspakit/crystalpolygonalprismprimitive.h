@@ -31,6 +31,8 @@ public:
   CrystalPolygonalPrismPrimitive();
   CrystalPolygonalPrismPrimitive(const CrystalPolygonalPrismPrimitive &crystalPolygonalPrismPrimitive);
   CrystalPolygonalPrismPrimitive(std::shared_ptr<Structure> s);
+  ~CrystalPolygonalPrismPrimitive() {}
+
   std::shared_ptr<Structure> clone() override final;
   std::shared_ptr<Structure> appliedCellContentShift() const override final;
 

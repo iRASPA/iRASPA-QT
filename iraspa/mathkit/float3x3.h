@@ -64,23 +64,19 @@ union float3x3
           {
 
           };
-   float3x3(simd_quatd q);
+  float3x3(simd_quatd q);
 
-   float determinant(void);
-   float trace(void);
-   float3x3 const inverse();
-   static float3x3 const inverse(const float3x3& right);
-   float3x3 const transpose(void);
-   float3x3 inversetranpose(void);
-   void solve_lambdas(float3 &res);
-   void solve_angles_0( float3 &res, float3 lambdas );
-   void solve_angles_1( float3 &res, float3 lambdas );
-   void solve_angles_2( float3 &res, float3 lambdas );
-   void EigenSystemSymmetric(float3 &eigenvalues,float3x3 &eigenvectors);
-   void SingularValueDecompositionSymmetric(float3x3 &U,float3 &D,float3x3 &V);
-   void SingularValueDecomposition(float3x3 &a,float3 &w,float3x3 &v);
-
-
+  float determinant(void);
+  float trace(void);
+  float3x3 const inverse();
+  static float3x3 const inverse(const float3x3& right);
+  float3x3 const transpose(void);
+  float3x3 inversetranpose(void);
+  void solve_lambdas(float3 &res);
+  void solve_angles_0( float3 &res, float3 lambdas );
+  void solve_angles_1( float3 &res, float3 lambdas );
+  void solve_angles_2( float3 &res, float3 lambdas );
+  void EigenSystemSymmetric(float3 &eigenvalues,float3x3 &eigenvectors);
 
   friend std::ostream& operator<<(std::ostream& out, const float3x3& vec) ;
 };

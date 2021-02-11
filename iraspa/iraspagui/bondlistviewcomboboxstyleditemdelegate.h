@@ -45,12 +45,12 @@ public:
 private slots:
   void cellEntered(const QModelIndex &index);
 private:
-  QIcon *singleBondIcon;
-  QIcon *doubleBondIcon;
-  QIcon *partialDoubleBondIcon;
-  QIcon *tripleBondIcon;
-  QComboBox *comboBox;
-  QTreeView *treeView;
-  bool isOneCellInEditMode = false;
-  QPersistentModelIndex currentEditedCellIndex;
+  QIcon *_singleBondIcon;
+  QIcon *_doubleBondIcon;
+  QIcon *_partialDoubleBondIcon;
+  QIcon *_tripleBondIcon;
+  QComboBox *_comboBox;
+  QTreeView *_treeView;
+  bool _isOneCellInEditMode = false;
+  QPersistentModelIndex _currentEditedCellIndex;
 };

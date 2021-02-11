@@ -389,12 +389,12 @@ QPixmap FrameListView::selectionToPixmap()
       if(iRASPAStructure *item = static_cast<iRASPAStructure *>(index.internalPointer()))
       {
         QString text = item->structure()->displayName();
-        QRect rect = fontMetrics.boundingRect(text);
-        currentHeight += rect.size().height();
+        QRect fontRect = fontMetrics.boundingRect(text);
+        currentHeight += fontRect.size().height();
 
         painter.save();
         painter.translate(QPointF(0,currentHeight));
-        painter.drawText(rect,Qt::AlignLeft|Qt::AlignCenter, text);
+        painter.drawText(fontRect,Qt::AlignLeft|Qt::AlignCenter, text);
         painter.restore();
       }
     }

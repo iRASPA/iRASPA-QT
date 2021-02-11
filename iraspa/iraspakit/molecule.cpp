@@ -356,33 +356,32 @@ std::set<int> Molecule::filterCartesianBondPositions(std::function<bool(double3)
 
 void Molecule::expandSymmetry()
 {
-	std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+  std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-	for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
-	{
-		std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
-		if (std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
-		{
-			std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
+  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  {
+    if (std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
+    {
+      std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
 
-			std::shared_ptr<SKAtomCopy> newAtom = std::make_shared<SKAtomCopy>(asymmetricAtom, asymmetricAtom->position());
-			newAtom->setType(SKAtomCopy::AtomCopyType::copy);
-			atomCopies.push_back(newAtom);
+      std::shared_ptr<SKAtomCopy> newAtom = std::make_shared<SKAtomCopy>(asymmetricAtom, asymmetricAtom->position());
+      newAtom->setType(SKAtomCopy::AtomCopyType::copy);
+      atomCopies.push_back(newAtom);
 			
-			asymmetricAtom->setCopies(atomCopies);
-		}
-	}
+      asymmetricAtom->setCopies(atomCopies);
+    }
+  }
 }
 
 void Molecule::expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom)
 {
-	std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
+  std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
 
-	std::shared_ptr<SKAtomCopy> newAtom = std::make_shared<SKAtomCopy>(asymmetricAtom, asymmetricAtom->position());
-	newAtom->setType(SKAtomCopy::AtomCopyType::copy);
-	atomCopies.push_back(newAtom);
+  std::shared_ptr<SKAtomCopy> newAtom = std::make_shared<SKAtomCopy>(asymmetricAtom, asymmetricAtom->position());
+  newAtom->setType(SKAtomCopy::AtomCopyType::copy);
+  atomCopies.push_back(newAtom);
 
-	asymmetricAtom->setCopies(atomCopies);
+  asymmetricAtom->setCopies(atomCopies);
 }
 
 std::shared_ptr<Structure> Molecule::flattenHierarchy() const
@@ -819,16 +818,16 @@ std::vector<RKInPerInstanceAttributesText> Molecule::atomTextData(RKFontAtlas *f
               break;
             }
 
-            for(RKInPerInstanceAttributesText &text: subdata)
+            for(RKInPerInstanceAttributesText &subdataText: subdata)
             {
-              text.vertexCoordinatesData.x -= rect.center().x();
-              text.vertexCoordinatesData.y -= rect.center().y();
-              text.vertexCoordinatesData.x += shift.x;
-              text.vertexCoordinatesData.y += shift.y;
-              text.vertexCoordinatesData.x /= 50.0;
-              text.vertexCoordinatesData.y /= 50.0;
-              text.vertexCoordinatesData.z /= 50.0;
-              text.vertexCoordinatesData.w /= 50.0;
+              subdataText.vertexCoordinatesData.x -= rect.center().x();
+              subdataText.vertexCoordinatesData.y -= rect.center().y();
+              subdataText.vertexCoordinatesData.x += shift.x;
+              subdataText.vertexCoordinatesData.y += shift.y;
+              subdataText.vertexCoordinatesData.x /= 50.0;
+              subdataText.vertexCoordinatesData.y /= 50.0;
+              subdataText.vertexCoordinatesData.z /= 50.0;
+              subdataText.vertexCoordinatesData.w /= 50.0;
             }
 
             std::copy(subdata.begin(), subdata.end(), std::inserter(data, data.end()));

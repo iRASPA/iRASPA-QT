@@ -280,6 +280,7 @@ public:
 class RKRenderPrimitiveObjectsSource
 {
 public:
+  virtual ~RKRenderPrimitiveObjectsSource() = 0;
   virtual simd_quatd primitiveOrientation() const = 0;
   virtual double3x3 primitiveTransformationMatrix() const = 0;
 
@@ -325,6 +326,7 @@ public:
 class RKRenderCrystalPrimitiveEllipsoidObjectsSource: public RKRenderPrimitiveObjectsSource
 {
 public:
+  virtual ~RKRenderCrystalPrimitiveEllipsoidObjectsSource() = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderCrystalPrimitiveEllipsoidObjects() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitiveEllipsoidObjects() const = 0;
 };
@@ -332,6 +334,7 @@ public:
 class RKRenderCrystalPrimitiveCylinderObjectsSource: public RKRenderPrimitiveObjectsSource
 {
 public:
+  virtual ~RKRenderCrystalPrimitiveCylinderObjectsSource() = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderCrystalPrimitiveCylinderObjects() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitiveCylinderObjects() const = 0;
 };
@@ -339,6 +342,7 @@ public:
 class RKRenderCrystalPrimitivePolygonalPrimsObjectsSource: public RKRenderPrimitiveObjectsSource
 {
 public:
+  virtual ~RKRenderCrystalPrimitivePolygonalPrimsObjectsSource() = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderCrystalPrimitivePolygonalPrismObjects() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitivePolygonalPrismObjects() const = 0;
 };
@@ -346,6 +350,7 @@ public:
 class RKRenderPrimitiveEllipsoidObjectsSource: public RKRenderPrimitiveObjectsSource
 {
 public:
+  virtual ~RKRenderPrimitiveEllipsoidObjectsSource() = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderPrimitiveEllipsoidObjects() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitiveEllipsoidObjects() const = 0;
 };
@@ -353,6 +358,7 @@ public:
 class RKRenderPrimitiveCylinderObjectsSource: public RKRenderPrimitiveObjectsSource
 {
 public:
+  virtual ~RKRenderPrimitiveCylinderObjectsSource() = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderPrimitiveCylinderObjects() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitiveCylinderObjects() const = 0;
 };
@@ -360,6 +366,7 @@ public:
 class RKRenderPrimitivePolygonalPrimsObjectsSource: public RKRenderPrimitiveObjectsSource
 {
 public:
+  virtual ~RKRenderPrimitivePolygonalPrimsObjectsSource() = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderPrimitivePolygonalPrismObjects() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitivePolygonalPrismObjects() const = 0;
 };
@@ -367,6 +374,7 @@ public:
 class RKRenderDataSource
 {
 public:
+  virtual ~RKRenderDataSource() = 0;
   virtual std::shared_ptr<RKCamera> camera() const = 0;
   virtual std::vector<size_t> numberOfScenes() const = 0;
   virtual int numberOfMovies(int sceneIndex) const = 0;
@@ -395,6 +403,7 @@ public:
 class RKRenderViewController
 {
  public:
+  virtual ~RKRenderViewController() = 0;
   virtual void redraw() = 0;
   virtual void redrawWithQuality(RKRenderQuality quality) = 0;
 

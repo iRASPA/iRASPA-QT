@@ -68,8 +68,8 @@ CappedCylinderPartialDoubleBondGeometry::CappedCylinderPartialDoubleBondGeometry
   {
     double cosTheta = r * cos(delta * double(i));
     double sinTheta = r * sin(delta * double(i));
-    float4 position_cap1 = float4(float(cosTheta), 0.0, float(sinTheta), 0.0);
-    float4 normal_cap1 = float4(0.0, -1.0, 0.0, 0.0);
+    position_cap1 = float4(float(cosTheta), 0.0, float(sinTheta), 0.0);
+    normal_cap1 = float4(0.0, -1.0, 0.0, 0.0);
     _vertexes[index] = RKVertex(position_cap1, normal_cap1, float2());
     index += 1;
   }
@@ -87,8 +87,8 @@ CappedCylinderPartialDoubleBondGeometry::CappedCylinderPartialDoubleBondGeometry
   {
     double cosTheta = r * cos(delta * double(i));
     double sinTheta = r * sin(delta * double(i));
-    float4 position_cap2 = float4(float(cosTheta), 1.0, float(sinTheta), 0.0);
-    float4 normal_cap2 = float4(0.0, 1.0, 0.0, 0.0);
+    position_cap2 = float4(float(cosTheta), 1.0, float(sinTheta), 0.0);
+    normal_cap2 = float4(0.0, 1.0, 0.0, 0.0);
     _vertexes[index] = RKVertex(position_cap2, normal_cap2, float2());
     index += 1;
   }

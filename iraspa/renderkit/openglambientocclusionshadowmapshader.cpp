@@ -457,12 +457,12 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
               simd_quatd smallChangeQ = simd_quatd::smallRandomQuaternion(0.5*10.0*M_PI/180.0);
               simd_quatd q = smallChangeQ * directions[k];
 
-              double4x4 modelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(q), centerOfScene);
+              double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(q), centerOfScene);
 
               double4x4 viewMatrix = RKCamera::GluLookAt(eye,centerOfScene,double3(0, 1, 0));
               double4x4 projectionMatrix = RKCamera::glFrustumfOrthographic(left, right, bottom, top, near1, far1);
 
-              RKShadowUniforms shadowMapFrameUniform = RKShadowUniforms(projectionMatrix, viewMatrix, modelMatrix);
+              RKShadowUniforms shadowMapFrameUniform = RKShadowUniforms(projectionMatrix, viewMatrix, currentModelMatrix);
               shadowMapFrameUniforms.push_back(shadowMapFrameUniform);
             }
 

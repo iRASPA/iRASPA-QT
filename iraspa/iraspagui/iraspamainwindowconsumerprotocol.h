@@ -26,16 +26,18 @@
 struct MainWindowConsumer
 {
   virtual void setMainWindow(MainWindow *mainWindow) = 0;
+  virtual ~MainWindowConsumer() = 0;
 };
 
 struct Reloadable
 {
   virtual void reloadSelection() = 0;
   virtual void reloadData() = 0;
-  //virtual void resetData() = 0;
+  virtual ~Reloadable() = 0;
 };
 
 struct TabControlled
 {
   virtual void TabItemWasSelected() = 0;
+  virtual ~TabControlled() = 0;
 };

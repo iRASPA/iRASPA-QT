@@ -56,9 +56,9 @@ void SceneTreeViewStyledItemDelegate::paint(QPainter *painter, const QStyleOptio
     // handle selection
     if(option.state & QStyle::State_Selected)
     {
-      if(SceneTreeView *item = qobject_cast<SceneTreeView*>(this->parent()))
+      if(SceneTreeView *itemSceneTreeView = qobject_cast<SceneTreeView*>(this->parent()))
       {
-        if(SceneTreeViewModel *model = qobject_cast<SceneTreeViewModel*>(item->model()))
+        if(SceneTreeViewModel *model = qobject_cast<SceneTreeViewModel*>(itemSceneTreeView->model()))
         {
           if(model->isMainSelectedItem(movie->shared_from_this()))
           {

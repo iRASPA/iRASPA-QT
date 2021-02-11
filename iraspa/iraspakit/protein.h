@@ -30,9 +30,10 @@ public:
   Protein(const Protein &protein);
   Protein(std::shared_ptr<SKStructure> structure);
   Protein(std::shared_ptr<Structure> s);
-  std::shared_ptr<Structure> clone() override final;
+  ~Protein() {}
 
-	iRASPAStructureType structureType() override final  { return iRASPAStructureType::protein; }
+  std::shared_ptr<Structure> clone() override final;
+  iRASPAStructureType structureType() override final  { return iRASPAStructureType::protein; }
 
   std::shared_ptr<Structure> flattenHierarchy() const override final;
   std::shared_ptr<Structure> appliedCellContentShift() const override final;

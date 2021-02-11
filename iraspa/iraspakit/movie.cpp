@@ -27,7 +27,7 @@ char Movie::mimeType[] = "application/x-qt-iraspa-movie-mime";
 // _movieType is to set the type of the movie based on the type of the first frame.
 // In this way, an empty movie (after deleting all its frames) can create a frame of the correct type.
 
-Movie::Movie(): _displayName("movie"), _frames{}, _movieType(iRASPAStructureType::crystal)
+Movie::Movie(): _movieType(iRASPAStructureType::crystal), _displayName("movie"),  _frames{}
 {
 
 }

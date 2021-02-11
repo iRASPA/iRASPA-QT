@@ -24,17 +24,17 @@
 
 RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, double4x4 viewMatrix, double bloomLevel, double bloomPulse, int multiSampling)
 {
-    double4x4 mvpMatrix = projectionMatrix * viewMatrix;
+    double4x4 currentMvpMatrix = projectionMatrix * viewMatrix;
     this->projectionMatrix = float4x4(projectionMatrix);
     this->viewMatrix = float4x4(viewMatrix);
-    this->mvpMatrix = float4x4(mvpMatrix);
-    this->shadowMatrix = float4x4(mvpMatrix);
+    this->mvpMatrix = float4x4(currentMvpMatrix);
+    this->shadowMatrix = float4x4(currentMvpMatrix);
 
     this->projectionMatrixInverse = float4x4(double4x4::inverse(projectionMatrix));
     this->viewMatrixInverse = float4x4(double4x4::inverse(viewMatrix));
 
-    double3x3 normalMatrix = double3x3::transpose(double3x3::inverse(double3x3(viewMatrix)));
-    this->normalMatrix = float4x4(double4x4(normalMatrix));
+    double3x3 currentNormalMatrix = double3x3::transpose(double3x3::inverse(double3x3(viewMatrix)));
+    this->normalMatrix = float4x4(double4x4(currentNormalMatrix));
     this->bloomLevel = float(bloomLevel);
     this->bloomPulse = float(bloomPulse);
     this->numberOfMultiSamplePoints = float(multiSampling);
@@ -46,7 +46,7 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
   SKBoundingBox boundingbox = structure->cell()->boundingBox();
   double3 centerOfRotation = boundingbox.center();
 
-  double4x4 modelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(structure->orientation()),centerOfRotation, structure->origin());
+  double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(structure->orientation()),centerOfRotation, structure->origin());
 
   this->sceneIdentifier = int32_t(sceneIdentifier);
   this->MovieIdentifier = int32_t(movieIdentifier);
@@ -54,7 +54,7 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
 
   this->colorAtomsWithBondColor = structure->colorAtomsWithBondColor();
   this->atomScaleFactor = float(structure->atomScaleFactor());
-  this->modelMatrix = float4x4(modelMatrix);
+  this->modelMatrix = float4x4(currentModelMatrix);
   this->atomHue = float(structure->atomHue());
   this->atomSaturation = float(structure->atomSaturation());
   this->atomValue = float(structure->atomValue());
@@ -312,9 +312,9 @@ RKIsosurfaceUniforms::RKIsosurfaceUniforms()
 
 RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderStructure> structure)
 {
-  double3x3 unitCellMatrix = structure->cell()->unitCell();
-  this->unitCellMatrix = float4x4(unitCellMatrix);
-  this->unitCellNormalMatrix = float4x4(double3x3::transpose(double3x3::inverse(unitCellMatrix)));
+  double3x3 currentUnitCellMatrix = structure->cell()->unitCell();
+  this->unitCellMatrix = float4x4(currentUnitCellMatrix);
+  this->unitCellNormalMatrix = float4x4(double3x3::transpose(double3x3::inverse(currentUnitCellMatrix)));
 
   this->hue = float(structure->adsorptionSurfaceHue());
   this->saturation = float(structure->adsorptionSurfaceSaturation());
@@ -375,8 +375,8 @@ RKLightsUniforms::RKLightsUniforms(std::shared_ptr<RKRenderDataSource> project)
 {
   if(project)
   {
-    std::vector<std::shared_ptr<RKLight>> lights = project->renderLights();
-    std::shared_ptr<RKLight> light = lights[0];
+    std::vector<std::shared_ptr<RKLight>> currentLights = project->renderLights();
+    std::shared_ptr<RKLight> light = currentLights[0];
     this->lights[0].ambient = float(light->ambientIntensity()) * float4(light->ambientColor().redF(),light->ambientColor().greenF(),light->ambientColor().blueF(),light->ambientColor().alphaF());
     this->lights[0].diffuse = float(light->diffuseIntensity()) * float4(light->diffuseColor().redF(),light->diffuseColor().greenF(),light->diffuseColor().blueF(),light->diffuseColor().alphaF());
     this->lights[0].specular = float(light->specularIntensity()) * float4(light->specularColor().redF(),light->specularColor().greenF(),light->specularColor().blueF(),light->specularColor().alphaF());

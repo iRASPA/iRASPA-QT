@@ -31,6 +31,9 @@ public:
   CylinderPrimitive();
   CylinderPrimitive(const CylinderPrimitive &cylinderPrimitive);
   CylinderPrimitive(std::shared_ptr<Structure> s);
+  ~CylinderPrimitive() {}
+
+
   std::shared_ptr<Structure> clone() override final;
 
   iRASPAStructureType structureType() override final { return iRASPAStructureType::cylinderPrimitive; }

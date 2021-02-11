@@ -30,6 +30,8 @@ public:
   Molecule(const Molecule &molecule);
   Molecule(std::shared_ptr<SKStructure> structure);
   Molecule(std::shared_ptr<Structure> s);
+  ~Molecule() {}
+
   std::shared_ptr<Structure> clone() override final;
 
 	iRASPAStructureType structureType() override final { return iRASPAStructureType::molecule; }

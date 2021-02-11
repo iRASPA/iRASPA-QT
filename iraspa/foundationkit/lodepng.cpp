@@ -2200,7 +2200,7 @@ unsigned LodePNG_convert(unsigned char* out, const unsigned char* in, LodePNG_In
   /*cases where in and out already have the same format*/
   if(LodePNG_InfoColor_equal(infoIn, infoOut))
   {
-    size_t i, size = (w * h * LodePNG_InfoColor_getBpp(infoIn) + 7) / 8;
+    size_t size = (w * h * LodePNG_InfoColor_getBpp(infoIn) + 7) / 8;
     for(i = 0; i < size; i++) out[i] = in[i];
     return 0;
   }
@@ -2945,8 +2945,8 @@ static void decodeGeneric(LodePNG_Decoder* decoder, unsigned char** out, size_t*
 #ifdef LODEPNG_COMPILE_UNKNOWN_CHUNKS
       if(decoder->settings.rememberUnknownChunks)
       {
-        LodePNG_UnknownChunks* unknown = &decoder->infoPng.unknown_chunks;
-        unsigned char* c = LodePNG_append_chunk(&unknown->data[critical_pos - 1], &unknown->datasize[critical_pos - 1], chunk);
+        LodePNG_UnknownChunks* unknownChunk = &decoder->infoPng.unknown_chunks;
+        unsigned char* c = LodePNG_append_chunk(&unknownChunk->data[critical_pos - 1], &unknownChunk->datasize[critical_pos - 1], chunk);
         if(!c) { decoder->error = 70; break; }
       }
 #endif /*LODEPNG_COMPILE_UNKNOWN_CHUNKS*/

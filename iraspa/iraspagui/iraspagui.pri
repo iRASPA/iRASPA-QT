@@ -38,6 +38,7 @@ SOURCES += \
     $$PWD/framelistview.cpp \
     $$PWD/detailtabviewcontroller.cpp \
     $$PWD/cameracameraform.cpp \
+    $$PWD/iraspamainwindowconsumerprotocol.cpp \
     $$PWD/atomtreeview.cpp \
     $$PWD/atomtreeviewmodel.cpp \
     $$PWD/framelistviewmodel.cpp \

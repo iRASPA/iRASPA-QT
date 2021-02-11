@@ -1479,7 +1479,7 @@ void Structure::updateForceField(ForceFieldSets &forceFieldSets)
           {
             SKElement& element = PredefinedElements::predefinedElements[atom->elementIdentifier()];
             const QString chemicalElement = element._chemicalSymbol;
-            ForceFieldType* forceFieldType = (*forceField)[chemicalElement];
+            forceFieldType = (*forceField)[chemicalElement];
             if(forceFieldType)
             {
               atom->setPotentialParameters(forceFieldType->potentialParameters());
@@ -1704,8 +1704,8 @@ void Structure::toggleAtomSelection(int asymmetricAtomId)
     _atomsTreeController->removeSelectionIndexPath(*search);
 
     // remove bonds that are connected to this atom from the selection
-    std::vector<std::shared_ptr<SKAtomTreeNode>> atomNodes = atomsTreeController()->flattenedLeafNodes();
-    std::shared_ptr<SKAtomTreeNode> selectedAtom = atomNodes[asymmetricAtomId];
+    atomNodes = atomsTreeController()->flattenedLeafNodes();
+    selectedAtom = atomNodes[asymmetricAtomId];
     std::shared_ptr<SKAsymmetricAtom> atom = selectedAtom->representedObject();
     int bondIndex=0;
     for(std::shared_ptr<SKAsymmetricBond> bond : bondSetController()->arrangedObjects())
@@ -2235,12 +2235,11 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
 #elif defined(Q_OS_LINUX)
         fontFamilyName = "Arial";
 #endif
-  }
+    }
 
-
-    QFont font = QFont(fontFamilyName);
-    font.setStyleName(fontStyleName);
-    structure->_atomTextFont = font.toString();
+    QFont fontFromfamily = QFont(fontFamilyName);
+    fontFromfamily.setStyleName(fontStyleName);
+    structure->_atomTextFont = fontFromfamily.toString();
   }
   stream >> structure->_atomTextScaling;
   stream >> structure->_atomTextColor;
@@ -2450,4 +2449,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
   structure->bondSetController()->setTags();
 
   return stream;
+}
+
+FrameConsumer::~FrameConsumer()
+{
+  // Compulsory virtual destructor definition
 }

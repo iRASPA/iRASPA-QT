@@ -19,54 +19,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "rkrenderkitprotocols.h"
+#include "logreporting.h"
 
-RKRenderStructure::~RKRenderStructure()
+LogReporting::~LogReporting()
 {
   // Compulsory virtual destructor definition
 }
 
-RKRenderPrimitiveObjectsSource::~RKRenderPrimitiveObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderCrystalPrimitiveEllipsoidObjectsSource::~RKRenderCrystalPrimitiveEllipsoidObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderCrystalPrimitiveCylinderObjectsSource::~RKRenderCrystalPrimitiveCylinderObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderCrystalPrimitivePolygonalPrimsObjectsSource::~RKRenderCrystalPrimitivePolygonalPrimsObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderPrimitiveEllipsoidObjectsSource::~RKRenderPrimitiveEllipsoidObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderPrimitiveCylinderObjectsSource::~RKRenderPrimitiveCylinderObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderPrimitivePolygonalPrimsObjectsSource::~RKRenderPrimitivePolygonalPrimsObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderDataSource::~RKRenderDataSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderViewController::~RKRenderViewController()
+LogReportingConsumer::~LogReportingConsumer()
 {
   // Compulsory virtual destructor definition
 }

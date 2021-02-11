@@ -385,7 +385,6 @@ void Protein::expandSymmetry()
 
   for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
   {
-    std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
     if (std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
       std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = std::vector<std::shared_ptr<SKAtomCopy>>{};
@@ -827,16 +826,16 @@ std::vector<RKInPerInstanceAttributesText> Protein::atomTextData(RKFontAtlas *fo
               break;
             }
 
-            for(RKInPerInstanceAttributesText &text: subdata)
+            for(RKInPerInstanceAttributesText &subdataText: subdata)
             {
-              text.vertexCoordinatesData.x -= rect.center().x();
-              text.vertexCoordinatesData.y -= rect.center().y();
-              text.vertexCoordinatesData.x += shift.x;
-              text.vertexCoordinatesData.y += shift.y;
-              text.vertexCoordinatesData.x /= 50.0;
-              text.vertexCoordinatesData.y /= 50.0;
-              text.vertexCoordinatesData.z /= 50.0;
-              text.vertexCoordinatesData.w /= 50.0;
+              subdataText.vertexCoordinatesData.x -= rect.center().x();
+              subdataText.vertexCoordinatesData.y -= rect.center().y();
+              subdataText.vertexCoordinatesData.x += shift.x;
+              subdataText.vertexCoordinatesData.y += shift.y;
+              subdataText.vertexCoordinatesData.x /= 50.0;
+              subdataText.vertexCoordinatesData.y /= 50.0;
+              subdataText.vertexCoordinatesData.z /= 50.0;
+              subdataText.vertexCoordinatesData.w /= 50.0;
             }
 
             std::copy(subdata.begin(), subdata.end(), std::inserter(data, data.end()));

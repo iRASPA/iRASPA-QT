@@ -65,28 +65,24 @@ union double3x3
           {
 
           };
-   double3x3(simd_quatd q);
+  double3x3(simd_quatd q);
 
-   double3x3(double lattice[3][3]);
-   double* data() {return m;}
+  double3x3(double lattice[3][3]);
+  double* data() {return m;}
 
-   double determinant(void);
-   double trace(void);
-   double3x3 const inverse();
-   static double3x3 const inverse(const double3x3& right);
-   static double3x3 transpose(const double3x3& right);
-   double3x3 const transpose(void) const;
-   double3x3 inversetranpose(void);
-   void solve_lambdas(double3 &res);
-   void solve_angles_0( double3 &res, double3 lambdas );
-   void solve_angles_1( double3 &res, double3 lambdas );
-   void solve_angles_2( double3 &res, double3 lambdas );
-   void EigenSystemSymmetric(double3 &eigenvalues,double3x3 &eigenvectors);
-   void SingularValueDecompositionSymmetric(double3x3 &U,double3 &D,double3x3 &V);
-   void SingularValueDecomposition(double3x3 &a,double3 &w,double3x3 &v);
+  double determinant(void);
+  double trace(void);
+  double3x3 const inverse();
+  static double3x3 const inverse(const double3x3& right);
+  static double3x3 transpose(const double3x3& right);
+  double3x3 const transpose(void) const;
+  double3x3 inversetranpose(void);
+  void solve_lambdas(double3 &res);
+  void solve_angles_0( double3 &res, double3 lambdas );
+  void solve_angles_1( double3 &res, double3 lambdas );
+  void solve_angles_2( double3 &res, double3 lambdas );
+  void EigenSystemSymmetric(double3 &eigenvalues,double3x3 &eigenvectors);
 
-//void EigenSystemSymmetric2(double3x3 A, double3x3 &V, double3 &d);
-//void tql2(double3x3 &V, double3 &d, double3 &e);
 
   friend std::ostream& operator<<(std::ostream& out, const double3x3& vec);
 

@@ -34,7 +34,7 @@ RKFontAtlas::RKFontAtlas(QString fontName, int texture_size): width(texture_size
 
   initializeOpenGLFunctions();
 
-  for(int i=0; i<characters.size(); i++)
+  for(size_t i=0; i<characters.size(); i++)
   {
     int index = characters[i].ID;
     characterIndex[index] = i;
@@ -95,7 +95,7 @@ bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
   rawFont.setPixelSize(sz*scaler);
 
   //	render all the glyphs individually
-  printf( "\nRendering characters into a packed %i^2 image:\n", texture_size );
+  qDebug() << "Rendering characters into a packed " + QString::number(texture_size) + " image";
   int packed_glyph_index = 0;
   int tin = clock();
   for( unsigned int char_index = 0; char_index < render_list.size(); ++char_index )
@@ -166,7 +166,7 @@ bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
   return true;
 }
 
-int RKFontAtlas::fontSizeForTextureSize(QRawFont &rawFont, int texture_size, const std::vector< int > &render_list, std::vector< FontCharacter > &characters)
+int RKFontAtlas::fontSizeForTextureSize(QRawFont &rawFont, int texture_size, const std::vector< int > &render_list, std::vector< FontCharacter > &c)
 {
   //	initial guess for the size of the Signed Distance Field font
   //	(intentionally low, the first trial will be at sz*2, so 8x8)
@@ -176,7 +176,7 @@ int RKFontAtlas::fontSizeForTextureSize(QRawFont &rawFont, int texture_size, con
   {
     sz <<= 1;
     printf( " %i", sz );
-    keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, characters );
+    keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, c );
   }
   int sz_step = sz >> 2;
   while( sz_step )
@@ -190,16 +190,16 @@ int RKFontAtlas::fontSizeForTextureSize(QRawFont &rawFont, int texture_size, con
     }
     printf( " %i", sz );
     sz_step >>= 1;
-    keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, characters );
+    keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, c );
   }
   //	just in case
   while( (!keep_going) && (sz > 1) )
   {
     --sz;
     printf( " %i", sz );
-    keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, characters );
+    keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, c );
   }
-  printf( "\nResult = %i pixels\n", sz );
+  qDebug() <<  "Result number of pixels: " + QString::number(sz);
 
   if( !keep_going )
   {

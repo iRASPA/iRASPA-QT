@@ -31,6 +31,8 @@ public:
   MolecularCrystal(const MolecularCrystal &molecularCrystal);
   MolecularCrystal(std::shared_ptr<SKStructure> structure);
   MolecularCrystal(std::shared_ptr<Structure> s);
+  ~MolecularCrystal() {}
+
   std::shared_ptr<Structure> clone() override final;
 
   bool hasSymmetry() override final {return true;}

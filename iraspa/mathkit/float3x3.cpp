@@ -316,22 +316,22 @@ void float3x3::solve_angles_1( float3 &res, float3 lambdas)
 
 void float3x3::solve_angles_2( float3 &res, float3 lambdas)
 {
-  float phi1a, phi1b, phi2, phi3, v, w, absdif, delta = 1.0E10;
+  float phi1a, phi1b, phi2, phi3, v1, w1, absdif, small_delta = 1.0E10;
   float g11, g12, g21, g22, t1, t2, t3, t4;
   t1 = lambdas[0] - lambdas[1];
   t2 = lambdas[1] - lambdas[2];
   t3 = lambdas[2] - lambdas[0];
   t4 = m[0] - lambdas[2];
-  v = sqr( m[1] ) + sqr( m[2] );
-  v += t4 * ( m[0] + t3 - lambdas[1] );
-  v /= t2 * t3;
-  if( fabs( v ) < fiszero_limit ) w = 1.0;
-  else w = ( t4 - t2 * v ) / ( t1 * v );
-  phi2 = trunc_acos( trunc_sqrt( v ) ); // + pi for symmetry
-  phi3 = trunc_acos( trunc_sqrt( w ) ); // + pi for symmetry
+  v1 = sqr( m[1] ) + sqr( m[2] );
+  v1 += t4 * ( m[0] + t3 - lambdas[1] );
+  v1 /= t2 * t3;
+  if( fabs( v1 ) < fiszero_limit ) w1 = 1.0;
+  else w1 = ( t4 - t2 * v1 ) / ( t1 * v1 );
+  phi2 = trunc_acos( trunc_sqrt( v1 ) ); // + pi for symmetry
+  phi3 = trunc_acos( trunc_sqrt( w1 ) ); // + pi for symmetry
   g11 = 0.5 * t1 * cos( phi2 ) * sin( 2.0 * phi3 );
-  g12 = 0.5 * ( t1 * w + t2 ) * sin( 2.0 * phi2 );
-  g21 = t1 * ( 1.0 + ( v - 2.0 ) * w ) + t2 * v;
+  g12 = 0.5 * ( t1 * w1 + t2 ) * sin( 2.0 * phi2 );
+  g21 = t1 * ( 1.0 + ( v1 - 2.0 ) * w1 ) + t2 * v1;
   g22 = t1 * sin( phi2 ) * sin( 2.0 * phi3 );
   t1 = angle( m[1], -1.0 * m[2] );
   t3 = angle(m[4] - m[8], -2.0 *m[5] );
@@ -345,8 +345,8 @@ void float3x3::solve_angles_2( float3 &res, float3 lambdas)
   { phi1a = angle( g11 * t1 + g12 * t2, -g11 * t2 + g12 * t1 );
     phi1b = 0.5 * angle( g21 * t3 + g22 * t4, -g21 * t4 + g22 * t3 );
     absdif = fabs( phi1a - phi1b );
-    if( absdif < delta )
-    { delta = absdif;
+    if( absdif < small_delta )
+    { small_delta = absdif;
       res[0] = big ? phi1b : phi1a;
       res[1] = phi2;
       res[2] = phi3;
@@ -405,323 +405,6 @@ void float3x3::EigenSystemSymmetric(float3 &eigenvalues,float3x3 &eigenvectors)
   eigenvectors.m31=sn[1];                eigenvectors.m32=-cs[1]*sn[0];                    eigenvectors.m33=cs[0]*cs[1];
 
 }
-
-// Assume [U,D,V] = SVD(A). Then
-// U = eigenvectors(A'A), V = eigenvectors(AA'), and D = sqrt(eigenvalues(A));
-void float3x3::SingularValueDecompositionSymmetric(float3x3 &U,float3 &D,float3x3 &V)
-{
-   float3x3 a;
-
-   a=(this->transpose()) * (*this);
-   a.EigenSystemSymmetric(D,U);
-
-   // for a symmetric matrix V=U
-   V=U;
-
-   D[0]=sqrt(D[0]); D[1]=sqrt(D[1]); D[2]=sqrt(D[2]);
-}
-
-
-static float PYTHAG(float a, float b)
-{
-    float at = fabs(a), bt = fabs(b), ct, result;
-
-    if (at > bt)       { ct = bt / at; result = at * sqrt(1.0 + ct * ct); }
-    else if (bt > 0.0) { ct = at / bt; result = bt * sqrt(1.0 + ct * ct); }
-    else result = 0.0;
-    return(result);
-}
-
-
-// given matrix M:n×m that performs some linear transformation, the SVD decomposes that transformation into three steps: U:m×m, D:m×n, V:n×n, such that M=U×D×V^T
-// V^T is the rotation to a more suitable axis system
-// D is the scaling done by M, D is a rectangular diagonal, with d_{ii}>d_{jj},i<j
-// The values of matrix D state the importance of each scaling. If the last values are low, they can be discarded without much loss.
-// U is the rotation back to the initial axis system
-// The m columns of U are called the left singular vectors. The n columns of V are called the right singular vectors.
-
-// The right singular vectors are eigenvectors of M^T×M
-// The left singular vectors are eigenvectors of M×M^T
-// The non-zero values of D are the square root of the eigenvalues of M×M^T and M^T×M are called the singular values
-// These singular values can be seen as the semiaxes of an ellipsoid where the scaling is done.
-// U and V are unitary matrixes, i.e. U×U^T=I and V×V^T=I.
-
-//  matrix=a*float3x3(w[0],0,0, 0,w[1],0, 0,0,w[2])*v.transpose();
-void float3x3::SingularValueDecomposition(float3x3 &a,float3 &w,float3x3 &v)
-{
-    int flag, i, its, j, jj, k, l, nm;
-    float c, f, h, s, x, y, z;
-    float anorm = 0.0, g = 0.0, scale = 0.0;
-    float *rv1;
-
-    int n=3;
-    int m=3;
-
-    a=*this;
-
-
-    if (m < n)
-    {
-        fprintf(stderr, "#rows must be > #cols \n");
-        return;
-    }
-
-    rv1 = (float *)malloc((unsigned int) n*sizeof(float));
-
-/* Householder reduction to bidiagonal form */
-    for (i = 0; i < n; i++)
-    {
-        /* left-hand reduction */
-        l = i + 1;
-        rv1[i] = scale * g;
-        g = s = scale = 0.0;
-        if (i < m)
-        {
-            for (k = i; k < m; k++)
-                scale += fabs((float)a.mm[k][i]);
-            if (scale)
-            {
-                for (k = i; k < m; k++)
-                {
-                    a.mm[k][i] = (float)((float)a.mm[k][i]/scale);
-                    s += ((float)a.mm[k][i] * (float)a.mm[k][i]);
-                }
-                f = (float)a.mm[i][i];
-                g = -SIGN(sqrt(s), f);
-                h = f * g - s;
-                a.mm[i][i] = (float)(f - g);
-                if (i != n - 1)
-                {
-                    for (j = l; j < n; j++)
-                    {
-                        for (s = 0.0, k = i; k < m; k++)
-                            s += ((float)a.mm[k][i] * (float)a.mm[k][j]);
-                        f = s / h;
-                        for (k = i; k < m; k++)
-                            a.mm[k][j] += (float)(f * (float)a.mm[k][i]);
-                    }
-                }
-                for (k = i; k < m; k++)
-                    a.mm[k][i] = (float)((float)a.mm[k][i]*scale);
-            }
-        }
-        w[i] = (float)(scale * g);
-
-        /* right-hand reduction */
-        g = s = scale = 0.0;
-        if (i < m && i != n - 1)
-        {
-            for (k = l; k < n; k++)
-                scale += fabs((float)a.mm[i][k]);
-            if (scale)
-            {
-                for (k = l; k < n; k++)
-                {
-                    a.mm[i][k] = (float)((float)a.mm[i][k]/scale);
-                    s += ((float)a.mm[i][k] * (float)a.mm[i][k]);
-                }
-                f = (float)a.mm[i][l];
-                g = -SIGN(sqrt(s), f);
-                h = f * g - s;
-                a.mm[i][l] = (float)(f - g);
-                for (k = l; k < n; k++)
-                    rv1[k] = (float)a.mm[i][k] / h;
-                if (i != m - 1)
-                {
-                    for (j = l; j < m; j++)
-                    {
-                        for (s = 0.0, k = l; k < n; k++)
-                            s += ((float)a.mm[j][k] * (float)a.mm[i][k]);
-                        for (k = l; k < n; k++)
-                            a.mm[j][k] += (float)(s * rv1[k]);
-                    }
-                }
-                for (k = l; k < n; k++)
-                    a.mm[i][k] = (float)((float)a.mm[i][k]*scale);
-            }
-        }
-        anorm = MAX(anorm, (fabs((float)w[i]) + fabs(rv1[i])));
-    }
-
-    /* accumulate the right-hand transformation */
-    for (i = n - 1; i >= 0; i--)
-    {
-        if (i < n - 1)
-        {
-            if (g)
-            {
-                for (j = l; j < n; j++)
-                    v.mm[j][i] = (float)(((float)a.mm[i][j] / (float)a.mm[i][l]) / g);
-                    /* float division to avoid underflow */
-                for (j = l; j < n; j++)
-                {
-                    for (s = 0.0, k = l; k < n; k++)
-                        s += ((float)a.mm[i][k] * (float)v.mm[k][j]);
-                    for (k = l; k < n; k++)
-                        v.mm[k][j] += (float)(s * (float)v.mm[k][i]);
-                }
-            }
-            for (j = l; j < n; j++)
-                v.mm[i][j] = v.mm[j][i] = 0.0;
-        }
-        v.mm[i][i] = 1.0;
-        g = rv1[i];
-        l = i;
-    }
-
-    /* accumulate the left-hand transformation */
-    for (i = n - 1; i >= 0; i--)
-    {
-        l = i + 1;
-        g = (float)w[i];
-        if (i < n - 1)
-            for (j = l; j < n; j++)
-                a.mm[i][j] = 0.0;
-        if (g)
-        {
-            g = 1.0 / g;
-            if (i != n - 1)
-            {
-                for (j = l; j < n; j++)
-                {
-                    for (s = 0.0, k = l; k < m; k++)
-                        s += ((float)a.mm[k][i] * (float)a.mm[k][j]);
-                    f = (s / (float)a.mm[i][i]) * g;
-                    for (k = i; k < m; k++)
-                        a.mm[k][j] += (float)(f * (float)a.mm[k][i]);
-                }
-            }
-            for (j = i; j < m; j++)
-                a.mm[j][i] = (float)((float)a.mm[j][i]*g);
-        }
-        else
-        {
-            for (j = i; j < m; j++)
-                a.mm[j][i] = 0.0;
-        }
-        ++a.mm[i][i];
-    }
-
-    /* diagonalize the bidiagonal form */
-    for (k = n - 1; k >= 0; k--)
-    {                             /* loop over singular values */
-        for (its = 0; its < 30; its++)
-        {                         /* loop over allowed iterations */
-            flag = 1;
-            for (l = k; l >= 0; l--)
-            {                     /* test for splitting */
-                nm = l - 1;
-                if (fabs(rv1[l]) + anorm == anorm)
-                {
-                    flag = 0;
-                    break;
-                }
-                if (fabs((float)w[nm]) + anorm == anorm)
-                    break;
-            }
-            if (flag)
-            {
-                c = 0.0;
-                s = 1.0;
-                for (i = l; i <= k; i++)
-                {
-                    f = s * rv1[i];
-                    if (fabs(f) + anorm != anorm)
-                    {
-                        g = (float)w[i];
-                        h = PYTHAG(f, g);
-                        w[i] = (float)h;
-                        h = 1.0 / h;
-                        c = g * h;
-                        s = (- f * h);
-                        for (j = 0; j < m; j++)
-                        {
-                            y = (float)a.mm[j][nm];
-                            z = (float)a.mm[j][i];
-                            a.mm[j][nm] = (float)(y * c + z * s);
-                            a.mm[j][i] = (float)(z * c - y * s);
-                        }
-                    }
-                }
-            }
-            z = (float)w[k];
-            if (l == k)
-            {                  /* convergence */
-                if (z < 0.0)
-                {              /* make singular value nonnegative */
-                    w[k] = (float)(-z);
-                    for (j = 0; j < n; j++)
-                        v.mm[j][k] = (-v.mm[j][k]);
-                }
-                break;
-            }
-            if (its >= 30) {
-                free((void*) rv1);
-                fprintf(stderr, "No convergence after 30,000! iterations \n");
-                return;
-            }
-
-            /* shift from bottom 2 x 2 minor */
-            x = (float)w[l];
-            nm = k - 1;
-            y = (float)w[nm];
-            g = rv1[nm];
-            h = rv1[k];
-            f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0 * h * y);
-            g = PYTHAG(f, 1.0);
-            f = ((x - z) * (x + z) + h * ((y / (f + SIGN(g, f))) - h)) / x;
-
-            /* next QR transformation */
-            c = s = 1.0;
-            for (j = l; j <= nm; j++)
-            {
-                i = j + 1;
-                g = rv1[i];
-                y = (float)w[i];
-                h = s * g;
-                g = c * g;
-                z = PYTHAG(f, h);
-                rv1[j] = z;
-                c = f / z;
-                s = h / z;
-                f = x * c + g * s;
-                g = g * c - x * s;
-                h = y * s;
-                y = y * c;
-                for (jj = 0; jj < n; jj++)
-                {
-                    x = (float)v.mm[jj][j];
-                    z = (float)v.mm[jj][i];
-                    v.mm[jj][j] = (float)(x * c + z * s);
-                    v.mm[jj][i] = (float)(z * c - x * s);
-                }
-                z = PYTHAG(f, h);
-                w[j] = (float)z;
-                if (z)
-                {
-                    z = 1.0 / z;
-                    c = f * z;
-                    s = h * z;
-                }
-                f = (c * g) + (s * y);
-                x = (c * y) - (s * g);
-                for (jj = 0; jj < m; jj++)
-                {
-                    y = (float)a.mm[jj][j];
-                    z = (float)a.mm[jj][i];
-                    a.mm[jj][j] = (float)(y * c + z * s);
-                    a.mm[jj][i] = (float)(z * c - y * s);
-                }
-            }
-            rv1[l] = 0.0;
-            rv1[k] = f;
-            w[k] = (float)x;
-        }
-    }
-    free((void*) rv1);
-}
-
-
 
 
 std::ostream& operator<<(std::ostream& out, const float3x3& vec) // output

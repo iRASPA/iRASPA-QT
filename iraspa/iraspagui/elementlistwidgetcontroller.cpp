@@ -128,9 +128,9 @@ void ElementListWidgetController::reloadData()
 
     // fill in color combobox
     whileBlocking(_mainWindow->mainWindowUI()->colorComboBox)->clear();
-    for(SKColorSet& colorSet : colorSets.colorSets())
+    for(SKColorSet& currentColorSet : colorSets.colorSets())
     {
-      QString name = colorSet.displayName();
+      QString name = currentColorSet.displayName();
       whileBlocking(_mainWindow->mainWindowUI()->colorComboBox)->addItem(name);
     }
     whileBlocking(_mainWindow->mainWindowUI()->colorComboBox)->setCurrentIndex(_selectedColorSetIndex);
@@ -354,14 +354,12 @@ void ElementListWidgetController::addNewForceFieldAtomType()
     form->colorPushButton->setEnabled(true);
     QObject::connect(form->colorPushButton,static_cast<void (SelectColorButton::*)(void)>(&SelectColorButton::pressed),this,&ElementListWidgetController::selectColorButton, Qt::UniqueConnection);
 
-
-
     for(int row=0; row<count(); row++)
     {
-      ElementsForm* form = static_cast<ElementsForm*>( this->itemWidget(mainItem));
+      ElementsForm* elementForm = static_cast<ElementsForm*>( this->itemWidget(mainItem));
 
-      QListWidgetItem* mainItem = this->item(row);
-      mainItem->setSizeHint(form->sizeHint());
+      QListWidgetItem* mainFormItem = this->item(row);
+      mainFormItem->setSizeHint(elementForm->sizeHint());
 
       whileBlocking(form->rowNumberLabel)->setText(QString::number(row));
     }

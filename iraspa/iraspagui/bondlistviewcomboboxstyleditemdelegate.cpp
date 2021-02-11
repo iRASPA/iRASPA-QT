@@ -33,30 +33,30 @@
 #include <QProxyStyle>
 #include <type_traits>
 
-BondListViewComboBoxStyledItemDelegate::BondListViewComboBoxStyledItemDelegate(QWidget *parent) : QStyledItemDelegate(parent), singleBondIcon(new QIcon(":/iraspa/singlebond.png"))
+BondListViewComboBoxStyledItemDelegate::BondListViewComboBoxStyledItemDelegate(QWidget *parent) : QStyledItemDelegate(parent), _singleBondIcon(new QIcon(":/iraspa/singlebond.png"))
 {
-  isOneCellInEditMode = false;
+  _isOneCellInEditMode = false;
 
   if(QTreeView *view = qobject_cast<QTreeView *>(parent))
   {
-     treeView = view;
-     connect(treeView, SIGNAL(entered(QModelIndex)), this, SLOT(cellEntered(QModelIndex)));
+     _treeView = view;
+     connect(_treeView, SIGNAL(entered(QModelIndex)), this, SLOT(cellEntered(QModelIndex)));
   }
 
-  singleBondIcon = new QIcon(":/iraspa/singlebond.png");
-  doubleBondIcon = new QIcon(":/iraspa/doublebond.png");
-  partialDoubleBondIcon = new QIcon(":/iraspa/partialdoublebond.png");
-  tripleBondIcon = new QIcon(":/iraspa/triplebond.png");
+  _singleBondIcon = new QIcon(":/iraspa/singlebond.png");
+  _doubleBondIcon = new QIcon(":/iraspa/doublebond.png");
+  _partialDoubleBondIcon = new QIcon(":/iraspa/partialdoublebond.png");
+  _tripleBondIcon = new QIcon(":/iraspa/triplebond.png");
 
-  comboBox = new QComboBox(treeView);
-  comboBox->hide();
-  comboBox->setAutoFillBackground(true);
-  comboBox->addItem(*singleBondIcon,QString(""));
-  comboBox->addItem(*doubleBondIcon, QString(""));
-  comboBox->addItem(*partialDoubleBondIcon, QString(""));
-  comboBox->addItem(*tripleBondIcon, QString(""));
-  comboBox->setCurrentText("");
-  comboBox->setCurrentIndex(0);
+  _comboBox = new QComboBox(_treeView);
+  _comboBox->hide();
+  _comboBox->setAutoFillBackground(true);
+  _comboBox->addItem(*_singleBondIcon,QString(""));
+  _comboBox->addItem(*_doubleBondIcon, QString(""));
+  _comboBox->addItem(*_partialDoubleBondIcon, QString(""));
+  _comboBox->addItem(*_tripleBondIcon, QString(""));
+  _comboBox->setCurrentText("");
+  _comboBox->setCurrentIndex(0);
 }
 
 void BondListViewComboBoxStyledItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
@@ -65,25 +65,25 @@ void BondListViewComboBoxStyledItemDelegate::paint(QPainter *painter, const QSty
   // call super to draw selection
   QStyledItemDelegate::paint(painter, option, index);
 
-  if (isOneCellInEditMode && (currentEditedCellIndex == index)) return;
+  if (_isOneCellInEditMode && (_currentEditedCellIndex == index)) return;
 
   if(SKAsymmetricBond *asymmetricBond = static_cast<SKAsymmetricBond*>(index.internalPointer()))
   {
     painter->save();
 
-    comboBox->resize(option.rect.size());
+    _comboBox->resize(option.rect.size());
 
     QStyleOptionComboBox comboBoxOption;
-    comboBoxOption.initFrom(comboBox);
+    comboBoxOption.initFrom(_comboBox);
     comboBoxOption.rect = option.rect;
     comboBoxOption.state = option.state;
 
     int value = static_cast<typename std::underlying_type<SKAsymmetricBond::SKBondType>::type>(asymmetricBond->getBondType());
-    comboBoxOption.currentIcon = comboBox->itemIcon(value);
-    comboBoxOption.iconSize = comboBox->iconSize();
+    comboBoxOption.currentIcon = _comboBox->itemIcon(value);
+    comboBoxOption.iconSize = _comboBox->iconSize();
 
-    comboBox->style()->drawComplexControl(QStyle::CC_ComboBox, &comboBoxOption, painter, nullptr);
-    comboBox->style()->drawControl(QStyle::CE_ComboBoxLabel, &comboBoxOption, painter, nullptr);
+    _comboBox->style()->drawComplexControl(QStyle::CC_ComboBox, &comboBoxOption, painter, nullptr);
+    _comboBox->style()->drawControl(QStyle::CE_ComboBoxLabel, &comboBoxOption, painter, nullptr);
 
     painter->restore();
   }
@@ -93,20 +93,20 @@ void BondListViewComboBoxStyledItemDelegate::cellEntered(const QModelIndex &inde
 {
   if(index.column() == 5)
   {
-    if(isOneCellInEditMode)
+    if(_isOneCellInEditMode)
     {
-      treeView->closePersistentEditor(currentEditedCellIndex);
+      _treeView->closePersistentEditor(_currentEditedCellIndex);
     }
-    treeView->openPersistentEditor(index);
-    isOneCellInEditMode = true;
-    currentEditedCellIndex = index;
+    _treeView->openPersistentEditor(index);
+    _isOneCellInEditMode = true;
+    _currentEditedCellIndex = index;
   }
   else
   {
-    if(isOneCellInEditMode)
+    if(_isOneCellInEditMode)
     {
-      isOneCellInEditMode = false;
-      treeView->closePersistentEditor(currentEditedCellIndex);
+      _isOneCellInEditMode = false;
+      _treeView->closePersistentEditor(_currentEditedCellIndex);
     }
   }
 }
@@ -130,14 +130,14 @@ QWidget * BondListViewComboBoxStyledItemDelegate::createEditor(QWidget *parent,
     realCombobox->resize(size);
 
     realCombobox->setAutoFillBackground(true);
-    realCombobox->addItem(*singleBondIcon, QString(""));
-    realCombobox->addItem(*doubleBondIcon, QString(""));
-    realCombobox->addItem(*partialDoubleBondIcon, QString(""));
-    realCombobox->addItem(*tripleBondIcon, QString(""));
+    realCombobox->addItem(*_singleBondIcon, QString(""));
+    realCombobox->addItem(*_doubleBondIcon, QString(""));
+    realCombobox->addItem(*_partialDoubleBondIcon, QString(""));
+    realCombobox->addItem(*_tripleBondIcon, QString(""));
     realCombobox->setCurrentIndex(value);
 
     connect(realCombobox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), realCombobox,
-            [this, realCombobox, index]([[maybe_unused]] int value){ setModelData(realCombobox, treeView->model(), index);});
+            [this, realCombobox, index]([[maybe_unused]] int value){ setModelData(realCombobox, _treeView->model(), index);});
 
     return realCombobox;
   }

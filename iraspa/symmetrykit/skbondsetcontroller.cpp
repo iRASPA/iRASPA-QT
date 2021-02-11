@@ -275,11 +275,11 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<SKBondSetController
         bond->setAtom1(asymmetricAtoms[atom1Tag]);
         bond->setAtom2(asymmetricAtoms[atom2Tag]);
 
-        for(std::shared_ptr<SKBond> &bond: bond->copies())
+        for(std::shared_ptr<SKBond> &bondCopy: bond->copies())
         {
-          int tag1 = bond->getTag1();
-          int tag2 = bond->getTag2();
-          bond->setAtoms(atomCopies[tag1],atomCopies[tag2]);
+          int tag1 = bondCopy->getTag1();
+          int tag2 = bondCopy->getTag2();
+          bondCopy->setAtoms(atomCopies[tag1],atomCopies[tag2]);
         }
       }
     }
@@ -322,11 +322,11 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<SKBondSetController
       bond->setAtom1(asymmetricAtoms[atom1Tag]);
       bond->setAtom2(asymmetricAtoms[atom2Tag]);
 
-      for(std::shared_ptr<SKBond> &bond: bond->copies())
+      for(std::shared_ptr<SKBond> &bondCopy: bond->copies())
       {
-        int tag1 = bond->getTag1();
-        int tag2 = bond->getTag2();
-        bond->setAtoms(atomCopies[tag1],atomCopies[tag2]);
+        int tag1 = bondCopy->getTag1();
+        int tag2 = bondCopy->getTag2();
+        bondCopy->setAtoms(atomCopies[tag1],atomCopies[tag2]);
       }
     }
   }

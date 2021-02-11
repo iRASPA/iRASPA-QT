@@ -29,6 +29,7 @@ class ProjectTreeNode;
 struct ProjectConsumer
 {
   virtual void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) = 0;
+  virtual ~ProjectConsumer() = 0;
 };
 
 

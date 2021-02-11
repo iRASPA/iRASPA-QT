@@ -62,8 +62,9 @@ public:
   Structure(std::shared_ptr<SKStructure> structure);
   Structure(std::shared_ptr<Structure> clone);
   Structure(const Structure &structure);
-  virtual std::shared_ptr<Structure> clone() {return nullptr;}
   virtual ~Structure() {}
+
+  virtual std::shared_ptr<Structure> clone() {return nullptr;}
 
   virtual bool hasSymmetry() {return false;}
   virtual std::shared_ptr<Structure> superCell() const {return nullptr;}
@@ -952,4 +953,5 @@ protected:
 struct FrameConsumer
 {
   virtual void setFrame(std::shared_ptr<Structure> structure) = 0;
+  virtual ~FrameConsumer() = 0;
 };

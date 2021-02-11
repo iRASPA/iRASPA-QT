@@ -19,54 +19,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "rkrenderkitprotocols.h"
+#include "iraspamainwindowconsumerprotocol.h"
 
-RKRenderStructure::~RKRenderStructure()
+MainWindowConsumer::~MainWindowConsumer()
 {
   // Compulsory virtual destructor definition
 }
 
-RKRenderPrimitiveObjectsSource::~RKRenderPrimitiveObjectsSource()
+Reloadable::~Reloadable()
 {
   // Compulsory virtual destructor definition
 }
 
-RKRenderCrystalPrimitiveEllipsoidObjectsSource::~RKRenderCrystalPrimitiveEllipsoidObjectsSource()
+TabControlled::~TabControlled()
 {
   // Compulsory virtual destructor definition
 }
 
-RKRenderCrystalPrimitiveCylinderObjectsSource::~RKRenderCrystalPrimitiveCylinderObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderCrystalPrimitivePolygonalPrimsObjectsSource::~RKRenderCrystalPrimitivePolygonalPrimsObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderPrimitiveEllipsoidObjectsSource::~RKRenderPrimitiveEllipsoidObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderPrimitiveCylinderObjectsSource::~RKRenderPrimitiveCylinderObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderPrimitivePolygonalPrimsObjectsSource::~RKRenderPrimitivePolygonalPrimsObjectsSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderDataSource::~RKRenderDataSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderViewController::~RKRenderViewController()
-{
-  // Compulsory virtual destructor definition
-}

@@ -702,9 +702,9 @@ void MainWindow::propagateProject(std::shared_ptr<ProjectTreeNode> project, QObj
     {
       if(std::shared_ptr<iRASPAProject> iraspaProject = project->representedObject())
       {
-        if(std::shared_ptr<Project> project = iraspaProject->project())
+        if(std::shared_ptr<Project> currentProject = iraspaProject->project())
         {
-          if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
+          if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(currentProject))
           {
             renderViewController->setRenderDataSource(projectStructure);
           }

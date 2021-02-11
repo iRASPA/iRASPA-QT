@@ -407,8 +407,8 @@ QMimeData* ProjectTreeViewModel::mimeDataLazy(const QModelIndexList &indexes) co
     {
       if(ProjectTreeNode *projectTreeNode = nodeForIndex(index))
       {
-        qulonglong ptrval(reinterpret_cast<qulonglong>(projectTreeNode));
-        stream << ptrval;
+        qulonglong projectPtrval(reinterpret_cast<qulonglong>(projectTreeNode));
+        stream << projectPtrval;
       }
     }
   }

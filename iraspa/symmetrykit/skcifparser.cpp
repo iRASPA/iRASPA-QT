@@ -159,11 +159,11 @@ void SKCIFParser::parseSymmetry(QString& string)
   if((string == QString("_symmetry_space_group_name_Hall").toLower()) ||
      (string == QString("_symmetry.space_group_name_Hall").toLower()))
   {
-    std::optional<QString> string = scanString();
+    std::optional<QString> possibleString = scanString();
 
-    if(string)
+    if(possibleString)
     { 
-      _spaceGroupHallNumber = SKSpaceGroup::HallNumber(*string);
+      _spaceGroupHallNumber = SKSpaceGroup::HallNumber(*possibleString);
     }
   }
 
@@ -173,10 +173,10 @@ void SKCIFParser::parseSymmetry(QString& string)
        (string == QString("_symmetry_space_group_name_H-M").toLower()) ||
        (string == QString("_symmetry.pdbx_full_space_group_name_H-M").toLower()))
     {
-      std::optional<QString> string = scanString();
-      if(string)
+      std::optional<QString> possibleString = scanString();
+      if(possibleString)
       {
-        _spaceGroupHallNumber = SKSpaceGroup::HallNumberFromHMString(*string);
+        _spaceGroupHallNumber = SKSpaceGroup::HallNumberFromHMString(*possibleString);
       }
     }
   }
@@ -285,15 +285,15 @@ void SKCIFParser::parseLoop(QString& string)
 
         std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
 
-        if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site_label")); (index != dictionary.end()))
+        if (std::map<QString,QString>::iterator atomSiteIndex = dictionary.find(QString("_atom_site_label")); (atomSiteIndex != dictionary.end()))
         {
-          atom->setDisplayName(index->second);
-          atom->setUniqueForceFieldName(index->second);
+          atom->setDisplayName(atomSiteIndex->second);
+          atom->setUniqueForceFieldName(atomSiteIndex->second);
         }
 
-        if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site_forcefield_label")); (index != dictionary.end()))
+        if (std::map<QString,QString>::iterator atomSiteForceFieldIndex = dictionary.find(QString("_atom_site_forcefield_label")); (atomSiteForceFieldIndex != dictionary.end()))
         {
-          atom->setUniqueForceFieldName(index->second);
+          atom->setUniqueForceFieldName(atomSiteForceFieldIndex->second);
         }
 
         std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site_fract_x"));
@@ -318,51 +318,54 @@ void SKCIFParser::parseLoop(QString& string)
           atom->setCharge(charge);
         }
 
-        if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(chemicalElement); index != PredefinedElements::atomicNumberData.end())
+        if (std::map<QString,int>::iterator chemicalElementIndex = PredefinedElements::atomicNumberData.find(chemicalElement); chemicalElementIndex != PredefinedElements::atomicNumberData.end())
         {
-          atom->setElementIdentifier(index->second);
+          atom->setElementIdentifier(chemicalElementIndex->second);
         }
 
         _atoms.push_back(atom);
       }
-      else if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site.type_symbol")); (index != dictionary.end()))
+      else
       {
-        std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
-
-        if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site.id")); (index != dictionary.end()))
+        if (std::map<QString,QString>::iterator index2 = dictionary.find(QString("_atom_site.type_symbol")); (index2 != dictionary.end()))
         {
-          atom->setDisplayName(index->second);
-          atom->setUniqueForceFieldName(index->second);
-        }
+          std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
 
-        if (std::map<QString,QString>::iterator index = dictionary.find(QString("_atom_site.forcefield_label")); (index != dictionary.end()))
-        {
-          atom->setUniqueForceFieldName(index->second);
-        }
+          if (std::map<QString,QString>::iterator atomSiteIndex = dictionary.find(QString("_atom_site.id")); (atomSiteIndex != dictionary.end()))
+          {
+            atom->setDisplayName(atomSiteIndex->second);
+            atom->setUniqueForceFieldName(atomSiteIndex->second);
+          }
 
-        std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site.fract_x"));
-        std::map<QString,QString>::iterator atom_site_y = dictionary.find(QString("_atom_site.fract_y"));
-        std::map<QString,QString>::iterator atom_site_z = dictionary.find(QString("_atom_site.fract_z"));
-        if ((atom_site_x != dictionary.end()) && (atom_site_y != dictionary.end()) && (dictionary.find(QString("atom_site_z")) != dictionary.end()))
-        {
-          double3 position;
-          bool succes = false;
-          position.x = atom_site_x->second.split('(').at(0).toDouble(&succes);
-          position.y = atom_site_y->second.split('(').at(0).toDouble(&succes);
-          position.z = atom_site_z->second.split('(').at(0).toDouble(&succes);
-          atom->setPosition(position);
-        }
+          if (std::map<QString,QString>::iterator atomSiteForceFieldIndex = dictionary.find(QString("_atom_site.forcefield_label")); (atomSiteForceFieldIndex != dictionary.end()))
+          {
+            atom->setUniqueForceFieldName(atomSiteForceFieldIndex->second);
+          }
 
-        std::map<QString,QString>::iterator atom_charge = dictionary.find(QString("_atom_site.charge"));
-        if (atom_charge != dictionary.end())
-        {
-          double charge=0.0;
-          bool succes = false;
-          charge = atom_charge->second.split('(').at(0).toDouble(&succes);
-          atom->setCharge(charge);
-        }
+          std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site.fract_x"));
+          std::map<QString,QString>::iterator atom_site_y = dictionary.find(QString("_atom_site.fract_y"));
+          std::map<QString,QString>::iterator atom_site_z = dictionary.find(QString("_atom_site.fract_z"));
+          if ((atom_site_x != dictionary.end()) && (atom_site_y != dictionary.end()) && (dictionary.find(QString("atom_site_z")) != dictionary.end()))
+          {
+            double3 position;
+            bool succes = false;
+            position.x = atom_site_x->second.split('(').at(0).toDouble(&succes);
+            position.y = atom_site_y->second.split('(').at(0).toDouble(&succes);
+            position.z = atom_site_z->second.split('(').at(0).toDouble(&succes);
+            atom->setPosition(position);
+          }
 
-        _atoms.push_back(atom);
+          std::map<QString,QString>::iterator atom_charge = dictionary.find(QString("_atom_site.charge"));
+          if (atom_charge != dictionary.end())
+          {
+            double charge=0.0;
+            bool succes = false;
+            charge = atom_charge->second.split('(').at(0).toDouble(&succes);
+            atom->setCharge(charge);
+          }
+
+          _atoms.push_back(atom);
+        }
       }
     }
   }

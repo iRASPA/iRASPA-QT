@@ -31,6 +31,8 @@ public:
   CrystalCylinderPrimitive();
   CrystalCylinderPrimitive(const CrystalCylinderPrimitive &crystalCylinderPrimitive);
   CrystalCylinderPrimitive(std::shared_ptr<Structure> s);
+  ~CrystalCylinderPrimitive() {}
+
   std::shared_ptr<Structure> clone() override final;
 
   bool hasSymmetry() override final {return true;}

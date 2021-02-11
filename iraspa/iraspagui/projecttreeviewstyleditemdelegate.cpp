@@ -57,9 +57,9 @@ void ProjectTreeViewStyledItemDelegate::paint(QPainter *painter, const QStyleOpt
     {
       if(ProjectTreeViewModel *model = qobject_cast<ProjectTreeViewModel*>(item->model()))
       {
-        if(ProjectTreeNode *item = static_cast<ProjectTreeNode*>(index.internalPointer()))
+        if(ProjectTreeNode *projectItem = static_cast<ProjectTreeNode*>(index.internalPointer()))
         {
-          if(model->isMainSelectedItem(item->shared_from_this()))
+          if(model->isMainSelectedItem(projectItem->shared_from_this()))
           {
             painter->save();
 
