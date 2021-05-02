@@ -21,8 +21,8 @@
 
 #include "mainwindow.h"
 #include <QApplication>
-//#include <QGLFormat>
 #include <QFontDatabase>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
@@ -48,6 +48,19 @@ int main(int argc, char *argv[])
 #endif
 
   QApplication a(argc, argv);
+
+  QTranslator qtTranslator, appTranslator;
+
+  //QLocale::setDefault(QLocale(QLocale::Chinese, QLocale::Script::SimplifiedChineseScript, QLocale::Country::China));
+
+  if( qtTranslator.load(QLocale(), QLatin1String("qt"), QLatin1String("_"), QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+  {
+    a.installTranslator(&qtTranslator);
+  }
+  if( appTranslator.load(QLocale(), QLatin1String("iraspa"), QLatin1String("_"), QLatin1String(":/i18n")))
+  {
+    a.installTranslator(&appTranslator);
+  }
 
   MainWindow w;
   w.show();

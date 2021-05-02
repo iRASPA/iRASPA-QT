@@ -23,6 +23,15 @@ include(iraspagui/iraspagui.pri)
 
 ICON = datafiles/iraspa.icns
 
+TRANSLATIONS = i18n/iraspa_en.ts \
+               i18n/iraspa_nl.ts \
+               i18n/iraspa_zh_Hans.ts \
+               i18n/iraspa_es.ts
+
+CONFIG += lrelease embed_translations
+
+OTHER_FILES = $$TRANSLATIONS
+
 macx{
   TARGET = iRASPA
 }

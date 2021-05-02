@@ -167,6 +167,7 @@ void ElementListWidgetController::reloadData()
        int atomicNumber = atomType.atomicNumber();
        SKElement element = PredefinedElements::predefinedElements[atomicNumber];
        const QString chemicalElement = element._chemicalSymbol;
+       const QString elementName = element._name;
 
        ElementsForm* form = new ElementsForm(this);
 
@@ -187,6 +188,9 @@ void ElementListWidgetController::reloadData()
        {
          whileBlocking(form->forceFieldStringIdentifierLabel)->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
        }
+
+       // set element-name
+       whileBlocking(form->elementNameLabel)->setText(QCoreApplication::translate("SKElement", qPrintable(elementName)));
 
        // set color
        QColor color = colorSet[forceFieldStringIdentifier];
