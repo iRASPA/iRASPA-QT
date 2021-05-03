@@ -54,7 +54,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* creatorItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(creatorItem);
 
-  pushButtonCreator = new QPushButton(QString("Creator"),this);
+  pushButtonCreator = new QPushButton(tr("Creator"),this);
   pushButtonCreator->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonCreator->setStyleSheet("text-align:left;");
   setItemWidget(creatorItem,0,pushButtonCreator);
@@ -328,7 +328,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* creationItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(creationItem);
 
-  pushButtonCreation = new QPushButton(QString("Creation"),this);
+  pushButtonCreation = new QPushButton(tr("Creation"),this);
   pushButtonCreation->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonCreation->setStyleSheet("text-align:left;");
   setItemWidget(creationItem,0,pushButtonCreation);
@@ -352,105 +352,105 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   pushButtonCreation->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   pushButtonCreation->resize(size().width(), fm.height());
 
-  _infoCreationForm->temperatureComboBox->insertItem(0,"Kelvin");
-  _infoCreationForm->temperatureComboBox->insertItem(1,"Celsius");
+  _infoCreationForm->temperatureComboBox->insertItem(0,tr("Kelvin"));
+  _infoCreationForm->temperatureComboBox->insertItem(1,tr("Celsius"));
 
-  _infoCreationForm->pressureComboBox->insertItem(0,"Pascal");
-  _infoCreationForm->pressureComboBox->insertItem(1,"Bar");
+  _infoCreationForm->pressureComboBox->insertItem(0,tr("Pascal"));
+  _infoCreationForm->pressureComboBox->insertItem(1,tr("Bar"));
 
-  _infoCreationForm->methodComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->methodComboBox->insertItem(1,"Simulation");
-  _infoCreationForm->methodComboBox->insertItem(2,"Experiment");
-
-
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(1,"Cell and edge-lengths free");
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(2,"Fixed angles; isotropic edge-length free");
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(3,"fixed angles; anisotropic edge-lengths free");
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(4,"Fixed β; α and γ-angles and edge-lengths free");
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(5,"Fixed volume; shape free");
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(6,"Fixed cell");
-
-  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(1,"Experimental");
-  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(2,"Gaussian");
-  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(3,"Turbomol");
-  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(4,"VASP");
-  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(5,"Spartan");
-  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(6,"CP2K");
-  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(7,"Classical");
-
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(1,"None");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(2,"Simplex");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(3,"Simulated annealing");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(4,"Gentic algorithm");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(5,"Steepest descent");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(6,"Conjugate gradient");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(7,"Quasi-Newton");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(8,"Newton-Rhapson");
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(9,"Mode following");
+  _infoCreationForm->methodComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->methodComboBox->insertItem(1,tr("Simulation"));
+  _infoCreationForm->methodComboBox->insertItem(2,tr("Experiment"));
 
 
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(1,"None");
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(2,"All positive");
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(3,"First order sadle-point");
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(4,"Second order sadle-point");
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(5,"Some small negative values");
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(6,"Some significant negative values");
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(7,"Many negative eigenvalues");
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(1,tr("Cell and edge-lengths free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(2,tr("Fixed angles; isotropic edge-length free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(3,tr("fixed angles; anisotropic edge-lengths free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(4,tr("Fixed β; α and γ-angles and edge-lengths free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(5,tr("Fixed volume; shape free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(6,tr("Fixed cell"));
+
+  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(1,tr("Experimental"));
+  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(2,tr("Gaussian"));
+  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(3,tr("Turbomol"));
+  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(4,tr("VASP"));
+  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(5,tr("Spartan"));
+  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(6,tr("CP2K"));
+  _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(7,tr("Classical"));
+
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(1,tr("None"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(2,tr("Simplex"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(3,tr("Simulated annealing"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(4,tr("Gentic algorithm"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(5,tr("Steepest descent"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(6,tr("Conjugate gradient"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(7,tr("Quasi-Newton"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(8,tr("Newton-Rhapson"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(9,tr("Mode following"));
 
 
-  _infoCreationForm->positionsForceFieldComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->positionsForceFieldComboBox->insertItem(1,"Ab initio");
-  _infoCreationForm->positionsForceFieldComboBox->insertItem(2,"UFF");
-  _infoCreationForm->positionsForceFieldComboBox->insertItem(3,"DREIDING");
-  _infoCreationForm->positionsForceFieldComboBox->insertItem(4,"MM3");
-  _infoCreationForm->positionsForceFieldComboBox->insertItem(5,"MM4");
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(1,tr("None"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(2,tr("All positive"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(3,tr("First order sadle-point"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(4,tr("Second order sadle-point"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(5,tr("Some small negative values"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(6,tr("Some significant negative values"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(7,tr("Many negative eigenvalues"));
 
-  _infoCreationForm->positionsForceFieldDetailsComboBox->insertItem(0,"Unknown");
 
-  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(1,"Experimental");
-  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(2,"Gaussian");
-  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(3,"Turbomol");
-  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(4,"VASP");
-  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(5,"Spartan");
-  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(6,"CP2K");
-  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(7,"Classical");
+  _infoCreationForm->positionsForceFieldComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->positionsForceFieldComboBox->insertItem(1,tr("Ab initio"));
+  _infoCreationForm->positionsForceFieldComboBox->insertItem(2,tr("UFF"));
+  _infoCreationForm->positionsForceFieldComboBox->insertItem(3,tr("DREIDING"));
+  _infoCreationForm->positionsForceFieldComboBox->insertItem(4,tr("MM3"));
+  _infoCreationForm->positionsForceFieldComboBox->insertItem(5,tr("MM4"));
 
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(1,"REPEAT");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(2,"CHELPG");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(3,"CHELP");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(4,"RESP");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(5,"Mulliken");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(6,"Merz-Kollman");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(7,"Hirshfeld");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(8,"Mulliken");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(9,"Natural Bond Orbital");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(10,"Qeq - Rappe and Goddard 1991");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(11,"Qeq - Rick, Stuart abd Berne 1994");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(12,"Qeq - York and Yang 1996");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(13,"Qeq - Itskoqitz and Berkowitz 1997");
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(14,"Qeq - Wilmer, Kim, Snurr 2012");
+  _infoCreationForm->positionsForceFieldDetailsComboBox->insertItem(0,tr("Unknown"));
 
-  _infoCreationForm->chargeForceFieldComboBox->insertItem(0,"Unknown");
-  _infoCreationForm->chargeForceFieldComboBox->insertItem(1,"Ab initio");
-  _infoCreationForm->chargeForceFieldComboBox->insertItem(2,"UFF");
-  _infoCreationForm->chargeForceFieldComboBox->insertItem(3,"DREIDING");
-  _infoCreationForm->chargeForceFieldComboBox->insertItem(4,"MM3");
-  _infoCreationForm->chargeForceFieldComboBox->insertItem(5,"MM4");
+  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(1,tr("Experimental"));
+  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(2,tr("Gaussian"));
+  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(3,tr("Turbomol"));
+  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(4,tr("VASP"));
+  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(5,tr("Spartan"));
+  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(6,tr("CP2K"));
+  _infoCreationForm->chargeSoftwarePackageComboBox->insertItem(7,tr("Classical"));
 
-  _infoCreationForm->chargeForceFieldDetailsComboBox->insertItem(0,"Unknown");
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(1,tr("REPEAT"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(2,tr("CHELPG"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(3,tr("CHELP"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(4,tr("RESP"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(5,tr("Mulliken"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(6,tr("Merz-Kollman"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(7,tr("Hirshfeld"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(8,tr("Mulliken"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(9,tr("Natural Bond Orbital"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(10,tr("Qeq - Rappe and Goddard 1991"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(11,tr("Qeq - Rick, Stuart abd Berne 1994"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(12,tr("Qeq - York and Yang 1996"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(13,tr("Qeq - Itskoqitz and Berkowitz 1997"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(14,tr("Qeq - Wilmer, Kim, Snurr 2012"));
+
+  _infoCreationForm->chargeForceFieldComboBox->insertItem(0,tr("Unknown"));
+  _infoCreationForm->chargeForceFieldComboBox->insertItem(1,tr("Ab initio"));
+  _infoCreationForm->chargeForceFieldComboBox->insertItem(2,tr("UFF"));
+  _infoCreationForm->chargeForceFieldComboBox->insertItem(3,tr("DREIDING"));
+  _infoCreationForm->chargeForceFieldComboBox->insertItem(4,tr("MM3"));
+  _infoCreationForm->chargeForceFieldComboBox->insertItem(5,tr("MM4"));
+
+  _infoCreationForm->chargeForceFieldDetailsComboBox->insertItem(0,tr("Unknown"));
 
   // Chemical
   //==========================================================================================================
   QTreeWidgetItem* chemicalItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(chemicalItem);
 
-  pushButtonChemical = new QPushButton(QString("Chemical"),this);
+  pushButtonChemical = new QPushButton(tr("Chemical Information"),this);
   pushButtonChemical->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonChemical->setStyleSheet("text-align:left;");
   setItemWidget(chemicalItem,0,pushButtonChemical);
@@ -466,7 +466,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* citationItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(citationItem);
 
-  pushButtonCitation = new QPushButton(QString("Citation"),this);
+  pushButtonCitation = new QPushButton(tr("Citation"),this);
   pushButtonCitation->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonCitation->setStyleSheet("text-align:left;");
   setItemWidget(citationItem,0,pushButtonCitation);

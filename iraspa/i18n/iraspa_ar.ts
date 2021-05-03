@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es_ES">
+<TS version="2.1" language="ar_EG">
 <context>
     <name>AppearanceAdsorptionSurfaceForm</name>
     <message>
@@ -11,7 +11,7 @@
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="37"/>
         <source>Show adsorption surface</source>
-        <translation>Toon adsorptie oppervlak</translation>
+        <translation>إظهار سطح الإمتصاص الكيميائي</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="51"/>
@@ -1925,18 +1925,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="187"/>
-        <source>Van der Waals radius  </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="116"/>
-        <source>0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="74"/>
-        <source>H</source>
+        <location filename="../iraspagui/elementsform.ui" line="31"/>
+        <source>  Triple bond covalent radius  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1951,13 +1941,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="435"/>
-        <source>User-defined radius  </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="368"/>
-        <source>Covalent radius  </source>
+        <location filename="../iraspagui/elementsform.ui" line="74"/>
+        <source>H</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1966,18 +1951,18 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="307"/>
-        <source>Group</source>
+        <location filename="../iraspagui/elementsform.ui" line="116"/>
+        <source>0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="447"/>
-        <source>Period</source>
+        <location filename="../iraspagui/elementsform.ui" line="155"/>
+        <source>Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="240"/>
-        <source>σ</source>
+        <location filename="../iraspagui/elementsform.ui" line="187"/>
+        <source>Van der Waals radius  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1986,18 +1971,23 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="31"/>
-        <source>  Triple bond covalent radius  </source>
+        <location filename="../iraspagui/elementsform.ui" line="207"/>
+        <source>Atomic radius  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="524"/>
-        <source>Oxidation states</source>
+        <location filename="../iraspagui/elementsform.ui" line="240"/>
+        <source>σ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="489"/>
-        <source>Element</source>
+        <location filename="../iraspagui/elementsform.ui" line="307"/>
+        <source>Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="368"/>
+        <source>Covalent radius  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2011,13 +2001,23 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="155"/>
-        <source>Number</source>
+        <location filename="../iraspagui/elementsform.ui" line="435"/>
+        <source>User-defined radius  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="207"/>
-        <source>Atomic radius  </source>
+        <location filename="../iraspagui/elementsform.ui" line="447"/>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="489"/>
+        <source>Element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="524"/>
+        <source>Oxidation states</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

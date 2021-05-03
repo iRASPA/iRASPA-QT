@@ -218,7 +218,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="433"/>
-        <source>Exposure:</source>
+        <source>Exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -328,7 +328,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="279"/>
-        <source>Exposure:</source>
+        <source>Exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -504,19 +504,19 @@
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="647"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="819"/>
-        <source>Specular light-intensity</source>
+        <source>Specular light intensity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="654"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="826"/>
-        <source>Diffuse light-intensity</source>
+        <source>Diffuse light intensity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="661"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="833"/>
-        <source>Ambient light-intensity</source>
+        <source>Ambient light intensity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -528,12 +528,284 @@
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="677"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="849"/>
-        <source>Exposure:</source>
+        <source>Exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="737"/>
         <source>Back properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AppearanceTreeWidgetController</name>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="55"/>
+        <source>Primitive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="315"/>
+        <source>Atoms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="323"/>
+        <source>Ball and stick</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="324"/>
+        <source>Van der Waals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="325"/>
+        <source>Unity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="327"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="341"/>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="328"/>
+        <source>Fancy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="329"/>
+        <source>Licorice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="330"/>
+        <source>Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="332"/>
+        <source>Jmol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="333"/>
+        <source>Rasmol modern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="334"/>
+        <source>Rasmol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="335"/>
+        <source>Vesta</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="337"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="343"/>
+        <source>Element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="338"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="344"/>
+        <source>Force field first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="339"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="345"/>
+        <source>Force field only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="347"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="446"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="640"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="348"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="447"/>
+        <source>Worley Noise 3D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="349"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="448"/>
+        <source>Stripes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="350"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="449"/>
+        <source>Glow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="434"/>
+        <source>Bonds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="442"/>
+        <source>Uniform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="443"/>
+        <source>Split</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="444"/>
+        <source>Gradient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="512"/>
+        <source>Unit cell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="533"/>
+        <source>Adsorption surface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="541"/>
+        <source>Helium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="542"/>
+        <source>Methane</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="543"/>
+        <source>Nitrogen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="544"/>
+        <source>Hydrogen</source>
+        <translation type="unfinished">Waterstof</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="545"/>
+        <source>Water</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="546"/>
+        <source>CO₂</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="547"/>
+        <source>Xenon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="548"/>
+        <source>Krypton</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="549"/>
+        <source>Argon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="631"/>
+        <source>Annotation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="641"/>
+        <source>Display name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="642"/>
+        <source>Identifier</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="643"/>
+        <source>Chemical element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="644"/>
+        <source>Forcefield type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="645"/>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="646"/>
+        <source>Charge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="649"/>
+        <source>Center</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="650"/>
+        <source>Left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="651"/>
+        <source>Right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="652"/>
+        <source>Top</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="653"/>
+        <source>Bottom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="654"/>
+        <source>Top-left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="655"/>
+        <source>Top-right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="656"/>
+        <source>Bottom-left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="657"/>
+        <source>Bottom-right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="659"/>
+        <source>Flat billboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -568,8 +840,134 @@
 <context>
     <name>AtomTreeView</name>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="780"/>
-        <source>Context menu</source>
+        <location filename="../iraspagui/atomtreeview.cpp" line="790"/>
+        <source>Add atom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="797"/>
+        <source>Add atom group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="804"/>
+        <source>Flatten hierarchy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="809"/>
+        <source>Make super-cell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="814"/>
+        <source>Symmetry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="816"/>
+        <source>Remove symmetry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="821"/>
+        <source>Wrap atoms to cell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="826"/>
+        <source>Find primitive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="831"/>
+        <source>Find and impose symmetry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="837"/>
+        <source>Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="839"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="862"/>
+        <source>Invert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="844"/>
+        <source>CopyToNewMovie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="849"/>
+        <source>MoveToNewMovie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="855"/>
+        <source>Visibility</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="857"/>
+        <source>Match selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="868"/>
+        <source>Scroll to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="870"/>
+        <source>Top</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="875"/>
+        <source>Bottom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="880"/>
+        <source>First selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="885"/>
+        <source>Last selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="892"/>
+        <source>Export to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="894"/>
+        <source>PDB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="899"/>
+        <source>mmCIF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="904"/>
+        <source>CIF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="909"/>
+        <source>XYZ</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="914"/>
+        <source>VASP POSCAR</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -719,7 +1117,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="204"/>
-        <source>Orthogonal</source>
+        <source>Orthographic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -848,6 +1246,31 @@
 </context>
 <context>
     <name>CameraTreeWidgetController</name>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="59"/>
+        <source>Camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="106"/>
+        <source>Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="129"/>
+        <source>Lights</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="158"/>
+        <source>Pictures</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="207"/>
+        <source>Background</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1742"/>
         <source>Open background picture</source>
@@ -1264,6 +1687,204 @@
     </message>
 </context>
 <context>
+    <name>CellTreeWidgetController</name>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="58"/>
+        <source>Cell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="70"/>
+        <source>Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="71"/>
+        <source>Structure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="72"/>
+        <source>Crystal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="73"/>
+        <source>Molecular crystal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="74"/>
+        <source>Molecule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="75"/>
+        <source>Protein</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="76"/>
+        <source>Protein crystal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="77"/>
+        <source>Protein crystal solvent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="78"/>
+        <source>Crystal solvent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="79"/>
+        <source>Molecular crystal solvent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="80"/>
+        <source>Crystal ellipsoid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="81"/>
+        <source>Crystal cylinder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="82"/>
+        <source>Crystal polygonal prism</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="83"/>
+        <source>Ellipsoid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="84"/>
+        <source>Cylinder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="85"/>
+        <source>Polygonal prism</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="139"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="141"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="143"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="146"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="148"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="150"/>
+        <source>Mult.Val.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="221"/>
+        <source>Tranform content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="271"/>
+        <source>Structural properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="286"/>
+        <source>Helium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="287"/>
+        <source>Methane</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="288"/>
+        <source>Nitrogen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="289"/>
+        <source>Hydrogen</source>
+        <translation type="unfinished">Waterstof</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="290"/>
+        <source>Water</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="291"/>
+        <source>CO₂</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="292"/>
+        <source>Xenon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="293"/>
+        <source>Krypton</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="294"/>
+        <source>Argon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="336"/>
+        <source>Unspecified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="337"/>
+        <source>Silica</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="338"/>
+        <source>Aluminosilicate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="339"/>
+        <source>Metallophosphate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="340"/>
+        <source>Silicialinophosphate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="341"/>
+        <source>Zeolite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="342"/>
+        <source>MOF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="343"/>
+        <source>ZIF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="351"/>
+        <source>Symmetry properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Dialog</name>
     <message>
         <location filename="../iraspagui/aboutdialog.ui" line="20"/>
@@ -1524,116 +2145,116 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="31"/>
+        <location filename="../iraspagui/infocreationform.ui" line="30"/>
         <source>Temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="38"/>
+        <location filename="../iraspagui/infocreationform.ui" line="37"/>
         <source>Method</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="45"/>
+        <location filename="../iraspagui/infocreationform.ui" line="44"/>
         <source>Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="55"/>
+        <location filename="../iraspagui/infocreationform.ui" line="54"/>
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="82"/>
+        <location filename="../iraspagui/infocreationform.ui" line="81"/>
         <source>Unit Cell</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="90"/>
+        <location filename="../iraspagui/infocreationform.ui" line="89"/>
         <source>Relax unit cell</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="105"/>
+        <location filename="../iraspagui/infocreationform.ui" line="104"/>
         <source>Atomic positions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="122"/>
-        <location filename="../iraspagui/infocreationform.ui" line="176"/>
+        <location filename="../iraspagui/infocreationform.ui" line="121"/>
+        <location filename="../iraspagui/infocreationform.ui" line="175"/>
         <source>Force field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="132"/>
-        <location filename="../iraspagui/infocreationform.ui" line="200"/>
+        <location filename="../iraspagui/infocreationform.ui" line="131"/>
+        <location filename="../iraspagui/infocreationform.ui" line="199"/>
         <source>Software package</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="139"/>
+        <location filename="../iraspagui/infocreationform.ui" line="138"/>
         <source>Eigenvalues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="146"/>
-        <location filename="../iraspagui/infocreationform.ui" line="186"/>
+        <location filename="../iraspagui/infocreationform.ui" line="145"/>
+        <location filename="../iraspagui/infocreationform.ui" line="185"/>
         <source>Force field details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="153"/>
-        <location filename="../iraspagui/infocreationform.ui" line="193"/>
+        <location filename="../iraspagui/infocreationform.ui" line="152"/>
+        <location filename="../iraspagui/infocreationform.ui" line="192"/>
         <source>Algorithm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="168"/>
+        <location filename="../iraspagui/infocreationform.ui" line="167"/>
         <source>Atomic charges</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="227"/>
+        <location filename="../iraspagui/infocreationform.ui" line="226"/>
         <source>Radiation type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="237"/>
+        <location filename="../iraspagui/infocreationform.ui" line="236"/>
         <source>Radiation wavelength</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="244"/>
+        <location filename="../iraspagui/infocreationform.ui" line="243"/>
         <source>Measurement Theta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="289"/>
-        <source>Labels</source>
+        <location filename="../iraspagui/infocreationform.ui" line="288"/>
+        <source>Limits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="318"/>
+        <location filename="../iraspagui/infocreationform.ui" line="317"/>
         <source>Number of reflections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="332"/>
+        <location filename="../iraspagui/infocreationform.ui" line="331"/>
         <source>Software</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="350"/>
+        <location filename="../iraspagui/infocreationform.ui" line="348"/>
         <source>Goodness-of-fit F</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="360"/>
+        <location filename="../iraspagui/infocreationform.ui" line="358"/>
         <source>Final R indices [|&gt;2 sigma(l)|]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreationform.ui" line="370"/>
+        <location filename="../iraspagui/infocreationform.ui" line="368"/>
         <source>R indices (all data)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1717,6 +2338,318 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>InfoTreeWidgetController</name>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="57"/>
+        <source>Creator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="331"/>
+        <source>Creation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="355"/>
+        <source>Kelvin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="356"/>
+        <source>Celsius</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="358"/>
+        <source>Pascal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="359"/>
+        <source>Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="361"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="366"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="374"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="383"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="395"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="405"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="412"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="414"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="423"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="439"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="446"/>
+        <source>Unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="362"/>
+        <source>Simulation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="363"/>
+        <source>Experiment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="367"/>
+        <source>Cell and edge-lengths free</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="368"/>
+        <source>Fixed angles; isotropic edge-length free</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="369"/>
+        <source>fixed angles; anisotropic edge-lengths free</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="370"/>
+        <source>Fixed β; α and γ-angles and edge-lengths free</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="371"/>
+        <source>Fixed volume; shape free</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="372"/>
+        <source>Fixed cell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="375"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="415"/>
+        <source>Experimental</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="376"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="416"/>
+        <source>Gaussian</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="377"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="417"/>
+        <source>Turbomol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="378"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="418"/>
+        <source>VASP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="379"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="419"/>
+        <source>Spartan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="380"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="420"/>
+        <source>CP2K</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="381"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="421"/>
+        <source>Classical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="384"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="396"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="385"/>
+        <source>Simplex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="386"/>
+        <source>Simulated annealing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="387"/>
+        <source>Gentic algorithm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="388"/>
+        <source>Steepest descent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="389"/>
+        <source>Conjugate gradient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="390"/>
+        <source>Quasi-Newton</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="391"/>
+        <source>Newton-Rhapson</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="392"/>
+        <source>Mode following</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="397"/>
+        <source>All positive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="398"/>
+        <source>First order sadle-point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="399"/>
+        <source>Second order sadle-point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="400"/>
+        <source>Some small negative values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="401"/>
+        <source>Some significant negative values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="402"/>
+        <source>Many negative eigenvalues</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="406"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="440"/>
+        <source>Ab initio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="407"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="441"/>
+        <source>UFF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="408"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="442"/>
+        <source>DREIDING</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="409"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="443"/>
+        <source>MM3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="410"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="444"/>
+        <source>MM4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="424"/>
+        <source>REPEAT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="425"/>
+        <source>CHELPG</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="426"/>
+        <source>CHELP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="427"/>
+        <source>RESP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="428"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="431"/>
+        <source>Mulliken</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="429"/>
+        <source>Merz-Kollman</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="430"/>
+        <source>Hirshfeld</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="432"/>
+        <source>Natural Bond Orbital</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="433"/>
+        <source>Qeq - Rappe and Goddard 1991</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="434"/>
+        <source>Qeq - Rick, Stuart abd Berne 1994</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="435"/>
+        <source>Qeq - York and Yang 1996</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="436"/>
+        <source>Qeq - Itskoqitz and Berkowitz 1997</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="437"/>
+        <source>Qeq - Wilmer, Kim, Snurr 2012</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="453"/>
+        <source>Chemical Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="469"/>
+        <source>Citation</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LightsMainWidget</name>
     <message>
         <location filename="../iraspagui/cameralightsform.ui" line="14"/>
@@ -1748,6 +2681,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../iraspagui/cameralightsform.ui" line="79"/>
         <source>Ambient light intensity</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>LogViewController</name>
+    <message>
+        <location filename="../iraspagui/logviewcontroller.cpp" line="26"/>
+        <source>Log console ready</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1812,7 +2753,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.ui" line="809"/>
-        <source>Charge:</source>
+        <source>Charge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1999,6 +2940,39 @@ Do you want to save your changes?</source>
     </message>
 </context>
 <context>
+    <name>ProjectTreeController</name>
+    <message>
+        <location filename="../iraspakit/projecttreecontroller.cpp" line="30"/>
+        <source>GALLERY</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspakit/projecttreecontroller.cpp" line="32"/>
+        <source>LOCAL PROJECTS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspakit/projecttreecontroller.cpp" line="34"/>
+        <source>DATABASES PUBLIC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspakit/projecttreecontroller.cpp" line="42"/>
+        <source>Gallery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspakit/projecttreecontroller.cpp" line="43"/>
+        <source>Local projects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspakit/projecttreecontroller.cpp" line="44"/>
+        <source>Databases public</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ProjectTreeView</name>
     <message>
         <location filename="../iraspagui/projecttreeview.cpp" line="130"/>
@@ -2014,8 +2988,17 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../iraspagui/projecttreeview.cpp" line="393"/>
-        <location filename="../iraspagui/projecttreeview.cpp" line="420"/>
         <source>Context menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/projecttreeview.cpp" line="422"/>
+        <source>Add structure project</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/projecttreeview.cpp" line="430"/>
+        <source>Add group project</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

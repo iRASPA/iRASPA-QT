@@ -417,9 +417,9 @@ void ProjectTreeView::ShowContextMenu(const QPoint &pos)
 
   if(ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(model()))
   {
-    QMenu contextMenu(tr("Context menu"), this);
+    QMenu contextMenu("Context menu", this);
 
-    QAction actionAddStructureProject("Add structure project", this);
+    QAction actionAddStructureProject(tr("Add structure project"), this);
     actionAddStructureProject.setEnabled(true);
     connect(&actionAddStructureProject, &QAction::triggered, [this, index](void) {
        this->addStructureProject(index);
@@ -427,7 +427,7 @@ void ProjectTreeView::ShowContextMenu(const QPoint &pos)
     contextMenu.addAction(&actionAddStructureProject);
 
 
-    QAction actionGroupProject("Add group project", this);
+    QAction actionGroupProject(tr("Add group project"), this);
     actionGroupProject.setEnabled(true);
     connect(&actionGroupProject, &QAction::triggered, [this, index](void) {
        this->addGroupProject(index);

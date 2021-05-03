@@ -777,7 +777,7 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
 {
   QModelIndex index = indexAt(pos);
 
-  QMenu contextMenu(tr("Context menu"), nullptr);
+  QMenu contextMenu("Context menu", nullptr);
 
   bool isEnabled = false;
   bool isSymmetryEnabled = false;
@@ -787,131 +787,131 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
     isSymmetryEnabled = isEnabled && _iraspaStructure->structure()->hasSymmetry();
   }
 
-  QAction actionAddAtom("Add atom", this);
+  QAction actionAddAtom(tr("Add atom"), this);
   actionAddAtom.setEnabled(isEnabled);
   connect(&actionAddAtom, &QAction::triggered, [this, index](void) {
      this->addAtom(index);
   });
   contextMenu.addAction(&actionAddAtom);
 
-  QAction actionAddAtomGroup("Add atom group", this);
+  QAction actionAddAtomGroup(tr("Add atom group"), this);
   actionAddAtomGroup.setEnabled(isEnabled);
   connect(&actionAddAtomGroup, &QAction::triggered, [this, index](void) {
      this->addAtomGroup(index);
   });
   contextMenu.addAction(&actionAddAtomGroup);
 
-  QAction actionFlattenHierarchy("Flatten hierarchy", this);
+  QAction actionFlattenHierarchy(tr("Flatten hierarchy"), this);
   actionFlattenHierarchy.setEnabled(isEnabled);
   connect(&actionFlattenHierarchy, &QAction::triggered, this, &AtomTreeView::flattenHierachy);
   contextMenu.addAction(&actionFlattenHierarchy);
 
-  QAction actionMakeSuperCell("Make super-cell", this);
+  QAction actionMakeSuperCell(tr("Make super-cell"), this);
   actionMakeSuperCell.setEnabled(isEnabled && isSymmetryEnabled);
   connect(&actionMakeSuperCell, &QAction::triggered, this, &AtomTreeView::makeSuperCell);
   contextMenu.addAction(&actionMakeSuperCell);
 
-  QMenu* subMenuSymmetry = contextMenu.addMenu( "Symmetry" );
+  QMenu* subMenuSymmetry = contextMenu.addMenu(tr("Symmetry"));
   QActionGroup* symmetryGroup = new QActionGroup(this);
-  QAction actionSymmetryRemove("Remove symmetry", this);
+  QAction actionSymmetryRemove(tr("Remove symmetry"), this);
   actionSymmetryRemove.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionSymmetryRemove);
   subMenuSymmetry->addAction(&actionSymmetryRemove);
   connect(&actionSymmetryRemove, &QAction::triggered, this, &AtomTreeView::removeSymmetry);
-  QAction actionSymmetryWrapAtoms("Wrap atoms to cell", this);
+  QAction actionSymmetryWrapAtoms(tr("Wrap atoms to cell"), this);
   actionSymmetryWrapAtoms.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionSymmetryWrapAtoms);
   subMenuSymmetry->addAction(&actionSymmetryWrapAtoms);
   connect(&actionSymmetryWrapAtoms, &QAction::triggered, this, &AtomTreeView::wrapAtoms);
-  QAction actionFindPrimitive("Find primitive", this);
+  QAction actionFindPrimitive(tr("Find primitive"), this);
   actionFindPrimitive.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionFindPrimitive);
   subMenuSymmetry->addAction(&actionFindPrimitive);
   connect(&actionFindPrimitive, &QAction::triggered, this, &AtomTreeView::findPrimitive);
-  QAction actionFindSymmetry("Find and impose symmetry", this);
+  QAction actionFindSymmetry(tr("Find and impose symmetry"), this);
   actionFindSymmetry.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionFindSymmetry);
   subMenuSymmetry->addAction(&actionFindSymmetry);
   connect(&actionFindSymmetry, &QAction::triggered, this, &AtomTreeView::findSymmetry);
 
-  QMenu* subMenuSelection = contextMenu.addMenu( "Selection" );
+  QMenu* subMenuSelection = contextMenu.addMenu(tr("Selection"));
   QActionGroup* selectionGroup = new QActionGroup(this);
-  QAction actionSelectionInvert("Invert", this);
+  QAction actionSelectionInvert(tr("Invert"), this);
   actionSelectionInvert.setEnabled(isEnabled);
   selectionGroup->addAction(&actionSelectionInvert);
   subMenuSelection->addAction(&actionSelectionInvert);
   connect(&actionSelectionInvert, &QAction::triggered, this, &AtomTreeView::invertSelection);
-  QAction actionCopyToNewMovie("CopyToNewMovie", this);
+  QAction actionCopyToNewMovie(tr("CopyToNewMovie"), this);
   actionCopyToNewMovie.setEnabled(isEnabled);
   selectionGroup->addAction(&actionCopyToNewMovie);
   subMenuSelection->addAction(&actionCopyToNewMovie);
   connect(&actionCopyToNewMovie, &QAction::triggered, this, &AtomTreeView::copyToNewMovie);
-  QAction actionMoveToNewMovie("MoveToNewMovie", this);
+  QAction actionMoveToNewMovie(tr("MoveToNewMovie"), this);
   actionMoveToNewMovie.setEnabled(isEnabled);
   selectionGroup->addAction(&actionMoveToNewMovie);
   subMenuSelection->addAction(&actionMoveToNewMovie);
   connect(&actionMoveToNewMovie, &QAction::triggered, this, &AtomTreeView::moveToNewMovie);
 
-  QMenu* subMenuVisibility = contextMenu.addMenu( "Visibility" );
+  QMenu* subMenuVisibility = contextMenu.addMenu(tr("Visibility"));
   QActionGroup* visibilityGroup = new QActionGroup(this);
-  QAction actionVisibilityMatchSelection("Match selection", this);
+  QAction actionVisibilityMatchSelection(tr("Match selection"), this);
   actionVisibilityMatchSelection.setEnabled(isEnabled);
   visibilityGroup->addAction(&actionVisibilityMatchSelection);
   subMenuVisibility->addAction(&actionVisibilityMatchSelection);
   connect(&actionVisibilityMatchSelection, &QAction::triggered, this, &AtomTreeView::visibilityMatchSelection);
-  QAction actionVisibilityInvert("Invert", this);
+  QAction actionVisibilityInvert(tr("Invert"), this);
   actionVisibilityInvert.setEnabled(isEnabled);
   visibilityGroup->addAction(&actionVisibilityInvert);
   subMenuVisibility->addAction(&actionVisibilityInvert);
   connect(&actionVisibilityInvert, &QAction::triggered, this, &AtomTreeView::visibilityInvert);
 
-  QMenu* subMenuScrollTo = contextMenu.addMenu( "Scroll to" );
+  QMenu* subMenuScrollTo = contextMenu.addMenu(tr("Scroll to"));
   QActionGroup* scrollToGroup = new QActionGroup(this);
-  QAction actionScrollToTop("Top", this);
+  QAction actionScrollToTop(tr("Top"), this);
   actionScrollToTop.setEnabled(isEnabled);
   scrollToGroup->addAction(&actionScrollToTop);
   subMenuScrollTo->addAction(&actionScrollToTop);
   connect(&actionScrollToTop, &QAction::triggered, this, &AtomTreeView::scrollToTop);
-  QAction actionScrollToBottom("Bottom", this);
+  QAction actionScrollToBottom(tr("Bottom"), this);
   actionScrollToBottom.setEnabled(isEnabled);
   scrollToGroup->addAction(&actionScrollToBottom);
   subMenuScrollTo->addAction(&actionScrollToBottom);
   connect(&actionScrollToBottom, &QAction::triggered, this, &AtomTreeView::scrollToBottom);
-  QAction actionScrollToFirstSelected("First selected", this);
+  QAction actionScrollToFirstSelected(tr("First selected"), this);
   actionScrollToFirstSelected.setEnabled(isEnabled);
   scrollToGroup->addAction(&actionScrollToFirstSelected);
   subMenuScrollTo->addAction(&actionScrollToFirstSelected);
   connect(&actionScrollToFirstSelected, &QAction::triggered, this, &AtomTreeView::scrollToFirstSelected);
-  QAction actionScrollToLastSelected("Last selected", this);
+  QAction actionScrollToLastSelected(tr("Last selected"), this);
   actionScrollToLastSelected.setEnabled(isEnabled);
   scrollToGroup->addAction(&actionScrollToLastSelected);
   subMenuScrollTo->addAction(&actionScrollToLastSelected);
   connect(&actionScrollToLastSelected, &QAction::triggered, this, &AtomTreeView::scrollToLastSelected);
 
 
-  QMenu* subMenuExport = contextMenu.addMenu( "Export to" );
+  QMenu* subMenuExport = contextMenu.addMenu(tr("Export to"));
   QActionGroup* exportToGroup = new QActionGroup(this);
-  QAction actionExportToPDB("PDB", this);
+  QAction actionExportToPDB(tr("PDB"), this);
   actionExportToPDB.setEnabled(isEnabled);
   exportToGroup->addAction(&actionExportToPDB);
   subMenuExport->addAction(&actionExportToPDB);
   connect(&actionExportToPDB, &QAction::triggered, this, &AtomTreeView::exportToPDB);
-  QAction actionExportToMMCIF("mmCIF", this);
+  QAction actionExportToMMCIF(tr("mmCIF"), this);
   actionExportToMMCIF.setEnabled(isEnabled);
   exportToGroup->addAction(&actionExportToMMCIF);
   subMenuExport->addAction(&actionExportToMMCIF);
   connect(&actionExportToMMCIF, &QAction::triggered, this, &AtomTreeView::exportToMMCIF);
-  QAction actionExportToCIF("CIF", this);
+  QAction actionExportToCIF(tr("CIF"), this);
   actionExportToCIF.setEnabled(isEnabled);
   exportToGroup->addAction(&actionExportToCIF);
   subMenuExport->addAction(&actionExportToCIF);
   connect(&actionExportToCIF, &QAction::triggered, this, &AtomTreeView::exportToCIF);
-  QAction actionExportToXYZ("XYZ", this);
+  QAction actionExportToXYZ(tr("XYZ"), this);
   actionExportToXYZ.setEnabled(isEnabled);
   exportToGroup->addAction(&actionExportToXYZ);
   subMenuExport->addAction(&actionExportToXYZ);
   connect(&actionExportToXYZ, &QAction::triggered, this, &AtomTreeView::exportToXYZ);
-  QAction actionExportToPOSCAR("VASP POSCAR", this);
+  QAction actionExportToPOSCAR(tr("VASP POSCAR"), this);
   actionExportToPOSCAR.setEnabled(isEnabled);
   exportToGroup->addAction(&actionExportToPOSCAR);
   subMenuExport->addAction(&actionExportToPOSCAR);

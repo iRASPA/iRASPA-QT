@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>532</width>
-    <height>660</height>
+    <height>676</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout" columnstretch="1,1,1">
        <item row="1" column="1">
-        <widget class="QLineEdit" name="temperatureLineEdit">
-        </widget>
+        <widget class="QLineEdit" name="temperatureLineEdit"/>
        </item>
        <item row="2" column="2">
         <widget class="QComboBox" name="pressureComboBox"/>
@@ -286,7 +285,7 @@
          <item>
           <widget class="QLabel" name="label_18">
            <property name="text">
-            <string>Labels</string>
+            <string>Limits</string>
            </property>
           </widget>
          </item>
@@ -339,8 +338,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QPlainTextEdit" name="plainTextEdit">
-        </widget>
+        <widget class="QPlainTextEdit" name="plainTextEdit"/>
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_5">

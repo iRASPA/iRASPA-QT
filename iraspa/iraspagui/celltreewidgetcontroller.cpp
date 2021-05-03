@@ -55,7 +55,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* cellItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(cellItem);
 
-  pushButtonCell = new QPushButton(QString("Cell"),this);
+  pushButtonCell = new QPushButton(tr("Cell"),this);
   pushButtonCell->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonCell->setStyleSheet("text-align:left;");
   setItemWidget(cellItem,0,pushButtonCell);
@@ -67,22 +67,22 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QFontMetrics fm(font());
   pushButtonCell->resize(size().width(), fm.height());
 
-  _cellCellForm->cellStructureTypeComboBox->insertItem(0, "Empty");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(1, "Structure");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(2, "Crystal");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(3, "Molecular crystal");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(4, "Molecule");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(5, "Protein");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(6, "Protein crystal");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(7, "Protein crystal solvent");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(8, "Crystal solvent");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(9, "Molecular crystal solvent");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(10, "Crystal ellipse primitive");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(11, "Crystal cylinder primitive");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(12, "Crystal polygonal prism primitive");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(13, "Ellipse primitive");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(14, "Cylinder primitive");
-  _cellCellForm->cellStructureTypeComboBox->insertItem(15, "Polygonal prism primitive");
+  _cellCellForm->cellStructureTypeComboBox->insertItem(0, tr("Empty"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(1, tr("Structure"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(2, tr("Crystal"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(3, tr("Molecular crystal"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(4, tr("Molecule"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(5, tr("Protein"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(6, tr("Protein crystal"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(7, tr("Protein crystal solvent"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(8, tr("Crystal solvent"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(9, tr("Molecular crystal solvent"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(10, tr("Crystal ellipsoid"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(11, tr("Crystal cylinder"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(12, tr("Crystal polygonal prism"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(13, tr("Ellipsoid"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(14, tr("Cylinder"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(15, tr("Polygonal prism"));
   QStandardItemModel *model = qobject_cast<QStandardItemModel *>( _cellCellForm->cellStructureTypeComboBox->model());
   QStandardItem *itemEmpty = model->item(0);
   itemEmpty->setFlags(itemEmpty->flags() & ~Qt::ItemIsEnabled);
@@ -136,18 +136,18 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   _cellCellForm->perpendicularWidthZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
   _cellCellForm->cellMaximumReplicaX->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMaximumReplicaX->setSpecialValueText(QString("Mult.Val."));
+  _cellCellForm->cellMaximumReplicaX->setSpecialValueText(tr("Mult.Val."));
   _cellCellForm->cellMaximumReplicaY->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMaximumReplicaY->setSpecialValueText(QString("Mult.Val."));
+  _cellCellForm->cellMaximumReplicaY->setSpecialValueText(tr("Mult.Val."));
   _cellCellForm->cellMaximumReplicaZ->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMaximumReplicaZ->setSpecialValueText(QString("Mult.Val."));
+  _cellCellForm->cellMaximumReplicaZ->setSpecialValueText(tr("Mult.Val."));
 
   _cellCellForm->cellMinimumReplicaX->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMinimumReplicaX->setSpecialValueText(QString("Mult.Val."));
+  _cellCellForm->cellMinimumReplicaX->setSpecialValueText(tr("Mult.Val."));
   _cellCellForm->cellMinimumReplicaY->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMinimumReplicaY->setSpecialValueText(QString("Mult.Val."));
+  _cellCellForm->cellMinimumReplicaY->setSpecialValueText(tr("Mult.Val."));
   _cellCellForm->cellMinimumReplicaZ->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMinimumReplicaZ->setSpecialValueText(QString("Mult.Val."));
+  _cellCellForm->cellMinimumReplicaZ->setSpecialValueText(tr("Mult.Val."));
 
 
 
@@ -218,7 +218,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* transformContentItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(transformContentItem);
 
-  pushButtonTransformContent = new QPushButton(QString("Tranform content"),this);
+  pushButtonTransformContent = new QPushButton(tr("Tranform content"),this);
   pushButtonTransformContent->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonTransformContent->setStyleSheet("text-align:left;");
   setItemWidget(transformContentItem,0,pushButtonTransformContent);
@@ -268,7 +268,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* structuralItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(structuralItem);
 
-  pushButtonStructural = new QPushButton(QString("Structural properties"),this);
+  pushButtonStructural = new QPushButton(tr("Structural properties"),this);
   pushButtonStructural->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonStructural->setStyleSheet("text-align:left;");
   setItemWidget(structuralItem,0,pushButtonStructural);
@@ -283,15 +283,15 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
 
   QObject::connect(_cellStructuralForm->computeHeliumVoidFractionPushButton, &QPushButton::clicked, this, &CellTreeWidgetController::computeHeliumVoidFractionPushButton);
 
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(0, "Helium");
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(1, "Methane");
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(2, "Nitrogen");
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(3, "Hydrogen");
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(4, "Water");
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(5, "CO₂");
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(6, "Xenon");
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(7, "Krypton");
-  _cellStructuralForm->probeMoleculeComboBox->insertItem(8, "Argon");
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(0, tr("Helium"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(1, tr("Methane"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(2, tr("Nitrogen"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(3, tr("Hydrogen"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(4, tr("Water"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(5, tr("CO₂"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(6, tr("Xenon"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(7, tr("Krypton"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(8, tr("Argon"));
   QObject::connect(_cellStructuralForm->probeMoleculeComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CellTreeWidgetController::setFrameworkProbeMolecule);
 
   _cellStructuralForm->computeGravimetricSurfaceAreaPushButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
@@ -333,14 +333,14 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QObject::connect(_cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this, &CellTreeWidgetController::setStructureLargestCavityDiameterAlongAviablePath);
 
 
-  _cellStructuralForm->materialTypeComboBox->insertItem(0,"Unspecified");
-  _cellStructuralForm->materialTypeComboBox->insertItem(1,"Silica");
-  _cellStructuralForm->materialTypeComboBox->insertItem(2,"Aluminosilicate");
-  _cellStructuralForm->materialTypeComboBox->insertItem(3,"Metallophosphate");
-  _cellStructuralForm->materialTypeComboBox->insertItem(4,"Silicialinophosphate");
-  _cellStructuralForm->materialTypeComboBox->insertItem(5,"Zeolite");
-  _cellStructuralForm->materialTypeComboBox->insertItem(6,"MOF");
-  _cellStructuralForm->materialTypeComboBox->insertItem(7,"ZIF");
+  _cellStructuralForm->materialTypeComboBox->insertItem(0,tr("Unspecified"));
+  _cellStructuralForm->materialTypeComboBox->insertItem(1,tr("Silica"));
+  _cellStructuralForm->materialTypeComboBox->insertItem(2,tr("Aluminosilicate"));
+  _cellStructuralForm->materialTypeComboBox->insertItem(3,tr("Metallophosphate"));
+  _cellStructuralForm->materialTypeComboBox->insertItem(4,tr("Silicialinophosphate"));
+  _cellStructuralForm->materialTypeComboBox->insertItem(5,tr("Zeolite"));
+  _cellStructuralForm->materialTypeComboBox->insertItem(6,tr("MOF"));
+  _cellStructuralForm->materialTypeComboBox->insertItem(7,tr("ZIF"));
 
 
   // Symmetry
@@ -348,7 +348,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* symmetryItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(symmetryItem);
 
-  pushButtonSymmetry = new QPushButton(QString("Symmetry properties"),this);
+  pushButtonSymmetry = new QPushButton(tr("Symmetry properties"),this);
   pushButtonSymmetry->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonSymmetry->setStyleSheet("text-align:left;");
   setItemWidget(symmetryItem,0,pushButtonSymmetry);

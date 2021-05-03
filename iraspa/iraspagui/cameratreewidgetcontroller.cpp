@@ -56,7 +56,7 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QTreeWidgetItem* cameraItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(cameraItem);
 
-  pushButtonCamera = new QPushButton(QString("Camera"),this);
+  pushButtonCamera = new QPushButton(tr("Camera"),this);
   pushButtonCamera->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonCamera->setStyleSheet("text-align:left;");
   setItemWidget(cameraItem,0,pushButtonCamera);
@@ -103,7 +103,7 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QTreeWidgetItem* selectionItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(selectionItem);
 
-  pushButtonSelection = new QPushButton(QString("Selection"),this);
+  pushButtonSelection = new QPushButton(tr("Selection"),this);
   pushButtonSelection->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonSelection->setStyleSheet("text-align:left;");
   setItemWidget(selectionItem,0,pushButtonSelection);
@@ -126,7 +126,7 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QTreeWidgetItem* lightsItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(lightsItem);
 
-  pushButtonLights = new QPushButton(QString("Lights"),this);
+  pushButtonLights = new QPushButton(tr("Lights"),this);
   pushButtonLights->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonLights->setStyleSheet("text-align:left;");
   setItemWidget(lightsItem,0,pushButtonLights);
@@ -155,7 +155,7 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QTreeWidgetItem* picturesItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(picturesItem);
 
-  pushButtonPictures = new QPushButton(QString("Pictures"),this);
+  pushButtonPictures = new QPushButton(tr("Pictures"),this);
   pushButtonPictures->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonPictures->setStyleSheet("text-align:left;");
   setItemWidget(picturesItem,0,pushButtonPictures);
@@ -204,7 +204,7 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QTreeWidgetItem* backgroundItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(backgroundItem);
 
-  pushButtonBackground = new QPushButton(QString("Background"),this);
+  pushButtonBackground = new QPushButton(tr("Background"),this);
   pushButtonBackground->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonBackground->setStyleSheet("text-align:left;");
   setItemWidget(backgroundItem,0,pushButtonBackground);

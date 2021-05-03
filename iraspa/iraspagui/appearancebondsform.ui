@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>516</height>
+    <height>623</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -276,7 +276,7 @@
            <item>
             <widget class="QLabel" name="label_25">
              <property name="text">
-              <string>Exposure:</string>
+              <string>Exposure</string>
              </property>
             </widget>
            </item>

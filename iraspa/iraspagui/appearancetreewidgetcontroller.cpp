@@ -52,7 +52,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem* PrimitiveItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(PrimitiveItem);
 
-  pushButtonPrimitive = new QPushButton(QString("Primitive"),this);
+  pushButtonPrimitive = new QPushButton(tr("Primitive"),this);
   pushButtonPrimitive->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonPrimitive->setStyleSheet("text-align:left;");
   setItemWidget(PrimitiveItem,0,pushButtonPrimitive);
@@ -312,7 +312,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem* AtomsItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(AtomsItem);
 
-  pushButtonAtoms = new QPushButton(QString("Atoms"),this);
+  pushButtonAtoms = new QPushButton(tr("Atoms"),this);
   pushButtonAtoms->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonAtoms->setStyleSheet("text-align:left;");
   setItemWidget(AtomsItem,0,pushButtonAtoms);
@@ -320,34 +320,34 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem *childAtomsItem = new QTreeWidgetItem(AtomsItem);
   this->setItemWidget(childAtomsItem,0, _appearanceAtomsForm);
 
-  _appearanceAtomsForm->atomRepresentationType->insertItem(0,"Ball and stick");
-  _appearanceAtomsForm->atomRepresentationType->insertItem(1,"Van der Waals");
-  _appearanceAtomsForm->atomRepresentationType->insertItem(2, "Unity");
+  _appearanceAtomsForm->atomRepresentationType->insertItem(0,tr("Ball and stick"));
+  _appearanceAtomsForm->atomRepresentationType->insertItem(1,tr("Van der Waals"));
+  _appearanceAtomsForm->atomRepresentationType->insertItem(2, tr("Unity"));
 
-  _appearanceAtomsForm->atomRepresentationStyle->insertItem(0,"Default");
-  _appearanceAtomsForm->atomRepresentationStyle->insertItem(1,"Fancy");
-  _appearanceAtomsForm->atomRepresentationStyle->insertItem(2,"Licorice");
-  _appearanceAtomsForm->atomRepresentationStyle->insertItem(3,"Objects");
+  _appearanceAtomsForm->atomRepresentationStyle->insertItem(0,tr("Default"));
+  _appearanceAtomsForm->atomRepresentationStyle->insertItem(1,tr("Fancy"));
+  _appearanceAtomsForm->atomRepresentationStyle->insertItem(2,tr("Licorice"));
+  _appearanceAtomsForm->atomRepresentationStyle->insertItem(3,tr("Objects"));
 
-  _appearanceAtomsForm->colorSchemeComboBox->insertItem(0,"Jmol");
-  _appearanceAtomsForm->colorSchemeComboBox->insertItem(1,"Rasmol modern");
-  _appearanceAtomsForm->colorSchemeComboBox->insertItem(2,"Rasmol");
-  _appearanceAtomsForm->colorSchemeComboBox->insertItem(3,"Vesta");
+  _appearanceAtomsForm->colorSchemeComboBox->insertItem(0,tr("Jmol"));
+  _appearanceAtomsForm->colorSchemeComboBox->insertItem(1,tr("Rasmol modern"));
+  _appearanceAtomsForm->colorSchemeComboBox->insertItem(2,tr("Rasmol"));
+  _appearanceAtomsForm->colorSchemeComboBox->insertItem(3,tr("Vesta"));
 
-  _appearanceAtomsForm->colorSchemeOrderComboBox->insertItem(0,"Element");
-  _appearanceAtomsForm->colorSchemeOrderComboBox->insertItem(1,"Force field first");
-  _appearanceAtomsForm->colorSchemeOrderComboBox->insertItem(2,"Force field only");
+  _appearanceAtomsForm->colorSchemeOrderComboBox->insertItem(0,tr("Element"));
+  _appearanceAtomsForm->colorSchemeOrderComboBox->insertItem(1,tr("Force field first"));
+  _appearanceAtomsForm->colorSchemeOrderComboBox->insertItem(2,tr("Force field only"));
 
-  _appearanceAtomsForm->forceFieldComboBox->insertItem(0,"Default");
+  _appearanceAtomsForm->forceFieldComboBox->insertItem(0,tr("Default"));
 
-  _appearanceAtomsForm->forceFieldSchemeOrderComboBox->insertItem(0,"Element");
-  _appearanceAtomsForm->forceFieldSchemeOrderComboBox->insertItem(1,"Force field first");
-  _appearanceAtomsForm->forceFieldSchemeOrderComboBox->insertItem(2,"Force field only");
+  _appearanceAtomsForm->forceFieldSchemeOrderComboBox->insertItem(0,tr("Element"));
+  _appearanceAtomsForm->forceFieldSchemeOrderComboBox->insertItem(1,tr("Force field first"));
+  _appearanceAtomsForm->forceFieldSchemeOrderComboBox->insertItem(2,tr("Force field only"));
 
-  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(0,"None");
-  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(1,"Worley Noise 3D");
-  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(2,"Stripes");
-  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(3,"Glow");
+  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(0,tr("None"));
+  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(1,tr("Worley Noise 3D"));
+  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(2,tr("Stripes"));
+  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(3,tr("Glow"));
 
   _appearanceAtomsForm->atomAtomicSizeScalingSlider->setDoubleMinimum(0.0);
   _appearanceAtomsForm->atomAtomicSizeScalingSlider->setDoubleMaximum(2.0);
@@ -431,7 +431,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem* BondsItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(BondsItem);
 
-  pushButtonBonds = new QPushButton(QString("Bonds"),this);
+  pushButtonBonds = new QPushButton(tr("Bonds"),this);
   pushButtonBonds->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonBonds->setStyleSheet("text-align:left;");
   setItemWidget(BondsItem,0,pushButtonBonds);
@@ -439,14 +439,14 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem *childBondsItem = new QTreeWidgetItem(BondsItem);
   this->setItemWidget(childBondsItem,0, _appearanceBondsForm);
 
-  _appearanceBondsForm->bondColorModeComboBox->insertItem(0,"Uniform");
-  _appearanceBondsForm->bondColorModeComboBox->insertItem(1,"Split");
-  _appearanceBondsForm->bondColorModeComboBox->insertItem(2,"Gradient");
+  _appearanceBondsForm->bondColorModeComboBox->insertItem(0,tr("Uniform"));
+  _appearanceBondsForm->bondColorModeComboBox->insertItem(1,tr("Split"));
+  _appearanceBondsForm->bondColorModeComboBox->insertItem(2,tr("Gradient"));
 
-  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(0,"None");
-  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(1,"Worley Noise 3D");
-  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(2,"Stripes");
-  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(3,"Glow");
+  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(0,tr("None"));
+  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(1,tr("Worley Noise 3D"));
+  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(2,tr("Stripes"));
+  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(3,tr("Glow"));
 
 
   _appearanceBondsForm->bondAmbientIntensityDoubleSlider->setDoubleMinimum(0.0);
@@ -509,7 +509,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem* UnitCellItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(UnitCellItem);
 
-  pushButtonUnitCell = new QPushButton(QString("Unit cell"),this);
+  pushButtonUnitCell = new QPushButton(tr("Unit cell"),this);
   pushButtonUnitCell->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonUnitCell->setStyleSheet("text-align:left;");
   setItemWidget(UnitCellItem,0,pushButtonUnitCell);
@@ -530,7 +530,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem* AdsorptionSurfaceItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(AdsorptionSurfaceItem);
 
-  pushButtonAdsorptionSurface = new QPushButton(QString("Adsorption surface"),this);
+  pushButtonAdsorptionSurface = new QPushButton(tr("Adsorption surface"),this);
   pushButtonAdsorptionSurface->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonAdsorptionSurface->setStyleSheet("text-align:left;");
   setItemWidget(AdsorptionSurfaceItem,0,pushButtonAdsorptionSurface);
@@ -538,15 +538,15 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem *childAdsorptionSurfaceItem = new QTreeWidgetItem(AdsorptionSurfaceItem);
   this->setItemWidget(childAdsorptionSurfaceItem,0, _appearanceAdsorptionSurfaceForm);
 
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(0, "Helium");
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(1, "Methane");
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(2, "Nitrogen");
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(3, "Hydrogen");
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(4, "Water");
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(5, "CO₂");
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(6, "Xenon");
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(7, "Krypton");
-  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(8, "Argon");
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(0, tr("Helium"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(1, tr("Methane"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(2, tr("Nitrogen"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(3, tr("Hydrogen"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(4, tr("Water"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(5, tr("CO₂"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(6, tr("Xenon"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(7, tr("Krypton"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(8, tr("Argon"));
 
 
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider->setDoubleMinimum(-1000.0);
@@ -628,7 +628,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem* AnnotationItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(AnnotationItem);
 
-  pushButtonAnnotation = new QPushButton(QString("Annotation"),this);
+  pushButtonAnnotation = new QPushButton(tr("Annotation"),this);
   pushButtonAnnotation->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonAnnotation->setStyleSheet("text-align:left;");
   setItemWidget(AnnotationItem,0,pushButtonAnnotation);
@@ -637,26 +637,26 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   this->setItemWidget(childAnnotationItem,0, _appearanceAnnotationForm);
 
 
-  _appearanceAnnotationForm->typeComboBox->insertItem(0, "None");
-  _appearanceAnnotationForm->typeComboBox->insertItem(1, "Display name");
-  _appearanceAnnotationForm->typeComboBox->insertItem(2, "Identifier");
-  _appearanceAnnotationForm->typeComboBox->insertItem(3, "Chemical element");
-  _appearanceAnnotationForm->typeComboBox->insertItem(4, "Forcefield type");
-  _appearanceAnnotationForm->typeComboBox->insertItem(5, "Position");
-  _appearanceAnnotationForm->typeComboBox->insertItem(6, "Charge");
+  _appearanceAnnotationForm->typeComboBox->insertItem(0, tr("None"));
+  _appearanceAnnotationForm->typeComboBox->insertItem(1, tr("Display name"));
+  _appearanceAnnotationForm->typeComboBox->insertItem(2, tr("Identifier"));
+  _appearanceAnnotationForm->typeComboBox->insertItem(3, tr("Chemical element"));
+  _appearanceAnnotationForm->typeComboBox->insertItem(4, tr("Forcefield type"));
+  _appearanceAnnotationForm->typeComboBox->insertItem(5, tr("Position"));
+  _appearanceAnnotationForm->typeComboBox->insertItem(6, tr("Charge"));
 
 
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(0, "Center");
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(1, "Left");
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(2, "Right");
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(3, "Top");
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(4, "Bottom");
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(5, "Top-left");
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(6, "Top-right");
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(7, "Bottom-left");
-  _appearanceAnnotationForm->alignmentComboBox->insertItem(8, "Bottom-right");
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(0, tr("Center"));
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(1, tr("Left"));
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(2, tr("Right"));
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(3, tr("Top"));
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(4, tr("Bottom"));
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(5, tr("Top-left"));
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(6, tr("Top-right"));
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(7, tr("Bottom-left"));
+  _appearanceAnnotationForm->alignmentComboBox->insertItem(8, tr("Bottom-right"));
 
-  _appearanceAnnotationForm->styleComboBox->insertItem(0, "Flat billboard");
+  _appearanceAnnotationForm->styleComboBox->insertItem(0, tr("Flat billboard"));
 
 #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   QFontDatabase database;

@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
 
   QTranslator qtTranslator, appTranslator;
 
-  //QLocale::setDefault(QLocale(QLocale::Chinese, QLocale::Script::SimplifiedChineseScript, QLocale::Country::China));
+  QLocale::setDefault(QLocale(QLocale::Chinese, QLocale::Script::SimplifiedChineseScript, QLocale::Country::China));
+  //QLocale::setDefault(QLocale(QLocale::Arabic, QLocale::Script::ArabicScript, QLocale::Country::Syria));
 
   if( qtTranslator.load(QLocale(), QLatin1String("qt"), QLatin1String("_"), QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
   {

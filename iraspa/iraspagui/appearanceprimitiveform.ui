@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>945</height>
+    <height>1077</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -644,21 +644,21 @@
       <item row="3" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Specular light-intensity</string>
+         <string>Specular light intensity</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Diffuse light-intensity</string>
+         <string>Diffuse light intensity</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_9">
         <property name="text">
-         <string>Ambient light-intensity</string>
+         <string>Ambient light intensity</string>
         </property>
        </widget>
       </item>
@@ -674,7 +674,7 @@
         <item>
          <widget class="QLabel" name="label_10">
           <property name="text">
-           <string>Exposure:</string>
+           <string>Exposure</string>
           </property>
          </widget>
         </item>
@@ -816,21 +816,21 @@
       <item row="3" column="0">
        <widget class="QLabel" name="label_13">
         <property name="text">
-         <string>Specular light-intensity</string>
+         <string>Specular light intensity</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_14">
         <property name="text">
-         <string>Diffuse light-intensity</string>
+         <string>Diffuse light intensity</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_15">
         <property name="text">
-         <string>Ambient light-intensity</string>
+         <string>Ambient light intensity</string>
         </property>
        </widget>
       </item>
@@ -846,7 +846,7 @@
         <item>
          <widget class="QLabel" name="label_11">
           <property name="text">
-           <string>Exposure:</string>
+           <string>Exposure</string>
           </property>
          </widget>
         </item>
