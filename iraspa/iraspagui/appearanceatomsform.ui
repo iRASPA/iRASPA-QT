@@ -637,7 +637,7 @@
            <item row="0" column="3">
             <widget class="SelectColorButton" name="atomAmbientColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>
@@ -658,7 +658,7 @@
            <item row="1" column="3">
             <widget class="SelectColorButton" name="atomDiffuseColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>
@@ -679,7 +679,7 @@
            <item row="2" column="3">
             <widget class="SelectColorButton" name="atomSpecularColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>

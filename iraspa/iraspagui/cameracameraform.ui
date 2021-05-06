@@ -926,7 +926,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>dist</string>
+        <string>Distance</string>
        </property>
       </widget>
      </item>

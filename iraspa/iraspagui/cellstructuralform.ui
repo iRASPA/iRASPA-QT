@@ -73,7 +73,7 @@
      <item row="2" column="3">
       <widget class="QPushButton" name="computeHeliumVoidFractionPushButton">
        <property name="text">
-        <string>comp</string>
+        <string>Comp</string>
        </property>
       </widget>
      </item>
@@ -306,7 +306,7 @@
      <item row="1" column="3">
       <widget class="QPushButton" name="computeVolumetricSurfaceAreaPushButton">
        <property name="text">
-        <string>comp</string>
+        <string>Comp</string>
        </property>
       </widget>
      </item>
@@ -341,7 +341,7 @@
      <item row="2" column="3">
       <widget class="QPushButton" name="computeGravimetricSurfaceAreaPushButton">
        <property name="text">
-        <string>comp</string>
+        <string>Comp</string>
        </property>
       </widget>
      </item>

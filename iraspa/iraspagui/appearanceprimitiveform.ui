@@ -616,21 +616,21 @@
       <item row="1" column="3">
        <widget class="SelectColorButton" name="frontAmbientColorPushButton">
         <property name="text">
-         <string>color</string>
+         <string>Color</string>
         </property>
        </widget>
       </item>
       <item row="2" column="3">
        <widget class="SelectColorButton" name="frontDiffuseColorPushButton">
         <property name="text">
-         <string>color</string>
+         <string>Color</string>
         </property>
        </widget>
       </item>
       <item row="3" column="3">
        <widget class="SelectColorButton" name="frontSpecularColorPushButton">
         <property name="text">
-         <string>color</string>
+         <string>Color</string>
         </property>
        </widget>
       </item>
@@ -788,21 +788,21 @@
       <item row="1" column="3">
        <widget class="SelectColorButton" name="backAmbientColorPushButton">
         <property name="text">
-         <string>color</string>
+         <string>Color</string>
         </property>
        </widget>
       </item>
       <item row="2" column="3">
        <widget class="SelectColorButton" name="backDiffuseColorPushButton">
         <property name="text">
-         <string>color</string>
+         <string>Color</string>
         </property>
        </widget>
       </item>
       <item row="3" column="3">
        <widget class="SelectColorButton" name="backSpecularColorPushButton">
         <property name="text">
-         <string>color</string>
+         <string>Color</string>
         </property>
        </widget>
       </item>
@@ -922,14 +922,14 @@
    <header>selectcolorbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>QDoubleDial</class>
-   <extends>QDial</extends>
-   <header>qdoubledial.h</header>
-  </customwidget>
-  <customwidget>
    <class>CustomIntSpinBox</class>
    <extends>QSpinBox</extends>
    <header>customintspinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QDoubleDial</class>
+   <extends>QDial</extends>
+   <header>qdoubledial.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

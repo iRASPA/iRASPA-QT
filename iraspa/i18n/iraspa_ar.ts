@@ -67,7 +67,7 @@
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="585"/>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="592"/>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="634"/>
-        <source>color</source>
+        <source>Color</source>
         <translation>اللون</translation>
     </message>
     <message>
@@ -255,7 +255,7 @@
         <location filename="../iraspagui/appearanceatomsform.ui" line="640"/>
         <location filename="../iraspagui/appearanceatomsform.ui" line="661"/>
         <location filename="../iraspagui/appearanceatomsform.ui" line="682"/>
-        <source>color</source>
+        <source>Color</source>
         <translation>اللون</translation>
     </message>
     <message>
@@ -365,7 +365,7 @@
         <location filename="../iraspagui/appearancebondsform.ui" line="464"/>
         <location filename="../iraspagui/appearancebondsform.ui" line="485"/>
         <location filename="../iraspagui/appearancebondsform.ui" line="506"/>
-        <source>color</source>
+        <source>Color</source>
         <translation>اللون</translation>
     </message>
     <message>
@@ -486,19 +486,19 @@
         <translation>خصائص الجبهة</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceprimitiveform.ui" line="737"/>
-        <source>Inside properties</source>
-        <translation>خصائص العودة</translation>
-    </message>
-    <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="619"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="626"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="633"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="791"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="798"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="805"/>
-        <source>color</source>
+        <source>Color</source>
         <translation>اللون</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearanceprimitiveform.ui" line="737"/>
+        <source>Inside properties</source>
+        <translation>خصائص العودة</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="640"/>
@@ -1028,13 +1028,13 @@
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="289"/>
-        <source>image placeholder</source>
+        <source>Image placeholder</source>
         <translation>عنصر نائب للصورة</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="309"/>
-        <source>select picture</source>
-        <translation>اختر صورة</translation>
+        <source>Select picture</source>
+        <translation>اختر الصورة</translation>
     </message>
 </context>
 <context>
@@ -1136,7 +1136,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="929"/>
-        <source>dist</source>
+        <source>Distance</source>
         <translation>مسافة</translation>
     </message>
 </context>
@@ -1464,8 +1464,8 @@
         <location filename="../iraspagui/cellstructuralform.ui" line="76"/>
         <location filename="../iraspagui/cellstructuralform.ui" line="309"/>
         <location filename="../iraspagui/cellstructuralform.ui" line="344"/>
-        <source>comp</source>
-        <translation>comp</translation>
+        <source>Comp</source>
+        <translation>Comp</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="83"/>
@@ -1661,7 +1661,7 @@
     </message>
     <message>
         <location filename="../iraspagui/celltransformcontentform.ui" line="28"/>
-        <source>a-xis</source>
+        <source>a-axis</source>
         <translation>a-محور</translation>
     </message>
     <message>
@@ -2689,7 +2689,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/cameralightsform.ui" line="65"/>
         <location filename="../iraspagui/cameralightsform.ui" line="72"/>
         <location filename="../iraspagui/cameralightsform.ui" line="86"/>
-        <source>color</source>
+        <source>Color</source>
         <translation>اللون</translation>
     </message>
     <message>
@@ -2767,8 +2767,8 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.ui" line="809"/>
-        <source>Charge</source>
-        <translation>الشحنة</translation>
+        <source>Net charge</source>
+        <translation>صافي الشحنة</translation>
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.ui" line="828"/>

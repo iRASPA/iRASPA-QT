@@ -286,7 +286,7 @@
             <item row="1" column="0" colspan="2">
              <widget class="QLabel" name="imagePlaceholderQLabel">
               <property name="text">
-               <string>image placeholder</string>
+               <string>Image placeholder</string>
               </property>
              </widget>
             </item>
@@ -306,7 +306,7 @@
             <item row="0" column="0">
              <widget class="QPushButton" name="selectImagePushButton">
               <property name="text">
-               <string>select picture</string>
+               <string>Select picture</string>
               </property>
              </widget>
             </item>

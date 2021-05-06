@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>681</height>
+    <height>776</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -362,14 +362,14 @@
            <item row="2" column="3">
             <widget class="SelectColorButton" name="insideSpecularColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>
            <item row="1" column="3">
             <widget class="SelectColorButton" name="insideDiffuseColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>
@@ -411,7 +411,7 @@
            <item row="0" column="3">
             <widget class="SelectColorButton" name="insideAmbientColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>
@@ -582,14 +582,14 @@
            <item row="2" column="3">
             <widget class="SelectColorButton" name="outsideSpecularColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>
            <item row="1" column="3">
             <widget class="SelectColorButton" name="outsideDiffuseColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>
@@ -631,7 +631,7 @@
            <item row="0" column="3">
             <widget class="SelectColorButton" name="outsideAmbientColorPushButton">
              <property name="text">
-              <string>color</string>
+              <string>Color</string>
              </property>
             </widget>
            </item>
