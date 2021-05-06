@@ -52,7 +52,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem* PrimitiveItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(PrimitiveItem);
 
-  pushButtonPrimitive = new QPushButton(tr("Primitive"),this);
+  pushButtonPrimitive = new QPushButton(tr("Primitive properties"),this);
   pushButtonPrimitive->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonPrimitive->setStyleSheet("text-align:left;");
   setItemWidget(PrimitiveItem,0,pushButtonPrimitive);
@@ -117,7 +117,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
 
   _appearancePrimitiveForm->primitiveSelectionStyleComboBox->insertItem(0,"None");
   _appearancePrimitiveForm->primitiveSelectionStyleComboBox->insertItem(1,"Worley Noise 3D");
-  _appearancePrimitiveForm->primitiveSelectionStyleComboBox->insertItem(2,"Stripes");
+  _appearancePrimitiveForm->primitiveSelectionStyleComboBox->insertItem(2,"Striped");
   _appearancePrimitiveForm->primitiveSelectionStyleComboBox->insertItem(3,"Glow");
 
 
@@ -346,7 +346,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
 
   _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(0,tr("None"));
   _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(1,tr("Worley Noise 3D"));
-  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(2,tr("Stripes"));
+  _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(2,tr("Striped"));
   _appearanceAtomsForm->atomSelectionStyleComboBox->insertItem(3,tr("Glow"));
 
   _appearanceAtomsForm->atomAtomicSizeScalingSlider->setDoubleMinimum(0.0);
@@ -445,7 +445,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
 
   _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(0,tr("None"));
   _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(1,tr("Worley Noise 3D"));
-  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(2,tr("Stripes"));
+  _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(2,tr("Striped"));
   _appearanceBondsForm->bondSelectionStyleComboBox->insertItem(3,tr("Glow"));
 
 

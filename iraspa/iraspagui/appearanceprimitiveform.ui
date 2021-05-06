@@ -562,7 +562,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
-      <string>Front properties</string>
+      <string>Outside properties</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
       <item row="0" column="3">
@@ -734,7 +734,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
-      <string>Back properties</string>
+      <string>Inside properties</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_9">
       <item row="3" column="2">

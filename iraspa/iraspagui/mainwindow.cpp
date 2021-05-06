@@ -614,7 +614,7 @@ void MainWindow::createMenus()
 
 void MainWindow::ShowContextAddStructureMenu(const QPoint &pos)
 {
-  QMenu contextMenu(tr("Context menu"), this);
+  QMenu contextMenu("Context menu", this);
 
   contextMenu.addAction(_newCrystalAction);
   contextMenu.addAction(_newMolecularCrystalAction);

@@ -56,7 +56,7 @@
        <item>
         <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>article authors</string>
+          <string>Article authors</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>

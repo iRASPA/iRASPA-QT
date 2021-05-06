@@ -31,7 +31,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Structure type</string>
+        <string>Materials type</string>
        </property>
       </widget>
      </item>
@@ -78,7 +78,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Bounding box</string>
+        <string>Bounding box (Read only)</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
@@ -403,7 +403,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Unit cell</string>
+          <string>Box matrix (Read only)</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <property name="leftMargin">
@@ -1101,14 +1101,14 @@
    <header>qdoubleslider.h</header>
   </customwidget>
   <customwidget>
-   <class>CustomIntSpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>customintspinbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>QDoubleDial</class>
    <extends>QDial</extends>
    <header>qdoubledial.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomIntSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>customintspinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

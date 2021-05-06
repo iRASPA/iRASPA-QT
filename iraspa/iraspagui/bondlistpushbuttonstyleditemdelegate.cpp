@@ -42,10 +42,10 @@ BondListPushButtonStyledItemDelegate::BondListPushButtonStyledItemDelegate(QWidg
   btn = new QPushButton();
   btn->setCheckable(true);
 
-  btn->setStyleSheet(tr(":!checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-                        "stop: 0 #dadbde, stop: 1 #f6f7fa); border: 1px inset #808080; }"
-                        ":checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-                        "stop: 0 #77a3f4, stop: 1 #2e6af6); border: 1px inset #404040; }"));
+  btn->setStyleSheet(":!checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+                     "stop: 0 #dadbde, stop: 1 #f6f7fa); border: 1px inset #808080; }"
+                     ":checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+                     "stop: 0 #77a3f4, stop: 1 #2e6af6); border: 1px inset #404040; }");
 }
 
 BondListPushButtonStyledItemDelegate::~BondListPushButtonStyledItemDelegate()

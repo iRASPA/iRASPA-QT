@@ -34,7 +34,7 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="drawUnitCellCheckBox">
          <property name="text">
-          <string>Draw unit cell</string>
+          <string>Show unit cell</string>
          </property>
         </widget>
        </item>

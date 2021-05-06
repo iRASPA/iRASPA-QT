@@ -309,7 +309,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_24">
          <property name="text">
-          <string>Atomic size scaling</string>
+          <string>Atom size scaling</string>
          </property>
         </widget>
        </item>
@@ -368,7 +368,7 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="atomDrawAtomsCheckBox">
          <property name="text">
-          <string>Draw atoms</string>
+          <string>Show atoms</string>
          </property>
          <property name="tristate">
           <bool>true</bool>

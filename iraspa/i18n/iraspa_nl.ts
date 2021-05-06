@@ -203,12 +203,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="312"/>
-        <source>Atomic size scaling</source>
+        <source>Atom size scaling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="371"/>
-        <source>Draw atoms</source>
+        <source>Show atoms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -283,7 +283,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="37"/>
-        <source>Draw bonds</source>
+        <source>Show bonds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -308,7 +308,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="146"/>
-        <source>Selection radial scaling</source>
+        <source>Selection scaling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -348,7 +348,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="428"/>
-        <source>bond lighting</source>
+        <source>Bond lighting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -482,7 +482,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="565"/>
-        <source>Front properties</source>
+        <source>Outside properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearanceprimitiveform.ui" line="737"/>
+        <source>Inside properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -531,17 +536,12 @@
         <source>Exposure</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../iraspagui/appearanceprimitiveform.ui" line="737"/>
-        <source>Back properties</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>AppearanceTreeWidgetController</name>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="55"/>
-        <source>Primitive</source>
+        <source>Primitive properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -639,7 +639,7 @@
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="349"/>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="448"/>
-        <source>Stripes</source>
+        <source>Striped</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -818,7 +818,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceunitcellform.ui" line="37"/>
-        <source>Draw unit cell</source>
+        <source>Show unit cell</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -972,22 +972,6 @@
     </message>
 </context>
 <context>
-    <name>AtomTreeViewPushButtonStyledItemDelegate</name>
-    <message>
-        <location filename="../iraspagui/atomtreeviewpushbuttonstyleditemdelegate.cpp" line="45"/>
-        <source>:!checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #eaebee, stop: 1 #f8f9fc); border: 1px inset #808080 ; }:checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #77a3f4, stop: 1 #2e6af6); border: 1px inset #404040; }</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>BondListPushButtonStyledItemDelegate</name>
-    <message>
-        <location filename="../iraspagui/bondlistpushbuttonstyleditemdelegate.cpp" line="45"/>
-        <source>:!checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #dadbde, stop: 1 #f6f7fa); border: 1px inset #808080; }:checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #77a3f4, stop: 1 #2e6af6); border: 1px inset #404040; }</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CameraBackgroundMainWidget</name>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="14"/>
@@ -996,7 +980,7 @@
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="20"/>
-        <source>background modes</source>
+        <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1230,7 +1214,7 @@
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="238"/>
-        <source>Frames per seconds</source>
+        <source>Frames per second</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1263,12 +1247,32 @@
     </message>
     <message>
         <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="158"/>
-        <source>Pictures</source>
+        <source>Pictures/Movies</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="207"/>
         <source>Background</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="512"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="513"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="514"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="839"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="840"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="841"/>
+        <source>Rotate +%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="515"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="516"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="517"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="842"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="843"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="844"/>
+        <source>Rotate -%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1287,16 +1291,6 @@
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cellcellform.ui" line="34"/>
-        <source>Structure type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cellcellform.ui" line="81"/>
-        <source>Bounding box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1340,8 +1334,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../iraspagui/cellcellform.ui" line="34"/>
+        <source>Materials type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cellcellform.ui" line="81"/>
+        <source>Bounding box (Read only)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../iraspagui/cellcellform.ui" line="406"/>
-        <source>Unit cell</source>
+        <source>Box matrix (Read only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1690,7 +1694,7 @@
     <name>CellTreeWidgetController</name>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="58"/>
-        <source>Cell</source>
+        <source>Cell/Boundingbox properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1883,6 +1887,20 @@
         <source>Symmetry properties</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1073"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1074"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1075"/>
+        <source>Rotate +%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1076"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1077"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1078"/>
+        <source>Rotate -%1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Dialog</name>
@@ -1903,7 +1921,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:28pt; font-style:italic;&quot;&gt;iRASPA&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:9pt;&quot;&gt;Version 2.0.3 (build 100)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:9pt;&quot;&gt;Version 2.0.4 (build 102)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Creators:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;David Dubbeldam (University of Amsterdam)&lt;/span&gt;&lt;/p&gt;
@@ -1912,8 +1930,13 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Contributor:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Randall Q. Snurr (Northwestern University)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Chung G. Yongchul (Pusan National University, Soth Korea, CRE MOF Database)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://dx.doi.org/10.1080/08927022.2018.1426855&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;Link to article&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://dx.doi.org/10.1080/08927022.2018.1426855&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;Link to article&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Other contributors:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Noura Dawass,  Weina Du,  Masafumi Miyaji, Sebastian Caro Ortiz, Shrinjay Sharma.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1922,11 +1945,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../iraspagui/elementsform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="187"/>
-        <source>Van der Waals radius  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1951,16 +1969,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="435"/>
-        <source>User-defined radius  </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="368"/>
-        <source>Covalent radius  </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../iraspagui/elementsform.ui" line="100"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
@@ -1968,6 +1976,16 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../iraspagui/elementsform.ui" line="307"/>
         <source>Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="393"/>
+        <source>ε/kB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="435"/>
+        <source>User-defined radius</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1981,16 +1999,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="197"/>
-        <source>Atomic mass  </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="31"/>
-        <source>  Triple bond covalent radius  </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../iraspagui/elementsform.ui" line="524"/>
         <source>Oxidation states</source>
         <translation type="unfinished"></translation>
@@ -2001,8 +2009,28 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="393"/>
-        <source>  ε/kB</source>
+        <location filename="../iraspagui/elementsform.ui" line="31"/>
+        <source>Triple bond covalent radius</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="187"/>
+        <source>Van der Waals radius</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="197"/>
+        <source>Atomic mass</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="207"/>
+        <source>Atomic radius</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="368"/>
+        <source>Covalent radius</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2013,20 +2041,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../iraspagui/elementsform.ui" line="155"/>
         <source>Number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="207"/>
-        <source>Atomic radius  </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GLWidget</name>
-    <message>
-        <location filename="../renderkit/glwidget.cpp" line="437"/>
-        <location filename="../renderkit/glwidget.cpp" line="495"/>
-        <source>Critical error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2100,7 +2114,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocitationform.ui" line="59"/>
-        <source>article authors</source>
+        <source>Article authors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2411,7 +2425,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="370"/>
-        <source>Fixed β; α and γ-angles and edge-lengths free</source>
+        <source>Fixed α-, β- and γ-angles and edge-lengths free</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2484,7 +2498,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="387"/>
-        <source>Gentic algorithm</source>
+        <source>Genetic algorithm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2529,12 +2543,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="400"/>
-        <source>Some small negative values</source>
+        <source>Some small negative eigenvalues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="401"/>
-        <source>Some significant negative values</source>
+        <source>Some significant negative eigenvalues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2620,7 +2634,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="434"/>
-        <source>Qeq - Rick, Stuart abd Berne 1994</source>
+        <source>Qeq - Rick, Stuart and Berne 1994</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2923,11 +2937,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="617"/>
-        <source>Context menu</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../iraspagui/mainwindow.cpp" line="1103"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
@@ -2987,11 +2996,6 @@ Do you want to save your changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="393"/>
-        <source>Context menu</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../iraspagui/projecttreeview.cpp" line="422"/>
         <source>Add structure project</source>
         <translation type="unfinished"></translation>
@@ -3005,8 +3009,83 @@ Do you want to save your changes?</source>
 <context>
     <name>RenderStackedWidget</name>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="519"/>
-        <source>Context menu</source>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="521"/>
+        <source>Reset camera distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="525"/>
+        <source>Reset camera to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="527"/>
+        <source>Z-direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="531"/>
+        <source>Y-direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="535"/>
+        <source>X-direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="541"/>
+        <source>Camera projection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="543"/>
+        <source>Orthographic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="549"/>
+        <source>Perspective</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="556"/>
+        <source>Show bounding box</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="562"/>
+        <source>Compute AO high quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="566"/>
+        <source>Export to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="568"/>
+        <source>PDB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="572"/>
+        <source>mmCIF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="576"/>
+        <source>CIF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="580"/>
+        <source>XYZ</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="584"/>
+        <source>VASP POSCAR</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

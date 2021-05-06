@@ -155,7 +155,7 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QTreeWidgetItem* picturesItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(picturesItem);
 
-  pushButtonPictures = new QPushButton(tr("Pictures"),this);
+  pushButtonPictures = new QPushButton(tr("Pictures/Movies"),this);
   pushButtonPictures->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonPictures->setStyleSheet("text-align:left;");
   setItemWidget(picturesItem,0,pushButtonPictures);
@@ -509,12 +509,12 @@ void CameraTreeWidgetController::reloadCameraProperties()
 
     double rotationAngle = camera->rotationAngle();
     whileBlocking(_cameraCameraForm->rotateAngleLineEdit)->setText(QString::number(rotationAngle, 'f', 2));
-    whileBlocking(_cameraCameraForm->rotatePlusXPushButton)->setText(QString("Rotate +") + QString::number(rotationAngle, 'f', 2));
-    whileBlocking(_cameraCameraForm->rotatePlusYPushButton)->setText(QString("Rotate +") + QString::number(rotationAngle, 'f', 2));
-    whileBlocking(_cameraCameraForm->rotatePlusZPushButton)->setText(QString("Rotate +") + QString::number(rotationAngle, 'f', 2));
-    whileBlocking(_cameraCameraForm->rotateMinusXPushButton)->setText(QString("Rotate ") + QString::number(-rotationAngle, 'f', 2));
-    whileBlocking(_cameraCameraForm->rotateMinusYPushButton)->setText(QString("Rotate ") + QString::number(-rotationAngle, 'f', 2));
-    whileBlocking(_cameraCameraForm->rotateMinusZPushButton)->setText(QString("Rotate ") + QString::number(-rotationAngle, 'f', 2));
+    whileBlocking(_cameraCameraForm->rotatePlusXPushButton)->setText(tr("Rotate +%1").arg(QString::number(rotationAngle, 'f', 2)));
+    whileBlocking(_cameraCameraForm->rotatePlusYPushButton)->setText(tr("Rotate +%1").arg(QString::number(rotationAngle, 'f', 2)));
+    whileBlocking(_cameraCameraForm->rotatePlusZPushButton)->setText(tr("Rotate +%1").arg(QString::number(rotationAngle, 'f', 2)));
+    whileBlocking(_cameraCameraForm->rotateMinusXPushButton)->setText(tr("Rotate -%1").arg(QString::number(rotationAngle, 'f', 2)));
+    whileBlocking(_cameraCameraForm->rotateMinusYPushButton)->setText(tr("Rotate -%1").arg(QString::number(rotationAngle, 'f', 2)));
+    whileBlocking(_cameraCameraForm->rotateMinusZPushButton)->setText(tr("Rotate -%1").arg(QString::number(rotationAngle, 'f', 2)));
   }
 }
 
@@ -836,12 +836,12 @@ void CameraTreeWidgetController::setRotationAngle(const QString &angleString)
     if(succes)
     {
       camera->setRotationAngle(newValue);
-      whileBlocking(_cameraCameraForm->rotatePlusXPushButton)->setText(QString("Rotate +") + angleString);
-      whileBlocking(_cameraCameraForm->rotatePlusYPushButton)->setText(QString("Rotate +") + angleString);
-      whileBlocking(_cameraCameraForm->rotatePlusZPushButton)->setText(QString("Rotate +") + angleString);
-      whileBlocking(_cameraCameraForm->rotateMinusXPushButton)->setText(QString("Rotate ") + angleString);
-      whileBlocking(_cameraCameraForm->rotateMinusYPushButton)->setText(QString("Rotate ") + angleString);
-      whileBlocking(_cameraCameraForm->rotateMinusZPushButton)->setText(QString("Rotate ") + angleString);
+      whileBlocking(_cameraCameraForm->rotatePlusXPushButton)->setText(tr("Rotate +%1").arg(angleString));
+      whileBlocking(_cameraCameraForm->rotatePlusYPushButton)->setText(tr("Rotate +%1").arg(angleString));
+      whileBlocking(_cameraCameraForm->rotatePlusZPushButton)->setText(tr("Rotate +%1").arg(angleString));
+      whileBlocking(_cameraCameraForm->rotateMinusXPushButton)->setText(tr("Rotate -%1").arg(angleString));
+      whileBlocking(_cameraCameraForm->rotateMinusYPushButton)->setText(tr("Rotate -%1").arg(angleString));
+      whileBlocking(_cameraCameraForm->rotateMinusZPushButton)->setText(tr("Rotate -%1").arg(angleString));
 
       _mainWindow->documentWasModified();
     }

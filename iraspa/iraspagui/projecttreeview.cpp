@@ -390,7 +390,7 @@ QSize ProjectTreeView::sizeHint() const
 
 void ProjectTreeView::ShowToolButtonContextMenu(const QPoint &pos)
 {
-  QMenu contextMenu(tr("Context menu"), this);
+  QMenu contextMenu("Context menu", this);
 
   QAction actionAddStructureProject("Add structure project", this);
   actionAddStructureProject.setEnabled(true);

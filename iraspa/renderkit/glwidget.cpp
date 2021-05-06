@@ -434,7 +434,7 @@ void GLWidget::initializeGL()
   {
     QMessageBox messageBox;
     messageBox.setFixedSize(650, 200);
-    messageBox.critical(nullptr, tr("Critical error"), "No OpenGL context present, install OpenGL drivers (>=3.3)");
+    messageBox.critical(nullptr, "Critical error", "No OpenGL context present, install OpenGL drivers (>=3.3)");
     QApplication::quit();
   }
 
@@ -492,7 +492,7 @@ void GLWidget::initializeGL()
   {
     QMessageBox messageBox;
     messageBox.setFixedSize(650, 200);
-    messageBox.critical(nullptr, tr("Critical error"), "OpenGL version error, install OpenGL drivers (>=3.3)");
+    messageBox.critical(nullptr, "Critical error", "OpenGL version error, install OpenGL drivers (>=3.3)");
     QApplication::quit();
   }
 

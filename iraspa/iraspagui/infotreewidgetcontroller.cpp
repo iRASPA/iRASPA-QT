@@ -367,7 +367,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   _infoCreationForm->relaxUnitCellComboBox->insertItem(1,tr("Cell and edge-lengths free"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(2,tr("Fixed angles; isotropic edge-length free"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(3,tr("fixed angles; anisotropic edge-lengths free"));
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(4,tr("Fixed β; α and γ-angles and edge-lengths free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(4,tr("Fixed α-, β- and γ-angles and edge-lengths free"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(5,tr("Fixed volume; shape free"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(6,tr("Fixed cell"));
 
@@ -384,7 +384,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(1,tr("None"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(2,tr("Simplex"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(3,tr("Simulated annealing"));
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(4,tr("Gentic algorithm"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(4,tr("Genetic algorithm"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(5,tr("Steepest descent"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(6,tr("Conjugate gradient"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(7,tr("Quasi-Newton"));
@@ -397,8 +397,8 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   _infoCreationForm->positionsEigenvaluesComboBox->insertItem(2,tr("All positive"));
   _infoCreationForm->positionsEigenvaluesComboBox->insertItem(3,tr("First order sadle-point"));
   _infoCreationForm->positionsEigenvaluesComboBox->insertItem(4,tr("Second order sadle-point"));
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(5,tr("Some small negative values"));
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(6,tr("Some significant negative values"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(5,tr("Some small negative eigenvalues"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(6,tr("Some significant negative eigenvalues"));
   _infoCreationForm->positionsEigenvaluesComboBox->insertItem(7,tr("Many negative eigenvalues"));
 
 
@@ -431,7 +431,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   _infoCreationForm->chargeAlgorithmComboBox->insertItem(8,tr("Mulliken"));
   _infoCreationForm->chargeAlgorithmComboBox->insertItem(9,tr("Natural Bond Orbital"));
   _infoCreationForm->chargeAlgorithmComboBox->insertItem(10,tr("Qeq - Rappe and Goddard 1991"));
-  _infoCreationForm->chargeAlgorithmComboBox->insertItem(11,tr("Qeq - Rick, Stuart abd Berne 1994"));
+  _infoCreationForm->chargeAlgorithmComboBox->insertItem(11,tr("Qeq - Rick, Stuart and Berne 1994"));
   _infoCreationForm->chargeAlgorithmComboBox->insertItem(12,tr("Qeq - York and Yang 1996"));
   _infoCreationForm->chargeAlgorithmComboBox->insertItem(13,tr("Qeq - Itskoqitz and Berkowitz 1997"));
   _infoCreationForm->chargeAlgorithmComboBox->insertItem(14,tr("Qeq - Wilmer, Kim, Snurr 2012"));

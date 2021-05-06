@@ -516,72 +516,72 @@ void RenderStackedWidget::ShowContextMenu(const QPoint &pos)
 {
   if(std::shared_ptr<ProjectStructure> project = this->_project.lock())
   {
-    QMenu contextMenu(tr("Context menu"), this);
+    QMenu contextMenu("Context menu", this);
 
-    QAction actionResetCameraDistance("Reset camera distance", this);
+    QAction actionResetCameraDistance(tr("Reset camera distance"), this);
     connect(&actionResetCameraDistance, &QAction::triggered, this, &RenderStackedWidget::resetCameraDistance);
     contextMenu.addAction(&actionResetCameraDistance);
 
-    QMenu* subMenuResetCamera = contextMenu.addMenu( "Reset camera to" );
+    QMenu* subMenuResetCamera = contextMenu.addMenu(tr("Reset camera to"));
     QActionGroup* cameraResetDirectionGroup = new QActionGroup(this);
-    QAction actionResetToZ("Z-direction", this);
+    QAction actionResetToZ(tr("Z-direction"), this);
     cameraResetDirectionGroup->addAction(&actionResetToZ);
     subMenuResetCamera->addAction(&actionResetToZ);
     connect(&actionResetToZ, &QAction::triggered, this, &RenderStackedWidget::resetCameraToZ);
-    QAction actionResetToY("Y-direction", this);
+    QAction actionResetToY(tr("Y-direction"), this);
     subMenuResetCamera->addAction(&actionResetToY);
     cameraResetDirectionGroup->addAction(&actionResetToY);
     connect(&actionResetToY, &QAction::triggered, this, &RenderStackedWidget::resetCameraToY);
-    QAction actionResetToX("X-direction", this);
+    QAction actionResetToX(tr("X-direction"), this);
     cameraResetDirectionGroup->addAction(&actionResetToX);
     connect(&actionResetToX, &QAction::triggered, this, &RenderStackedWidget::resetCameraToX);
     subMenuResetCamera->addAction(&actionResetToX);
 
 
-    QMenu* subMenuCameraProjection = contextMenu.addMenu( "Camera projection" );
+    QMenu* subMenuCameraProjection = contextMenu.addMenu(tr("Camera projection"));
     QActionGroup* cameraProjectionGroup = new QActionGroup(this);
-    QAction actionOrthographic("Orthographic", this);
+    QAction actionOrthographic(tr("Orthographic"), this);
     actionOrthographic.setCheckable(true);
     cameraProjectionGroup->addAction(&actionOrthographic);
     subMenuCameraProjection->addAction(&actionOrthographic);
     actionOrthographic.setChecked(project->camera()->isOrthographic());
     connect(&actionOrthographic, &QAction::triggered, this, &RenderStackedWidget::setCameraToOrthographic);
-    QAction actionPerspective("Perspective", this);
+    QAction actionPerspective(tr("Perspective"), this);
     actionPerspective.setCheckable(true);
     cameraProjectionGroup->addAction(&actionPerspective);
     subMenuCameraProjection->addAction(&actionPerspective);
     connect(&actionPerspective, &QAction::triggered, this, &RenderStackedWidget::setCameraToPerspective);
     actionPerspective.setChecked(project->camera()->isPerspective());
 
-    QAction _actionShowBoundingBox("Show bounding box", this);
+    QAction _actionShowBoundingBox(tr("Show bounding box"), this);
     _actionShowBoundingBox.setCheckable(true);
     _actionShowBoundingBox.setChecked(project->showBoundingBox());
     connect(&_actionShowBoundingBox, &QAction::toggled, this, &RenderStackedWidget::showBoundingBox);
     contextMenu.addAction(&_actionShowBoundingBox);
 
-    QAction _actionComputeAOHighQuality("Compute AO high quality", this);
+    QAction _actionComputeAOHighQuality(tr("Compute AO high quality"), this);
     connect(&_actionComputeAOHighQuality, &QAction::triggered, this, &RenderStackedWidget::computeAOHighQuality);
     contextMenu.addAction(&_actionComputeAOHighQuality);
 
-    QMenu* subMenuExport = contextMenu.addMenu( "Export to" );
+    QMenu* subMenuExport = contextMenu.addMenu(tr("Export to"));
     QActionGroup* exportToGroup = new QActionGroup(this);
-    QAction actionExportToPDB("PDB", this);
+    QAction actionExportToPDB(tr("PDB"), this);
     exportToGroup->addAction(&actionExportToPDB);
     subMenuExport->addAction(&actionExportToPDB);
     connect(&actionOrthographic, &QAction::triggered, this, &RenderStackedWidget::exportToPDB);
-    QAction actionExportToMMCIF("mmCIF", this);
+    QAction actionExportToMMCIF(tr("mmCIF"), this);
     exportToGroup->addAction(&actionExportToMMCIF);
     subMenuExport->addAction(&actionExportToMMCIF);
     connect(&actionOrthographic, &QAction::triggered, this, &RenderStackedWidget::exportToMMCIF);
-    QAction actionExportToCIF("CIF", this);
+    QAction actionExportToCIF(tr("CIF"), this);
     exportToGroup->addAction(&actionExportToCIF);
     subMenuExport->addAction(&actionExportToCIF);
     connect(&actionOrthographic, &QAction::triggered, this, &RenderStackedWidget::exportToCIF);
-    QAction actionExportToXYZ("XYZ", this);
+    QAction actionExportToXYZ(tr("XYZ"), this);
     exportToGroup->addAction(&actionExportToXYZ);
     subMenuExport->addAction(&actionExportToXYZ);
     connect(&actionOrthographic, &QAction::triggered, this, &RenderStackedWidget::exportToXYZ);
-    QAction actionExportToPOSCAR("VASP POSCAR", this);
+    QAction actionExportToPOSCAR(tr("VASP POSCAR"), this);
     exportToGroup->addAction(&actionExportToPOSCAR);
     subMenuExport->addAction(&actionExportToPOSCAR);
     connect(&actionOrthographic, &QAction::triggered, this, &RenderStackedWidget::exportToPOSCAR);

@@ -202,14 +202,14 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceatomsform.ui" line="312"/>
-        <source>Atomic size scaling</source>
-        <translation>原子大小缩放</translation>
+        <location filename="../iraspagui/appearanceatomsform.ui" line="371"/>
+        <source>Show atoms</source>
+        <translation>显示原子</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceatomsform.ui" line="371"/>
-        <source>Draw atoms</source>
-        <translation>显示原子</translation>
+        <location filename="../iraspagui/appearanceatomsform.ui" line="312"/>
+        <source>Atom size scaling</source>
+        <translation>原子大小缩放</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="413"/>
@@ -283,7 +283,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="37"/>
-        <source>Draw bonds</source>
+        <source>Show bonds</source>
         <translation>显示化学键</translation>
     </message>
     <message>
@@ -308,7 +308,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="146"/>
-        <source>Selection radial scaling</source>
+        <source>Selection scaling</source>
         <translation>选择径向缩放</translation>
     </message>
     <message>
@@ -348,7 +348,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="428"/>
-        <source>bond lighting</source>
+        <source>Bond lighting</source>
         <translation>邦德照明</translation>
     </message>
     <message>
@@ -482,8 +482,13 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="565"/>
-        <source>Front properties</source>
+        <source>Outside properties</source>
         <translation>正面属性</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearanceprimitiveform.ui" line="737"/>
+        <source>Inside properties</source>
+        <translation>返回属性</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="619"/>
@@ -531,17 +536,12 @@
         <source>Exposure</source>
         <translation>曝光</translation>
     </message>
-    <message>
-        <location filename="../iraspagui/appearanceprimitiveform.ui" line="737"/>
-        <source>Back properties</source>
-        <translation>返回属性</translation>
-    </message>
 </context>
 <context>
     <name>AppearanceTreeWidgetController</name>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="55"/>
-        <source>Primitive</source>
+        <source>Primitive properties</source>
         <translation>原始属性</translation>
     </message>
     <message>
@@ -639,7 +639,7 @@
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="349"/>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="448"/>
-        <source>Stripes</source>
+        <source>Striped</source>
         <translation>有条纹的</translation>
     </message>
     <message>
@@ -818,7 +818,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceunitcellform.ui" line="37"/>
-        <source>Draw unit cell</source>
+        <source>Show unit cell</source>
         <translation>显示元胞</translation>
     </message>
     <message>
@@ -972,22 +972,6 @@
     </message>
 </context>
 <context>
-    <name>AtomTreeViewPushButtonStyledItemDelegate</name>
-    <message>
-        <location filename="../iraspagui/atomtreeviewpushbuttonstyleditemdelegate.cpp" line="45"/>
-        <source>:!checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #eaebee, stop: 1 #f8f9fc); border: 1px inset #808080 ; }:checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #77a3f4, stop: 1 #2e6af6); border: 1px inset #404040; }</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>BondListPushButtonStyledItemDelegate</name>
-    <message>
-        <location filename="../iraspagui/bondlistpushbuttonstyleditemdelegate.cpp" line="45"/>
-        <source>:!checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #dadbde, stop: 1 #f6f7fa); border: 1px inset #808080; }:checked {margin: 1px; border-radius: 5px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #77a3f4, stop: 1 #2e6af6); border: 1px inset #404040; }</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>CameraBackgroundMainWidget</name>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="14"/>
@@ -996,8 +980,8 @@
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="20"/>
-        <source>background modes</source>
-        <translation>背景</translation>
+        <source>Properties</source>
+        <translation>属性</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="28"/>
@@ -1230,7 +1214,7 @@
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="238"/>
-        <source>Frames per seconds</source>
+        <source>Frames per second</source>
         <translation>每秒帧数</translation>
     </message>
     <message>
@@ -1263,13 +1247,33 @@
     </message>
     <message>
         <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="158"/>
-        <source>Pictures</source>
-        <translation>图片</translation>
+        <source>Pictures/Movies</source>
+        <translation>图片/影片</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="207"/>
         <source>Background</source>
         <translation>背景</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="512"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="513"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="514"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="839"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="840"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="841"/>
+        <source>Rotate +%1</source>
+        <translation>旋转 +%1</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="515"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="516"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="517"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="842"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="843"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="844"/>
+        <source>Rotate -%1</source>
+        <translation>旋转 -%1</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1742"/>
@@ -1288,16 +1292,6 @@
         <location filename="../iraspagui/cellcellform.ui" line="14"/>
         <source>Form</source>
         <translation></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cellcellform.ui" line="34"/>
-        <source>Structure type</source>
-        <translation>材料类型</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cellcellform.ui" line="81"/>
-        <source>Bounding box</source>
-        <translation>晶胞/边界框属性</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="89"/>
@@ -1340,9 +1334,19 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="../iraspagui/cellcellform.ui" line="34"/>
+        <source>Materials type</source>
+        <translation>材料类型</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cellcellform.ui" line="81"/>
+        <source>Bounding box (Read only)</source>
+        <translation>边界框（只读)</translation>
+    </message>
+    <message>
         <location filename="../iraspagui/cellcellform.ui" line="406"/>
-        <source>Unit cell</source>
-        <translation>晶胞</translation>
+        <source>Box matrix (Read only)</source>
+        <translation>单元矩阵（只读)</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="426"/>
@@ -1690,8 +1694,8 @@
     <name>CellTreeWidgetController</name>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="58"/>
-        <source>Cell</source>
-        <translation>晶胞</translation>
+        <source>Cell/Boundingbox properties</source>
+        <translation>晶胞/边界框属性</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="70"/>
@@ -1883,6 +1887,20 @@
         <source>Symmetry properties</source>
         <translation>对称属性</translation>
     </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1073"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1074"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1075"/>
+        <source>Rotate +%1</source>
+        <translation>旋转 +%1</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1076"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1077"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1078"/>
+        <source>Rotate -%1</source>
+        <translation>旋转 -%1</translation>
+    </message>
 </context>
 <context>
     <name>Dialog</name>
@@ -1903,7 +1921,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:28pt; font-style:italic;&quot;&gt;iRASPA&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:9pt;&quot;&gt;Version 2.0.3 (build 100)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:9pt;&quot;&gt;Version 2.0.4 (build 102)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Creators:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;David Dubbeldam (University of Amsterdam)&lt;/span&gt;&lt;/p&gt;
@@ -1912,8 +1930,13 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Contributor:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Randall Q. Snurr (Northwestern University)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Chung G. Yongchul (Pusan National University, Soth Korea, CRE MOF Database)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://dx.doi.org/10.1080/08927022.2018.1426855&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;Link to article&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://dx.doi.org/10.1080/08927022.2018.1426855&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;Link to article&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Other contributors:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Noura Dawass,  Weina Du,  Masafumi Miyaji, Sebastian Caro Ortiz, Shrinjay Sharma.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
 </context>
@@ -1923,11 +1946,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/elementsform.ui" line="14"/>
         <source>Form</source>
         <translation></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="187"/>
-        <source>Van der Waals radius  </source>
-        <translation>范德华半径</translation>
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="116"/>
@@ -1951,16 +1969,6 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="435"/>
-        <source>User-defined radius  </source>
-        <translation>用户定义的半径</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="368"/>
-        <source>Covalent radius  </source>
-        <translation>共价半径</translation>
-    </message>
-    <message>
         <location filename="../iraspagui/elementsform.ui" line="100"/>
         <source>TextLabel</source>
         <translation></translation>
@@ -1969,6 +1977,16 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/elementsform.ui" line="307"/>
         <source>Group</source>
         <translation>主族</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="393"/>
+        <source>ε/kB</source>
+        <translation>ε/kB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="435"/>
+        <source>User-defined radius</source>
+        <translation>用户定义的半径</translation>
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="447"/>
@@ -1981,16 +1999,6 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="197"/>
-        <source>Atomic mass  </source>
-        <translation>原子半径</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="31"/>
-        <source>  Triple bond covalent radius  </source>
-        <translation>三键共价半径</translation>
-    </message>
-    <message>
         <location filename="../iraspagui/elementsform.ui" line="524"/>
         <source>Oxidation states</source>
         <translation>可能的氧化态</translation>
@@ -2001,9 +2009,29 @@ p, li { white-space: pre-wrap; }
         <translation>化学元素</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="393"/>
-        <source>  ε/kB</source>
-        <translation></translation>
+        <location filename="../iraspagui/elementsform.ui" line="31"/>
+        <source>Triple bond covalent radius</source>
+        <translation>三键共价半径</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="187"/>
+        <source>Van der Waals radius</source>
+        <translation>范德华半径</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="197"/>
+        <source>Atomic mass</source>
+        <translation>原子半径</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="207"/>
+        <source>Atomic radius</source>
+        <translation>原子半径</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="368"/>
+        <source>Covalent radius</source>
+        <translation>共价半径</translation>
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="413"/>
@@ -2014,20 +2042,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/elementsform.ui" line="155"/>
         <source>Number</source>
         <translation>原子序数</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="207"/>
-        <source>Atomic radius  </source>
-        <translation>原子半径</translation>
-    </message>
-</context>
-<context>
-    <name>GLWidget</name>
-    <message>
-        <location filename="../renderkit/glwidget.cpp" line="437"/>
-        <location filename="../renderkit/glwidget.cpp" line="495"/>
-        <source>Critical error</source>
-        <translation></translation>
     </message>
 </context>
 <context>
@@ -2100,7 +2114,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocitationform.ui" line="59"/>
-        <source>article authors</source>
+        <source>Article authors</source>
         <translation>文章作者</translation>
     </message>
     <message>
@@ -2410,11 +2424,6 @@ p, li { white-space: pre-wrap; }
         <translation>固定角度；各向异性边长变化</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="370"/>
-        <source>Fixed β; α and γ-angles and edge-lengths free</source>
-        <translation>固定𝝰- 𝝱;和𝝲角和边长的变化</translation>
-    </message>
-    <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="371"/>
         <source>Fixed volume; shape free</source>
         <translation>固定体积；形状变化</translation>
@@ -2484,8 +2493,8 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="387"/>
-        <source>Gentic algorithm</source>
-        <translation>Gentic algorithm</translation>
+        <source>Genetic algorithm</source>
+        <translation>Genetic algorithm</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="388"/>
@@ -2528,13 +2537,18 @@ p, li { white-space: pre-wrap; }
         <translation>Second order sadle-point</translation>
     </message>
     <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="370"/>
+        <source>Fixed α-, β- and γ-angles and edge-lengths free</source>
+        <translation>固定𝝰- 𝝱;和𝝲角和边长的变化</translation>
+    </message>
+    <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="400"/>
-        <source>Some small negative values</source>
+        <source>Some small negative eigenvalues</source>
         <translation>一些小的负值</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="401"/>
-        <source>Some significant negative values</source>
+        <source>Some significant negative eigenvalues</source>
         <translation>一些明显的负值</translation>
     </message>
     <message>
@@ -2620,8 +2634,8 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="434"/>
-        <source>Qeq - Rick, Stuart abd Berne 1994</source>
-        <translation>Qeq - Rick, Stuart abd Berne 1994</translation>
+        <source>Qeq - Rick, Stuart and Berne 1994</source>
+        <translation>Qeq - Rick, Stuart and Berne 1994</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="435"/>
@@ -2923,11 +2937,6 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;帮助</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="617"/>
-        <source>Context menu</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../iraspagui/mainwindow.cpp" line="1103"/>
         <source>Application</source>
         <translation></translation>
@@ -2988,11 +2997,6 @@ Do you want to save your changes?</source>
         <translation>&amp;重做</translation>
     </message>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="393"/>
-        <source>Context menu</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../iraspagui/projecttreeview.cpp" line="422"/>
         <source>Add structure project</source>
         <translation>添加结构项目</translation>
@@ -3006,9 +3010,84 @@ Do you want to save your changes?</source>
 <context>
     <name>RenderStackedWidget</name>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="519"/>
-        <source>Context menu</source>
-        <translation></translation>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="521"/>
+        <source>Reset camera distance</source>
+        <translation>重置相机距离</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="525"/>
+        <source>Reset camera to</source>
+        <translation>将相机重置为</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="527"/>
+        <source>Z-direction</source>
+        <translation>Z向</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="531"/>
+        <source>Y-direction</source>
+        <translation>Y向</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="535"/>
+        <source>X-direction</source>
+        <translation>X向</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="541"/>
+        <source>Camera projection</source>
+        <translation>相机投影</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="543"/>
+        <source>Orthographic</source>
+        <translation>正射投影</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="549"/>
+        <source>Perspective</source>
+        <translation>透视投影</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="556"/>
+        <source>Show bounding box</source>
+        <translation>显示边界框</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="562"/>
+        <source>Compute AO high quality</source>
+        <translation>计算AO高质量</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="566"/>
+        <source>Export to</source>
+        <translation>导出到</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="568"/>
+        <source>PDB</source>
+        <translation>PDB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="572"/>
+        <source>mmCIF</source>
+        <translation>mmCIF</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="576"/>
+        <source>CIF</source>
+        <translation>CIF</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="580"/>
+        <source>XYZ</source>
+        <translation>XYZ</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="584"/>
+        <source>VASP POSCAR</source>
+        <translation>VASP POSCAR</translation>
     </message>
 </context>
 <context>

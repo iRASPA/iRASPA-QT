@@ -55,7 +55,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* cellItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(cellItem);
 
-  pushButtonCell = new QPushButton(tr("Cell"),this);
+  pushButtonCell = new QPushButton(tr("Cell/Boundingbox properties"),this);
   pushButtonCell->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonCell->setStyleSheet("text-align:left;");
   setItemWidget(cellItem,0,pushButtonCell);
@@ -1070,12 +1070,12 @@ void CellTreeWidgetController::reloadRotationAngle()
         _cellCellForm->rotateMinusYPushButton->setEnabled(_projectTreeNode->isEditable());
         _cellCellForm->rotateMinusZPushButton->setEnabled(_projectTreeNode->isEditable());
 
-        _cellCellForm->rotatePlusXPushButton->setText("Rotate +" + QString::number(*angle));
-        _cellCellForm->rotatePlusYPushButton->setText("Rotate +" + QString::number(*angle));
-        _cellCellForm->rotatePlusZPushButton->setText("Rotate +" + QString::number(*angle));
-        _cellCellForm->rotateMinusXPushButton->setText("Rotate -" + QString::number(*angle));
-        _cellCellForm->rotateMinusYPushButton->setText("Rotate -" + QString::number(*angle));
-        _cellCellForm->rotateMinusZPushButton->setText("Rotate -" + QString::number(*angle));
+        _cellCellForm->rotatePlusXPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle)));
+        _cellCellForm->rotatePlusYPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle)));
+        _cellCellForm->rotatePlusZPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle)));
+        _cellCellForm->rotateMinusXPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle)));
+        _cellCellForm->rotateMinusYPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle)));
+        _cellCellForm->rotateMinusZPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle)));
       }
       else
       {
