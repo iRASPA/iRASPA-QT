@@ -26,6 +26,8 @@ ICON = datafiles/iraspa.icns
 TRANSLATIONS = i18n/iraspa_en.ts \
                i18n/iraspa_nl.ts \
                i18n/iraspa_ar.ts \
+               i18n/iraspa_ja.ts \
+               i18n/iraspa_hi.ts \
                i18n/iraspa_zh_Hans.ts \
                i18n/iraspa_es.ts
 
