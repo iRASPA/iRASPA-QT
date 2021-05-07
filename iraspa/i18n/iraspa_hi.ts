@@ -1038,6 +1038,41 @@
     </message>
 </context>
 <context>
+    <name>CameraLightsMainWidget</name>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="22"/>
+        <source>Camera light</source>
+        <translation>कैमरा लाइट</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="44"/>
+        <source>Specular light intensity</source>
+        <translation>विशेष प्रकाश की तीव्रता</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="51"/>
+        <source>Diffuse light intensity</source>
+        <translation>विसरित प्रकाश की तीव्रता</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="65"/>
+        <location filename="../iraspagui/cameralightsform.ui" line="72"/>
+        <location filename="../iraspagui/cameralightsform.ui" line="86"/>
+        <source>Color</source>
+        <translation>रंग</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="79"/>
+        <source>Ambient light intensity</source>
+        <translation>परिवेशी प्रकाश की तीव्रता</translation>
+    </message>
+</context>
+<context>
     <name>CameraMainWidget</name>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="14"/>
@@ -2420,7 +2455,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="369"/>
-        <source>fixed angles; anisotropic edge-lengths free</source>
+        <source>Fixed angles; anisotropic edge-lengths free</source>
         <translation>निर्धारित कोण; विषमदैशिक किनारो की  लंबाई बदलें</translation>
     </message>
     <message>
@@ -2661,41 +2696,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="469"/>
         <source>Citation</source>
         <translation>उद्धरण</translation>
-    </message>
-</context>
-<context>
-    <name>LightsMainWidget</name>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="14"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="22"/>
-        <source>Camera light</source>
-        <translation>कैमरा लाइट</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="44"/>
-        <source>Specular light intensity</source>
-        <translation>विशेष प्रकाश की तीव्रता</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="51"/>
-        <source>Diffuse light intensity</source>
-        <translation>विसरित प्रकाश की तीव्रता</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="65"/>
-        <location filename="../iraspagui/cameralightsform.ui" line="72"/>
-        <location filename="../iraspagui/cameralightsform.ui" line="86"/>
-        <source>Color</source>
-        <translation>रंग</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="79"/>
-        <source>Ambient light intensity</source>
-        <translation>परिवेशी प्रकाश की तीव्रता</translation>
     </message>
 </context>
 <context>

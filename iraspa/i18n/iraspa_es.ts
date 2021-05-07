@@ -1039,6 +1039,41 @@
     </message>
 </context>
 <context>
+    <name>CameraLightsMainWidget</name>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="22"/>
+        <source>Camera light</source>
+        <translation>Iluminación de la cámara</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="44"/>
+        <source>Specular light intensity</source>
+        <translation>Intensidad de luz especular</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="51"/>
+        <source>Diffuse light intensity</source>
+        <translation>Intensidad de luz difusa</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="65"/>
+        <location filename="../iraspagui/cameralightsform.ui" line="72"/>
+        <location filename="../iraspagui/cameralightsform.ui" line="86"/>
+        <source>Color</source>
+        <translation>Color</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="79"/>
+        <source>Ambient light intensity</source>
+        <translation>Intensidad de luz ambiental</translation>
+    </message>
+</context>
+<context>
     <name>CameraMainWidget</name>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="14"/>
@@ -2421,7 +2456,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="369"/>
-        <source>fixed angles; anisotropic edge-lengths free</source>
+        <source>Fixed angles; anisotropic edge-lengths free</source>
         <translation>Ángulos fijos; Cambio de longitud de borde anisotrópico</translation>
     </message>
     <message>
@@ -2662,45 +2697,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="469"/>
         <source>Citation</source>
         <translation>Citación</translation>
-    </message>
-</context>
-<context>
-    <name>LightsMainWidget</name>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="14"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="22"/>
-        <source>Camera light</source>
-        <translation>Iluminación de la cámara</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="44"/>
-        <source>Specular light intensity</source>
-        <translation>Intensidad de luz especular</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="51"/>
-        <source>Diffuse light intensity</source>
-        <translation>Intensidad de luz difusa</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="65"/>
-        <location filename="../iraspagui/cameralightsform.ui" line="72"/>
-        <location filename="../iraspagui/cameralightsform.ui" line="86"/>
-        <source>Color</source>
-        <translation>Color</translation>
-    </message>
-    <message>
-        <source>color</source>
-        <translation type="obsolete">Color</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="79"/>
-        <source>Ambient light intensity</source>
-        <translation>Intensidad de luz ambiental</translation>
     </message>
 </context>
 <context>

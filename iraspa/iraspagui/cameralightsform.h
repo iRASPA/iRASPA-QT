@@ -25,7 +25,7 @@
 #include <QObject>
 #include "ui_cameralightsform.h"
 
-class CameraLightsForm : public QWidget, public Ui::LightsMainWidget
+class CameraLightsForm : public QWidget, public Ui::CameraLightsMainWidget
 {
   Q_OBJECT
 

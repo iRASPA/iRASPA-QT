@@ -366,7 +366,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   _infoCreationForm->relaxUnitCellComboBox->insertItem(0,tr("Unknown"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(1,tr("Cell and edge-lengths free"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(2,tr("Fixed angles; isotropic edge-length free"));
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(3,tr("fixed angles; anisotropic edge-lengths free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(3,tr("Fixed angles; anisotropic edge-lengths free"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(4,tr("Fixed α-, β- and γ-angles and edge-lengths free"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(5,tr("Fixed volume; shape free"));
   _infoCreationForm->relaxUnitCellComboBox->insertItem(6,tr("Fixed cell"));

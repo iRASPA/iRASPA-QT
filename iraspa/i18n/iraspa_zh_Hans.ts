@@ -1038,6 +1038,41 @@
     </message>
 </context>
 <context>
+    <name>CameraLightsMainWidget</name>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="22"/>
+        <source>Camera light</source>
+        <translation>摄影灯</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="44"/>
+        <source>Specular light intensity</source>
+        <translation>镜面光强度</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="51"/>
+        <source>Diffuse light intensity</source>
+        <translation>漫射光强度</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="65"/>
+        <location filename="../iraspagui/cameralightsform.ui" line="72"/>
+        <location filename="../iraspagui/cameralightsform.ui" line="86"/>
+        <source>Color</source>
+        <translation>显示颜色</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameralightsform.ui" line="79"/>
+        <source>Ambient light intensity</source>
+        <translation>环境光强度</translation>
+    </message>
+</context>
+<context>
     <name>CameraMainWidget</name>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="14"/>
@@ -2419,11 +2454,6 @@ p, li { white-space: pre-wrap; }
         <translation>固定角度；各向同性的边长变化</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="369"/>
-        <source>fixed angles; anisotropic edge-lengths free</source>
-        <translation>固定角度；各向异性边长变化</translation>
-    </message>
-    <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="371"/>
         <source>Fixed volume; shape free</source>
         <translation>固定体积；形状变化</translation>
@@ -2540,6 +2570,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="370"/>
         <source>Fixed α-, β- and γ-angles and edge-lengths free</source>
         <translation>固定𝝰- 𝝱;和𝝲角和边长的变化</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="369"/>
+        <source>Fixed angles; anisotropic edge-lengths free</source>
+        <translation>固定角度；各向异性边长变化</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="400"/>
@@ -2661,41 +2696,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="469"/>
         <source>Citation</source>
         <translation>引文</translation>
-    </message>
-</context>
-<context>
-    <name>LightsMainWidget</name>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="14"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="22"/>
-        <source>Camera light</source>
-        <translation>摄影灯</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="44"/>
-        <source>Specular light intensity</source>
-        <translation>镜面光强度</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="51"/>
-        <source>Diffuse light intensity</source>
-        <translation>漫射光强度</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="65"/>
-        <location filename="../iraspagui/cameralightsform.ui" line="72"/>
-        <location filename="../iraspagui/cameralightsform.ui" line="86"/>
-        <source>Color</source>
-        <translation>显示颜色</translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameralightsform.ui" line="79"/>
-        <source>Ambient light intensity</source>
-        <translation>环境光强度</translation>
     </message>
 </context>
 <context>
