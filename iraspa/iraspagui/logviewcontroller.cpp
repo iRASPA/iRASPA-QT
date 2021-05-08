@@ -23,7 +23,7 @@
 
 LogViewController::LogViewController(QWidget *parent): LineNumberPlainTextEdit(parent)
 {
-  appendPlainText(QT_TRANSLATE_NOOP("LogViewController","Log console ready"));
+  appendPlainText(QT_TRANSLATE_NOOP("LogViewController","Log Console Ready"));
 }
 
 

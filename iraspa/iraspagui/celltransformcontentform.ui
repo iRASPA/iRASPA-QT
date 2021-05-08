@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Cell content</string>
+      <string>Cell Content</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -25,7 +25,7 @@
         <item row="0" column="1">
          <widget class="QCheckBox" name="flipAxisACheckBox">
           <property name="text">
-           <string>a-axis</string>
+           <string>a-Axis</string>
           </property>
          </widget>
         </item>
@@ -39,7 +39,7 @@
         <item row="0" column="2">
          <widget class="QCheckBox" name="flipAxisBCheckBox">
           <property name="text">
-           <string>b-axis</string>
+           <string>b-Axis</string>
           </property>
          </widget>
         </item>
@@ -59,7 +59,7 @@
         <item row="0" column="3">
          <widget class="QCheckBox" name="flipAxisCCheckBox">
           <property name="text">
-           <string>c-axis</string>
+           <string>c-Axis</string>
           </property>
          </widget>
         </item>

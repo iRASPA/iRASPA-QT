@@ -34,7 +34,7 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="drawUnitCellCheckBox">
          <property name="text">
-          <string>Show unit cell</string>
+          <string>Show Unit Cell</string>
          </property>
         </widget>
        </item>
@@ -67,7 +67,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_24">
          <property name="text">
-          <string>Unit cell size scaling</string>
+          <string>Unit Cell Size Scaling</string>
          </property>
         </widget>
        </item>
@@ -94,7 +94,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Light intensity</string>
+          <string>Light Intensity</string>
          </property>
         </widget>
        </item>

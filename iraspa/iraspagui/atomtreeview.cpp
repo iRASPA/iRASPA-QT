@@ -787,48 +787,48 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
     isSymmetryEnabled = isEnabled && _iraspaStructure->structure()->hasSymmetry();
   }
 
-  QAction actionAddAtom(tr("Add atom"), this);
+  QAction actionAddAtom(tr("Add Atom"), this);
   actionAddAtom.setEnabled(isEnabled);
   connect(&actionAddAtom, &QAction::triggered, [this, index](void) {
      this->addAtom(index);
   });
   contextMenu.addAction(&actionAddAtom);
 
-  QAction actionAddAtomGroup(tr("Add atom group"), this);
+  QAction actionAddAtomGroup(tr("Add Atom Group"), this);
   actionAddAtomGroup.setEnabled(isEnabled);
   connect(&actionAddAtomGroup, &QAction::triggered, [this, index](void) {
      this->addAtomGroup(index);
   });
   contextMenu.addAction(&actionAddAtomGroup);
 
-  QAction actionFlattenHierarchy(tr("Flatten hierarchy"), this);
+  QAction actionFlattenHierarchy(tr("Flatten Hierarchy"), this);
   actionFlattenHierarchy.setEnabled(isEnabled);
   connect(&actionFlattenHierarchy, &QAction::triggered, this, &AtomTreeView::flattenHierachy);
   contextMenu.addAction(&actionFlattenHierarchy);
 
-  QAction actionMakeSuperCell(tr("Make super-cell"), this);
+  QAction actionMakeSuperCell(tr("Make Super-Cell"), this);
   actionMakeSuperCell.setEnabled(isEnabled && isSymmetryEnabled);
   connect(&actionMakeSuperCell, &QAction::triggered, this, &AtomTreeView::makeSuperCell);
   contextMenu.addAction(&actionMakeSuperCell);
 
   QMenu* subMenuSymmetry = contextMenu.addMenu(tr("Symmetry"));
   QActionGroup* symmetryGroup = new QActionGroup(this);
-  QAction actionSymmetryRemove(tr("Remove symmetry"), this);
+  QAction actionSymmetryRemove(tr("Remove Symmetry"), this);
   actionSymmetryRemove.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionSymmetryRemove);
   subMenuSymmetry->addAction(&actionSymmetryRemove);
   connect(&actionSymmetryRemove, &QAction::triggered, this, &AtomTreeView::removeSymmetry);
-  QAction actionSymmetryWrapAtoms(tr("Wrap atoms to cell"), this);
+  QAction actionSymmetryWrapAtoms(tr("Wrap Atoms to Cell"), this);
   actionSymmetryWrapAtoms.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionSymmetryWrapAtoms);
   subMenuSymmetry->addAction(&actionSymmetryWrapAtoms);
   connect(&actionSymmetryWrapAtoms, &QAction::triggered, this, &AtomTreeView::wrapAtoms);
-  QAction actionFindPrimitive(tr("Find primitive"), this);
+  QAction actionFindPrimitive(tr("Find Primitive"), this);
   actionFindPrimitive.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionFindPrimitive);
   subMenuSymmetry->addAction(&actionFindPrimitive);
   connect(&actionFindPrimitive, &QAction::triggered, this, &AtomTreeView::findPrimitive);
-  QAction actionFindSymmetry(tr("Find and impose symmetry"), this);
+  QAction actionFindSymmetry(tr("Find and Impose Symmetry"), this);
   actionFindSymmetry.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionFindSymmetry);
   subMenuSymmetry->addAction(&actionFindSymmetry);
@@ -854,7 +854,7 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
 
   QMenu* subMenuVisibility = contextMenu.addMenu(tr("Visibility"));
   QActionGroup* visibilityGroup = new QActionGroup(this);
-  QAction actionVisibilityMatchSelection(tr("Match selection"), this);
+  QAction actionVisibilityMatchSelection(tr("Match Selection"), this);
   actionVisibilityMatchSelection.setEnabled(isEnabled);
   visibilityGroup->addAction(&actionVisibilityMatchSelection);
   subMenuVisibility->addAction(&actionVisibilityMatchSelection);
@@ -865,7 +865,7 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
   subMenuVisibility->addAction(&actionVisibilityInvert);
   connect(&actionVisibilityInvert, &QAction::triggered, this, &AtomTreeView::visibilityInvert);
 
-  QMenu* subMenuScrollTo = contextMenu.addMenu(tr("Scroll to"));
+  QMenu* subMenuScrollTo = contextMenu.addMenu(tr("Scroll To"));
   QActionGroup* scrollToGroup = new QActionGroup(this);
   QAction actionScrollToTop(tr("Top"), this);
   actionScrollToTop.setEnabled(isEnabled);
@@ -877,19 +877,19 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
   scrollToGroup->addAction(&actionScrollToBottom);
   subMenuScrollTo->addAction(&actionScrollToBottom);
   connect(&actionScrollToBottom, &QAction::triggered, this, &AtomTreeView::scrollToBottom);
-  QAction actionScrollToFirstSelected(tr("First selected"), this);
+  QAction actionScrollToFirstSelected(tr("First Selected"), this);
   actionScrollToFirstSelected.setEnabled(isEnabled);
   scrollToGroup->addAction(&actionScrollToFirstSelected);
   subMenuScrollTo->addAction(&actionScrollToFirstSelected);
   connect(&actionScrollToFirstSelected, &QAction::triggered, this, &AtomTreeView::scrollToFirstSelected);
-  QAction actionScrollToLastSelected(tr("Last selected"), this);
+  QAction actionScrollToLastSelected(tr("Last Selected"), this);
   actionScrollToLastSelected.setEnabled(isEnabled);
   scrollToGroup->addAction(&actionScrollToLastSelected);
   subMenuScrollTo->addAction(&actionScrollToLastSelected);
   connect(&actionScrollToLastSelected, &QAction::triggered, this, &AtomTreeView::scrollToLastSelected);
 
 
-  QMenu* subMenuExport = contextMenu.addMenu(tr("Export to"));
+  QMenu* subMenuExport = contextMenu.addMenu(tr("Export To"));
   QActionGroup* exportToGroup = new QActionGroup(this);
   QAction actionExportToPDB(tr("PDB"), this);
   actionExportToPDB.setEnabled(isEnabled);

@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>iRASPA visualizer</string>
+   <string>iRASPA Visualizer</string>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
@@ -609,7 +609,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Force field</string>
+                  <string>Force Field</string>
                  </property>
                 </widget>
                </item>
@@ -806,7 +806,7 @@
                <item>
                 <widget class="QLabel" name="label_3">
                  <property name="text">
-                  <string>Net charge</string>
+                  <string>Net Charge</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

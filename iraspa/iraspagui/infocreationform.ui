@@ -86,7 +86,7 @@
             <item>
              <widget class="QLabel" name="label_5">
               <property name="text">
-               <string>Relax unit cell</string>
+               <string>Relax Unit Cell</string>
               </property>
              </widget>
             </item>
@@ -101,7 +101,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Atomic positions</string>
+          <string>Atomic Positions</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
@@ -118,7 +118,7 @@
             <item row="3" column="0">
              <widget class="QLabel" name="label_9">
               <property name="text">
-               <string>Force field</string>
+               <string>Force Field</string>
               </property>
              </widget>
             </item>
@@ -128,7 +128,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label_6">
               <property name="text">
-               <string>Software package</string>
+               <string>Software Package</string>
               </property>
              </widget>
             </item>
@@ -142,7 +142,7 @@
             <item row="4" column="0">
              <widget class="QLabel" name="label_10">
               <property name="text">
-               <string>Force field details</string>
+               <string>Force Field Details</string>
               </property>
              </widget>
             </item>
@@ -164,7 +164,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_3">
          <property name="title">
-          <string>Atomic charges</string>
+          <string>Atomic Charges</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
@@ -172,7 +172,7 @@
             <item row="2" column="0">
              <widget class="QLabel" name="label_15">
               <property name="text">
-               <string>Force field</string>
+               <string>Force Field</string>
               </property>
              </widget>
             </item>
@@ -182,7 +182,7 @@
             <item row="3" column="0">
              <widget class="QLabel" name="label_12">
               <property name="text">
-               <string>Force field details</string>
+               <string>Force Field Details</string>
               </property>
              </widget>
             </item>
@@ -196,7 +196,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label_14">
               <property name="text">
-               <string>Software package</string>
+               <string>Software Package</string>
               </property>
              </widget>
             </item>
@@ -223,7 +223,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_13">
            <property name="text">
-            <string>Radiation type</string>
+            <string>Radiation Type</string>
            </property>
           </widget>
          </item>
@@ -233,7 +233,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_16">
            <property name="text">
-            <string>Radiation wavelength</string>
+            <string>Radiation Wavelength</string>
            </property>
           </widget>
          </item>
@@ -314,7 +314,7 @@
          <item>
           <widget class="QLabel" name="label_19">
            <property name="text">
-            <string>Number of reflections</string>
+            <string>Number of Reflections</string>
            </property>
           </widget>
          </item>
@@ -345,7 +345,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_21">
            <property name="text">
-            <string>Goodness-of-fit F</string>
+            <string>Goodness-of-Fit F</string>
            </property>
           </widget>
          </item>
@@ -355,7 +355,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_22">
            <property name="text">
-            <string>Final R indices [|&gt;2 sigma(l)|]</string>
+            <string>Final R Indices [|&gt;2 sigma(l)|]</string>
            </property>
           </widget>
          </item>
@@ -365,7 +365,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_23">
            <property name="text">
-            <string>R indices (all data)</string>
+            <string>R Indices (All Data)</string>
            </property>
           </widget>
          </item>

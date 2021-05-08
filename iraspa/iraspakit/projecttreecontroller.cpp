@@ -40,8 +40,8 @@ ProjectTreeController::ProjectTreeController(): _hiddenRootNode(std::make_shared
   _hiddenRootNode->insertChild(4, rootIcloudProjects);
 
   _galleryProjects = std::make_shared<ProjectTreeNode>(QCoreApplication::translate("ProjectTreeController", "Gallery"), std::make_shared<iRASPAProject>(std::make_shared<ProjectGroup>()), false, false);
-  _localProjects = std::make_shared<ProjectTreeNode>(QCoreApplication::translate("ProjectTreeController", "Local projects"), std::make_shared<iRASPAProject>(std::make_shared<ProjectGroup>()), false, false);
-  _icloudProjects = std::make_shared<ProjectTreeNode>(QCoreApplication::translate("ProjectTreeController", "Databases public"), std::make_shared<iRASPAProject>(std::make_shared<ProjectGroup>()), false, false);
+  _localProjects = std::make_shared<ProjectTreeNode>(QCoreApplication::translate("ProjectTreeController", "Local Projects"), std::make_shared<iRASPAProject>(std::make_shared<ProjectGroup>()), false, false);
+  _icloudProjects = std::make_shared<ProjectTreeNode>(QCoreApplication::translate("ProjectTreeController", "Databases Public"), std::make_shared<iRASPAProject>(std::make_shared<ProjectGroup>()), false, false);
 
   rootGalleryProjects->insertChild(0,_galleryProjects);
   rootLocalProjects->insertChild(0,_localProjects);

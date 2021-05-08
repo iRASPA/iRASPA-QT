@@ -55,7 +55,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* cellItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(cellItem);
 
-  pushButtonCell = new QPushButton(tr("Cell/Boundingbox properties"),this);
+  pushButtonCell = new QPushButton(tr("Cell/Boundingbox Properties"),this);
   pushButtonCell->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonCell->setStyleSheet("text-align:left;");
   setItemWidget(cellItem,0,pushButtonCell);
@@ -70,19 +70,19 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   _cellCellForm->cellStructureTypeComboBox->insertItem(0, tr("Empty"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(1, tr("Structure"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(2, tr("Crystal"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(3, tr("Molecular crystal"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(3, tr("Molecular Crystal"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(4, tr("Molecule"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(5, tr("Protein"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(6, tr("Protein crystal"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(7, tr("Protein crystal solvent"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(8, tr("Crystal solvent"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(9, tr("Molecular crystal solvent"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(10, tr("Crystal ellipsoid"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(11, tr("Crystal cylinder"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(12, tr("Crystal polygonal prism"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(6, tr("Protein Crystal"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(7, tr("Protein Crystal Solvent"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(8, tr("Crystal Solvent"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(9, tr("Molecular Crystal Solvent"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(10, tr("Crystal Ellipsoid"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(11, tr("Crystal Cylinder"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(12, tr("Crystal Polygonal Prism"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(13, tr("Ellipsoid"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(14, tr("Cylinder"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(15, tr("Polygonal prism"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(15, tr("Polygonal Prism"));
   QStandardItemModel *model = qobject_cast<QStandardItemModel *>( _cellCellForm->cellStructureTypeComboBox->model());
   QStandardItem *itemEmpty = model->item(0);
   itemEmpty->setFlags(itemEmpty->flags() & ~Qt::ItemIsEnabled);
@@ -218,7 +218,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* transformContentItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(transformContentItem);
 
-  pushButtonTransformContent = new QPushButton(tr("Tranform content"),this);
+  pushButtonTransformContent = new QPushButton(tr("Tranform Content"),this);
   pushButtonTransformContent->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonTransformContent->setStyleSheet("text-align:left;");
   setItemWidget(transformContentItem,0,pushButtonTransformContent);
@@ -268,7 +268,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* structuralItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(structuralItem);
 
-  pushButtonStructural = new QPushButton(tr("Structural properties"),this);
+  pushButtonStructural = new QPushButton(tr("Structural Properties"),this);
   pushButtonStructural->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonStructural->setStyleSheet("text-align:left;");
   setItemWidget(structuralItem,0,pushButtonStructural);
@@ -348,7 +348,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem* symmetryItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(symmetryItem);
 
-  pushButtonSymmetry = new QPushButton(tr("Symmetry properties"),this);
+  pushButtonSymmetry = new QPushButton(tr("Symmetry Properties"),this);
   pushButtonSymmetry->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonSymmetry->setStyleSheet("text-align:left;");
   setItemWidget(symmetryItem,0,pushButtonSymmetry);

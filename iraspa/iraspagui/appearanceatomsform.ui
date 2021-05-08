@@ -21,7 +21,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Representation type</string>
+          <string>Representation Type</string>
          </property>
         </widget>
        </item>
@@ -31,7 +31,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Representation style</string>
+          <string>Representation Style</string>
          </property>
         </widget>
        </item>
@@ -41,7 +41,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Color set</string>
+          <string>Color Set</string>
          </property>
         </widget>
        </item>
@@ -61,7 +61,7 @@
        <item row="3" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Force field</string>
+          <string>Force Field</string>
          </property>
         </widget>
        </item>
@@ -139,7 +139,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Selection scaling</string>
+          <string>Selection Scaling</string>
          </property>
         </widget>
        </item>
@@ -175,7 +175,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Selection style</string>
+          <string>Selection Style</string>
          </property>
         </widget>
        </item>
@@ -195,7 +195,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>Selection intensity</string>
+          <string>Selection Intensity</string>
          </property>
         </widget>
        </item>
@@ -309,7 +309,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_24">
          <property name="text">
-          <string>Atom size scaling</string>
+          <string>Atom Size Scaling</string>
          </property>
         </widget>
        </item>
@@ -368,7 +368,7 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="atomDrawAtomsCheckBox">
          <property name="text">
-          <string>Show atoms</string>
+          <string>Show Atoms</string>
          </property>
          <property name="tristate">
           <bool>true</bool>
@@ -601,13 +601,13 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Atom lighting</string>
+        <string>Atom Lighting</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QCheckBox" name="atomAmbientOcclusionCheckBox">
           <property name="text">
-           <string>Ambient occlusion</string>
+           <string>Ambient Occlusion</string>
           </property>
          </widget>
         </item>
@@ -623,7 +623,7 @@
            <item row="0" column="0">
             <widget class="QLabel" name="label_12">
              <property name="text">
-              <string>Ambient light intensity</string>
+              <string>Ambient Light Intensity</string>
              </property>
             </widget>
            </item>
@@ -644,7 +644,7 @@
            <item row="1" column="0">
             <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>Diffuse light intensity</string>
+              <string>Diffuse Light Intensity</string>
              </property>
             </widget>
            </item>
@@ -665,7 +665,7 @@
            <item row="2" column="0">
             <widget class="QLabel" name="label_14">
              <property name="text">
-              <string>Specular light intensity</string>
+              <string>Specular Light Intensity</string>
              </property>
             </widget>
            </item>

@@ -21,7 +21,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Dots-per-inch</string>
+          <string>Dots-per-Inch</string>
          </property>
         </widget>
        </item>
@@ -44,7 +44,7 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Quality/type</string>
+          <string>Quality/Type</string>
          </property>
         </widget>
        </item>
@@ -66,28 +66,28 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Physical width</string>
+          <string>Physical Width</string>
          </property>
         </widget>
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Pixel width</string>
+          <string>Pixel Width</string>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Physical height</string>
+          <string>Physical Height</string>
          </property>
         </widget>
        </item>
        <item row="1" column="2">
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Pixel height</string>
+          <string>Pixel Height</string>
          </property>
         </widget>
        </item>
@@ -166,7 +166,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Edit dimensions</string>
+          <string>Edit Dimensions</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
@@ -174,14 +174,14 @@
             <item>
              <widget class="QRadioButton" name="physicalDimensionsRadioButton">
               <property name="text">
-               <string>Physical dimensions</string>
+               <string>Physical Dimensions</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QRadioButton" name="pixelDimensionsRadioButton">
               <property name="text">
-               <string>Pixel dimensions</string>
+               <string>Pixel Dimensions</string>
               </property>
              </widget>
             </item>
@@ -220,7 +220,7 @@
        <item>
         <widget class="QPushButton" name="createPicturePushButton">
          <property name="text">
-          <string>Create picture</string>
+          <string>Create Picture</string>
          </property>
         </widget>
        </item>
@@ -235,7 +235,7 @@
        <item>
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>Frames per second</string>
+          <string>Frames per Second</string>
          </property>
         </widget>
        </item>
@@ -262,7 +262,7 @@
        <item>
         <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>Movie type</string>
+          <string>Movie Type</string>
          </property>
         </widget>
        </item>
@@ -288,7 +288,7 @@
           <bool>true</bool>
          </property>
          <property name="text">
-          <string>Create movie</string>
+          <string>Create Movie</string>
          </property>
         </widget>
        </item>

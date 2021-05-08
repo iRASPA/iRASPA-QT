@@ -10,17 +10,17 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="37"/>
-        <source>Show adsorption surface</source>
+        <source>Show Adsorption Surface</source>
         <translation>Toon adsorptie oppervlak</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="51"/>
-        <source>Isocontour value</source>
+        <source>Isocontour Value</source>
         <translation>Valor de isocontorno</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="58"/>
-        <source>Probe particle</source>
+        <source>Probe Particle</source>
         <translation>Partícula de prueba</translation>
     </message>
     <message>
@@ -45,13 +45,13 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="282"/>
-        <source>Inside surface</source>
+        <source>Inside Surface</source>
         <translation>Superficie posterior</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="290"/>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="510"/>
-        <source>High Dynamics Range</source>
+        <source>High Dynamic Range</source>
         <translation>Alto rango dinámico</translation>
     </message>
     <message>
@@ -79,24 +79,24 @@
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="386"/>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="606"/>
-        <source>Specular light intensity</source>
+        <source>Specular Light Intensity</source>
         <translation>Intensidad de luz especular</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="400"/>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="620"/>
-        <source>Diffuse light intensity</source>
+        <source>Diffuse Light Intensity</source>
         <translation>Intensidad de luz difusa</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="407"/>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="627"/>
-        <source>Ambient light intensity</source>
+        <source>Ambient Light Intensity</source>
         <translation>Intensidad de luz ambiental</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="502"/>
-        <source>Outside surface</source>
+        <source>Outside Surface</source>
         <translation>Superficie frontal</translation>
     </message>
 </context>
@@ -139,7 +139,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceannotationform.ui" line="125"/>
-        <source>Text offset</source>
+        <source>Text Offset</source>
         <translation>Desplazamiento texto</translation>
     </message>
 </context>
@@ -152,17 +152,17 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="24"/>
-        <source>Representation type</source>
+        <source>Representation Type</source>
         <translation>Tipo de representación</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="34"/>
-        <source>Representation style</source>
+        <source>Representation Style</source>
         <translation>Estilo de representación</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="44"/>
-        <source>Color set</source>
+        <source>Color Set</source>
         <translation>Conjunto de colores</translation>
     </message>
     <message>
@@ -173,7 +173,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="64"/>
-        <source>Force field</source>
+        <source>Force Field</source>
         <translation>Campo de fuerza</translation>
     </message>
     <message>
@@ -183,17 +183,17 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="142"/>
-        <source>Selection scaling</source>
+        <source>Selection Scaling</source>
         <translation>Selección de escala radial</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="178"/>
-        <source>Selection style</source>
+        <source>Selection Style</source>
         <translation>Estilo de selección</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="198"/>
-        <source>Selection intensity</source>
+        <source>Selection Intensity</source>
         <translation>Intensidad de selección</translation>
     </message>
     <message>
@@ -203,12 +203,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="312"/>
-        <source>Atom size scaling</source>
+        <source>Atom Size Scaling</source>
         <translation>Escala de tamaño de átomo</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="371"/>
-        <source>Show atoms</source>
+        <source>Show Atoms</source>
         <translation>Mostrar átomos</translation>
     </message>
     <message>
@@ -238,17 +238,17 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="604"/>
-        <source>Atom lighting</source>
+        <source>Atom Lighting</source>
         <translation>Iluminación del Átomo</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="610"/>
-        <source>Ambient occlusion</source>
+        <source>Ambient Occlusion</source>
         <translation>Oclusión ambiental</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="626"/>
-        <source>Ambient light intensity</source>
+        <source>Ambient Light Intensity</source>
         <translation>Intensidad de luz ambiental</translation>
     </message>
     <message>
@@ -260,12 +260,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="647"/>
-        <source>Diffuse light intensity</source>
+        <source>Diffuse Light Intensity</source>
         <translation>Intensidad de luz difusa</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceatomsform.ui" line="668"/>
-        <source>Specular light intensity</source>
+        <source>Specular Light Intensity</source>
         <translation>Intensidad de luz especular</translation>
     </message>
     <message>
@@ -283,32 +283,32 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="37"/>
-        <source>Show bonds</source>
+        <source>Show Bonds</source>
         <translation>Mostrar vínculos</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="70"/>
-        <source>Bond scale factor</source>
+        <source>Bond Scale Factor</source>
         <translation>Factor de escala de enlaces</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="97"/>
-        <source>Bond type</source>
+        <source>Bond Type</source>
         <translation>Tipo de enlace</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="132"/>
-        <source>Selection style</source>
+        <source>Selection Style</source>
         <translation>Estilo de selección</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="139"/>
-        <source>Selection intensity</source>
+        <source>Selection Intensity</source>
         <translation>Intensidad de selección</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="146"/>
-        <source>Selection scaling</source>
+        <source>Selection Scaling</source>
         <translation>Escala de selección</translation>
     </message>
     <message>
@@ -348,17 +348,17 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="428"/>
-        <source>Bond lighting</source>
+        <source>Bond Lighting</source>
         <translation>Iluminación del enlace</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="434"/>
-        <source>Ambient occlusion</source>
+        <source>Ambient Occlusion</source>
         <translation>Oclusión ambiental</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="450"/>
-        <source>Ambient light intensity</source>
+        <source>Ambient Light Intensity</source>
         <translation>Intensidad de luz ambiental</translation>
     </message>
     <message>
@@ -370,12 +370,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="471"/>
-        <source>Diffuse light intensity</source>
+        <source>Diffuse Light Intensity</source>
         <translation>Intensidad de luz difusa</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancebondsform.ui" line="492"/>
-        <source>Specular light intensity</source>
+        <source>Specular Light Intensity</source>
         <translation>Intensidad de luz especular</translation>
     </message>
     <message>
@@ -412,12 +412,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="72"/>
-        <source>Rotation angle</source>
+        <source>Rotation Angle</source>
         <translation>Ángulo de rotación</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="103"/>
-        <source>Euler angles</source>
+        <source>Euler Angles</source>
         <translation>Ángulos de Euler</translation>
     </message>
     <message>
@@ -427,7 +427,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="290"/>
-        <source>Number of sides</source>
+        <source>Number of Sides</source>
         <translation>Número de lados</translation>
     </message>
     <message>
@@ -442,7 +442,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="358"/>
-        <source>Selection style</source>
+        <source>Selection Style</source>
         <translation>Estilo de selección</translation>
     </message>
     <message>
@@ -452,12 +452,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="385"/>
-        <source>Selection scaling</source>
+        <source>Selection Scaling</source>
         <translation>Escala de selección</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="425"/>
-        <source>Selection intensity</source>
+        <source>Selection Intensity</source>
         <translation>Intensidad de selección</translation>
     </message>
     <message>
@@ -482,7 +482,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="565"/>
-        <source>Outside properties</source>
+        <source>Outside Properties</source>
         <translation>Propiedades frontales</translation>
     </message>
     <message>
@@ -497,7 +497,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="737"/>
-        <source>Inside properties</source>
+        <source>Inside Properties</source>
         <translation>Volver Propiedades</translation>
     </message>
     <message>
@@ -509,19 +509,19 @@
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="647"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="819"/>
-        <source>Specular light intensity</source>
+        <source>Specular Light Intensity</source>
         <translation>Intensidad de luz especular</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="654"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="826"/>
-        <source>Diffuse light intensity</source>
+        <source>Diffuse Light Intensity</source>
         <translation>Intensidad de luz difusa</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="661"/>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="833"/>
-        <source>Ambient light intensity</source>
+        <source>Ambient Light Intensity</source>
         <translation>Intensidad de luz ambiental</translation>
     </message>
     <message>
@@ -541,7 +541,7 @@
     <name>AppearanceTreeWidgetController</name>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="55"/>
-        <source>Primitive properties</source>
+        <source>Primitive Properties</source>
         <translation>Propiedades primitivas</translation>
     </message>
     <message>
@@ -551,7 +551,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="323"/>
-        <source>Ball and stick</source>
+        <source>Ball and Stick</source>
         <translation>Bolas y palos</translation>
     </message>
     <message>
@@ -592,8 +592,8 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="333"/>
-        <source>Rasmol modern</source>
-        <translation>Rasmol modern</translation>
+        <source>Rasmol Modern</source>
+        <translation>Rasmol Modern</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="334"/>
@@ -614,13 +614,13 @@
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="338"/>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="344"/>
-        <source>Force field first</source>
+        <source>Force Field First</source>
         <translation>Campo de fuerza primero</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="339"/>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="345"/>
-        <source>Force field only</source>
+        <source>Force Field Only</source>
         <translation>Solo campo de fuerza</translation>
     </message>
     <message>
@@ -670,12 +670,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="512"/>
-        <source>Unit cell</source>
+        <source>Unit Cell</source>
         <translation>Celda unitaria</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="533"/>
-        <source>Adsorption surface</source>
+        <source>Adsorption Surface</source>
         <translation>Superficie de adsorción</translation>
     </message>
     <message>
@@ -730,7 +730,7 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="641"/>
-        <source>Display name</source>
+        <source>Display Name</source>
         <translation>Nombre para mostrar</translation>
     </message>
     <message>
@@ -740,12 +740,12 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="643"/>
-        <source>Chemical element</source>
+        <source>Chemical Element</source>
         <translation>Elemento químico</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="644"/>
-        <source>Forcefield type</source>
+        <source>Force Field Type</source>
         <translation>Tipo de campo de fuerza</translation>
     </message>
     <message>
@@ -785,27 +785,27 @@
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="654"/>
-        <source>Top-left</source>
+        <source>Top-Left</source>
         <translation>Arriba a la izquierda</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="655"/>
-        <source>Top-right</source>
+        <source>Top-Right</source>
         <translation>Parte superior derecha</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="656"/>
-        <source>Bottom-left</source>
+        <source>Bottom-Left</source>
         <translation>Abajo a la izquierda</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="657"/>
-        <source>Bottom-right</source>
+        <source>Bottom-Right</source>
         <translation>Abajo a la derecha</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="659"/>
-        <source>Flat billboard</source>
+        <source>Flat Billboard</source>
         <translation>Pantalla plana</translation>
     </message>
 </context>
@@ -818,17 +818,17 @@
     </message>
     <message>
         <location filename="../iraspagui/appearanceunitcellform.ui" line="37"/>
-        <source>Show unit cell</source>
+        <source>Show Unit Cell</source>
         <translation>Mostrar celda unitaria</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceunitcellform.ui" line="70"/>
-        <source>Unit cell size scaling</source>
+        <source>Unit Cell Size Scaling</source>
         <translation>Escala de tamaño de celda unitaria</translation>
     </message>
     <message>
         <location filename="../iraspagui/appearanceunitcellform.ui" line="97"/>
-        <source>Light intensity</source>
+        <source>Light Intensity</source>
         <translation>Intensidad de luz</translation>
     </message>
     <message>
@@ -841,22 +841,22 @@
     <name>AtomTreeView</name>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="790"/>
-        <source>Add atom</source>
+        <source>Add Atom</source>
         <translation>Agregar átomo</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="797"/>
-        <source>Add atom group</source>
+        <source>Add Atom Group</source>
         <translation>Agregar grupo de átomos</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="804"/>
-        <source>Flatten hierarchy</source>
+        <source>Flatten Hierarchy</source>
         <translation>Aplanar jerarquía</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="809"/>
-        <source>Make super-cell</source>
+        <source>Make Super-Cell</source>
         <translation>Hacer supercelda</translation>
     </message>
     <message>
@@ -866,22 +866,22 @@
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="816"/>
-        <source>Remove symmetry</source>
+        <source>Remove Symmetry</source>
         <translation>Eliminar simetría</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="821"/>
-        <source>Wrap atoms to cell</source>
+        <source>Wrap Atoms to Cell</source>
         <translation>Devolver los átomos a la celda</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="826"/>
-        <source>Find primitive</source>
+        <source>Find Primitive</source>
         <translation>Encontrar primitivo</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="831"/>
-        <source>Find and impose symmetry</source>
+        <source>Find and Impose Symmetry</source>
         <translation>Encontrar e imponer simetría</translation>
     </message>
     <message>
@@ -912,12 +912,12 @@
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="857"/>
-        <source>Match selection</source>
+        <source>Match Selection</source>
         <translation>Encajar Selección</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="868"/>
-        <source>Scroll to</source>
+        <source>Scroll To</source>
         <translation>Desplazarse a</translation>
     </message>
     <message>
@@ -932,17 +932,17 @@
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="880"/>
-        <source>First selected</source>
+        <source>First Selected</source>
         <translation>Primero seleccionado</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="885"/>
-        <source>Last selected</source>
+        <source>Last Selected</source>
         <translation>Último seleccionado</translation>
     </message>
     <message>
         <location filename="../iraspagui/atomtreeview.cpp" line="892"/>
-        <source>Export to</source>
+        <source>Export To</source>
         <translation>Exportar Ascted</translation>
     </message>
     <message>
@@ -992,12 +992,12 @@
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="38"/>
-        <source>Linear gradient</source>
+        <source>Linear Gradient</source>
         <translation>Gradiente lineal</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="45"/>
-        <source>Radial gradient</source>
+        <source>Radial Gradient</source>
         <translation>Gradiente radial</translation>
     </message>
     <message>
@@ -1029,12 +1029,12 @@
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="289"/>
-        <source>Image placeholder</source>
+        <source>Image Placeholder</source>
         <translation>Marcador de posición de imagen</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerabackgroundform.ui" line="309"/>
-        <source>Select picture</source>
+        <source>Select Picture</source>
         <translation>Seleccionar imagen</translation>
     </message>
 </context>
@@ -1047,17 +1047,17 @@
     </message>
     <message>
         <location filename="../iraspagui/cameralightsform.ui" line="22"/>
-        <source>Camera light</source>
+        <source>Camera Light</source>
         <translation>Iluminación de la cámara</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameralightsform.ui" line="44"/>
-        <source>Specular light intensity</source>
+        <source>Specular Light Intensity</source>
         <translation>Intensidad de luz especular</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameralightsform.ui" line="51"/>
-        <source>Diffuse light intensity</source>
+        <source>Diffuse Light Intensity</source>
         <translation>Intensidad de luz difusa</translation>
     </message>
     <message>
@@ -1069,7 +1069,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cameralightsform.ui" line="79"/>
-        <source>Ambient light intensity</source>
+        <source>Ambient Light Intensity</source>
         <translation>Intensidad de luz ambiental</translation>
     </message>
 </context>
@@ -1082,12 +1082,12 @@
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="42"/>
-        <source>Reset to</source>
+        <source>Reset To</source>
         <translation>Restablecer a</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="80"/>
-        <source>Reset direction</source>
+        <source>Reset Direction</source>
         <translation>Restablecer dirección</translation>
     </message>
     <message>
@@ -1142,32 +1142,32 @@
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="232"/>
-        <source>Angle of view</source>
+        <source>Angle of View</source>
         <translation>Punto de vista</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="264"/>
-        <source>Center of scene</source>
+        <source>Center of Scene</source>
         <translation>Centro de escena</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="363"/>
-        <source>Rotation angle</source>
+        <source>Rotation Angle</source>
         <translation>Ángulo de rotación</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="628"/>
-        <source>Euler angles</source>
+        <source>Euler Angles</source>
         <translation>Ángulos de Euler</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="670"/>
-        <source>View matrix</source>
+        <source>View Matrix</source>
         <translation>Matriz de visualización</translation>
     </message>
     <message>
         <location filename="../iraspagui/cameracameraform.ui" line="810"/>
-        <source>Virtual position</source>
+        <source>Virtual Position</source>
         <translation>Posición cámara virtual</translation>
     </message>
     <message>
@@ -1185,47 +1185,47 @@
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="24"/>
-        <source>Dots-per-inch</source>
+        <source>Dots-per-Inch</source>
         <translation>Puntos por pulgada</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="47"/>
-        <source>Quality/type</source>
+        <source>Quality/Type</source>
         <translation>Calidad / Tipo</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="69"/>
-        <source>Physical width</source>
+        <source>Physical Width</source>
         <translation>Anchura física</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="76"/>
-        <source>Pixel width</source>
+        <source>Pixel Width</source>
         <translation>Ancho de píxel</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="83"/>
-        <source>Physical height</source>
+        <source>Physical Height</source>
         <translation>Altura física</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="90"/>
-        <source>Pixel height</source>
+        <source>Pixel Height</source>
         <translation>Altura de píxel</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="169"/>
-        <source>Edit dimensions</source>
+        <source>Edit Dimensions</source>
         <translation>Editar dimensiones</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="177"/>
-        <source>Physical dimensions</source>
+        <source>Physical Dimensions</source>
         <translation>Dimensiones físicas</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="184"/>
-        <source>Pixel dimensions</source>
+        <source>Pixel Dimensions</source>
         <translation>Dimensiones en píxeles</translation>
     </message>
     <message>
@@ -1245,22 +1245,22 @@
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="223"/>
-        <source>Create picture</source>
+        <source>Create Picture</source>
         <translation>Crear imagen</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="238"/>
-        <source>Frames per second</source>
+        <source>Frames per Second</source>
         <translation>Imágenes por segundo</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="265"/>
-        <source>Movie type</source>
+        <source>Movie Type</source>
         <translation>Tipo de video</translation>
     </message>
     <message>
         <location filename="../iraspagui/camerapicturesform.ui" line="291"/>
-        <source>Create movie</source>
+        <source>Create Movie</source>
         <translation>Crear película</translation>
     </message>
 </context>
@@ -1313,7 +1313,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1742"/>
-        <source>Open background picture</source>
+        <source>Open Background Picture</source>
         <translation>Imagen de fondo abierta</translation>
     </message>
     <message>
@@ -1371,17 +1371,17 @@
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="34"/>
-        <source>Materials type</source>
+        <source>Materials Type</source>
         <translation>Tipo de material</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="81"/>
-        <source>Bounding box (Read only)</source>
+        <source>Bounding Box (Read Only)</source>
         <translation>Recuadro (solo lectura)</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="406"/>
-        <source>Box matrix (Read only)</source>
+        <source>Box Matrix (Read Only)</source>
         <translation>Matriz de caja (solo lectura)</translation>
     </message>
     <message>
@@ -1431,7 +1431,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="765"/>
-        <source>Perpendicular widths</source>
+        <source>Perpendicular Widths</source>
         <translation>Anchuras perpendiculares</translation>
     </message>
     <message>
@@ -1441,17 +1441,17 @@
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="825"/>
-        <source>Maximum replicas</source>
+        <source>Maximum Replicas</source>
         <translation>Máximo número de Réplicas</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="856"/>
-        <source>Minimum replicas</source>
+        <source>Minimum Replicas</source>
         <translation>Mínimo número de Réplicas</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="892"/>
-        <source>Rotation angle</source>
+        <source>Rotation Angle</source>
         <translation>Ángulo de rotación</translation>
     </message>
     <message>
@@ -1470,7 +1470,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cellcellform.ui" line="955"/>
-        <source>Euler angles</source>
+        <source>Euler Angles</source>
         <translation>Ángulos de Euler</translation>
     </message>
     <message>
@@ -1488,7 +1488,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="24"/>
-        <source>Material type</source>
+        <source>Material Type</source>
         <translation>Tipo de material</translation>
     </message>
     <message>
@@ -1515,7 +1515,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="97"/>
-        <source>Specific volume</source>
+        <source>Specific Volume</source>
         <translation>Volumen específico</translation>
     </message>
     <message>
@@ -1525,7 +1525,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="225"/>
-        <source>Helium void fraction</source>
+        <source>Helium Void Fraction</source>
         <translation>Helium Void Fraction</translation>
     </message>
     <message>
@@ -1544,7 +1544,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="246"/>
-        <source>Accessible pore volume</source>
+        <source>Accessible Pore Volume</source>
         <translation>Volumen de poro accesible</translation>
     </message>
     <message>
@@ -1554,17 +1554,17 @@
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="323"/>
-        <source>Number of channel systems</source>
+        <source>Number of Channel Systems</source>
         <translation>Número de sistemas de canales</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="351"/>
-        <source>Probe molecule</source>
+        <source>Probe Molecule</source>
         <translation>Molécula de Prueba</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="383"/>
-        <source>Volumetric surface area</source>
+        <source>Volumetric Surface Area</source>
         <translation>Área superficial volumétrica (nitrógeno)</translation>
     </message>
     <message>
@@ -1574,27 +1574,27 @@
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="410"/>
-        <source>Gravimetric surface area</source>
+        <source>Gravimetric Surface Area</source>
         <translation>Área superficial gravimétrica (nitrógeno)</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="455"/>
-        <source>Number of inaccessible pockets</source>
+        <source>Number of Inaccessible Pockets</source>
         <translation>Número de bolsillos inaccesibles</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="499"/>
-        <source>Channel information</source>
+        <source>Channel Information</source>
         <translation>Información del canal</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="507"/>
-        <source>Dimensionality of pore system</source>
+        <source>Dimensionality of Pore System</source>
         <translation>Dimensionalidad del sistema de poros</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="521"/>
-        <source>Largest overall cavity diameter (Di)</source>
+        <source>Largest Overall Cavity Diameter (Di)</source>
         <translation>Mayor diámetro total de la cavidad (Di)</translation>
     </message>
     <message>
@@ -1606,12 +1606,12 @@
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="535"/>
-        <source>Restricting pore diameter (Df)</source>
+        <source>Restricting Pore Diameter (Df)</source>
         <translation>Restricción del diámetro de Poro (Df)</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellstructuralform.ui" line="549"/>
-        <source>Largest diameter along a viable path (Dif)</source>
+        <source>Largest Diameter Along a Viable Path (Dif)</source>
         <translation>Diámetro más grande a lo largo de un camino viable (Dif)</translation>
     </message>
 </context>
@@ -1624,7 +1624,7 @@
     </message>
     <message>
         <location filename="../iraspagui/cellsymmetryform.ui" line="24"/>
-        <source>Space group</source>
+        <source>Space Group</source>
         <translation>Grupo espacial</translation>
     </message>
     <message>
@@ -1664,12 +1664,12 @@
     </message>
     <message>
         <location filename="../iraspagui/cellsymmetryform.ui" line="233"/>
-        <source>Point group</source>
+        <source>Point Group</source>
         <translation>Grupo de puntos</translation>
     </message>
     <message>
         <location filename="../iraspagui/cellsymmetryform.ui" line="240"/>
-        <source>Laue group</source>
+        <source>Laue Group</source>
         <translation>Grupo Laue</translation>
     </message>
     <message>
@@ -1692,12 +1692,12 @@
     </message>
     <message>
         <location filename="../iraspagui/celltransformcontentform.ui" line="20"/>
-        <source>Cell content</source>
+        <source>Cell Content</source>
         <translation>Contenido de la celda</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltransformcontentform.ui" line="28"/>
-        <source>a-axis</source>
+        <source>a-Axis</source>
         <translation>a-Eje</translation>
     </message>
     <message>
@@ -1707,7 +1707,7 @@
     </message>
     <message>
         <location filename="../iraspagui/celltransformcontentform.ui" line="42"/>
-        <source>b-axis</source>
+        <source>b-Axis</source>
         <translation>b-Eje</translation>
     </message>
     <message>
@@ -1717,7 +1717,7 @@
     </message>
     <message>
         <location filename="../iraspagui/celltransformcontentform.ui" line="62"/>
-        <source>c-axis</source>
+        <source>c-Axis</source>
         <translation>c-Eje</translation>
     </message>
     <message>
@@ -1730,7 +1730,7 @@
     <name>CellTreeWidgetController</name>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="58"/>
-        <source>Cell/Boundingbox properties</source>
+        <source>Cell/Boundingbox Properties</source>
         <translation>Propiedades de celda / Recuadro</translation>
     </message>
     <message>
@@ -1750,7 +1750,7 @@
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="73"/>
-        <source>Molecular crystal</source>
+        <source>Molecular Crystal</source>
         <translation>Cristal molecular</translation>
     </message>
     <message>
@@ -1765,37 +1765,37 @@
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="76"/>
-        <source>Protein crystal</source>
+        <source>Protein Crystal</source>
         <translation>Cristal de proteína</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="77"/>
-        <source>Protein crystal solvent</source>
+        <source>Protein Crystal Solvent</source>
         <translation>Disolvente de cristal de proteínas</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="78"/>
-        <source>Crystal solvent</source>
+        <source>Crystal Solvent</source>
         <translation>Disolvente cristal</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="79"/>
-        <source>Molecular crystal solvent</source>
+        <source>Molecular Crystal Solvent</source>
         <translation>Disolvente de Cristal molecular</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="80"/>
-        <source>Crystal ellipsoid</source>
+        <source>Crystal Ellipsoid</source>
         <translation>Elipsoide de cristal</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="81"/>
-        <source>Crystal cylinder</source>
+        <source>Crystal Cylinder</source>
         <translation>Cilindro de cristal</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="82"/>
-        <source>Crystal polygonal prism</source>
+        <source>Crystal Polygonal Prism</source>
         <translation>Prisma poligonal de cristal</translation>
     </message>
     <message>
@@ -1810,7 +1810,7 @@
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="85"/>
-        <source>Polygonal prism</source>
+        <source>Polygonal Prism</source>
         <translation>Prisma poligonal</translation>
     </message>
     <message>
@@ -1825,12 +1825,12 @@
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="221"/>
-        <source>Tranform content</source>
+        <source>Tranform Content</source>
         <translation>Transformar contenido</translation>
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="271"/>
-        <source>Structural properties</source>
+        <source>Structural Properties</source>
         <translation>Propiedades Estructurales</translation>
     </message>
     <message>
@@ -1920,7 +1920,7 @@
     </message>
     <message>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="351"/>
-        <source>Symmetry properties</source>
+        <source>Symmetry Properties</source>
         <translation>Propiedades de simetría</translation>
     </message>
     <message>
@@ -2021,7 +2021,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="435"/>
-        <source>User-defined radius</source>
+        <source>User-Defined Radius</source>
         <translation>Radio definido por el usuario</translation>
     </message>
     <message>
@@ -2036,7 +2036,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="524"/>
-        <source>Oxidation states</source>
+        <source>Potential Oxidation States</source>
         <translation>Posibles estados de oxidación</translation>
     </message>
     <message>
@@ -2046,27 +2046,27 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="31"/>
-        <source>Triple bond covalent radius</source>
+        <source>Triple Bond Covalent Radius</source>
         <translation>Radio de enlace covalente triple</translation>
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="187"/>
-        <source>Van der Waals radius</source>
+        <source>Van der Waals Radius</source>
         <translation>Radio de Van der Waals</translation>
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="197"/>
-        <source>Atomic mass</source>
-        <translation>Masa atomica</translation>
+        <source>Atomic Mass</source>
+        <translation>Masa Atomica</translation>
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="207"/>
-        <source>Atomic radius</source>
+        <source>Atomic Radius</source>
         <translation>Radio atómico</translation>
     </message>
     <message>
         <location filename="../iraspagui/elementsform.ui" line="368"/>
-        <source>Covalent radius</source>
+        <source>Covalent Radius</source>
         <translation>Radio covalente</translation>
     </message>
     <message>
@@ -2117,17 +2117,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infochemicalform.ui" line="24"/>
-        <source>Chemical formula moiety</source>
+        <source>Chemical Formula Moiety</source>
         <translation>Resto de fórmula química</translation>
     </message>
     <message>
         <location filename="../iraspagui/infochemicalform.ui" line="34"/>
-        <source>Chemical formula sum</source>
+        <source>Chemical Formula Sum</source>
         <translation>Suma de fórmula química</translation>
     </message>
     <message>
         <location filename="../iraspagui/infochemicalform.ui" line="44"/>
-        <source>Chemical name systematic</source>
+        <source>Chemical Name Systematic</source>
         <translation>Nombre químico sistemático</translation>
     </message>
 </context>
@@ -2140,17 +2140,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocitationform.ui" line="22"/>
-        <source>Article title</source>
+        <source>Article Title</source>
         <translation>Título del artículo</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocitationform.ui" line="41"/>
-        <source>Journal title</source>
+        <source>Journal Title</source>
         <translation>Título de la revista</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocitationform.ui" line="59"/>
-        <source>Article authors</source>
+        <source>Article Authors</source>
         <translation>Autores del artículo</translation>
     </message>
     <message>
@@ -2168,7 +2168,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocitationform.ui" line="104"/>
-        <source>Database codes</source>
+        <source>Database Codes</source>
         <translation>Códigos de base de datos</translation>
     </message>
     <message>
@@ -2221,24 +2221,24 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="89"/>
-        <source>Relax unit cell</source>
+        <source>Relax Unit Cell</source>
         <translation>Relajar la celda unitaria</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="104"/>
-        <source>Atomic positions</source>
+        <source>Atomic Positions</source>
         <translation>Posiciones atómicas</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="121"/>
         <location filename="../iraspagui/infocreationform.ui" line="175"/>
-        <source>Force field</source>
+        <source>Force Field</source>
         <translation>Campo de fuerza</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="131"/>
         <location filename="../iraspagui/infocreationform.ui" line="199"/>
-        <source>Software package</source>
+        <source>Software Package</source>
         <translation>Paquete de software</translation>
     </message>
     <message>
@@ -2249,7 +2249,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="145"/>
         <location filename="../iraspagui/infocreationform.ui" line="185"/>
-        <source>Force field details</source>
+        <source>Force Field Details</source>
         <translation>Detalles del campo de fuerza</translation>
     </message>
     <message>
@@ -2260,17 +2260,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="167"/>
-        <source>Atomic charges</source>
+        <source>Atomic Charges</source>
         <translation>Cargas atómicas</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="226"/>
-        <source>Radiation type</source>
+        <source>Radiation Type</source>
         <translation>Tipo de radiación</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="236"/>
-        <source>Radiation wavelength</source>
+        <source>Radiation Wavelength</source>
         <translation>Longitud de onda de radiación</translation>
     </message>
     <message>
@@ -2285,7 +2285,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="317"/>
-        <source>Number of reflections</source>
+        <source>Number of Reflections</source>
         <translation>Número de reflexiones</translation>
     </message>
     <message>
@@ -2295,17 +2295,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="348"/>
-        <source>Goodness-of-fit F</source>
+        <source>Goodness-of-Fit F</source>
         <translation>Bondad de ajuste en F²</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="358"/>
-        <source>Final R indices [|&gt;2 sigma(l)|]</source>
+        <source>Final R Indices [|&gt;2 sigma(l)|]</source>
         <translation>Índices R finales [I&gt;2sigma(I)]</translation>
     </message>
     <message>
         <location filename="../iraspagui/infocreationform.ui" line="368"/>
-        <source>R indices (all data)</source>
+        <source>R Indices (All Data)</source>
         <translation>Índices R (todos los datos)</translation>
     </message>
     <message>
@@ -2353,7 +2353,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocreatorform.ui" line="107"/>
-        <source>University or Company name</source>
+        <source>University or Company Name</source>
         <translation>ombre de la universidad o empresa</translation>
     </message>
     <message>
@@ -2378,7 +2378,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infocreatorform.ui" line="154"/>
-        <source>Institute name</source>
+        <source>Institute Name</source>
         <translation>Nombre del Instituto</translation>
     </message>
     <message>
@@ -2446,32 +2446,32 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="367"/>
-        <source>Cell and edge-lengths free</source>
+        <source>Cell and Edge-Lengths Free</source>
         <translation>Cambio de longitud de celda y bordes</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="368"/>
-        <source>Fixed angles; isotropic edge-length free</source>
+        <source>Fixed Angles; Isotropic Edge-Lengths Free</source>
         <translation>Ángulos fijos; Cambio isotrópico de la longitud del borde</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="369"/>
-        <source>Fixed angles; anisotropic edge-lengths free</source>
+        <source>Fixed Angles; Anisotropic Edge-Lengths Free</source>
         <translation>Ángulos fijos; Cambio de longitud de borde anisotrópico</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="370"/>
-        <source>Fixed α-, β- and γ-angles and edge-lengths free</source>
+        <source>Fixed α-, β- and γ-Angles and Edge-Lengths Free</source>
         <translation>Fijo 𝝰- 𝝱; y los ángulos 𝝲 y las longitudes de los bordes cambian</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="371"/>
-        <source>Fixed volume; shape free</source>
+        <source>Fixed Volume; Shape Free</source>
         <translation>Volumen fijado; Cambio de forma</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="372"/>
-        <source>Fixed cell</source>
+        <source>Fixed Cell</source>
         <translation>Celda fija</translation>
     </message>
     <message>
@@ -2529,23 +2529,23 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="386"/>
-        <source>Simulated annealing</source>
-        <translation>Simulated annealing</translation>
+        <source>Simulated Annealing</source>
+        <translation>Simulated Annealing</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="387"/>
-        <source>Genetic algorithm</source>
-        <translation>Genetic algorithm</translation>
+        <source>Genetic Algorithm</source>
+        <translation>Genetic Algorithm</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="388"/>
-        <source>Steepest descent</source>
-        <translation>Steepest descent</translation>
+        <source>Steepest Descent</source>
+        <translation>Steepest Descent</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="389"/>
-        <source>Conjugate gradient</source>
-        <translation>Conjugate gradient</translation>
+        <source>Conjugate Gradient</source>
+        <translation>Conjugate Gradient</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="390"/>
@@ -2559,44 +2559,44 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="392"/>
-        <source>Mode following</source>
-        <translation>Mode following</translation>
+        <source>Mode Following</source>
+        <translation>Mode Following</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="397"/>
-        <source>All positive</source>
+        <source>All Positive</source>
         <translation>Todo positivo</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="398"/>
-        <source>First order sadle-point</source>
-        <translation>First order sadle-point</translation>
+        <source>First Order Sadle-Point</source>
+        <translation>First Order Sadle-Point</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="399"/>
-        <source>Second order sadle-point</source>
-        <translation>Second order sadle-point</translation>
+        <source>Second Order Sadle-Point</source>
+        <translation>Second Order Sadle-Point</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="400"/>
-        <source>Some small negative eigenvalues</source>
+        <source>Some Small Negative Eigenvalues</source>
         <translation>Algunos pequeños valores negativos</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="401"/>
-        <source>Some significant negative eigenvalues</source>
+        <source>Some Significant Negative Eigenvalues</source>
         <translation>Algunos valores significativamente negativos</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="402"/>
-        <source>Many negative eigenvalues</source>
+        <source>Many Negative Eigenvalues</source>
         <translation>Muchos valores propios negativos</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="406"/>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="440"/>
-        <source>Ab initio</source>
-        <translation>Ab initio</translation>
+        <source>Ab Initio</source>
+        <translation>Ab Initio</translation>
     </message>
     <message>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="407"/>
@@ -2703,7 +2703,7 @@ p, li { white-space: pre-wrap; }
     <name>LogViewController</name>
     <message>
         <location filename="../iraspagui/logviewcontroller.cpp" line="26"/>
-        <source>Log console ready</source>
+        <source>Log Console Ready</source>
         <translation>Consola de registro listo</translation>
     </message>
 </context>
@@ -2711,7 +2711,7 @@ p, li { white-space: pre-wrap; }
     <name>MainWindow</name>
     <message>
         <location filename="../iraspagui/mainwindow.ui" line="20"/>
-        <source>iRASPA visualizer</source>
+        <source>iRASPA Visualizer</source>
         <translation>iRASPA</translation>
     </message>
     <message>
@@ -2738,7 +2738,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.ui" line="612"/>
-        <source>Force field</source>
+        <source>Force Field</source>
         <translation>Campo de fuerza</translation>
     </message>
     <message>
@@ -2768,7 +2768,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.ui" line="809"/>
-        <source>Net charge</source>
+        <source>Net Charge</source>
         <translation>Carga neta</translation>
     </message>
     <message>
@@ -2797,12 +2797,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="488"/>
-        <source>&amp;Structure project</source>
+        <source>&amp;Structure Project</source>
         <translation>&amp;Proyecto de estructura</translation>
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="491"/>
-        <source>&amp;Project group</source>
+        <source>&amp;Project Group</source>
         <translation>&amp;Grupo de proyecto</translation>
     </message>
     <message>
@@ -2812,12 +2812,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="499"/>
-        <source>&amp;Molecular crystal</source>
+        <source>&amp;Molecular Crystal</source>
         <translation>&amp;Cristal molecular</translation>
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="502"/>
-        <source>&amp;Protein crystal</source>
+        <source>&amp;Protein Crystal</source>
         <translation>&amp;Cristal molecular</translation>
     </message>
     <message>
@@ -2837,17 +2837,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="513"/>
-        <source>&amp;Crystal ellipsoid</source>
+        <source>&amp;Crystal Ellipsoid</source>
         <translation>&amp;Elipsoide de cristal</translation>
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="516"/>
-        <source>&amp;Crystal cylinder</source>
+        <source>&amp;Crystal Cylinder</source>
         <translation>&amp;Cilindro de cristal</translation>
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="519"/>
-        <source>&amp;Crystal polygonal prism</source>
+        <source>&amp;Crystal Polygonal Prism</source>
         <translation>&amp;Prisma poligonal de cristal</translation>
     </message>
     <message>
@@ -2862,7 +2862,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="528"/>
-        <source>&amp;Polygonal prism</source>
+        <source>&amp;Polygonal Prism</source>
         <translation>&amp;Prisma Poligonal</translation>
     </message>
     <message>
@@ -2882,7 +2882,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="542"/>
-        <source>Open an existing document</source>
+        <source>Open an Existing Document</source>
         <translation>Abrir un documento existente</translation>
     </message>
     <message>
@@ -2893,7 +2893,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="547"/>
         <location filename="../iraspagui/mainwindow.cpp" line="552"/>
-        <source>Save the document to disk</source>
+        <source>Save the Document to Disk</source>
         <translation>Guarde el documento en el disco</translation>
     </message>
     <message>
@@ -2948,8 +2948,8 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../iraspagui/mainwindow.cpp" line="1104"/>
-        <source>The document has been modified.
-Do you want to save your changes?</source>
+        <source>The Document Has Been Modified.
+Do You Want to Save Your Changes?</source>
         <translation>El documento ha sido modificado.
 ¿Quieres guardar tus cambios?</translation>
     </message>
@@ -2978,12 +2978,12 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../iraspakit/projecttreecontroller.cpp" line="43"/>
-        <source>Local projects</source>
+        <source>Local Projects</source>
         <translation>Proyectos locales</translation>
     </message>
     <message>
         <location filename="../iraspakit/projecttreecontroller.cpp" line="44"/>
-        <source>Databases public</source>
+        <source>Databases Public</source>
         <translation>iCloud Público</translation>
     </message>
 </context>
@@ -3003,12 +3003,12 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../iraspagui/projecttreeview.cpp" line="422"/>
-        <source>Add structure project</source>
+        <source>Add Structure Project</source>
         <translation>Agregar proyecto de estructura</translation>
     </message>
     <message>
         <location filename="../iraspagui/projecttreeview.cpp" line="430"/>
-        <source>Add group project</source>
+        <source>Add Group Project</source>
         <translation>Agregar proyecto de grupo</translation>
     </message>
 </context>
@@ -3016,32 +3016,32 @@ Do you want to save your changes?</source>
     <name>RenderStackedWidget</name>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="521"/>
-        <source>Reset camera distance</source>
+        <source>Reset Camera Distance</source>
         <translation>Restablecer la distancia de la cámara</translation>
     </message>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="525"/>
-        <source>Reset camera to</source>
+        <source>Reset Camera To</source>
         <translation>Restablecer cámara a</translation>
     </message>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="527"/>
-        <source>Z-direction</source>
+        <source>Z-Direction</source>
         <translation>Dirección Z</translation>
     </message>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="531"/>
-        <source>Y-direction</source>
+        <source>Y-Direction</source>
         <translation>Dirección Y</translation>
     </message>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="535"/>
-        <source>X-direction</source>
+        <source>X-Direction</source>
         <translation>Dirección X</translation>
     </message>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="541"/>
-        <source>Camera projection</source>
+        <source>Camera Projection</source>
         <translation>Proyección de la cámara</translation>
     </message>
     <message>
@@ -3056,17 +3056,17 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="556"/>
-        <source>Show bounding box</source>
+        <source>Show Bounding Box</source>
         <translation>Mostrar Recuadro</translation>
     </message>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="562"/>
-        <source>Compute AO high quality</source>
+        <source>Compute AO High Quality</source>
         <translation>Calcular AO de alta calidad</translation>
     </message>
     <message>
         <location filename="../iraspagui/renderstackedwidget.cpp" line="566"/>
-        <source>Export to</source>
+        <source>Export To</source>
         <translation>Exportar Ascted</translation>
     </message>
     <message>
@@ -3697,7 +3697,7 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../iraspagui/cameraselectionform.ui" line="22"/>
-        <source>Overall luminance</source>
+        <source>Overall Luminance</source>
         <translation>Luminancia general</translation>
     </message>
 </context>

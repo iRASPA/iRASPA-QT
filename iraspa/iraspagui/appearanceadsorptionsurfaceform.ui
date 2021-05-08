@@ -34,7 +34,7 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="adsorptionSurfaceCheckBox">
          <property name="text">
-          <string>Show adsorption surface</string>
+          <string>Show Adsorption Surface</string>
          </property>
         </widget>
        </item>
@@ -48,14 +48,14 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Isocontour value</string>
+          <string>Isocontour Value</string>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_24">
          <property name="text">
-          <string>Probe particle</string>
+          <string>Probe Particle</string>
          </property>
         </widget>
        </item>
@@ -279,7 +279,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Inside surface</string>
+        <string>Inside Surface</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
@@ -287,7 +287,7 @@
           <item>
            <widget class="QCheckBox" name="insideHighDynamicRangecheckBox">
             <property name="text">
-             <string>High Dynamics Range</string>
+             <string>High Dynamic Range</string>
             </property>
            </widget>
           </item>
@@ -383,7 +383,7 @@
            <item row="2" column="0">
             <widget class="QLabel" name="label_14">
              <property name="text">
-              <string>Specular light intensity</string>
+              <string>Specular Light Intensity</string>
              </property>
             </widget>
            </item>
@@ -397,14 +397,14 @@
            <item row="1" column="0">
             <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>Diffuse light intensity</string>
+              <string>Diffuse Light Intensity</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label_12">
              <property name="text">
-              <string>Ambient light intensity</string>
+              <string>Ambient Light Intensity</string>
              </property>
             </widget>
            </item>
@@ -499,7 +499,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_2">
        <property name="title">
-        <string>Outside surface</string>
+        <string>Outside Surface</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
@@ -507,7 +507,7 @@
           <item>
            <widget class="QCheckBox" name="outsideHighDynamicRangecheckBox">
             <property name="text">
-             <string>High Dynamics Range</string>
+             <string>High Dynamic Range</string>
             </property>
            </widget>
           </item>
@@ -603,7 +603,7 @@
            <item row="2" column="0">
             <widget class="QLabel" name="label_17">
              <property name="text">
-              <string>Specular light intensity</string>
+              <string>Specular Light Intensity</string>
              </property>
             </widget>
            </item>
@@ -617,14 +617,14 @@
            <item row="1" column="0">
             <widget class="QLabel" name="label_18">
              <property name="text">
-              <string>Diffuse light intensity</string>
+              <string>Diffuse Light Intensity</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label_19">
              <property name="text">
-              <string>Ambient light intensity</string>
+              <string>Ambient Light Intensity</string>
              </property>
             </widget>
            </item>

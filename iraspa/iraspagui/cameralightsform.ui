@@ -19,7 +19,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Camera light</string>
+        <string>Camera Light</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
@@ -41,14 +41,14 @@
            <item row="2" column="0">
             <widget class="QLabel" name="label_14">
              <property name="text">
-              <string>Specular light intensity</string>
+              <string>Specular Light Intensity</string>
              </property>
             </widget>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>Diffuse light intensity</string>
+              <string>Diffuse Light Intensity</string>
              </property>
             </widget>
            </item>
@@ -76,7 +76,7 @@
            <item row="0" column="0">
             <widget class="QLabel" name="label_12">
              <property name="text">
-              <string>Ambient light intensity</string>
+              <string>Ambient Light Intensity</string>
              </property>
             </widget>
            </item>

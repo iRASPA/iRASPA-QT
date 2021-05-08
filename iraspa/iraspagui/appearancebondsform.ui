@@ -34,7 +34,7 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="drawBondsCheckBox">
          <property name="text">
-          <string>Show bonds</string>
+          <string>Show Bonds</string>
          </property>
         </widget>
        </item>
@@ -67,7 +67,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_24">
          <property name="text">
-          <string>Bond scale factor</string>
+          <string>Bond Scale Factor</string>
          </property>
         </widget>
        </item>
@@ -94,7 +94,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Bond type</string>
+          <string>Bond Type</string>
          </property>
         </widget>
        </item>
@@ -129,21 +129,21 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Selection style</string>
+        <string>Selection Style</string>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Selection intensity</string>
+        <string>Selection Intensity</string>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Selection scaling</string>
+        <string>Selection Scaling</string>
        </property>
       </widget>
      </item>
@@ -425,13 +425,13 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Bond lighting</string>
+        <string>Bond Lighting</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QCheckBox" name="bondAmbientOcclusionCheckBox">
           <property name="text">
-           <string>Ambient occlusion</string>
+           <string>Ambient Occlusion</string>
           </property>
          </widget>
         </item>
@@ -447,7 +447,7 @@
            <item row="0" column="0">
             <widget class="QLabel" name="label_12">
              <property name="text">
-              <string>Ambient light intensity</string>
+              <string>Ambient Light Intensity</string>
              </property>
             </widget>
            </item>
@@ -468,7 +468,7 @@
            <item row="1" column="0">
             <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>Diffuse light intensity</string>
+              <string>Diffuse Light Intensity</string>
              </property>
             </widget>
            </item>
@@ -489,7 +489,7 @@
            <item row="2" column="0">
             <widget class="QLabel" name="label_14">
              <property name="text">
-              <string>Specular light intensity</string>
+              <string>Specular Light Intensity</string>
              </property>
             </widget>
            </item>

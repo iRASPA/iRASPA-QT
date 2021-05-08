@@ -364,12 +364,12 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
 
 
   _infoCreationForm->relaxUnitCellComboBox->insertItem(0,tr("Unknown"));
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(1,tr("Cell and edge-lengths free"));
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(2,tr("Fixed angles; isotropic edge-length free"));
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(3,tr("Fixed angles; anisotropic edge-lengths free"));
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(4,tr("Fixed α-, β- and γ-angles and edge-lengths free"));
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(5,tr("Fixed volume; shape free"));
-  _infoCreationForm->relaxUnitCellComboBox->insertItem(6,tr("Fixed cell"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(1,tr("Cell and Edge-Lengths Free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(2,tr("Fixed Angles; Isotropic Edge-Lengths Free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(3,tr("Fixed Angles; Anisotropic Edge-Lengths Free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(4,tr("Fixed α-, β- and γ-Angles and Edge-Lengths Free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(5,tr("Fixed Volume; Shape Free"));
+  _infoCreationForm->relaxUnitCellComboBox->insertItem(6,tr("Fixed Cell"));
 
   _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(0,tr("Unknown"));
   _infoCreationForm->positionsSoftwarePackageComboBox->insertItem(1,tr("Experimental"));
@@ -383,27 +383,27 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(0,tr("Unknown"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(1,tr("None"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(2,tr("Simplex"));
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(3,tr("Simulated annealing"));
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(4,tr("Genetic algorithm"));
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(5,tr("Steepest descent"));
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(6,tr("Conjugate gradient"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(3,tr("Simulated Annealing"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(4,tr("Genetic Algorithm"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(5,tr("Steepest Descent"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(6,tr("Conjugate Gradient"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(7,tr("Quasi-Newton"));
   _infoCreationForm->positionsAlgorithmComboBox->insertItem(8,tr("Newton-Rhapson"));
-  _infoCreationForm->positionsAlgorithmComboBox->insertItem(9,tr("Mode following"));
+  _infoCreationForm->positionsAlgorithmComboBox->insertItem(9,tr("Mode Following"));
 
 
   _infoCreationForm->positionsEigenvaluesComboBox->insertItem(0,tr("Unknown"));
   _infoCreationForm->positionsEigenvaluesComboBox->insertItem(1,tr("None"));
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(2,tr("All positive"));
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(3,tr("First order sadle-point"));
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(4,tr("Second order sadle-point"));
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(5,tr("Some small negative eigenvalues"));
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(6,tr("Some significant negative eigenvalues"));
-  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(7,tr("Many negative eigenvalues"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(2,tr("All Positive"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(3,tr("First Order Sadle-Point"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(4,tr("Second Order Sadle-Point"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(5,tr("Some Small Negative Eigenvalues"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(6,tr("Some Significant Negative Eigenvalues"));
+  _infoCreationForm->positionsEigenvaluesComboBox->insertItem(7,tr("Many Negative Eigenvalues"));
 
 
   _infoCreationForm->positionsForceFieldComboBox->insertItem(0,tr("Unknown"));
-  _infoCreationForm->positionsForceFieldComboBox->insertItem(1,tr("Ab initio"));
+  _infoCreationForm->positionsForceFieldComboBox->insertItem(1,tr("Ab Initio"));
   _infoCreationForm->positionsForceFieldComboBox->insertItem(2,tr("UFF"));
   _infoCreationForm->positionsForceFieldComboBox->insertItem(3,tr("DREIDING"));
   _infoCreationForm->positionsForceFieldComboBox->insertItem(4,tr("MM3"));
@@ -437,7 +437,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   _infoCreationForm->chargeAlgorithmComboBox->insertItem(14,tr("Qeq - Wilmer, Kim, Snurr 2012"));
 
   _infoCreationForm->chargeForceFieldComboBox->insertItem(0,tr("Unknown"));
-  _infoCreationForm->chargeForceFieldComboBox->insertItem(1,tr("Ab initio"));
+  _infoCreationForm->chargeForceFieldComboBox->insertItem(1,tr("Ab Initio"));
   _infoCreationForm->chargeForceFieldComboBox->insertItem(2,tr("UFF"));
   _infoCreationForm->chargeForceFieldComboBox->insertItem(3,tr("DREIDING"));
   _infoCreationForm->chargeForceFieldComboBox->insertItem(4,tr("MM3"));

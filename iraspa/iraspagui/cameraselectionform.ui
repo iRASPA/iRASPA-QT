@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Overall luminance</string>
+        <string>Overall Luminance</string>
        </property>
       </widget>
      </item>

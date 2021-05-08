@@ -21,7 +21,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Material type</string>
+          <string>Material Type</string>
          </property>
         </widget>
        </item>
@@ -94,7 +94,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Specific volume</string>
+        <string>Specific Volume</string>
        </property>
       </widget>
      </item>
@@ -222,7 +222,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Helium void fraction</string>
+        <string>Helium Void Fraction</string>
        </property>
       </widget>
      </item>
@@ -243,7 +243,7 @@
      <item row="4" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Accessible pore volume</string>
+        <string>Accessible Pore Volume</string>
        </property>
       </widget>
      </item>
@@ -320,7 +320,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="label_9">
        <property name="text">
-        <string>Number of channel systems</string>
+        <string>Number of Channel Systems</string>
        </property>
       </widget>
      </item>
@@ -348,7 +348,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_15">
        <property name="text">
-        <string>Probe molecule</string>
+        <string>Probe Molecule</string>
        </property>
       </widget>
      </item>
@@ -380,7 +380,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
-        <string>Volumetric surface area</string>
+        <string>Volumetric Surface Area</string>
        </property>
       </widget>
      </item>
@@ -407,7 +407,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Gravimetric surface area</string>
+        <string>Gravimetric Surface Area</string>
        </property>
       </widget>
      </item>
@@ -452,7 +452,7 @@
      <item row="4" column="0">
       <widget class="QLabel" name="label_10">
        <property name="text">
-        <string>Number of inaccessible pockets</string>
+        <string>Number of Inaccessible Pockets</string>
        </property>
       </widget>
      </item>
@@ -496,7 +496,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Channel information</string>
+        <string>Channel Information</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
@@ -504,7 +504,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="label_11">
             <property name="text">
-             <string>Dimensionality of pore system</string>
+             <string>Dimensionality of Pore System</string>
             </property>
            </widget>
           </item>
@@ -518,7 +518,7 @@
           <item row="1" column="0">
            <widget class="QLabel" name="label_12">
             <property name="text">
-             <string>Largest overall cavity diameter (Di)</string>
+             <string>Largest Overall Cavity Diameter (Di)</string>
             </property>
            </widget>
           </item>
@@ -532,7 +532,7 @@
           <item row="2" column="0">
            <widget class="QLabel" name="label_13">
             <property name="text">
-             <string>Restricting pore diameter (Df)</string>
+             <string>Restricting Pore Diameter (Df)</string>
             </property>
            </widget>
           </item>
@@ -546,7 +546,7 @@
           <item row="3" column="0">
            <widget class="QLabel" name="label_14">
             <property name="text">
-             <string>Largest diameter along a viable path (Dif)</string>
+             <string>Largest Diameter Along a Viable Path (Dif)</string>
             </property>
            </widget>
           </item>

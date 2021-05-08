@@ -392,7 +392,7 @@ void ProjectTreeView::ShowToolButtonContextMenu(const QPoint &pos)
 {
   QMenu contextMenu("Context menu", this);
 
-  QAction actionAddStructureProject("Add structure project", this);
+  QAction actionAddStructureProject("Add Structure Project", this);
   actionAddStructureProject.setEnabled(true);
   connect(&actionAddStructureProject, &QAction::triggered, [this](void) {
      this->addStructureProject(QModelIndex());
@@ -400,7 +400,7 @@ void ProjectTreeView::ShowToolButtonContextMenu(const QPoint &pos)
   contextMenu.addAction(&actionAddStructureProject);
 
 
-  QAction actionGroupProject("Add group project", this);
+  QAction actionGroupProject("Add Group Project", this);
   actionGroupProject.setEnabled(true);
   connect(&actionGroupProject, &QAction::triggered, [this](void) {
      this->addGroupProject(QModelIndex());
@@ -419,7 +419,7 @@ void ProjectTreeView::ShowContextMenu(const QPoint &pos)
   {
     QMenu contextMenu("Context menu", this);
 
-    QAction actionAddStructureProject(tr("Add structure project"), this);
+    QAction actionAddStructureProject(tr("Add Structure Project"), this);
     actionAddStructureProject.setEnabled(true);
     connect(&actionAddStructureProject, &QAction::triggered, [this, index](void) {
        this->addStructureProject(index);
@@ -427,7 +427,7 @@ void ProjectTreeView::ShowContextMenu(const QPoint &pos)
     contextMenu.addAction(&actionAddStructureProject);
 
 
-    QAction actionGroupProject(tr("Add group project"), this);
+    QAction actionGroupProject(tr("Add Group Project"), this);
     actionGroupProject.setEnabled(true);
     connect(&actionGroupProject, &QAction::triggered, [this, index](void) {
        this->addGroupProject(index);

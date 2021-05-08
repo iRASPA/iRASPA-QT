@@ -31,7 +31,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Materials type</string>
+        <string>Materials Type</string>
        </property>
       </widget>
      </item>
@@ -78,7 +78,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Bounding box (Read only)</string>
+        <string>Bounding Box (Read Only)</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
@@ -403,7 +403,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Box matrix (Read only)</string>
+          <string>Box Matrix (Read Only)</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <property name="leftMargin">
@@ -762,7 +762,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_14">
          <property name="text">
-          <string>Perpendicular widths</string>
+          <string>Perpendicular Widths</string>
          </property>
         </widget>
        </item>
@@ -822,7 +822,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_15">
          <property name="text">
-          <string>Maximum replicas</string>
+          <string>Maximum Replicas</string>
          </property>
         </widget>
        </item>
@@ -853,7 +853,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_25">
          <property name="text">
-          <string>Minimum replicas</string>
+          <string>Minimum Replicas</string>
          </property>
         </widget>
        </item>
@@ -889,7 +889,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_18">
          <property name="text">
-          <string>Rotation angle</string>
+          <string>Rotation Angle</string>
          </property>
         </widget>
        </item>
@@ -952,7 +952,7 @@
        <item row="0" column="1">
         <widget class="QLabel" name="label_21">
          <property name="text">
-          <string>Euler angles</string>
+          <string>Euler Angles</string>
          </property>
         </widget>
        </item>
@@ -1101,14 +1101,14 @@
    <header>qdoubleslider.h</header>
   </customwidget>
   <customwidget>
-   <class>QDoubleDial</class>
-   <extends>QDial</extends>
-   <header>qdoubledial.h</header>
-  </customwidget>
-  <customwidget>
    <class>CustomIntSpinBox</class>
    <extends>QSpinBox</extends>
    <header>customintspinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QDoubleDial</class>
+   <extends>QDial</extends>
+   <header>qdoubledial.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

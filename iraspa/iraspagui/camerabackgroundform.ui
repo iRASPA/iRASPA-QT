@@ -35,14 +35,14 @@
         <item>
          <widget class="QRadioButton" name="linearGradientRadioButton">
           <property name="text">
-           <string>Linear gradient</string>
+           <string>Linear Gradient</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QRadioButton" name="radialGradientRadioButton">
           <property name="text">
-           <string>Radial gradient</string>
+           <string>Radial Gradient</string>
           </property>
          </widget>
         </item>
@@ -286,7 +286,7 @@
             <item row="1" column="0" colspan="2">
              <widget class="QLabel" name="imagePlaceholderQLabel">
               <property name="text">
-               <string>Image placeholder</string>
+               <string>Image Placeholder</string>
               </property>
              </widget>
             </item>
@@ -306,7 +306,7 @@
             <item row="0" column="0">
              <widget class="QPushButton" name="selectImagePushButton">
               <property name="text">
-               <string>Select picture</string>
+               <string>Select Picture</string>
               </property>
              </widget>
             </item>

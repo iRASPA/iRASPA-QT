@@ -69,7 +69,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>Rotation angle</string>
+             <string>Rotation Angle</string>
             </property>
            </widget>
           </item>
@@ -100,7 +100,7 @@
           <item row="0" column="1">
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Euler angles</string>
+             <string>Euler Angles</string>
             </property>
            </widget>
           </item>
@@ -287,7 +287,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Number of sides</string>
+        <string>Number of Sides</string>
        </property>
       </widget>
      </item>
@@ -355,7 +355,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_16">
        <property name="text">
-        <string>Selection style</string>
+        <string>Selection Style</string>
        </property>
       </widget>
      </item>
@@ -382,7 +382,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_20">
        <property name="text">
-        <string>Selection scaling</string>
+        <string>Selection Scaling</string>
        </property>
       </widget>
      </item>
@@ -422,7 +422,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label_19">
        <property name="text">
-        <string>Selection intensity</string>
+        <string>Selection Intensity</string>
        </property>
       </widget>
      </item>
@@ -562,7 +562,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
-      <string>Outside properties</string>
+      <string>Outside Properties</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
       <item row="0" column="3">
@@ -644,21 +644,21 @@
       <item row="3" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Specular light intensity</string>
+         <string>Specular Light Intensity</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Diffuse light intensity</string>
+         <string>Diffuse Light Intensity</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_9">
         <property name="text">
-         <string>Ambient light intensity</string>
+         <string>Ambient Light Intensity</string>
         </property>
        </widget>
       </item>
@@ -734,7 +734,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
-      <string>Inside properties</string>
+      <string>Inside Properties</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_9">
       <item row="3" column="2">
@@ -816,21 +816,21 @@
       <item row="3" column="0">
        <widget class="QLabel" name="label_13">
         <property name="text">
-         <string>Specular light intensity</string>
+         <string>Specular Light Intensity</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_14">
         <property name="text">
-         <string>Diffuse light intensity</string>
+         <string>Diffuse Light Intensity</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_15">
         <property name="text">
-         <string>Ambient light intensity</string>
+         <string>Ambient Light Intensity</string>
         </property>
        </widget>
       </item>

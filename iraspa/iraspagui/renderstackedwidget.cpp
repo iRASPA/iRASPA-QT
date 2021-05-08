@@ -518,27 +518,27 @@ void RenderStackedWidget::ShowContextMenu(const QPoint &pos)
   {
     QMenu contextMenu("Context menu", this);
 
-    QAction actionResetCameraDistance(tr("Reset camera distance"), this);
+    QAction actionResetCameraDistance(tr("Reset Camera Distance"), this);
     connect(&actionResetCameraDistance, &QAction::triggered, this, &RenderStackedWidget::resetCameraDistance);
     contextMenu.addAction(&actionResetCameraDistance);
 
-    QMenu* subMenuResetCamera = contextMenu.addMenu(tr("Reset camera to"));
+    QMenu* subMenuResetCamera = contextMenu.addMenu(tr("Reset Camera To"));
     QActionGroup* cameraResetDirectionGroup = new QActionGroup(this);
-    QAction actionResetToZ(tr("Z-direction"), this);
+    QAction actionResetToZ(tr("Z-Direction"), this);
     cameraResetDirectionGroup->addAction(&actionResetToZ);
     subMenuResetCamera->addAction(&actionResetToZ);
     connect(&actionResetToZ, &QAction::triggered, this, &RenderStackedWidget::resetCameraToZ);
-    QAction actionResetToY(tr("Y-direction"), this);
+    QAction actionResetToY(tr("Y-Direction"), this);
     subMenuResetCamera->addAction(&actionResetToY);
     cameraResetDirectionGroup->addAction(&actionResetToY);
     connect(&actionResetToY, &QAction::triggered, this, &RenderStackedWidget::resetCameraToY);
-    QAction actionResetToX(tr("X-direction"), this);
+    QAction actionResetToX(tr("X-Direction"), this);
     cameraResetDirectionGroup->addAction(&actionResetToX);
     connect(&actionResetToX, &QAction::triggered, this, &RenderStackedWidget::resetCameraToX);
     subMenuResetCamera->addAction(&actionResetToX);
 
 
-    QMenu* subMenuCameraProjection = contextMenu.addMenu(tr("Camera projection"));
+    QMenu* subMenuCameraProjection = contextMenu.addMenu(tr("Camera Projection"));
     QActionGroup* cameraProjectionGroup = new QActionGroup(this);
     QAction actionOrthographic(tr("Orthographic"), this);
     actionOrthographic.setCheckable(true);
@@ -553,17 +553,17 @@ void RenderStackedWidget::ShowContextMenu(const QPoint &pos)
     connect(&actionPerspective, &QAction::triggered, this, &RenderStackedWidget::setCameraToPerspective);
     actionPerspective.setChecked(project->camera()->isPerspective());
 
-    QAction _actionShowBoundingBox(tr("Show bounding box"), this);
+    QAction _actionShowBoundingBox(tr("Show Bounding Box"), this);
     _actionShowBoundingBox.setCheckable(true);
     _actionShowBoundingBox.setChecked(project->showBoundingBox());
     connect(&_actionShowBoundingBox, &QAction::toggled, this, &RenderStackedWidget::showBoundingBox);
     contextMenu.addAction(&_actionShowBoundingBox);
 
-    QAction _actionComputeAOHighQuality(tr("Compute AO high quality"), this);
+    QAction _actionComputeAOHighQuality(tr("Compute AO High Quality"), this);
     connect(&_actionComputeAOHighQuality, &QAction::triggered, this, &RenderStackedWidget::computeAOHighQuality);
     contextMenu.addAction(&_actionComputeAOHighQuality);
 
-    QMenu* subMenuExport = contextMenu.addMenu(tr("Export to"));
+    QMenu* subMenuExport = contextMenu.addMenu(tr("Export To"));
     QActionGroup* exportToGroup = new QActionGroup(this);
     QAction actionExportToPDB(tr("PDB"), this);
     exportToGroup->addAction(&actionExportToPDB);

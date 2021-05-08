@@ -485,10 +485,10 @@ void MainWindow::createMenus()
   fileMenu->addAction(actionFileAbout);
 
   _newMenu = fileMenu->addMenu(tr("&New"));
-  _newStructureProjectAction = new QAction(tr("&Structure project"), this);
+  _newStructureProjectAction = new QAction(tr("&Structure Project"), this);
   QObject::connect(_newStructureProjectAction, &QAction::triggered, this, &MainWindow::newStructureProject);
   _newMenu->addAction(_newStructureProjectAction);
-  _newProjectGroupAction = new QAction(tr("&Project group"), this);
+  _newProjectGroupAction = new QAction(tr("&Project Group"), this);
   QObject::connect(_newProjectGroupAction, &QAction::triggered, this, &MainWindow::newProjectGroup);
   _newMenu->addAction(_newProjectGroupAction);
   _newMenu->addSeparator();
@@ -496,10 +496,10 @@ void MainWindow::createMenus()
   _newCrystalAction = new QAction(tr("&Crystal"), this);
   QObject::connect(_newCrystalAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newCrystal);
   _newMenu->addAction(_newCrystalAction);
-  _newMolecularCrystalAction = new QAction(tr("&Molecular crystal"), this);
+  _newMolecularCrystalAction = new QAction(tr("&Molecular Crystal"), this);
   QObject::connect(_newMolecularCrystalAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newMolecularCrystal);
   _newMenu->addAction(_newMolecularCrystalAction);
-  _newProteinCrystalAction = new QAction(tr("&Protein crystal"), this);
+  _newProteinCrystalAction = new QAction(tr("&Protein Crystal"), this);
   QObject::connect(_newProteinCrystalAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newProteinCrystal);
   _newMenu->addAction(_newProteinCrystalAction);
   _newMoleculeAction = new QAction(tr("&Molecule"), this);
@@ -510,13 +510,13 @@ void MainWindow::createMenus()
   _newMenu->addAction(_newProteinAction);
 
   _newObjectsMenu = _newMenu->addMenu(tr("&Objects"));
-  _newCrystalEllipsoidAction = new QAction(tr("&Crystal ellipsoid"), this);
+  _newCrystalEllipsoidAction = new QAction(tr("&Crystal Ellipsoid"), this);
   QObject::connect(_newCrystalEllipsoidAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newCrystalEllipsoid);
   _newObjectsMenu->addAction(_newCrystalEllipsoidAction);
-  _newCrystalCylinderAction = new QAction(tr("&Crystal cylinder"), this);
+  _newCrystalCylinderAction = new QAction(tr("&Crystal Cylinder"), this);
   QObject::connect(_newCrystalCylinderAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newCrystalCylinder);
   _newObjectsMenu->addAction(_newCrystalCylinderAction);
-  _newCrystalPolygonalPrismAction = new QAction(tr("&Crystal polygonal prism"), this);
+  _newCrystalPolygonalPrismAction = new QAction(tr("&Crystal Polygonal Prism"), this);
   QObject::connect(_newCrystalPolygonalPrismAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newCrystalPolygonalPrism);
   _newObjectsMenu->addAction(_newCrystalPolygonalPrismAction);
   _newEllipsoidAction = new QAction(tr("&Ellipsoid"), this);
@@ -525,7 +525,7 @@ void MainWindow::createMenus()
   _newCylinderAction = new QAction(tr("&Cylinder"), this);
   QObject::connect(_newCylinderAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newCylinder);
   _newObjectsMenu->addAction(_newCylinderAction);
-  _newPolygonalPrismAction = new QAction(tr("&Polygonal prism"), this);
+  _newPolygonalPrismAction = new QAction(tr("&Polygonal Prism"), this);
   QObject::connect(_newPolygonalPrismAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newPolygonalPrism);
   _newObjectsMenu->addAction(_newPolygonalPrismAction);
 
@@ -539,17 +539,17 @@ void MainWindow::createMenus()
   fileMenu->addAction(actionFileImport);
   QAction *actionFileOpen = new QAction(tr("&Open"), this);
   actionFileOpen->setShortcuts(QKeySequence::Open);
-  actionFileOpen->setStatusTip(tr("Open an existing document"));
+  actionFileOpen->setStatusTip(tr("Open an Existing Document"));
   QObject::connect(actionFileOpen, &QAction::triggered, this, &MainWindow::open);
   fileMenu->addAction(actionFileOpen);
   QAction *actionFileSave = new QAction(tr("&Save"), this);
   actionFileSave->setShortcuts(QKeySequence::Save);
-  actionFileSave->setStatusTip(tr("Save the document to disk"));
+  actionFileSave->setStatusTip(tr("Save the Document to Disk"));
   QObject::connect(actionFileSave, &QAction::triggered, this, &MainWindow::save);
   fileMenu->addAction(actionFileSave);
   QAction *actionFileSaveAs = new QAction(tr("Save &As"), this);
   actionFileSaveAs->setShortcuts(QKeySequence::SaveAs);
-  actionFileSaveAs->setStatusTip(tr("Save the document to disk"));
+  actionFileSaveAs->setStatusTip(tr("Save the Document to Disk"));
   QObject::connect(actionFileSaveAs, &QAction::triggered, this, &MainWindow::saveAs);
   fileMenu->addAction(actionFileSaveAs);
 
@@ -1101,8 +1101,8 @@ bool MainWindow::maybeSave()
     if (!_isEdited)
         return true;
     const QMessageBox::StandardButton ret = QMessageBox::warning(this, tr("Application"),
-                               tr("The document has been modified.\n"
-                                  "Do you want to save your changes?"),
+                               tr("The Document Has Been Modified.\n"
+                                  "Do You Want to Save Your Changes?"),
                                QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     switch (ret)
     {

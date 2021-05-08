@@ -104,7 +104,7 @@
           <string/>
          </property>
          <property name="placeholderText">
-          <string>University or Company name</string>
+          <string>University or Company Name</string>
          </property>
         </widget>
        </item>
@@ -151,7 +151,7 @@
           <string/>
          </property>
          <property name="placeholderText">
-          <string>Institute name</string>
+          <string>Institute Name</string>
          </property>
         </widget>
        </item>

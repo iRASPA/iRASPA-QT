@@ -1739,7 +1739,7 @@ void CameraTreeWidgetController::setRadialGradientRoundness(double roundness)
 void CameraTreeWidgetController::selectBackgroundImage()
 {
   QUrl url = QFileDialog::getOpenFileUrl(this, QDir::homePath(),
-             tr("Open background picture"),
+             tr("Open Background Picture"),
              tr("png or jpg files (*.png *.jpg)"));
 
 

@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="label_7">
        <property name="text">
-        <string>Article title</string>
+        <string>Article Title</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -38,7 +38,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Journal title</string>
+          <string>Journal Title</string>
          </property>
         </widget>
        </item>
@@ -56,7 +56,7 @@
        <item>
         <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>Article authors</string>
+          <string>Article Authors</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -101,7 +101,7 @@
        <item row="4" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Database codes</string>
+          <string>Database Codes</string>
          </property>
         </widget>
        </item>
