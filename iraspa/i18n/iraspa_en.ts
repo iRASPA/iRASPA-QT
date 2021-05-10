@@ -1264,6 +1264,19 @@
     </message>
 </context>
 <context>
+    <name>CameraSelectionMainWidget</name>
+    <message>
+        <location filename="../iraspagui/cameraselectionform.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraselectionform.ui" line="22"/>
+        <source>Overall Luminance</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CameraTreeWidgetController</name>
     <message>
         <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="59"/>
@@ -1983,98 +1996,115 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="31"/>
+        <location filename="../iraspagui/elementsform.ui" line="44"/>
         <source>Triple Bond Covalent Radius</source>
+        <translation>Covalent Radius (≡)</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="106"/>
+        <source>Van der Waals parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="50"/>
-        <location filename="../iraspagui/elementsform.ui" line="229"/>
-        <location filename="../iraspagui/elementsform.ui" line="257"/>
-        <location filename="../iraspagui/elementsform.ui" line="338"/>
-        <location filename="../iraspagui/elementsform.ui" line="359"/>
-        <location filename="../iraspagui/elementsform.ui" line="478"/>
-        <location filename="../iraspagui/elementsform.ui" line="546"/>
+        <location filename="../iraspagui/elementsform.ui" line="119"/>
+        <source>Single Bond Covalent Radius</source>
+        <translation>Covalent Radius (-)</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="210"/>
+        <location filename="../iraspagui/elementsform.ui" line="289"/>
+        <location filename="../iraspagui/elementsform.ui" line="397"/>
+        <location filename="../iraspagui/elementsform.ui" line="438"/>
+        <location filename="../iraspagui/elementsform.ui" line="566"/>
+        <location filename="../iraspagui/elementsform.ui" line="593"/>
+        <location filename="../iraspagui/elementsform.ui" line="636"/>
+        <location filename="../iraspagui/elementsform.ui" line="696"/>
+        <location filename="../iraspagui/elementsform.ui" line="720"/>
         <source>Å</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="74"/>
+        <location filename="../iraspagui/elementsform.ui" line="462"/>
         <source>H</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="100"/>
+        <location filename="../iraspagui/elementsform.ui" line="488"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="116"/>
+        <location filename="../iraspagui/elementsform.ui" line="504"/>
         <source>0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="155"/>
+        <location filename="../iraspagui/elementsform.ui" line="313"/>
         <source>Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="187"/>
+        <location filename="../iraspagui/elementsform.ui" line="541"/>
+        <source>Double Bond Covalent Radius</source>
+        <translation>Covalent Radius (=)</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/elementsform.ui" line="605"/>
         <source>Van der Waals Radius</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="197"/>
+        <location filename="../iraspagui/elementsform.ui" line="645"/>
         <source>Atomic Mass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="207"/>
+        <location filename="../iraspagui/elementsform.ui" line="232"/>
         <source>Atomic Radius</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="368"/>
+        <location filename="../iraspagui/elementsform.ui" line="219"/>
         <source>Covalent Radius</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="393"/>
+        <location filename="../iraspagui/elementsform.ui" line="77"/>
         <source>ε/kB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="435"/>
+        <location filename="../iraspagui/elementsform.ui" line="179"/>
         <source>User-Defined Radius</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="240"/>
+        <location filename="../iraspagui/elementsform.ui" line="421"/>
         <source>σ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="307"/>
+        <location filename="../iraspagui/elementsform.ui" line="160"/>
         <source>Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="413"/>
+        <location filename="../iraspagui/elementsform.ui" line="97"/>
         <source>K</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="447"/>
+        <location filename="../iraspagui/elementsform.ui" line="56"/>
         <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="489"/>
+        <location filename="../iraspagui/elementsform.ui" line="334"/>
         <source>Element</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="524"/>
+        <location filename="../iraspagui/elementsform.ui" line="658"/>
         <source>Potential Oxidation States</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3092,606 +3122,593 @@ Do You Want to Save Your Changes?</source>
 <context>
     <name>SKElement</name>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="45"/>
+        <location filename="../symmetrykit/skelement.cpp" line="46"/>
         <source>Hydrogen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="46"/>
+        <location filename="../symmetrykit/skelement.cpp" line="47"/>
         <source>Helium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="47"/>
+        <location filename="../symmetrykit/skelement.cpp" line="48"/>
         <source>Lithium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="48"/>
+        <location filename="../symmetrykit/skelement.cpp" line="49"/>
         <source>Beryllium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="49"/>
+        <location filename="../symmetrykit/skelement.cpp" line="50"/>
         <source>Boron</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="50"/>
+        <location filename="../symmetrykit/skelement.cpp" line="51"/>
         <source>Carbon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="51"/>
+        <location filename="../symmetrykit/skelement.cpp" line="52"/>
         <source>Nitrogen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="52"/>
+        <location filename="../symmetrykit/skelement.cpp" line="53"/>
         <source>Oxygen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="53"/>
+        <location filename="../symmetrykit/skelement.cpp" line="54"/>
         <source>Fluorine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="54"/>
+        <location filename="../symmetrykit/skelement.cpp" line="55"/>
         <source>Neon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="55"/>
+        <location filename="../symmetrykit/skelement.cpp" line="56"/>
         <source>Sodium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="56"/>
+        <location filename="../symmetrykit/skelement.cpp" line="57"/>
         <source>Magnesium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="57"/>
+        <location filename="../symmetrykit/skelement.cpp" line="58"/>
         <source>Aluminum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="58"/>
+        <location filename="../symmetrykit/skelement.cpp" line="59"/>
         <source>Silicon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="59"/>
+        <location filename="../symmetrykit/skelement.cpp" line="60"/>
         <source>Phosphorus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="60"/>
+        <location filename="../symmetrykit/skelement.cpp" line="61"/>
         <source>Sulfur</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="61"/>
+        <location filename="../symmetrykit/skelement.cpp" line="62"/>
         <source>Chlorine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="62"/>
+        <location filename="../symmetrykit/skelement.cpp" line="63"/>
         <source>Argon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="63"/>
+        <location filename="../symmetrykit/skelement.cpp" line="64"/>
         <source>Potassium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="64"/>
+        <location filename="../symmetrykit/skelement.cpp" line="65"/>
         <source>Calcium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="65"/>
+        <location filename="../symmetrykit/skelement.cpp" line="66"/>
         <source>Scandium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="66"/>
+        <location filename="../symmetrykit/skelement.cpp" line="67"/>
         <source>Titanium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="67"/>
+        <location filename="../symmetrykit/skelement.cpp" line="68"/>
         <source>Vanadium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="68"/>
+        <location filename="../symmetrykit/skelement.cpp" line="69"/>
         <source>Chromium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="69"/>
+        <location filename="../symmetrykit/skelement.cpp" line="70"/>
         <source>Manganese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="70"/>
+        <location filename="../symmetrykit/skelement.cpp" line="71"/>
         <source>Iron</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="71"/>
+        <location filename="../symmetrykit/skelement.cpp" line="72"/>
         <source>Cobalt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="72"/>
+        <location filename="../symmetrykit/skelement.cpp" line="73"/>
         <source>Nickel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="73"/>
+        <location filename="../symmetrykit/skelement.cpp" line="74"/>
         <source>Copper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="74"/>
+        <location filename="../symmetrykit/skelement.cpp" line="75"/>
         <source>Zinc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="75"/>
+        <location filename="../symmetrykit/skelement.cpp" line="76"/>
         <source>Gallium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="76"/>
+        <location filename="../symmetrykit/skelement.cpp" line="77"/>
         <source>Germanium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="77"/>
+        <location filename="../symmetrykit/skelement.cpp" line="78"/>
         <source>Arsenic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="78"/>
+        <location filename="../symmetrykit/skelement.cpp" line="79"/>
         <source>Selenium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="79"/>
+        <location filename="../symmetrykit/skelement.cpp" line="80"/>
         <source>Bromine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="80"/>
+        <location filename="../symmetrykit/skelement.cpp" line="81"/>
         <source>Krypton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="81"/>
+        <location filename="../symmetrykit/skelement.cpp" line="82"/>
         <source>Rubidium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="82"/>
+        <location filename="../symmetrykit/skelement.cpp" line="83"/>
         <source>Strontium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="83"/>
+        <location filename="../symmetrykit/skelement.cpp" line="84"/>
         <source>Yttrium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="84"/>
+        <location filename="../symmetrykit/skelement.cpp" line="85"/>
         <source>Zirconium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="85"/>
+        <location filename="../symmetrykit/skelement.cpp" line="86"/>
         <source>Niobium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="86"/>
+        <location filename="../symmetrykit/skelement.cpp" line="87"/>
         <source>Molybdenum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="87"/>
+        <location filename="../symmetrykit/skelement.cpp" line="88"/>
         <source>Technetium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="88"/>
+        <location filename="../symmetrykit/skelement.cpp" line="89"/>
         <source>Ruthenium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="89"/>
+        <location filename="../symmetrykit/skelement.cpp" line="90"/>
         <source>Rhodium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="90"/>
+        <location filename="../symmetrykit/skelement.cpp" line="91"/>
         <source>Palladium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="91"/>
+        <location filename="../symmetrykit/skelement.cpp" line="92"/>
         <source>Silver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="92"/>
+        <location filename="../symmetrykit/skelement.cpp" line="93"/>
         <source>Cadmium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="93"/>
+        <location filename="../symmetrykit/skelement.cpp" line="94"/>
         <source>Indium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="94"/>
+        <location filename="../symmetrykit/skelement.cpp" line="95"/>
         <source>Tin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="95"/>
+        <location filename="../symmetrykit/skelement.cpp" line="96"/>
         <source>Antimony</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="96"/>
+        <location filename="../symmetrykit/skelement.cpp" line="97"/>
         <source>Tellurium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="97"/>
+        <location filename="../symmetrykit/skelement.cpp" line="98"/>
         <source>Iodine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="98"/>
+        <location filename="../symmetrykit/skelement.cpp" line="99"/>
         <source>Xenon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="99"/>
+        <location filename="../symmetrykit/skelement.cpp" line="100"/>
         <source>Cesium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="100"/>
+        <location filename="../symmetrykit/skelement.cpp" line="101"/>
         <source>Barium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="101"/>
+        <location filename="../symmetrykit/skelement.cpp" line="102"/>
         <source>Lanthanum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="102"/>
+        <location filename="../symmetrykit/skelement.cpp" line="103"/>
         <source>Cerium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="103"/>
+        <location filename="../symmetrykit/skelement.cpp" line="104"/>
         <source>Praseodymium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="104"/>
+        <location filename="../symmetrykit/skelement.cpp" line="105"/>
         <source>Neodymium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="105"/>
+        <location filename="../symmetrykit/skelement.cpp" line="106"/>
         <source>Promethium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="106"/>
+        <location filename="../symmetrykit/skelement.cpp" line="107"/>
         <source>Samarium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="107"/>
+        <location filename="../symmetrykit/skelement.cpp" line="108"/>
         <source>Europium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="108"/>
+        <location filename="../symmetrykit/skelement.cpp" line="109"/>
         <source>Gadolinium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="109"/>
+        <location filename="../symmetrykit/skelement.cpp" line="110"/>
         <source>Terbium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="110"/>
+        <location filename="../symmetrykit/skelement.cpp" line="111"/>
         <source>Dysprosium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="111"/>
+        <location filename="../symmetrykit/skelement.cpp" line="112"/>
         <source>Holmium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="112"/>
+        <location filename="../symmetrykit/skelement.cpp" line="113"/>
         <source>Erbium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="113"/>
+        <location filename="../symmetrykit/skelement.cpp" line="114"/>
         <source>Thulium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="114"/>
+        <location filename="../symmetrykit/skelement.cpp" line="115"/>
         <source>Ytterbium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="115"/>
+        <location filename="../symmetrykit/skelement.cpp" line="116"/>
         <source>Lutetium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="116"/>
+        <location filename="../symmetrykit/skelement.cpp" line="117"/>
         <source>Hafnium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="117"/>
+        <location filename="../symmetrykit/skelement.cpp" line="118"/>
         <source>Tantalum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="118"/>
+        <location filename="../symmetrykit/skelement.cpp" line="119"/>
         <source>Tungsten</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="119"/>
+        <location filename="../symmetrykit/skelement.cpp" line="120"/>
         <source>Rhenium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="120"/>
+        <location filename="../symmetrykit/skelement.cpp" line="121"/>
         <source>Osmium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="121"/>
+        <location filename="../symmetrykit/skelement.cpp" line="122"/>
         <source>Iridium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="122"/>
+        <location filename="../symmetrykit/skelement.cpp" line="123"/>
         <source>Platinum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="123"/>
+        <location filename="../symmetrykit/skelement.cpp" line="124"/>
         <source>Gold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="124"/>
+        <location filename="../symmetrykit/skelement.cpp" line="125"/>
         <source>Mercury</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="125"/>
+        <location filename="../symmetrykit/skelement.cpp" line="126"/>
         <source>Thallium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="126"/>
+        <location filename="../symmetrykit/skelement.cpp" line="127"/>
         <source>Lead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="127"/>
+        <location filename="../symmetrykit/skelement.cpp" line="128"/>
         <source>Bismuth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="128"/>
+        <location filename="../symmetrykit/skelement.cpp" line="129"/>
         <source>Polonium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="129"/>
+        <location filename="../symmetrykit/skelement.cpp" line="130"/>
         <source>Astatine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="130"/>
+        <location filename="../symmetrykit/skelement.cpp" line="131"/>
         <source>Radon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="131"/>
+        <location filename="../symmetrykit/skelement.cpp" line="132"/>
         <source>Francium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="132"/>
+        <location filename="../symmetrykit/skelement.cpp" line="133"/>
         <source>Radium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="133"/>
+        <location filename="../symmetrykit/skelement.cpp" line="134"/>
         <source>Actinium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="134"/>
+        <location filename="../symmetrykit/skelement.cpp" line="135"/>
         <source>Thorium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="135"/>
+        <location filename="../symmetrykit/skelement.cpp" line="136"/>
         <source>Protactinium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="136"/>
+        <location filename="../symmetrykit/skelement.cpp" line="137"/>
         <source>Uranium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="137"/>
+        <location filename="../symmetrykit/skelement.cpp" line="138"/>
         <source>Neptunium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="138"/>
+        <location filename="../symmetrykit/skelement.cpp" line="139"/>
         <source>Plutonium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="139"/>
+        <location filename="../symmetrykit/skelement.cpp" line="140"/>
         <source>Americium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="140"/>
+        <location filename="../symmetrykit/skelement.cpp" line="141"/>
         <source>Curium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="141"/>
+        <location filename="../symmetrykit/skelement.cpp" line="142"/>
         <source>Berkelium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="142"/>
+        <location filename="../symmetrykit/skelement.cpp" line="143"/>
         <source>Californium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="143"/>
+        <location filename="../symmetrykit/skelement.cpp" line="144"/>
         <source>Einsteinium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="144"/>
+        <location filename="../symmetrykit/skelement.cpp" line="145"/>
         <source>Fermium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="145"/>
+        <location filename="../symmetrykit/skelement.cpp" line="146"/>
         <source>Mendelevium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="146"/>
+        <location filename="../symmetrykit/skelement.cpp" line="147"/>
         <source>Nobelium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="147"/>
+        <location filename="../symmetrykit/skelement.cpp" line="148"/>
         <source>Lawrencium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="148"/>
+        <location filename="../symmetrykit/skelement.cpp" line="149"/>
         <source>Rutherfordium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="149"/>
+        <location filename="../symmetrykit/skelement.cpp" line="150"/>
         <source>Dubnium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="150"/>
+        <location filename="../symmetrykit/skelement.cpp" line="151"/>
         <source>Seaborgium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="151"/>
+        <location filename="../symmetrykit/skelement.cpp" line="152"/>
         <source>Bohrium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="152"/>
+        <location filename="../symmetrykit/skelement.cpp" line="153"/>
         <source>Hassium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="153"/>
+        <location filename="../symmetrykit/skelement.cpp" line="154"/>
         <source>Meitnerium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="154"/>
+        <location filename="../symmetrykit/skelement.cpp" line="155"/>
         <source>Darmstadtium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="155"/>
+        <location filename="../symmetrykit/skelement.cpp" line="156"/>
         <source>Roentgenium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="156"/>
+        <location filename="../symmetrykit/skelement.cpp" line="157"/>
         <source>Copernicium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="157"/>
+        <location filename="../symmetrykit/skelement.cpp" line="158"/>
         <source>Nihonium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="158"/>
+        <location filename="../symmetrykit/skelement.cpp" line="159"/>
         <source>Flerovium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="159"/>
+        <location filename="../symmetrykit/skelement.cpp" line="160"/>
         <source>Moscovium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="160"/>
+        <location filename="../symmetrykit/skelement.cpp" line="161"/>
         <source>Livermorium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="161"/>
+        <location filename="../symmetrykit/skelement.cpp" line="162"/>
         <source>Tennessine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../symmetrykit/skelement.cpp" line="162"/>
+        <location filename="../symmetrykit/skelement.cpp" line="163"/>
         <source>Oganesson</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SelectionMainWidget</name>
-    <message>
-        <location filename="../iraspagui/cameraselectionform.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/cameraselectionform.ui" line="22"/>
-        <source>Overall Luminance</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

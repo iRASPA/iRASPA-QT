@@ -25,7 +25,7 @@
 #include <QObject>
 #include "ui_cameraselectionform.h"
 
-class CameraSelectionForm : public QWidget, public Ui::SelectionMainWidget
+class CameraSelectionForm : public QWidget, public Ui::CameraSelectionMainWidget
 {
   Q_OBJECT
 

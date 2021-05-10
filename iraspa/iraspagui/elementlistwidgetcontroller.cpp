@@ -254,6 +254,14 @@ void ElementListWidgetController::reloadData()
        whileBlocking(form->vanderWaalsDoubleSpinBox)->setValue(VDWRadius);
        form->vanderWaalsDoubleSpinBox->setReadOnly(!forceFieldEditable);
 
+       double singleBondCovalentRadius = element._singleBondCovalentRadius;
+       whileBlocking(form->singleBondCovalentRadiusDoubleSpinBox)->setValue(singleBondCovalentRadius);
+       form->singleBondCovalentRadiusDoubleSpinBox->setReadOnly(!forceFieldEditable);
+
+       double doubleBondCovalentRadius = element._doubleBondCovalentRadius;
+       whileBlocking(form->doubleBondCovalentRadiusDoubleSpinBox)->setValue(doubleBondCovalentRadius);
+       form->doubleBondCovalentRadiusDoubleSpinBox->setReadOnly(!forceFieldEditable);
+
        double tripleBondCovalentRadius = element._tripleBondCovalentRadius;
        whileBlocking(form->tripleBondCovalentRadiusDoubleSpinBox)->setValue(tripleBondCovalentRadius);
        form->tripleBondCovalentRadiusDoubleSpinBox->setReadOnly(!forceFieldEditable);
