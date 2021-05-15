@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QString>
+#include <QByteArray>
 #include <vector>
 #include <memory>
 #include <iostream>
@@ -94,7 +95,7 @@ public:
     void setIsDropEnabled(bool enabled) {_isDropEnabled = enabled;}
     void removeFromParent();
 private:
-    qint64 _versionNumber{1};
+    qint64 _versionNumber{2};
     Type _type;
     QString _displayName;
     std::weak_ptr<ProjectTreeNode> _parent{};
@@ -107,6 +108,8 @@ private:
     bool _selected = true;
     bool _isEditable;
     bool _isDropEnabled;
+
+    QImage _thumbnail;
 
     friend ProjectTreeController;
 

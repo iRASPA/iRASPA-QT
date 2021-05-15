@@ -35,6 +35,8 @@ ElementListWidgetController::ElementListWidgetController(QWidget* parent): QList
   this->setFrameStyle(QFrame::NoFrame);
   this->setVerticalScrollMode(QTreeWidget::ScrollPerPixel);
   this->setSelectionMode(QAbstractItemView::SingleSelection);
+
+  this->setStyleSheet("background-color:rgb(210, 210, 210);");
 }
 
 void ElementListWidgetController::setColorComboBoxIndex(size_t type)

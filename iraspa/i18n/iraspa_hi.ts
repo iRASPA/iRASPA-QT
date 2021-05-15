@@ -808,6 +808,30 @@
         <source>Flat Billboard</source>
         <translation>फ्लैट बिलबो</translation>
     </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1429"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1466"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1503"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1618"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1655"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1692"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4068"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4105"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4142"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5524"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5561"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5598"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6448"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6918"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6955"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6992"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7105"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7142"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7179"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="8197"/>
+        <source>Color</source>
+        <translation>रंग</translation>
+    </message>
 </context>
 <context>
     <name>AppearanceUnitCellForm</name>
@@ -1150,27 +1174,27 @@
         <translation>दृश्य का केंद्र</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="363"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="375"/>
         <source>Rotation Angle</source>
         <translation>वर्तन कोण</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="628"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="513"/>
         <source>Euler Angles</source>
         <translation>ऑइलर एंगल्स</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="670"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="671"/>
         <source>View Matrix</source>
         <translation>मैट्रिक्स देखें</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="810"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="811"/>
         <source>Virtual Position</source>
         <translation>आभासी/कल्पित कैमरा स्थिति</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="929"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="930"/>
         <source>Distance</source>
         <translation>दूरी</translation>
     </message>
@@ -1268,12 +1292,12 @@
     <message>
         <location filename="../iraspagui/cameraselectionform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../iraspagui/cameraselectionform.ui" line="22"/>
         <source>Overall Luminance</source>
-        <translation type="unfinished">सर्वसमावेशी ज्योतिर्मयता</translation>
+        <translation>सर्वसमावेशी ज्योतिर्मयता</translation>
     </message>
 </context>
 <context>
@@ -1333,6 +1357,18 @@
         <source>png or jpg files (*.png *.jpg)</source>
         <translation>png or jpg files (*.png *.jpg)</translation>
     </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1600"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1748"/>
+        <source>Select Picture</source>
+        <translation>छवि चुने</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1601"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1749"/>
+        <source>Image Placeholder</source>
+        <translation>छवि प्लेसहोल्डर</translation>
+    </message>
 </context>
 <context>
     <name>CellMainWidget</name>
@@ -1342,122 +1378,122 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="34"/>
+        <location filename="../iraspagui/cellcellform.ui" line="22"/>
         <source>Materials Type</source>
         <translation>पदार्थ के प्रकार</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="81"/>
+        <location filename="../iraspagui/cellcellform.ui" line="69"/>
         <source>Bounding Box (Read Only)</source>
         <translation>बाउंडिंग बॉक्स (केवल पढ़ने के लिए)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="89"/>
+        <location filename="../iraspagui/cellcellform.ui" line="77"/>
         <source>Maximum</source>
         <translation>अधिकतम</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="96"/>
+        <location filename="../iraspagui/cellcellform.ui" line="84"/>
         <source>Minimum</source>
         <translation>न्यूनतम</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="235"/>
+        <location filename="../iraspagui/cellcellform.ui" line="223"/>
         <source>α</source>
         <translation>α</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="245"/>
+        <location filename="../iraspagui/cellcellform.ui" line="233"/>
         <source>B</source>
         <translation>B</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="255"/>
+        <location filename="../iraspagui/cellcellform.ui" line="243"/>
         <source>γ</source>
         <translation>γ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="265"/>
+        <location filename="../iraspagui/cellcellform.ui" line="253"/>
         <source>A</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="275"/>
+        <location filename="../iraspagui/cellcellform.ui" line="263"/>
         <source>β</source>
         <translation>β</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="390"/>
+        <location filename="../iraspagui/cellcellform.ui" line="378"/>
         <source>C</source>
         <translation>C</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="406"/>
+        <location filename="../iraspagui/cellcellform.ui" line="394"/>
         <source>Box Matrix (Read Only)</source>
         <translation>बॉक्स मैट्रिक्स (केवल पढ़ें)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="426"/>
+        <location filename="../iraspagui/cellcellform.ui" line="414"/>
         <source>cz</source>
         <translation>cz</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="436"/>
+        <location filename="../iraspagui/cellcellform.ui" line="424"/>
         <source>ax</source>
         <translation>ax</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="446"/>
+        <location filename="../iraspagui/cellcellform.ui" line="434"/>
         <source>bx</source>
         <translation>bx</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="456"/>
+        <location filename="../iraspagui/cellcellform.ui" line="444"/>
         <source>cx</source>
         <translation>cx</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="466"/>
+        <location filename="../iraspagui/cellcellform.ui" line="454"/>
         <source>ay</source>
         <translation>ay</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="476"/>
+        <location filename="../iraspagui/cellcellform.ui" line="464"/>
         <source>az</source>
         <translation>az</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="486"/>
+        <location filename="../iraspagui/cellcellform.ui" line="474"/>
         <source>by</source>
         <translation>by</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="496"/>
+        <location filename="../iraspagui/cellcellform.ui" line="484"/>
         <source>cy</source>
         <translation>cy</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="506"/>
+        <location filename="../iraspagui/cellcellform.ui" line="494"/>
         <source>bz</source>
         <translation>bz</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="765"/>
+        <location filename="../iraspagui/cellcellform.ui" line="753"/>
         <source>Perpendicular Widths</source>
         <translation>लंबवत चौड़ाई</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="772"/>
+        <location filename="../iraspagui/cellcellform.ui" line="760"/>
         <source>Volume</source>
         <translation>आयतन</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="825"/>
+        <location filename="../iraspagui/cellcellform.ui" line="813"/>
         <source>Maximum Replicas</source>
         <translation>अधिकतम प्रतिकृतियां</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="856"/>
+        <location filename="../iraspagui/cellcellform.ui" line="844"/>
         <source>Minimum Replicas</source>
         <translation>न्यूनतम प्रतिकृतियां</translation>
     </message>
@@ -1481,12 +1517,12 @@
         <translation>घुमाएँ +5.0</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="955"/>
+        <location filename="../iraspagui/cellcellform.ui" line="967"/>
         <source>Euler Angles</source>
         <translation>ऑयलर कोणे</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cellcellform.ui" line="1045"/>
+        <location filename="../iraspagui/cellcellform.ui" line="1130"/>
         <source>Origin</source>
         <translation>मूल बिंदु</translation>
     </message>
@@ -1969,7 +2005,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:28pt; font-style:italic;&quot;&gt;iRASPA&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:9pt;&quot;&gt;Version 2.0.4 (build 102)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:9pt;&quot;&gt;Version 2.1.0 (build 110)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Creators:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;David Dubbeldam (University of Amsterdam)&lt;/span&gt;&lt;/p&gt;
@@ -1983,7 +2019,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://dx.doi.org/10.1080/08927022.2018.1426855&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;Link to article&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Other contributors:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Noura Dawass,  Weina Du,  Masafumi Miyaji, Sebastian Caro Ortiz, Shrinjay Sharma.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Tim Becker, Noura Dawass,  Weina Du,  Masafumi Miyaji, Sebastian Caro Ortiz,  Ahmadreza Rahbari, Shrinjay Sharma.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
@@ -1996,115 +2032,110 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="44"/>
+        <location filename="../iraspagui/elementsform.ui" line="340"/>
         <source>Triple Bond Covalent Radius</source>
-        <translation>ट्रिपल बॉन्ड सहसंयोजक त्रिज्या</translation>
+        <translation>बॉन्ड सहसंयोजक त्रिज्या (≡)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="106"/>
-        <source>Van der Waals parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../iraspagui/elementsform.ui" line="119"/>
+        <location filename="../iraspagui/elementsform.ui" line="83"/>
         <source>Single Bond Covalent Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>बॉन्ड सहसंयोजक त्रिज्या (-)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="210"/>
-        <location filename="../iraspagui/elementsform.ui" line="289"/>
-        <location filename="../iraspagui/elementsform.ui" line="397"/>
-        <location filename="../iraspagui/elementsform.ui" line="438"/>
-        <location filename="../iraspagui/elementsform.ui" line="566"/>
-        <location filename="../iraspagui/elementsform.ui" line="593"/>
-        <location filename="../iraspagui/elementsform.ui" line="636"/>
-        <location filename="../iraspagui/elementsform.ui" line="696"/>
-        <location filename="../iraspagui/elementsform.ui" line="720"/>
+        <location filename="../iraspagui/elementsform.ui" line="61"/>
+        <location filename="../iraspagui/elementsform.ui" line="137"/>
+        <location filename="../iraspagui/elementsform.ui" line="190"/>
+        <location filename="../iraspagui/elementsform.ui" line="211"/>
+        <location filename="../iraspagui/elementsform.ui" line="267"/>
+        <location filename="../iraspagui/elementsform.ui" line="291"/>
+        <location filename="../iraspagui/elementsform.ui" line="331"/>
+        <location filename="../iraspagui/elementsform.ui" line="387"/>
+        <location filename="../iraspagui/elementsform.ui" line="578"/>
         <source>Å</source>
         <translation>Å</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="462"/>
+        <location filename="../iraspagui/elementsform.ui" line="466"/>
         <source>H</source>
         <translation>H</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="488"/>
+        <location filename="../iraspagui/elementsform.ui" line="510"/>
         <source>TextLabel</source>
         <translation>TextLabel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="504"/>
+        <location filename="../iraspagui/elementsform.ui" line="526"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="313"/>
+        <location filename="../iraspagui/elementsform.ui" line="744"/>
         <source>Number</source>
         <translation>संख्या</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="541"/>
+        <location filename="../iraspagui/elementsform.ui" line="220"/>
         <source>Double Bond Covalent Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>बॉन्ड सहसंयोजक त्रिज्या (=)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="605"/>
+        <location filename="../iraspagui/elementsform.ui" line="438"/>
         <source>Van der Waals Radius</source>
         <translation>वैन डेर वाल्स त्रिज्या</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="645"/>
+        <location filename="../iraspagui/elementsform.ui" line="159"/>
         <source>Atomic Mass</source>
         <translation>परमाण्विक भार</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="232"/>
+        <location filename="../iraspagui/elementsform.ui" line="353"/>
         <source>Atomic Radius</source>
         <translation>परमाण्विक त्रिज्या</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="421"/>
+        <location filename="../iraspagui/elementsform.ui" line="624"/>
         <source>σ</source>
         <translation>σ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="160"/>
+        <location filename="../iraspagui/elementsform.ui" line="689"/>
         <source>Group</source>
         <translation>समूह</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="219"/>
+        <location filename="../iraspagui/elementsform.ui" line="70"/>
         <source>Covalent Radius</source>
         <translation>सहसंयोजक त्रिज्या</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="77"/>
+        <location filename="../iraspagui/elementsform.ui" line="640"/>
         <source>ε/kB</source>
         <translation>ε/kB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="97"/>
+        <location filename="../iraspagui/elementsform.ui" line="615"/>
         <source>K</source>
         <translation>K</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="179"/>
+        <location filename="../iraspagui/elementsform.ui" line="146"/>
         <source>User-Defined Radius</source>
         <translation>उपयोगकर्ता-परिभाषित त्रिज्या</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="56"/>
+        <location filename="../iraspagui/elementsform.ui" line="668"/>
         <source>Period</source>
         <translation>अवधि</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="334"/>
+        <location filename="../iraspagui/elementsform.ui" line="710"/>
         <source>Element</source>
         <translation>रासायनिक तत्व</translation>
     </message>
     <message>
-        <location filename="../iraspagui/elementsform.ui" line="658"/>
+        <location filename="../iraspagui/elementsform.ui" line="656"/>
         <source>Potential Oxidation States</source>
         <translation>संभावित ऑक्सीकरण अवस्था</translation>
     </message>
@@ -3711,13 +3742,6 @@ Do You Want to Save Your Changes?</source>
         <location filename="../symmetrykit/skelement.cpp" line="163"/>
         <source>Oganesson</source>
         <translation>ओगेनेस्साॅन</translation>
-    </message>
-</context>
-<context>
-    <name>SelectionMainWidget</name>
-    <message>
-        <source>Overall Luminance</source>
-        <translation type="vanished">सर्वसमावेशी ज्योतिर्मयता</translation>
     </message>
 </context>
 </TS>

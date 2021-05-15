@@ -1426,7 +1426,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveAmbientLight()
 
       if (std::optional<QColor> value = frontPrimitiveAmbientLightColor())
       {
-        whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setText("color");
+        whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setColor(*value);
       }
       else
@@ -1463,7 +1463,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveDiffuseLight()
 
       if (std::optional<QColor> value = frontPrimitiveDiffuseLightColor())
       {
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setText("color");
+        whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setColor(*value);
       }
       else
@@ -1500,7 +1500,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveSpecularLight()
 
       if (std::optional<QColor> value = frontPrimitiveSpecularLightColor())
       {
-        whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setText("color");
+        whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setColor(*value);
       }
       else
@@ -1615,7 +1615,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveAmbientLight()
 
       if (std::optional<QColor> value = backPrimitiveAmbientLightColor())
       {
-        whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setText("color");
+        whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setColor(*value);
       }
       else
@@ -1652,7 +1652,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveDiffuseLight()
 
       if (std::optional<QColor> value = backPrimitiveDiffuseLightColor())
       {
-        whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setText("color");
+        whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setColor(*value);
       }
       else
@@ -1689,7 +1689,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveSpecularLight()
 
       if (std::optional<QColor> value = backPrimitiveSpecularLightColor())
       {
-        whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setText("color");
+        whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setColor(*value);
       }
       else
@@ -4065,7 +4065,7 @@ void AppearanceTreeWidgetController::reloadAtomAmbientLight()
 
       if (std::optional<QColor> value = atomAmbientLightColor())
       {
-        whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setText("color");
+        whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setColor(*value);
       }
       else
@@ -4102,7 +4102,7 @@ void AppearanceTreeWidgetController::reloadAtomDiffuseLight()
 
       if (std::optional<QColor> value = atomDiffuseLightColor())
       {
-        whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setText("color");
+        whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setColor(*value);
       }
       else
@@ -4139,7 +4139,7 @@ void AppearanceTreeWidgetController::reloadAtomSpecularLight()
 
       if (std::optional<QColor> value = atomSpecularLightColor())
       {
-        whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setText("color");
+        whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setColor(*value);
       }
       else
@@ -5521,7 +5521,7 @@ void AppearanceTreeWidgetController::reloadBondAmbientLight()
 
       if (std::optional<QColor> value = bondAmbientLightColor())
       {
-        whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setText("color");
+        whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setColor(*value);
       }
       else
@@ -5558,7 +5558,7 @@ void AppearanceTreeWidgetController::reloadBondDiffuseLight()
 
       if (std::optional<QColor> value = bondDiffuseLightColor())
       {
-        whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setText("color");
+        whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setColor(*value);
       }
       else
@@ -5595,7 +5595,7 @@ void AppearanceTreeWidgetController::reloadBondSpecularLight()
 
       if (std::optional<QColor> value = bondSpecularLightColor())
       {
-        whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setText("color");
+        whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setColor(*value);
       }
       else
@@ -6445,7 +6445,7 @@ void AppearanceTreeWidgetController::reloadUnitCellDiffuseLight()
 
       if (std::optional<QColor> value = bondDiffuseLightColor())
       {
-        whileBlocking(_appearanceUnitCellForm->diffuseColorPushButton)->setText("color");
+        whileBlocking(_appearanceUnitCellForm->diffuseColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceUnitCellForm->diffuseColorPushButton)->setColor(*value);
       }
       else
@@ -6915,7 +6915,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideAmbientLight()
 
       if (std::optional<QColor> value = adsorptionSurfaceInsideAmbientLightColor())
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setText("color");
+        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setColor(*value);
       }
       else
@@ -6952,7 +6952,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideDiffuseLight()
 
       if (std::optional<QColor> value = adsorptionSurfaceInsideDiffuseLightColor())
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setText("color");
+        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setColor(*value);
       }
       else
@@ -6989,7 +6989,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideSpecularLight(
 
       if (std::optional<QColor> value = adsorptionSurfaceInsideSpecularLightColor())
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setText("color");
+        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setColor(*value);
       }
       else
@@ -7102,7 +7102,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideAmbientLight(
 
       if (std::optional<QColor> value = adsorptionSurfaceOutsideAmbientLightColor())
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setText("color");
+        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setColor(*value);
       }
       else
@@ -7139,7 +7139,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideDiffuseLight(
 
       if (std::optional<QColor> value = adsorptionSurfaceOutsideDiffuseLightColor())
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setText("color");
+        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setColor(*value);
       }
       else
@@ -7176,7 +7176,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideSpecularLight
 
       if (std::optional<QColor> value = adsorptionSurfaceOutsideSpecularLightColor())
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setText("color");
+        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setColor(*value);
       }
       else
@@ -8194,7 +8194,7 @@ void AppearanceTreeWidgetController::reloadAnnotationColor()
       _appearanceAnnotationForm->colorPushButton->setEnabled(_projectTreeNode->isEditable());
       if (std::optional<QColor> value = annotationTextColor())
       {
-        whileBlocking(_appearanceAnnotationForm->colorPushButton)->setText("color");
+        whileBlocking(_appearanceAnnotationForm->colorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceAnnotationForm->colorPushButton)->setColor(*value);
       }
       else

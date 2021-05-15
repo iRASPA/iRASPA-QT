@@ -25,7 +25,7 @@ AboutDialog::AboutDialog( QWidget * parent): QDialog(parent)
 {
   setupUi(this);
 
-   this->setStyleSheet("background-color:rgb(255, 255, 255);");
+  this->setStyleSheet("background-color:rgb(255, 255, 255);");
 }
 
 

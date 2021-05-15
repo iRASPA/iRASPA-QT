@@ -1597,8 +1597,8 @@ void CameraTreeWidgetController::reloadBackgroundProperties()
 
     if(fileName.isEmpty())
     {
-      whileBlocking(_cameraBackgroundForm->selectImagePushButton)->setText("Select picture");
-      whileBlocking(_cameraBackgroundForm->imagePlaceholderQLabel)->setText("Image placeholder");
+      whileBlocking(_cameraBackgroundForm->selectImagePushButton)->setText(tr("Select Picture"));
+      whileBlocking(_cameraBackgroundForm->imagePlaceholderQLabel)->setText(tr("Image Placeholder"));
     }
     else
     {
@@ -1745,8 +1745,8 @@ void CameraTreeWidgetController::selectBackgroundImage()
 
   if(!url.isValid())
   {
-    whileBlocking(_cameraBackgroundForm->selectImagePushButton)->setText("Select picture");
-    whileBlocking(_cameraBackgroundForm->imagePlaceholderQLabel)->setText("Image placeholder");
+    whileBlocking(_cameraBackgroundForm->selectImagePushButton)->setText(tr("Select Picture"));
+    whileBlocking(_cameraBackgroundForm->imagePlaceholderQLabel)->setText(tr("Image Placeholder"));
     return;
   }
   else

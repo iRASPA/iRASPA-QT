@@ -508,7 +508,7 @@ void CellTreeWidgetController::reloadSelection()
 
 void CellTreeWidgetController::reloadCellProperties()
 {
-	reloadStructureType();
+  reloadStructureType();
   reloadBoundingBox();
 
   reloadUnitCell();
@@ -1070,12 +1070,12 @@ void CellTreeWidgetController::reloadRotationAngle()
         _cellCellForm->rotateMinusYPushButton->setEnabled(_projectTreeNode->isEditable());
         _cellCellForm->rotateMinusZPushButton->setEnabled(_projectTreeNode->isEditable());
 
-        _cellCellForm->rotatePlusXPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle)));
-        _cellCellForm->rotatePlusYPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle)));
-        _cellCellForm->rotatePlusZPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle)));
-        _cellCellForm->rotateMinusXPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle)));
-        _cellCellForm->rotateMinusYPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle)));
-        _cellCellForm->rotateMinusZPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle)));
+        _cellCellForm->rotatePlusXPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle, 'f', 2)));
+        _cellCellForm->rotatePlusYPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle, 'f', 2)));
+        _cellCellForm->rotatePlusZPushButton->setText(tr("Rotate +%1").arg(QString::number(*angle, 'f', 2)));
+        _cellCellForm->rotateMinusXPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle, 'f', 2)));
+        _cellCellForm->rotateMinusYPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle, 'f', 2)));
+        _cellCellForm->rotateMinusZPushButton->setText(tr("Rotate -%1").arg(QString::number(*angle,  'f', 2)));
       }
       else
       {

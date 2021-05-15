@@ -473,6 +473,13 @@ QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<ProjectTreeNo
 
   stream << node->_representedObject;
 
+  // save picture in PNG format
+  QByteArray imageByteArray;
+  QBuffer buffer(&imageByteArray);
+  buffer.open(QIODevice::WriteOnly);
+  node->_thumbnail.save(&buffer,"PNG");
+  stream << imageByteArray;
+
   stream << node->_childNodes;
 
   return stream;
@@ -492,9 +499,19 @@ QDataStream &operator>>(QDataStream& stream, std::shared_ptr<ProjectTreeNode>& n
 
   stream >> node->_representedObject;
 
+  if(versionNumber >= 2) // introduced in version 2
+  {
+     // read picture in PNG-format
+     QByteArray imageByteArray;
+     stream >> imageByteArray;
+     QBuffer buffer(&imageByteArray);
+     buffer.open(QIODevice::ReadOnly);
+     node->_thumbnail.load(&buffer, "PNG");
+  }
+
   stream >> node->_childNodes;
 
-  for(std::shared_ptr<ProjectTreeNode> child : node->_childNodes)
+  for(std::shared_ptr<ProjectTreeNode> &child : node->_childNodes)
   {
     child->_parent = node;
   }
@@ -512,6 +529,14 @@ QDataStream &operator<<=(QDataStream& stream, const std::shared_ptr<ProjectTreeN
 
   stream <<= node->_representedObject;
 
+  // save picture in PNG format
+  QByteArray imageByteArray;
+  QBuffer buffer(&imageByteArray);
+  buffer.open(QIODevice::WriteOnly);
+  node->_thumbnail.save(&buffer,"PNG");
+  stream << imageByteArray;
+
+
   return stream;
 }
 
@@ -528,6 +553,16 @@ QDataStream &operator>>=(QDataStream& stream, std::shared_ptr<ProjectTreeNode>& 
   stream >> node->_isDropEnabled;
 
   stream >>= node->_representedObject;
+
+  if(versionNumber >= 2) // introduced in version 2
+  {
+     // read picture in PNG-format
+     QByteArray imageByteArray;
+     stream >> imageByteArray;
+     QBuffer buffer(&imageByteArray);
+     buffer.open(QIODevice::ReadOnly);
+     node->_thumbnail.load(&buffer, "PNG");
+  }
 
   return stream;
 }
