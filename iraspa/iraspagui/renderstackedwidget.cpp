@@ -25,9 +25,19 @@
 #include <QApplication>
 #include <QObject>
 #include <QAction>
+#include <QWidgetAction>
 #include <QtDebug>
+#include <QToolButton>
+#include <QActionGroup>
+#include <QMainWindow>
+#include <QLabel>
+#include <QRadioButton>
+#include <QButtonGroup>
+#include <QSettings>
 #include <iraspakit.h>
 #include "moviemaker.h"
+#include "toolbarwidget.h"
+#include "toolbarmenu.h"
 #include "fixedaspectratiolayoutitem.h"
 #include "renderviewdeleteselectioncommand.h"
 #include "renderviewchangeselectioncommand.h"
@@ -36,20 +46,80 @@
 #include "renderviewtranslatepositionsbodyframecommand.h"
 #include "renderviewrotatepositionscartesiancommand.h"
 #include "renderviewrotatepositionsbodyframecommand.h"
+#include <QHBoxLayout>
 
-RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QStackedWidget(parent ),
-    _rubberBand(new QRubberBand(QRubberBand::Rectangle, this))
+#if defined (USE_OPENGL)
+  #include "openglwindow.h"
+#endif
+#if defined (USE_DIRECTX)
+  #include "directxwindow.h"
+#endif
+#if defined (USE_VULKAN)
+  #include "vulkanwindow.h"
+#endif
+
+RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QWidget(parent )
+
 {
   this->setContextMenuPolicy(Qt::PreventContextMenu);
 
+  QHBoxLayout *layout = new QHBoxLayout(this);
+  layout->setSpacing(0);
+  layout->setContentsMargins(0,0,0,0);
+
+#if defined (USE_OPENGL)
+   OpenGLWindow *w = new OpenGLWindow(parent);
+   renderWindow = w;
+   w->installEventFilter(this);
+   renderViewController = w;
+   renderWidget = QWidget::createWindowContainer(w);
+   renderWidget->setMouseTracking(true);
+   renderWidget->setAttribute( Qt::WA_OpaquePaintEvent );
+   renderWidget->setFocusPolicy(Qt::TabFocus);
+   layout->addWidget(renderWidget);
+#endif
+#if defined (USE_VULKAN)
+  VulkanWindow* w = new VulkanWindow(nullptr);
+  renderWindow = w;
+  w->installEventFilter(this);
+  renderViewController = w;
+  renderWidget = QWidget::createWindowContainer(w);
+  renderWidget->setMouseTracking(true);
+  renderWidget->setAttribute( Qt::WA_OpaquePaintEvent );
+  renderWidget->setFocusPolicy(Qt::TabFocus);
+  layout->addWidget(renderWidget);
+#endif
+#if defined (USE_DIRECTX)
+  DirectXWindow* w = new DirectXWindow();
+  renderWindow = w;
+  w->installEventFilter(this);
+  renderViewController = w;
+  renderWidget = QWidget::createWindowContainer(w);
+  renderWidget->setMouseTracking(true);
+  renderWidget->setAttribute( Qt::WA_OpaquePaintEvent );
+  renderWidget->setFocusPolicy(Qt::TabFocus);
+  layout->addWidget(renderWidget);
+#endif
+
   setMouseTracking(true);
+
+  _controlPanel = new ToolbarWidget(this);
+
+  toolBar = new ToolbarMenu(this);
+  toolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+  QWidgetAction *action = new QWidgetAction(toolBar);
+  action->setDefaultWidget(_controlPanel);
+  toolBar->addAction(action);
+  toolBar->setContentsMargins(0, 0, 0, 0);
+
+  renderWidget->setMinimumHeight(270);
+  renderWidget->setMinimumWidth(120);
 }
 
 void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode)
 {
   this->_projectTreeNode = projectTreeNode;
   this->_project.reset();
-
 
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
   if (projectTreeNode)
@@ -81,15 +151,37 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
     }
   }
 
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
-    widget->setRenderStructures(render_structures);
+    renderViewController->setRenderStructures(render_structures);
   }
+
+  if (projectTreeNode)
+  {
+    if(std::shared_ptr<iRASPAProject> iraspaProject = projectTreeNode->representedObject())
+    {
+      if(std::shared_ptr<Project> project = iraspaProject->project())
+      {
+        if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
+        {
+            if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+            {
+                qDebug() << "TRUE";
+              renderViewController->setRenderDataSource(projectStructure);
+            }
+          }
+        }
+      }
+    }
 }
 
 void RenderStackedWidget::setLogReportingWidget(LogReporting *logReporting)
 {
   _logReporter = logReporting;
+  if (LogReportingConsumer* widget = dynamic_cast<LogReportingConsumer*>(renderViewController))
+  {
+    widget->setLogReportingWidget(logReporting);
+  }
 }
 
 void RenderStackedWidget::setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> iraspa_structures)
@@ -104,7 +196,8 @@ void RenderStackedWidget::setSelectedRenderFrames(std::vector<std::vector<std::s
   }
 
   _iraspa_structures = iraspa_structures;
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  qDebug() << "setRenderStructures parent";
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->setRenderStructures(renderStructures);
   }
@@ -136,13 +229,37 @@ void RenderStackedWidget::resizeEvent(QResizeEvent *event)
 }
 
 
-bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
+bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
 {
-  Q_UNUSED(obj);
+  Q_UNUSED(object);
+
   if(event->type() == QEvent::MouseMove || event->type() == QEvent::Wheel)
   {
     emit updateCameraModelViewMatrix();
     emit updateCameraEulerAngles();
+  }
+
+  if(object == renderWindow || object == this)
+  {
+    if(QKeyEvent * keyEvent = dynamic_cast<QKeyEvent*>(event))
+    {
+      if (event->type() == QEvent::KeyPress)
+      {
+        if (keyEvent->modifiers().testFlag(Qt::AltModifier))
+        {
+          setControlPanel(true);
+          event->ignore();
+        }
+      }
+      if (event->type() == QEvent::KeyRelease)
+      {
+        if (keyEvent->key() == Qt::Key_Alt)
+        {
+          setControlPanel(false);
+          event->ignore();
+        }
+      }
+    }
   }
 
   if( event->type() == QEvent::KeyPress )
@@ -168,15 +285,11 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
     {
       // Using the shift key means a new selection is chosen. If later a drag occurs it is modified to 'draggedNewSelection'
       _tracking = Tracking::newSelection;
-      _rubberBand->setGeometry(QRect(_origin, QSize()));
-      _rubberBand->show();
     }
     else if(isCTRL)  // command, not option
     {
       // Using the command key means the selection is extended. If later a drag occurs it is modified to 'draggedAddToSelection'
       _tracking = Tracking::addToSelection;
-      _rubberBand->setGeometry(QRect(_origin, QSize()));
-      _rubberBand->show();
     }
     else if(isALT && isCTRL)  // option and command
     {
@@ -220,18 +333,14 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
       case Tracking::newSelection:
         // convert to dragged version
         _tracking = Tracking::draggedNewSelection;
-        _rubberBand->setGeometry(QRect(_origin, me->pos()).normalized());
         break;
       case Tracking::addToSelection:
         // convert to dragged version
         _tracking = Tracking::draggedAddToSelection;
-        _rubberBand->setGeometry(QRect(_origin, me->pos()).normalized());
         break;
       case Tracking::draggedNewSelection:
-        _rubberBand->setGeometry(QRect(_origin, me->pos()).normalized());
         break;
       case Tracking::draggedAddToSelection:
-        _rubberBand->setGeometry(QRect(_origin, me->pos()).normalized());
         break;
       case Tracking::translateSelection:
         break;
@@ -278,12 +387,10 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
     std::array<int,4> pixel{0,0,0,0};
     QRect rect = QRect(_origin, me->pos()).normalized();
 
-    _rubberBand->hide();
-
     switch(_tracking)
     {
       case Tracking::newSelection:
-        if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+        if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
         {
           #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
             pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
@@ -294,6 +401,8 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
           int structureIdentifier = pixel[1];
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
+
+          qDebug() << "Pick: " << pixel[0] << pickedObject;
 
           switch(pixel[0])
           {
@@ -312,10 +421,10 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
             break;
           }
         }
-        _mainWindow->updateControlPanel();
+        this->updateControlPanel();
         break;
       case Tracking::addToSelection:
-        if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+        if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
         {
           #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
             pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
@@ -325,6 +434,9 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
           int structureIdentifier = pixel[1];
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
+
+          qDebug() << "Pick: " << pixel[0] << pickedObject;
+
           switch(pixel[0])
           {
           case 1:
@@ -342,21 +454,21 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
             break;
           }
         }
-        _mainWindow->updateControlPanel();
+        this->updateControlPanel();
         break;
       case Tracking::draggedNewSelection:
         if (std::shared_ptr<RKCamera> camera = _camera.lock())
         {
           selectAsymetricAtomsInRectangle(rect, false);
         }
-        _mainWindow->updateControlPanel();
+        this->updateControlPanel();
         break;
       case Tracking::draggedAddToSelection:
         if (std::shared_ptr<RKCamera> camera = _camera.lock())
         {
           selectAsymetricAtomsInRectangle(rect, true);
         }
-        _mainWindow->updateControlPanel();
+        this->updateControlPanel();
         break;
       case Tracking::translateSelection:
         break;
@@ -370,7 +482,7 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
             _iraspa_structures[i][j]->structure()->clearSelection();
           }
         }
-        if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+        if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
         {
           #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
             pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
@@ -381,6 +493,8 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
           int structureIdentifier = pixel[1];
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
+
+          qDebug() << "Background Pick: " << pixel[0] << pickedObject;
 
           switch(pixel[0])
           {
@@ -404,14 +518,16 @@ bool RenderStackedWidget::eventFilter(QObject *obj, QEvent *event)
             break;
           }
         }
-        _mainWindow->updateControlPanel();
+        this->updateControlPanel();
         break;
       default:
         break;
     }
   }
 
-  return QStackedWidget::eventFilter(obj, event);
+  update();
+
+  return QWidget::eventFilter(object, event);
 }
 
 void RenderStackedWidget::selectAsymetricAtomsInRectangle(QRect rect, bool extend)
@@ -508,7 +624,7 @@ void RenderStackedWidget::deleteSelection()
       }
     }
   }
-  _mainWindow->updateControlPanel();
+  this->updateControlPanel();
 }
 
 
@@ -606,7 +722,7 @@ void RenderStackedWidget::reloadRenderData()
   }
 
   qDebug() << "RenderStackedWidget::reloadRenderData(): " << render_structures.size();
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->setRenderStructures(render_structures);
     widget->reloadRenderData();
@@ -631,7 +747,7 @@ void RenderStackedWidget::resetData()
     project->camera()->resetForNewBoundingBox(box);
   }
 
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->setRenderStructures(render_structures);
     widget->reloadData();
@@ -641,7 +757,7 @@ void RenderStackedWidget::resetData()
 
 void RenderStackedWidget::reloadData()
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->reloadData();
   }
@@ -650,7 +766,7 @@ void RenderStackedWidget::reloadData()
 
 void RenderStackedWidget::reloadAmbientOcclusionData()
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->reloadAmbientOcclusionData();
   }
@@ -659,7 +775,7 @@ void RenderStackedWidget::reloadAmbientOcclusionData()
 
 void RenderStackedWidget::reloadSelectionData()
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->reloadData();
   }
@@ -668,7 +784,7 @@ void RenderStackedWidget::reloadSelectionData()
 
 void RenderStackedWidget::reloadBackgroundImage()
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->reloadBackgroundImage();
   }
@@ -750,7 +866,7 @@ void RenderStackedWidget::showBoundingBox(bool checked)
 
 void RenderStackedWidget::computeAOHighQuality()
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     // invalidate all lower quality caches
     if(std::shared_ptr<ProjectStructure> project = _project.lock())
@@ -768,7 +884,7 @@ void RenderStackedWidget::computeAOHighQuality()
 
 void RenderStackedWidget::createPicture(QUrl fileURL, int width, int height)
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     // invalidate all lower quality caches
     if(std::shared_ptr<ProjectStructure> project = _project.lock())
@@ -788,7 +904,7 @@ int nearestEvenInt(int to)
 
 void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, MovieWriter::Type type)
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     if (std::shared_ptr<ProjectStructure> project = _project.lock())
     {
@@ -946,9 +1062,6 @@ void RenderStackedWidget::pressedTranslateCartesianPlusZ()
     }
   }
 }
-
-
-
 
 void RenderStackedWidget::pressedRotateCartesianMinusX()
 {
@@ -1349,12 +1462,12 @@ void RenderStackedWidget::pressedRotateBodyFramePlusZ()
 
 void RenderStackedWidget::redraw()
 {
-  currentWidget()->update();
+  renderViewController->redraw();
 }
 
 void RenderStackedWidget::redrawWithQuality(RKRenderQuality quality)
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->redrawWithQuality(quality);
   }
@@ -1371,7 +1484,7 @@ void RenderStackedWidget::invalidateCachedAmbientOcclusionTextures(std::vector<s
                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
   }
 
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->invalidateCachedAmbientOcclusionTextures(renderStructures);
   }
@@ -1386,16 +1499,67 @@ void RenderStackedWidget::invalidateCachedIsoSurfaces(std::vector<std::vector<st
                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
   }
 
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->invalidateCachedIsosurfaces(renderStructures);
   }
 }
 
+void RenderStackedWidget::setControlPanel(bool iskeyAltOn)
+{
+  if(iskeyAltOn)
+  {
+    _controlPanel->setCurrentIndex(1);
+  }
+  else
+  {
+    _controlPanel->setCurrentIndex(0);
+  }
+}
+
+
+void RenderStackedWidget::hideToolBarMenuMenu()
+{
+  if(toolBar)
+  {
+    toolBar->hide();
+  }
+}
+void RenderStackedWidget::showToolBarMenuMenu()
+{
+  if(toolBar)
+  {
+     if(std::shared_ptr<ProjectStructure> project = this->_project.lock())
+     {
+       if(project->hasSelectedObjects())
+       {
+         toolBar->move(mapToGlobal(QPoint(10,10)));
+         toolBar->show();
+         return;
+       }
+    }
+    toolBar->hide();
+  }
+}
+
+void RenderStackedWidget::updateControlPanel()
+{
+  if(std::shared_ptr<ProjectStructure> project = this->_project.lock())
+  {
+     if(project->hasSelectedObjects())
+     {
+       showToolBarMenuMenu();
+       return;
+     }
+  }
+
+  hideToolBarMenuMenu();
+}
+
 
 void RenderStackedWidget::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures)
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->computeHeliumVoidFraction(structures);
   }
@@ -1403,7 +1567,7 @@ void RenderStackedWidget::computeHeliumVoidFraction(std::vector<std::shared_ptr<
 
 void RenderStackedWidget::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures)
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(currentWidget()))
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->computeNitrogenSurfaceArea(structures);
   }

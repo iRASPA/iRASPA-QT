@@ -26,6 +26,8 @@
 #include "scenetreeviewchangemoviedisplaynamecommand.h"
 #include "scenetreeviewpasteprojectscommand.h"
 #include <optional>
+#include <QCoreApplication>
+#include <QMimeData>
 
 SceneTreeViewModel::SceneTreeViewModel(): _sceneList(std::make_shared<SceneList>())
 {

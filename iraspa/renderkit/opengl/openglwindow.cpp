@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "glwidget.h"
+#include "openglwindow.h"
 #include <QCoreApplication>
 #include <QKeyEvent>
 #include <QPaintDevice>
@@ -35,6 +35,8 @@
 #include <QMessageBox>
 #include <QApplication>
 #include <optional>
+#include <QPainter>
+#include <QStylePainter>
 
 #if defined(Q_OS_WIN)
   #include "wingdi.h"
@@ -45,14 +47,17 @@
     #include <QtPlatformHeaders/QGLXNativeContext>
   #endif
 #endif
-
+/*
 #if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
   GLWidget::GLWidget(QWidget* parent ): QOpenGLWidget(parent),
 #else
   GLWidget::GLWidget(QWidget* parent ): QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
-#endif
+#endif*/
+
+OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGLWindow(),
     _isOpenGLInitialized(false),
     _isOpenCLInitialized(false),
+    _logReporter(logReporter),
     _backgroundShader(),
     _blurShader(),
     _energySurfaceShader(),
@@ -64,269 +69,29 @@
     _selectionShader(_atomShader, _bondShader, _objectShader),
     _pickingShader(_atomShader, _bondShader, _objectShader),
     _textShader(),
-    _controlPanel(new QStackedWidget(this)),
-    _controlPanelCartesian(new QFrame(this)),
-    _controlPanelBodyFrame(new QFrame(this)),
     _timer(new QTimer(parent))
 {
-  setAttribute( Qt::WA_OpaquePaintEvent );
-  setFocusPolicy(Qt::StrongFocus);
+  connect(_timer, &QTimer::timeout, this, &OpenGLWindow::timeoutEventHandler);
 
-  connect(_timer, &QTimer::timeout, this, &GLWidget::timeoutEventHandler);
-
-#if (QT_VERSION < QT_VERSION_CHECK(5,4,0))
-  QGLFormat format;
+  QSurfaceFormat format;
   format.setSamples(1);
-  format.setRgba(true);
-  format.setDepth(false);
-  format.setStencil(false);
-  format.setVersion(3, 3);
-  format.setProfile(QGLFormat::CoreProfile);
+  format.setDepthBufferSize(0);
+  format.setStencilBufferSize(0);
+  format.setVersion(3,3);
+  format.setProfile(QSurfaceFormat::CoreProfile);
   setFormat(format);
-#endif
 
-  QGridLayout *layoutCartesian = new QGridLayout(this);
-  layoutCartesian->setSpacing(4);
-  _controlPanelCartesian->setLayout(layoutCartesian);
-
-  _buttonCartesianMinusTx = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianMinusTx->setAutoRepeat(true);
-  _buttonCartesianMinusTx->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianMinusTx->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianMinusTx->setText("-Tx");
-  layoutCartesian->addWidget(_buttonCartesianMinusTx, 1, 0);
-  QObject::connect(_buttonCartesianMinusTx, &QToolButton::clicked,this,&GLWidget::pressedTranslateCartesianMinusX);
-
-  _buttonCartesianPlusTx = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianPlusTx->setAutoRepeat(true);
-  _buttonCartesianPlusTx->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianPlusTx->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianPlusTx->setText("+Tx");
-  layoutCartesian->addWidget(_buttonCartesianPlusTx, 1, 1);
-  QObject::connect(_buttonCartesianPlusTx, &QToolButton::clicked,this,&GLWidget::pressedTranslateCartesianPlusX);
-
-  _buttonCartesianMinusTy = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianMinusTy->setAutoRepeat(true);
-  _buttonCartesianMinusTy->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianMinusTy->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianMinusTy->setText("-Ty");
-  layoutCartesian->addWidget(_buttonCartesianMinusTy, 2, 0);
-  QObject::connect(_buttonCartesianMinusTy, &QToolButton::clicked,this,&GLWidget::pressedTranslateCartesianMinusY);
-
-  _buttonCartesianPlusTy = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianPlusTy->setAutoRepeat(true);
-  _buttonCartesianPlusTy->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianPlusTy->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianPlusTy->setText("+Ty");
-  layoutCartesian->addWidget(_buttonCartesianPlusTy, 2, 1);
-  QObject::connect(_buttonCartesianPlusTy, &QToolButton::clicked,this,&GLWidget::pressedTranslateCartesianPlusY);
-
-  _buttonCartesianMinusTz = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianMinusTz->setAutoRepeat(true);
-  _buttonCartesianMinusTz->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianMinusTz->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianMinusTz->setText("-Tz");
-  layoutCartesian->addWidget(_buttonCartesianMinusTz, 3, 0);
-  QObject::connect(_buttonCartesianMinusTz, &QToolButton::clicked,this,&GLWidget::pressedTranslateCartesianMinusZ);
-
-  _buttonCartesianPlusTz = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianPlusTz->setAutoRepeat(true);
-  _buttonCartesianPlusTz->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianPlusTz->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianPlusTz->setText("+Tz");
-  layoutCartesian->addWidget(_buttonCartesianPlusTz, 3, 1);
-  QObject::connect(_buttonCartesianPlusTz, &QToolButton::clicked,this,&GLWidget::pressedTranslateCartesianPlusZ);
-
-
-
-  _buttonCartesianMinusRx = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianMinusRx->setAutoRepeat(true);
-  _buttonCartesianMinusRx->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianMinusRx->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianMinusRx->setText("-Rx");
-  layoutCartesian->addWidget(_buttonCartesianMinusRx, 4, 0);
-  QObject::connect(_buttonCartesianMinusRx, &QToolButton::clicked,this,&GLWidget::pressedRotateCartesianMinusX);
-
-  _buttonCartesianPlusRx = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianPlusRx->setAutoRepeat(true);
-  _buttonCartesianPlusRx->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianPlusRx->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianPlusRx->setText("+Rx");
-  layoutCartesian->addWidget(_buttonCartesianPlusRx, 4, 1);
-  QObject::connect(_buttonCartesianPlusRx, &QToolButton::clicked,this,&GLWidget::pressedRotateCartesianPlusX);
-
-  _buttonCartesianMinusRy = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianMinusRy->setAutoRepeat(true);
-  _buttonCartesianMinusRy->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianMinusRy->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianMinusRy->setText("-Ry");
-  layoutCartesian->addWidget(_buttonCartesianMinusRy, 5, 0);
-  QObject::connect(_buttonCartesianMinusRy, &QToolButton::clicked,this,&GLWidget::pressedRotateCartesianMinusY);
-
-  _buttonCartesianPlusRy = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianPlusRy->setAutoRepeat(true);
-  _buttonCartesianPlusRy->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianPlusRy->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianPlusRy->setText("+Ry");
-  layoutCartesian->addWidget(_buttonCartesianPlusRy, 5, 1);
-  QObject::connect(_buttonCartesianPlusRy, &QToolButton::clicked,this,&GLWidget::pressedRotateCartesianPlusY);
-
-  _buttonCartesianMinusRz = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianMinusRz->setAutoRepeat(true);
-  _buttonCartesianMinusRz->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianMinusRz->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianMinusRz->setText("-Rz");
-  layoutCartesian->addWidget(_buttonCartesianMinusRz, 6, 0);
-  QObject::connect(_buttonCartesianMinusRz, &QToolButton::clicked,this,&GLWidget::pressedRotateCartesianMinusZ);
-
-  _buttonCartesianPlusRz = new QToolButton(_controlPanelCartesian);
-  _buttonCartesianPlusRz->setAutoRepeat(true);
-  _buttonCartesianPlusRz->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonCartesianPlusRz->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonCartesianPlusRz->setText("+Rz");
-  layoutCartesian->addWidget(_buttonCartesianPlusRz, 6, 1);
-  QObject::connect(_buttonCartesianPlusRz, &QToolButton::clicked,this,&GLWidget::pressedRotateCartesianPlusZ);
-
-  _controlPanel->addWidget(_controlPanelCartesian);
-
-
-  QGridLayout *layoutBodyFrame = new QGridLayout(this);
-  layoutBodyFrame->setSpacing(4);
-  _controlPanelBodyFrame->setLayout(layoutBodyFrame);
-
-  _buttonBodyFrameMinusTx = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFrameMinusTx->setAutoRepeat(true);
-  _buttonBodyFrameMinusTx->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFrameMinusTx->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFrameMinusTx->setText("-T1");
-  layoutBodyFrame->addWidget(_buttonBodyFrameMinusTx, 1, 0);
-  QObject::connect(_buttonBodyFrameMinusTx, &QToolButton::clicked,this,&GLWidget::pressedTranslateBodyFrameMinusX);
-
-  _buttonBodyFramePlusTx = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFramePlusTx->setAutoRepeat(true);
-  _buttonBodyFramePlusTx->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFramePlusTx->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFramePlusTx->setText("+T1");
-  layoutBodyFrame->addWidget(_buttonBodyFramePlusTx, 1, 1);
-  QObject::connect(_buttonBodyFramePlusTx, &QToolButton::clicked,this,&GLWidget::pressedTranslateBodyFramePlusX);
-
-  _buttonBodyFrameMinusTy = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFrameMinusTy->setAutoRepeat(true);
-  _buttonBodyFrameMinusTy->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFrameMinusTy->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFrameMinusTy->setText("-T2");
-  layoutBodyFrame->addWidget(_buttonBodyFrameMinusTy, 2, 0);
-  QObject::connect(_buttonBodyFrameMinusTy, &QToolButton::clicked,this,&GLWidget::pressedTranslateBodyFrameMinusY);
-
-  _buttonBodyFramePlusTy = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFramePlusTy->setAutoRepeat(true);
-  _buttonBodyFramePlusTy->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFramePlusTy->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFramePlusTy->setText("+T2");
-  layoutBodyFrame->addWidget(_buttonBodyFramePlusTy, 2, 1);
-  QObject::connect(_buttonBodyFramePlusTy, &QToolButton::clicked,this,&GLWidget::pressedTranslateBodyFramePlusY);
-
-  _buttonBodyFrameMinusTz = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFrameMinusTz->setAutoRepeat(true);
-  _buttonBodyFrameMinusTz->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFrameMinusTz->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFrameMinusTz->setText("-T3");
-  layoutBodyFrame->addWidget(_buttonBodyFrameMinusTz, 3, 0);
-  QObject::connect(_buttonBodyFrameMinusTz, &QToolButton::clicked,this,&GLWidget::pressedTranslateBodyFrameMinusZ);
-
-  _buttonBodyFramePlusTz = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFramePlusTz->setAutoRepeat(true);
-  _buttonBodyFramePlusTz->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFramePlusTz->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFramePlusTz->setText("+T3");
-  layoutBodyFrame->addWidget(_buttonBodyFramePlusTz, 3, 1);
-  QObject::connect(_buttonBodyFramePlusTz, &QToolButton::clicked,this,&GLWidget::pressedTranslateBodyFramePlusZ);
-
-
-
-  _buttonBodyFrameMinusRx = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFrameMinusRx->setAutoRepeat(true);
-  _buttonBodyFrameMinusRx->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFrameMinusRx->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFrameMinusRx->setText("-R1");
-  layoutBodyFrame->addWidget(_buttonBodyFrameMinusRx, 4, 0);
-  QObject::connect(_buttonBodyFrameMinusRx, &QToolButton::clicked,this,&GLWidget::pressedRotateBodyFrameMinusX);
-
-  _buttonBodyFramePlusRx = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFramePlusRx->setAutoRepeat(true);
-  _buttonBodyFramePlusRx->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFramePlusRx->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFramePlusRx->setText("+R1");
-  layoutBodyFrame->addWidget(_buttonBodyFramePlusRx, 4, 1);
-  QObject::connect(_buttonBodyFramePlusRx, &QToolButton::clicked,this,&GLWidget::pressedRotateBodyFramePlusX);
-
-  _buttonBodyFrameMinusRy = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFrameMinusRy->setAutoRepeat(true);
-  _buttonBodyFrameMinusRy->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFrameMinusRy->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFrameMinusRy->setText("-R2");
-  layoutBodyFrame->addWidget(_buttonBodyFrameMinusRy, 5, 0);
-  QObject::connect(_buttonBodyFrameMinusRy, &QToolButton::clicked,this,&GLWidget::pressedRotateBodyFrameMinusY);
-
-  _buttonBodyFramePlusRy = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFramePlusRy->setAutoRepeat(true);
-  _buttonBodyFramePlusRy->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFramePlusRy->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFramePlusRy->setText("+R2");
-  layoutBodyFrame->addWidget(_buttonBodyFramePlusRy, 5, 1);
-  QObject::connect(_buttonBodyFramePlusRy, &QToolButton::clicked,this,&GLWidget::pressedRotateBodyFramePlusY);
-
-  _buttonBodyFrameMinusRz = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFrameMinusRz->setAutoRepeat(true);
-  _buttonBodyFrameMinusRz->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFrameMinusRz->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFrameMinusRz->setText("-R3");
-  layoutBodyFrame->addWidget(_buttonBodyFrameMinusRz, 6, 0);
-  QObject::connect(_buttonBodyFrameMinusRz, &QToolButton::clicked,this,&GLWidget::pressedRotateBodyFrameMinusZ);
-
-  _buttonBodyFramePlusRz = new QToolButton(_controlPanelBodyFrame);
-  _buttonBodyFramePlusRz->setAutoRepeat(true);
-  _buttonBodyFramePlusRz->setStyleSheet("height: 24px; width: 24px; font: bold; color: black; background-color: rgba(220, 220, 220, 128); border: 1px solid grey; font-size: 14px; ");
-  _buttonBodyFramePlusRz->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  _buttonBodyFramePlusRz->setText("+R3");
-  layoutBodyFrame->addWidget(_buttonBodyFramePlusRz, 6, 1);
-  QObject::connect(_buttonBodyFramePlusRz, &QToolButton::clicked,this,&GLWidget::pressedRotateBodyFramePlusZ);
-
-  _controlPanel->addWidget(_controlPanelBodyFrame);
-
-  _controlPanel->setHidden(true);
+  setSurfaceType(QWindow::OpenGLSurface);
 }
 
-void GLWidget::setControlPanel(bool iskeyAltOn)
-{
-  if(iskeyAltOn)
-    _controlPanel->setCurrentIndex(1);
-  else
-    _controlPanel->setCurrentIndex(0);
-}
 
-void GLWidget::updateControlPanel()
+OpenGLWindow::~OpenGLWindow()
 {
-  for(std::vector<std::shared_ptr<RKRenderStructure>> renderStructureVector : _renderStructures)
-  {
-    for(std::shared_ptr<RKRenderStructure> structure : renderStructureVector)
-    {
-      if(structure->hasSelectedAtoms())
-      {
-        _controlPanel->setHidden(false);
-        return;
-      }
-    }
-  }
-  _controlPanel->setHidden(true);
-}
-
-GLWidget::~GLWidget()
-{
+  makeCurrent();
   _bondShader.deletePermanentBuffers();
 }
 
-void GLWidget::setLogReportingWidget(LogReporting *logReporting)
+void OpenGLWindow::setLogReportingWidget(LogReporting *logReporting)
 {
   _logReporter = logReporting;
 
@@ -338,9 +103,11 @@ void GLWidget::setLogReportingWidget(LogReporting *logReporting)
   }
 }
 
-void GLWidget::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
+void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
 {
   makeCurrent();
+
+  qDebug() << "setRenderDataSource";
 
   _dataSource = source;
   _boundingBoxShader.setRenderDataSource(source);
@@ -373,8 +140,9 @@ void GLWidget::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
   }
 }
 
-void GLWidget::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
 {
+    qDebug() << "setRenderStructures";
   makeCurrent();
   _renderStructures = structures;
 
@@ -389,15 +157,16 @@ void GLWidget::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRen
   _pickingShader.setRenderStructures(structures);
 
   _textShader.setRenderStructures(structures);
+
 }
 
 
-void GLWidget::redraw()
+void OpenGLWindow::redraw()
 {
   update();
 }
 
-void GLWidget::redrawWithQuality(RKRenderQuality quality)
+void OpenGLWindow::redrawWithQuality(RKRenderQuality quality)
 {
   _quality = quality;
   update();
@@ -406,25 +175,25 @@ void GLWidget::redrawWithQuality(RKRenderQuality quality)
 
 
 
-void GLWidget::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void OpenGLWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderStructure>> structures)
 {
   makeCurrent();
   _atomShader.invalidateCachedAmbientOcclusionTexture(structures);
 }
 
-void GLWidget::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void OpenGLWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderStructure>> structures)
 {
   makeCurrent();
   _energySurfaceShader.invalidateIsosurface(structures);
 }
 
-std::array<int,4> GLWidget::pickTexture(int x, int y, int width, int height)
+std::array<int,4> OpenGLWindow::pickTexture(int x, int y, int width, int height)
 {
   makeCurrent();
   return _pickingShader.pickTexture(x,y,width,height);
 }
 
-void GLWidget::initializeGL()
+void OpenGLWindow::initializeGL()
 {
   cl_context _clContext = nullptr;
   cl_device_id _clDeviceId = nullptr;
@@ -440,6 +209,8 @@ void GLWidget::initializeGL()
 
   if (!initializeOpenGLFunctions()) 
 	  qFatal("Failed to initialize OpenGL functions");
+
+  glEnable(GL_MULTISAMPLE);
 
   _backgroundShader.initializeOpenGLFunctions();
   _blurShader.initializeOpenGLFunctions();
@@ -539,7 +310,7 @@ void GLWidget::initializeGL()
                           + "multisampling: " + QString::number(_multiSampling)));
   }
 
-  _devicePixelRatio = QPaintDevice:: devicePixelRatio();
+  _devicePixelRatio = devicePixelRatio();
   _width = std::max(512, this->width());
   _height = std::max(512, this->height());
 
@@ -583,10 +354,10 @@ void GLWidget::initializeGL()
   check_gl_error();
 
 
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+  //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
   check_gl_error();
 
-  glActiveTexture(GL_TEXTURE0);
+  glActiveTexture(GL_TEXTURE1);
   check_gl_error();
 
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _glowSelectionTexture);
@@ -599,11 +370,13 @@ void GLWidget::initializeGL()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   check_gl_error();
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+  //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
-  glActiveTexture(GL_TEXTURE1);
+  //glActiveTexture(GL_TEXTURE1);
+  //check_gl_error();
+
+  glActiveTexture(GL_TEXTURE2);
   check_gl_error();
-
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneDepthTexture);
   check_gl_error();
   glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
@@ -633,7 +406,7 @@ void GLWidget::initializeGL()
     qWarning("initializeSceneFrameBuffer fatal error: framebuffer incomplete");
   }
 
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+  //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -688,7 +461,7 @@ void GLWidget::initializeGL()
   _energySurfaceShader.initializeOpenCL(_isOpenCLInitialized, _clContext, _clDeviceId, _clCommandQueue, _logData);
 
   // Set the clear color to white
-  glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
+  glClearColor( 1.0f, 1.0f, 0.0f, 1.0f );
 
   this->loadShader();
   _backgroundShader.loadShader();
@@ -708,6 +481,7 @@ void GLWidget::initializeGL()
   _unitCellShader.generateBuffers();
   _bondShader.generatePermanentBuffers();
   _textShader.generateTextures();
+
 
   _backgroundShader.initializeVertexArrayObject();
   _energySurfaceShader.initializeVertexArrayObject();
@@ -751,9 +525,9 @@ void GLWidget::initializeGL()
   glEnableVertexAttribArray(_downSamplePositionAttributeLocation);
   check_gl_error();
 
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture);
-  check_gl_error();
+ // glActiveTexture(GL_TEXTURE0);
+ // glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture);
+ // check_gl_error();
 
   glBindVertexArray(0);
   check_gl_error();
@@ -762,7 +536,7 @@ void GLWidget::initializeGL()
 }
 
 #if defined (Q_OS_OSX)
-void GLWidget::initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue)
+void OpenGLWindow::initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue)
 {
   cl_int err;
 
@@ -845,7 +619,7 @@ void GLWidget::initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceI
 #endif
 
 #if defined(Q_OS_WIN)
-void GLWidget::initializeCL_Windows(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue)
+void OpenGLWindow::initializeCL_Windows(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue)
 {
   cl_int err;
 
@@ -933,7 +707,7 @@ void GLWidget::initializeCL_Windows(cl_context &_clContext, cl_device_id &_clDev
 #endif
 
 #if defined(Q_OS_LINUX)
-void GLWidget::initializeCL_Linux(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue)
+void OpenGLWindow::initializeCL_Linux(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue)
 {
   cl_int err;
 
@@ -1021,7 +795,7 @@ void GLWidget::initializeCL_Linux(cl_context &_clContext, cl_device_id &_clDevic
 }
 #endif
 
-void GLWidget::printDeviceInformation(cl_device_id &clDeviceId)
+void OpenGLWindow::printDeviceInformation(cl_device_id &clDeviceId)
 {
   cl_int err;
   size_t valueSize = 0;
@@ -1202,7 +976,7 @@ void GLWidget::printDeviceInformation(cl_device_id &clDeviceId)
   }
 }
 
-std::optional<cl_device_id> GLWidget::bestOpenCLDevice(cl_device_type device_type)
+std::optional<cl_device_id> OpenGLWindow::bestOpenCLDevice(cl_device_type device_type)
 {
   cl_int err;
 
@@ -1299,7 +1073,7 @@ std::optional<cl_device_id> GLWidget::bestOpenCLDevice(cl_device_type device_typ
   return std::nullopt;
 }
 
-bool GLWidget::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId)
+bool OpenGLWindow::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId)
 {
   cl_int err;
 
@@ -1361,136 +1135,192 @@ bool GLWidget::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_d
   return true;
 }
 
-void GLWidget::resizeGL( int w, int h )
+void OpenGLWindow::resizeGL( int w, int h )
 {
-  if (std::shared_ptr<RKCamera> camera = _camera.lock())
+  if(_isOpenGLInitialized)
   {
-    camera->updateCameraForWindowResize(w, h);
-  }
+    makeCurrent();
+    check_gl_error();
 
-  _pickingShader.resizeGL(w,h);
+    if (std::shared_ptr<RKCamera> camera = _camera.lock())
+    {
+      camera->updateCameraForWindowResize(w, h);
+    }
 
-  _width = std::max(16, w);
-  _height = std::max(16, h);
+    _pickingShader.resizeGL(w,h);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, _sceneFrameBuffer);
+    _width = std::max(16, w);
+    _height = std::max(16, h);
 
-  // on nvidia, the multisampled (depth-)texture needs to be recreated to avoid memory corruption
-  if(_sceneTexture)
-    glDeleteTextures(1, &_sceneTexture);
-  glGenTextures(1, &_sceneTexture);
+    glBindFramebuffer(GL_FRAMEBUFFER, _sceneFrameBuffer);
 
-  if(_sceneDepthTexture)
-    glDeleteTextures(1, &_sceneDepthTexture);
-  glGenTextures(1, &_sceneDepthTexture);
+    // on nvidia, the multisampled (depth-)texture needs to be recreated to avoid memory corruption
+    if(_sceneTexture)
+      glDeleteTextures(1, &_sceneTexture);
+    glGenTextures(1, &_sceneTexture);
+    check_gl_error();
 
-  if(_glowSelectionTexture)
-    glDeleteTextures(1, &_glowSelectionTexture);
-  glGenTextures(1, &_glowSelectionTexture);
+    if(_sceneDepthTexture)
+      glDeleteTextures(1, &_sceneDepthTexture);
+    glGenTextures(1, &_sceneDepthTexture);
+    check_gl_error();
 
+    if(_glowSelectionTexture)
+      glDeleteTextures(1, &_glowSelectionTexture);
+    glGenTextures(1, &_glowSelectionTexture);
+    check_gl_error();
 
-  glBindFramebuffer(GL_FRAMEBUFFER, _sceneFrameBuffer);
-  glGetError();
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_RGBA16F, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_TRUE);
-  glGetError();
-  glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture, 0);
-  glGetError();
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, _sceneFrameBuffer);
+    check_gl_error();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_RGBA16F, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_TRUE);
+    check_gl_error();
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture, 0);
+    check_gl_error();
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _glowSelectionTexture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_RGBA16F, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_TRUE);
-  glGetError();
-  glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D_MULTISAMPLE, _glowSelectionTexture, 0);
-  glGetError();
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _glowSelectionTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_RGBA16F, _width  * _devicePixelRatio, _height * _devicePixelRatio, GL_TRUE);
+    check_gl_error();
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D_MULTISAMPLE, _glowSelectionTexture, 0);
+    check_gl_error();
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneDepthTexture);
-  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
-  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_T), GLint(GL_CLAMP_TO_EDGE));
-  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MIN_FILTER), GLint(GL_NEAREST));
-  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MAG_FILTER), GLint(GL_NEAREST));
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_DEPTH32F_STENCIL8, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_TRUE);
-  glGetError();
-  glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, _sceneDepthTexture, 0);
-  glGetError();
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneDepthTexture);
+    glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
+    glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_T), GLint(GL_CLAMP_TO_EDGE));
+    glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MIN_FILTER), GLint(GL_NEAREST));
+    glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MAG_FILTER), GLint(GL_NEAREST));
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_DEPTH32F_STENCIL8, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_TRUE);
+    check_gl_error();
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, _sceneDepthTexture, 0);
+    check_gl_error();
 
-  // check framebuffer completeness
-  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-  if (status != GL_FRAMEBUFFER_COMPLETE)
-  {
-    qWarning("initializeSceneFrameBuffer fatal error: framebuffer incomplete: %0x",status);
-    glGetError();
-  }
+    // check framebuffer completeness
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+      qWarning("initializeSceneFrameBuffer fatal error: framebuffer incomplete: %0x",status);
+      check_gl_error();
+    }
 
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-  if(std::shared_ptr<RKRenderDataSource> dataSource = _dataSource)
-  {
-    _blurShader.resizeGL(_width,_height);
+    if(std::shared_ptr<RKRenderDataSource> dataSource = _dataSource)
+    {
+      _blurShader.resizeGL(_width, _height);
+    }
   }
 }
 
 
-void GLWidget::paintGL()
+void OpenGLWindow::paintGL()
 {
-  glGetError();
-  updateStructureUniforms();
-  glGetError();
-  updateTransformUniforms();
-  glGetError();
-  updateIsosurfaceUniforms();
-  updateLightUniforms();
+  if(isValid())
+  {
+    check_gl_error();
+    updateStructureUniforms();
+    check_gl_error();
+    updateTransformUniforms();
+    check_gl_error();
+    updateIsosurfaceUniforms();
+    updateLightUniforms();
 
-  GLint prev_fbo_id;
-  glGetIntegerv( GL_FRAMEBUFFER_BINDING, &prev_fbo_id );
+    glViewport(0,0,_width,_height);
 
-  // pass mouse coordinates (real coordinates twice larger for retina-displays)
-  _pickingShader.paintGL(_width, _height, _structureUniformBuffer);
+    // pass mouse coordinates (real coordinates twice larger for retina-displays)
+    _pickingShader.paintGL(_width, _height, _structureUniformBuffer);
 
-  glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
+    glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
+    drawSceneToFramebuffer(_sceneFrameBuffer);
+    check_gl_error();
 
-  drawSceneToFramebuffer(_sceneFrameBuffer);
+    glViewport(0,0,_width,_height);
+    _blurShader.paintGL(_glowSelectionTexture, _width, _height);
 
-  _blurShader.paintGL(_glowSelectionTexture, _width, _height);
+    glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+    glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
+    check_gl_error();
 
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER,prev_fbo_id);
-  glViewport(0,0,_width * _devicePixelRatio, _height * _devicePixelRatio);
-  glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    GLfloat black[4] = {0.0,1.0,0.0,0.0};
+    glDisable(GL_BLEND);
+    glDisable (GL_DEPTH_TEST);
+    glClearBufferfv(GL_COLOR, 0, black);
+    glClear(GL_DEPTH_BUFFER_BIT);
 
-  glUseProgram(_program);
-  glBindVertexArray(_downSamplerVertexArray);
+    glUseProgram(_program);
+    glBindVertexArray(_downSamplerVertexArray);
+    check_gl_error();
 
-  // input scene texture
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture);
-  glUniform1i(_downSampleInputTextureUniformLocation, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture);
+    glUniform1i(_downSampleInputTextureUniformLocation, 0);
+    check_gl_error();
 
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, _blurShader.blurredTexture());
-  glUniform1i(_blurredInputTextureUniformLocation, 1);
-  glUniform1i(_numberOfMultiSamplePointsUniformLocation, _multiSampling);
-  glDrawElements(GL_TRIANGLE_STRIP,4,GL_UNSIGNED_SHORT, nullptr);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, _blurShader.blurredTexture());
+    glUniform1i(_blurredInputTextureUniformLocation, 1);
+    glUniform1i(_numberOfMultiSamplePointsUniformLocation, _multiSampling);
+    glDrawElements(GL_TRIANGLE_STRIP,4,GL_UNSIGNED_SHORT, nullptr);
+    check_gl_error();
 
-  glActiveTexture(GL_TEXTURE0);
-  glBindVertexArray(0);
-  glUseProgram(0);
+    glBindVertexArray(0);
+    glUseProgram(0);
+    check_gl_error();
+  }
 }
 
-QImage GLWidget::renderSceneToImage(int width, int height, RKRenderQuality quality)
+void OpenGLWindow::paintOverGL()
+{
+  if(_dataSource)
+  {
+    QColor color(Qt::lightGray);
+    color.setAlpha(100);
+
+    QPen pen;
+    pen.setColor(Qt::darkGray);
+    QVector<qreal> dashes{6.0,3.0};
+    pen.setDashPattern(dashes);
+    pen.setWidthF(2.0);
+
+    QPainter painter(this);
+
+    switch(_tracking)
+    {
+      case Tracking::draggedAddToSelection:
+        painter.setPen(pen);
+        painter.drawRect(QRect(_origin,_draggedPos));
+        painter.fillRect(QRect(_origin,_draggedPos), QBrush(color));
+        break;
+      case Tracking::draggedNewSelection:
+        painter.setPen(pen);
+        painter.setPen(Qt::SolidLine);
+        painter.drawRect(QRect(_origin,_draggedPos));
+        painter.fillRect(QRect(_origin,_draggedPos), QBrush(color));
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+void OpenGLWindow::paintUnderGL()
+{
+
+}
+
+QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality quality)
 {
   GLuint sceneFrameBuffer;
   GLuint sceneDepthTexture;
@@ -1526,7 +1356,7 @@ QImage GLWidget::renderSceneToImage(int width, int height, RKRenderQuality quali
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
   check_gl_error();
 
-  glActiveTexture(GL_TEXTURE0);
+  glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, glowSelectionTexture);
   glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_RGBA16F, width, height, GL_TRUE);
   check_gl_error();
@@ -1537,7 +1367,7 @@ QImage GLWidget::renderSceneToImage(int width, int height, RKRenderQuality quali
   check_gl_error();
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
-  glActiveTexture(GL_TEXTURE1);
+  glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, sceneDepthTexture);
   check_gl_error();
   glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
@@ -1620,9 +1450,9 @@ QImage GLWidget::renderSceneToImage(int width, int height, RKRenderQuality quali
   glUniform1i(_downSampleInputTextureUniformLocation, 0);
   check_gl_error();
 
- // glActiveTexture(GL_TEXTURE1);
-//  glBindTexture(GL_TEXTURE_2D, _blurShader.blurredTexture());
-//  glUniform1i(_blurredInputTextureUniformLocation, 1);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, _blurShader.blurredTexture());
+  glUniform1i(_blurredInputTextureUniformLocation, 1);
   glDrawElements(GL_TRIANGLE_STRIP,4,GL_UNSIGNED_SHORT, nullptr);
   check_gl_error();
 
@@ -1650,29 +1480,37 @@ QImage GLWidget::renderSceneToImage(int width, int height, RKRenderQuality quali
   return img.mirrored();
 }
 
-void GLWidget::drawSceneToFramebuffer(GLuint framebuffer)
+void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer)
 {
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER,framebuffer);
+  check_gl_error();
   glDrawBuffer(GL_COLOR_ATTACHMENT0);
+  check_gl_error();
 
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
+  glDisable(GL_CULL_FACE);
   check_gl_error();
 
   // clear the color, depth, and stencil buffer
   // the background default color is white
-  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  check_gl_error();
 
   _backgroundShader.paintGL();
+  check_gl_error();
 
   glEnable(GL_DEPTH_TEST);
-
 
   if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
     _atomShader.paintGL(camera, _quality, _structureUniformBuffer);
+    check_gl_error();
+
     _bondShader.paintGL(_structureUniformBuffer);
+     check_gl_error();
+
     _objectShader.paintGL(_structureUniformBuffer);
     _unitCellShader.paintGL(_structureUniformBuffer);
 
@@ -1691,24 +1529,28 @@ void GLWidget::drawSceneToFramebuffer(GLuint framebuffer)
   glDrawBuffer(GL_COLOR_ATTACHMENT1);
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT);
+  check_gl_error();
   _selectionShader.paintGLGlow(_structureUniformBuffer);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
 }
 
-void GLWidget::keyPressEvent( QKeyEvent* e )
+void OpenGLWindow::keyPressEvent( QKeyEvent* e )
 {
   Q_UNUSED(e);
 
   makeCurrent();
 }
 
-void GLWidget::mousePressEvent(QMouseEvent *event)
+void OpenGLWindow::mousePressEvent(QMouseEvent *event)
 {
   _timer->stop();
+
+  _tracking = Tracking::none;
 
   makeCurrent();
   _startPoint = event->pos();
   _origin = event->pos();
+  _draggedPos = event->pos();
 
   _quality = RKRenderQuality::medium;
 
@@ -1756,22 +1598,28 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 }
 
 
-void GLWidget::mouseMoveEvent(QMouseEvent *event)
+void OpenGLWindow::mouseMoveEvent(QMouseEvent *event)
 {
   makeCurrent();
   switch(_tracking)
   {
+    case Tracking::none:
+      break;
     case Tracking::newSelection:
       // convert to dragged version
       _tracking = Tracking::draggedNewSelection;
+      _draggedPos = event->pos();
       break;
     case Tracking::addToSelection:
        // convert to dragged version
        _tracking = Tracking::draggedAddToSelection;
+       _draggedPos = event->pos();
        break;
     case Tracking::draggedNewSelection:
+      _draggedPos = event->pos();
        break;
     case Tracking::draggedAddToSelection:
+      _draggedPos = event->pos();
       break;
     case Tracking::translateSelection:
        break;
@@ -1798,12 +1646,14 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
   update();
 }
 
-void GLWidget::mouseReleaseEvent(QMouseEvent *event)
+void OpenGLWindow::mouseReleaseEvent(QMouseEvent *event)
 {
   makeCurrent();
 
   switch(_tracking)
   {
+    case Tracking::none:
+      break;
     case Tracking::newSelection:
       break;
     case Tracking::addToSelection:
@@ -1835,12 +1685,13 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
   }
 
   _quality = RKRenderQuality::high;
+  _tracking = Tracking::none;
 
   update();
 }
 
 
-void GLWidget::wheelEvent(QWheelEvent *event)
+void OpenGLWindow::wheelEvent(QWheelEvent *event)
 {
   _quality = RKRenderQuality::medium;
   _timer->start(500);
@@ -1852,14 +1703,14 @@ void GLWidget::wheelEvent(QWheelEvent *event)
   update();
 }
 
-void GLWidget::timeoutEventHandler()
+void OpenGLWindow::timeoutEventHandler()
 {
   _timer->stop();
   _quality = RKRenderQuality::high;
   update();
 }
 
-void GLWidget::initializeTransformUniforms()
+void OpenGLWindow::initializeTransformUniforms()
 {
   glGenBuffers(1, &_frameUniformBuffer);
   check_gl_error();
@@ -1880,6 +1731,7 @@ void GLWidget::initializeTransformUniforms()
   check_gl_error();
   _bondShader.initializeTransformUniforms();
   check_gl_error();
+
   _objectShader.initializeTransformUniforms();
   check_gl_error();
   _unitCellShader.initializeTransformUniforms();
@@ -1895,7 +1747,7 @@ void GLWidget::initializeTransformUniforms()
   check_gl_error();
 }
 
-void GLWidget::updateTransformUniforms()
+void OpenGLWindow::updateTransformUniforms()
 {
   double4x4 projectionMatrix = double4x4();
   double4x4 viewMatrix = double4x4();
@@ -1920,7 +1772,7 @@ void GLWidget::updateTransformUniforms()
 
 
 
-void GLWidget::initializeStructureUniforms()
+void OpenGLWindow::initializeStructureUniforms()
 {
   glGenBuffers(1, &_structureUniformBuffer);
   check_gl_error();
@@ -1945,7 +1797,7 @@ void GLWidget::initializeStructureUniforms()
   check_gl_error();
 }
 
-void GLWidget::updateStructureUniforms()
+void OpenGLWindow::updateStructureUniforms()
 {
   glBindBuffer(GL_UNIFORM_BUFFER, _structureUniformBuffer);
 
@@ -1970,7 +1822,7 @@ void GLWidget::updateStructureUniforms()
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void GLWidget::initializeIsosurfaceUniforms()
+void OpenGLWindow::initializeIsosurfaceUniforms()
 {
   glGenBuffers(1, &_isosurfaceUniformBuffer);
   check_gl_error();
@@ -1984,7 +1836,7 @@ void GLWidget::initializeIsosurfaceUniforms()
   check_gl_error();
 }
 
-void GLWidget::updateIsosurfaceUniforms()
+void OpenGLWindow::updateIsosurfaceUniforms()
 {
   std::vector<RKIsosurfaceUniforms> isosurfaceUniforms;
 
@@ -2011,7 +1863,7 @@ void GLWidget::updateIsosurfaceUniforms()
 }
 
 
-void GLWidget::initializeLightUniforms()
+void OpenGLWindow::initializeLightUniforms()
 {
   glGenBuffers(1, &_lightsUniformBuffer);
   check_gl_error();
@@ -2033,7 +1885,7 @@ void GLWidget::initializeLightUniforms()
   check_gl_error();
 }
 
-void GLWidget::updateLightUniforms()
+void OpenGLWindow::updateLightUniforms()
 {
   RKLightsUniforms lightUniforms = RKLightsUniforms(_dataSource);
   glBindBuffer(GL_UNIFORM_BUFFER, _lightsUniformBuffer);
@@ -2042,7 +1894,7 @@ void GLWidget::updateLightUniforms()
 }
 
 
-void GLWidget::reloadData()
+void OpenGLWindow::reloadData()
 {
   makeCurrent();
 
@@ -2063,7 +1915,7 @@ void GLWidget::reloadData()
   check_gl_error();
 }
 
-void GLWidget::reloadData(RKRenderQuality quality)
+void OpenGLWindow::reloadData(RKRenderQuality quality)
 {
   makeCurrent();
 
@@ -2084,14 +1936,14 @@ void GLWidget::reloadData(RKRenderQuality quality)
   check_gl_error();
 }
 
-void GLWidget::reloadAmbientOcclusionData()
+void OpenGLWindow::reloadAmbientOcclusionData()
 {
   qDebug() << "GLWidget reloadAmbientOcclusionData";
   makeCurrent();
   _atomShader.reloadAmbientOcclusionData(_dataSource, RKRenderQuality::low);
 }
 
-void GLWidget::reloadRenderData()
+void OpenGLWindow::reloadRenderData()
 {
   makeCurrent();
 
@@ -2109,24 +1961,24 @@ void GLWidget::reloadRenderData()
   update();
 }
 
-void GLWidget::reloadRenderMeasurePointsData()
+void OpenGLWindow::reloadRenderMeasurePointsData()
 {
   makeCurrent();
 }
 
-void GLWidget::reloadBoundingBoxData()
+void OpenGLWindow::reloadBoundingBoxData()
 {
   makeCurrent();
 }
 
-void GLWidget::reloadSelectionData()
+void OpenGLWindow::reloadSelectionData()
 {
   makeCurrent();
 
   _selectionShader.reloadData();
 }
 
-void GLWidget::reloadBackgroundImage()
+void OpenGLWindow::reloadBackgroundImage()
 {
   makeCurrent();
   if(_dataSource)
@@ -2135,12 +1987,12 @@ void GLWidget::reloadBackgroundImage()
   }
 }
 
-void GLWidget::updateVertexArrays()
+void OpenGLWindow::updateVertexArrays()
 {
 
 }
 
-void GLWidget::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void OpenGLWindow::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures)
 {
   if(_isOpenCLInitialized)
   {
@@ -2153,7 +2005,7 @@ void GLWidget::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStr
   }
 }
 
-void GLWidget::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void OpenGLWindow::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures)
 {
   if(_isOpenCLInitialized)
   {
@@ -2166,13 +2018,13 @@ void GLWidget::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderSt
   }
 }
 
-void GLWidget::loadShader(void)
+void OpenGLWindow::loadShader(void)
 {
   GLuint vertexShader;
   GLuint fragmentShader;
 
-  vertexShader=compileShaderOfType(GL_VERTEX_SHADER,GLWidget::_vertexShaderSource.c_str());
-  fragmentShader=compileShaderOfType(GL_FRAGMENT_SHADER,GLWidget::_fragmentShaderSource.c_str());
+  vertexShader=compileShaderOfType(GL_VERTEX_SHADER,OpenGLWindow::_vertexShaderSource.c_str());
+  fragmentShader=compileShaderOfType(GL_FRAGMENT_SHADER,OpenGLWindow::_fragmentShaderSource.c_str());
 
   if (0 != vertexShader && 0 != fragmentShader)
   {
@@ -2203,7 +2055,7 @@ void GLWidget::loadShader(void)
   }
 }
 
-const std::string GLWidget::_vertexShaderSource =
+const std::string OpenGLWindow::_vertexShaderSource =
 OpenGLVersionStringLiteral +
 std::string(R"foo(
 in vec4 position;
@@ -2217,7 +2069,7 @@ void main()
 }
 )foo");
 
-const std::string GLWidget:: _fragmentShaderSource =
+const std::string OpenGLWindow:: _fragmentShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLFrameUniformBlockStringLiteral +
 std::string(R"foo(

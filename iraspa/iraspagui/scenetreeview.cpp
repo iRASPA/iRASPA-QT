@@ -28,6 +28,9 @@
 #include "scenetreeviewchangeselectioncommand.h"
 #include <QModelIndexList>
 #include <QApplication>
+#include <QDrag>
+#include <QMimeData>
+#include <QClipboard>
 #include <map>
 #include <unordered_set>
 

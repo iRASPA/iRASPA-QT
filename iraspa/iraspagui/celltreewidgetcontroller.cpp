@@ -26,6 +26,7 @@
 #include <tuple>
 #include <QLabel>
 #include <QSpinBox>
+#include <QStandardItemModel>
 #include <mathkit.h>
 #include <renderkit.h>
 #include <symmetrykit.h>

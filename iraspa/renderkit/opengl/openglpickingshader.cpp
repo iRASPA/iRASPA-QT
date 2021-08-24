@@ -134,8 +134,8 @@ void OpenGLPickingShader::paintGL(int width,int height,GLuint structureUniformBu
 
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _frameBufferObject);
 
-  glViewport(0,0,width,height);
   glDisable(GL_BLEND);
+  glEnable (GL_DEPTH_TEST);
   glClearBufferfv(GL_COLOR, 0, black);
   glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -217,16 +217,49 @@ void OpenGLPickingShader::generateFrameBuffers()
 
 void OpenGLPickingShader::resizeGL(int w, int h)
 {
+  GLenum status;
+
+  // on nvidia, the (depth-)textures needs to be recreated to avoid memory corruption
+  if(_texture)
+    glDeleteTextures(1, &_texture);
+  glGenTextures(1, &_texture);
+
+  if(_depthTexture)
+    glDeleteTextures(1, &_depthTexture);
+  glGenTextures(1, &_depthTexture);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferObject);
+  check_gl_error();
+  glActiveTexture(GL_TEXTURE0);
+  check_gl_error();
   glBindTexture(GL_TEXTURE_2D, _texture);
+  check_gl_error();
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32UI, w, h, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr);
   check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
+  check_gl_error();
 
+  glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, _depthTexture);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
   check_gl_error();
-
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
   check_gl_error();
+
+  // check framebuffer completeness
+  status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (status != GL_FRAMEBUFFER_COMPLETE)
+  {
+    qWarning("initializePickingFrameBuffer fatal error: framebuffer incomplete");
+  }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 

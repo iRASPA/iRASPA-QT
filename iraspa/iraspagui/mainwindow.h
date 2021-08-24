@@ -25,9 +25,13 @@
 #include <QObject>
 #include <QDockWidget>
 #include <QMenu>
+#include <QDir>
 #include <QAction>
+#include <QItemSelection>
+#include <QFuture>
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QTimer>
 #include <foundationkit.h>
 #include <iraspakit.h>
 #include <symmetrykit.h>
@@ -83,6 +87,9 @@ private:
   bool saveFile(const QString &fileName);
   void setCurrentFile(const QString &fileName);
 
+  void resizeEvent(QResizeEvent* pEvent) override final;
+  QTimer *_timer;
+
   QAction *_helpAction;
   void acknowledgements();
   QDir directoryOf(const QString &subdir);
@@ -125,6 +132,8 @@ private:
   QAction *_cutAction{nullptr};
   QAction *_copyAction{nullptr};
   QAction *_pasteAction{nullptr};
+
+  void moveEvent(QMoveEvent *event) override;
 public slots:
   void importFile();
   void open();
@@ -142,6 +151,8 @@ public slots:
   void focusChanged(QWidget *old, QWidget *now);
   void updatePasteStatus();
   void focusWidgetSelectionChanged(const QItemSelection &selected, const QItemSelection &/*deselected*/);
+private slots:
+  void resizeStopped();
 signals:
   void rendererReloadData();
   void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);

@@ -34,7 +34,6 @@
 #include <iraspakit.h>
 #include <foundationkit.h>
 #include <renderkit.h>
-#include "glwidget.h"
 #include "masterstackedwidget.h"
 #include "importfiledialog.h"
 #include <iraspatreeview.h>
@@ -80,9 +79,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 
   this->propagateProject(std::shared_ptr<ProjectTreeNode>(nullptr), this);
-
-  // monitor the opengl mouse events in stackRenderers
-  ui->glwidget->installEventFilter(ui->stackedRenderers);
 
   ui->detailTabViewController->setStyleSheet("QTabWidget::tab-bar { left: 0;}");
 
@@ -165,36 +161,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   QObject::connect(this, &MainWindow::invalidateCachedIsoSurfaces, ui->stackedRenderers, &RenderStackedWidget::invalidateCachedIsoSurfaces);
   QObject::connect(this, &MainWindow::rendererReloadData, ui->stackedRenderers, &RenderStackedWidget::reloadRenderData);
 
-  if (GLWidget* widget = dynamic_cast<GLWidget*>(ui->stackedRenderers->currentWidget()))
-  {
-    QObject::connect(widget, &GLWidget::pressedTranslateCartesianMinusX, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateCartesianMinusX);
-    QObject::connect(widget, &GLWidget::pressedTranslateCartesianPlusX, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateCartesianPlusX);
-    QObject::connect(widget, &GLWidget::pressedTranslateCartesianMinusY, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateCartesianMinusY);
-    QObject::connect(widget, &GLWidget::pressedTranslateCartesianPlusY, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateCartesianPlusY);
-    QObject::connect(widget, &GLWidget::pressedTranslateCartesianMinusZ, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateCartesianMinusZ);
-    QObject::connect(widget, &GLWidget::pressedTranslateCartesianPlusZ, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateCartesianPlusZ);
-    QObject::connect(widget, &GLWidget::pressedRotateCartesianMinusX, ui->stackedRenderers, &RenderStackedWidget::pressedRotateCartesianMinusX);
-    QObject::connect(widget, &GLWidget::pressedRotateCartesianPlusX, ui->stackedRenderers, &RenderStackedWidget::pressedRotateCartesianPlusX);
-    QObject::connect(widget, &GLWidget::pressedRotateCartesianMinusY, ui->stackedRenderers, &RenderStackedWidget::pressedRotateCartesianMinusY);
-    QObject::connect(widget, &GLWidget::pressedRotateCartesianPlusY, ui->stackedRenderers, &RenderStackedWidget::pressedRotateCartesianPlusY);
-    QObject::connect(widget, &GLWidget::pressedRotateCartesianMinusZ, ui->stackedRenderers, &RenderStackedWidget::pressedRotateCartesianMinusZ);
-    QObject::connect(widget, &GLWidget::pressedRotateCartesianPlusZ, ui->stackedRenderers, &RenderStackedWidget::pressedRotateCartesianPlusZ);
-
-    QObject::connect(widget, &GLWidget::pressedTranslateBodyFrameMinusX, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateBodyFrameMinusX);
-    QObject::connect(widget, &GLWidget::pressedTranslateBodyFramePlusX, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateBodyFramePlusX);
-    QObject::connect(widget, &GLWidget::pressedTranslateBodyFrameMinusY, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateBodyFrameMinusY);
-    QObject::connect(widget, &GLWidget::pressedTranslateBodyFramePlusY, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateBodyFramePlusY);
-    QObject::connect(widget, &GLWidget::pressedTranslateBodyFrameMinusZ, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateBodyFrameMinusZ);
-    QObject::connect(widget, &GLWidget::pressedTranslateBodyFramePlusZ, ui->stackedRenderers, &RenderStackedWidget::pressedTranslateBodyFramePlusZ);
-    QObject::connect(widget, &GLWidget::pressedRotateBodyFrameMinusX, ui->stackedRenderers, &RenderStackedWidget::pressedRotateBodyFrameMinusX);
-    QObject::connect(widget, &GLWidget::pressedRotateBodyFramePlusX, ui->stackedRenderers, &RenderStackedWidget::pressedRotateBodyFramePlusX);
-    QObject::connect(widget, &GLWidget::pressedRotateBodyFrameMinusY, ui->stackedRenderers, &RenderStackedWidget::pressedRotateBodyFrameMinusY);
-    QObject::connect(widget, &GLWidget::pressedRotateBodyFramePlusY, ui->stackedRenderers, &RenderStackedWidget::pressedRotateBodyFramePlusY);
-    QObject::connect(widget, &GLWidget::pressedRotateBodyFrameMinusZ, ui->stackedRenderers, &RenderStackedWidget::pressedRotateBodyFrameMinusZ);
-    QObject::connect(widget, &GLWidget::pressedRotateBodyFramePlusZ, ui->stackedRenderers, &RenderStackedWidget::pressedRotateBodyFramePlusZ);
-  }
-
-
   QObject::connect(ui->addProjectToolButton, &QToolButton::pressed,ui->projectTreeView, &ProjectTreeView::addProjectStructure);
   QObject::connect(ui->removeProjectToolButton, &QToolButton::pressed,ui->projectTreeView, &ProjectTreeView::deleteSelection);
 
@@ -232,6 +198,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   watcherDatabaseIZAReadDone->setFuture(readDatabaseIZAWorker);
 
   setCurrentFile(QString());
+
+  _timer = new QTimer(this);
+  _timer->setSingleShot(true);
+  connect(_timer, SIGNAL(timeout()), SLOT(resizeStopped()));
 }
 
 MainWindow::~MainWindow()
@@ -746,43 +716,66 @@ void MainWindow::propagateLogReporter(LogReporting* logReporting, QObject *widge
   }
 }
 
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+#if defined (Q_OS_OSX)
+  _timer->start(500);
 
+  ui->stackedRenderers->hideToolBarMenuMenu();
+#else
+  ui->stackedRenderers->showToolBarMenuMenu();
+#endif
+
+  QMainWindow::resizeEvent(event);
+}
+
+void MainWindow::moveEvent(QMoveEvent *event)
+{
+#if defined (Q_OS_OSX)
+  _timer->start(500);
+  ui->stackedRenderers->hideToolBarMenuMenu();
+#else
+  ui->stackedRenderers->showToolBarMenuMenu();
+#endif
+
+  QMainWindow::moveEvent(event);
+}
+
+void MainWindow::resizeStopped()
+{
+  ui->stackedRenderers->showToolBarMenuMenu();
+}
 
 // snoop global keyboard events
 bool MainWindow::eventFilter( QObject* object, QEvent *event )
 {
-  if(GLWidget* widget = dynamic_cast<GLWidget*>(ui->stackedRenderers->currentWidget()))
+  if(object == this)
   {
-    if(object == this || object == widget)
+    if(QKeyEvent * keyEvent = dynamic_cast<QKeyEvent*>(event))
     {
-      if(QKeyEvent * keyEvent = dynamic_cast<QKeyEvent*>(event))
+      if (event->type() == QEvent::KeyPress)
       {
-        if (event->type() == QEvent::KeyPress)
+        if (keyEvent->modifiers().testFlag(Qt::AltModifier))
         {
-          if (keyEvent->modifiers().testFlag(Qt::AltModifier))
-          {
-            widget->setControlPanel(true);
-          }
+          ui->stackedRenderers->setControlPanel(true);
         }
-        if (event->type() == QEvent::KeyRelease)
+      }
+      if (event->type() == QEvent::KeyRelease)
+      {
+        if (keyEvent->key() == Qt::Key_Alt)
         {
-          if (keyEvent->key() == Qt::Key_Alt)
-          {
-            widget->setControlPanel(false);
-          }
+          ui->stackedRenderers->setControlPanel(false);
         }
       }
     }
   }
+
   return QMainWindow::eventFilter(object, event);
 }
 
 void MainWindow::updateControlPanel()
 {
-  if(GLWidget* widget = dynamic_cast<GLWidget*>(ui->stackedRenderers->currentWidget()))
-  {
-    widget->updateControlPanel();
-  }
+  ui->stackedRenderers->updateControlPanel();
 }
 
 void MainWindow::showAboutDialog()
@@ -1322,3 +1315,6 @@ void MainWindow::closeEvent(QCloseEvent *event)  // show prompt when user wants 
     event->ignore();
   }
 }
+
+
+

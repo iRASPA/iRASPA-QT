@@ -4,13 +4,21 @@
 #
 #-------------------------------------------------
 
-QT += core gui widgets opengl concurrent
+QT += core gui widgets concurrent
 
 equals(QT_MAJOR_VERSION, 5):lessThan (QT_MINOR_VERSION, 6): QT += webkitwidgets
 equals(QT_MAJOR_VERSION, 5):greaterThan (QT_MINOR_VERSION, 5): QT += webenginewidgets
-equals(QT_MAJOR_VERSION, 6): QT += openglwidgets
 
-CONFIG += c++1z
+#DEFINES += USE_VULKAN
+#DEFINES += USE_DIRECTX
+DEFINES += USE_OPENGL
+
+contains(DEFINES, USE_OPENGL){
+  QT +=  opengl
+  equals(QT_MAJOR_VERSION, 6): QT += openglwidgets
+}
+
+CONFIG += c++17
 
 include(spglib/spglib.pri)
 include(mathkit/mathkit.pri)
@@ -55,15 +63,57 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+
 macx{
-  #QMAKE_CXXFLAGS += -Wl,--stack,4194304
-  QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
-  INCLUDEPATH += $$system(python-config --include | sed -e 's:-I::g')
-  QMAKE_LFLAGS += -framework OpenCL -framework Python -framework Accelerate
-  LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+  contains(DEFINES,USE_VULKAN){
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
+    DEFINES += VK_USE_PLATFORM_MACOS_MVK
+    # CHANGE HERE TO YOUR SDK PATH:
+    VULKAN_SDK_PATH = /usr/local/VulkanSDK/1.2.182.0
+    VULKAN_DYLIB = $${VULKAN_SDK_PATH}/macOS/lib/libvulkan.1.dylib
+    LIBS += $$VULKAN_DYLIB
+    LIBS += -framework Cocoa -framework QuartzCore
+    # Copy dylib to app bundle
+    VULKAN_DATA.path = Contents/Frameworks
+    VULKAN_DATA.files = $$VULKAN_DYLIB
+    QMAKE_BUNDLE_DATA += VULKAN_DATA
+
+    INCLUDEPATH += $${VULKAN_SDK_PATH}/macOS/include
+    # Fix @rpath
+    QMAKE_RPATHDIR += @executable_path/../Frameworks
+
+    #QMAKE_CXXFLAGS += -Wl,--stack,4194304
+    QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
+    INCLUDEPATH += $$system(python-config --include | sed -e 's:-I::g')
+    QMAKE_LFLAGS += -framework Python -framework Accelerate
+    LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+  }
+
+  contains(DEFINES,USE_OPENGL) {
+    #QMAKE_CXXFLAGS += -Wl,--stack,4194304
+    QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
+    INCLUDEPATH += $$system(python-config --include | sed -e 's:-I::g')
+    QMAKE_LFLAGS +=  -framework OpenCL -framework Python -framework Accelerate
+    LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+  }
 }
 
 win32{
+  contains(DEFINES,USE_VULKAN){
+    DEFINES += VK_USE_PLATFORM_WIN32_KHR
+    # CHANGE HERE TO YOUR SDK PATH:
+    VULKAN_SDK_PATH = "C:/VulkanSDK/1.2.141.2"
+    VULKAN_DYLIB = $${VULKAN_SDK_PATH}/Lib/vulkan-1.lib
+    LIBS += $$VULKAN_DYLIB
+  }
+  contains(DEFINES,USE_OPENGL){
+    CONFIG(debug, debug|release){
+      LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/OpenCL.lib"
+    } else {
+      LIBS += "C:/vcpkg/installed/x64-windows-static/lib/OpenCL.lib"
+    }
+  }
+
   QMAKE_CXXFLAGS += /F 4194304 /Zi /MD
   QMAKE_LFLAGS   += /STACK:4194304  /INCREMENTAL:NO /DEBUG /MD
 
@@ -110,9 +160,12 @@ win32{
 }
 
 unix:!macx{
-  QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wl,--stack,4194304 -I/usr/include $$system(python3-config --includes) -I/usr/include/ffmpeg
-  LIBS += -lOpenCL -lavcodec -lavutil -lavformat -lswscale $$system(python3-config --embed > /dev/null 2>&1  && python3-config --embed --libs  || python3-config --libs)  -llzma -lz
+  contains(DEFINES,USE_OPENGL){
+    QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wl,--stack,4194304 -I/usr/include $$system(python3-config --includes) -I/usr/include/ffmpeg
+    LIBS += -lOpenCL -lavcodec -lavutil -lavformat -lswscale $$system(python3-config --embed > /dev/null 2>&1  && python3-config --embed --libs  || python3-config --libs)  -llzma -lz
+  }
 }
+
 
 RESOURCES += \
     iraspagui/iraspa-resources.qrc

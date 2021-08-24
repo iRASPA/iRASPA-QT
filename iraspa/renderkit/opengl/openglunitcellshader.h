@@ -33,31 +33,34 @@
 #include "openglshader.h"
 #include "rkrenderkitprotocols.h"
 #include "rkrenderuniforms.h"
-#include "openglboundingboxsphereshader.h"
-#include "openglboundingboxcylindershader.h"
+#include "openglunitcellsphereshader.h"
+#include "openglunitcellcylindershader.h"
 
-class GLWidget;
+class OpenGLWindow;
 
-class OpenGLBoundingBoxShader: public QOpenGLFunctions_3_3_Core
+class OpenGLUnitCellShader: public QOpenGLFunctions_3_3_Core
 {
 public:
-  OpenGLBoundingBoxShader();
+  OpenGLUnitCellShader();
 
   void generateBuffers();
+  void deleteBuffers();
 
-  void setRenderDataSource(std::shared_ptr<RKRenderDataSource> source);
   bool initializeOpenGLFunctions() override;
-  void paintGL();
+  void paintGL(GLuint structureUniformBuffer);
   void initializeVertexArrayObject();
   void loadShader(void);
 
   void initializeTransformUniforms();
+  void initializeStructureUniforms();
   void initializeLightUniforms();
 
   void reloadData();
-private:
-  OpenGLBoundingBoxSphereShader _boundingBoxSphereShader;
-  OpenGLBoundingBoxCylinderShader _boundingBoxCylinderShader;
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
 
-  friend GLWidget;
+private:
+  OpenGLUnitCellSphereShader _unitCellSphereShader;
+  OpenGLUnitCellCylinderShader _unitCellCylinderShader;
+
+  friend OpenGLWindow;
 };

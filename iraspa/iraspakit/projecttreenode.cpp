@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <vector>
 #include <foundationkit.h>
+#include <QBuffer>
 
 ProjectTreeNode::~ProjectTreeNode()
 {

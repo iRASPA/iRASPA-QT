@@ -25,6 +25,8 @@
 #include "framelistviewpastecommand.h"
 #include "framelistviewchangedisplaynamecommand.h"
 #include <iostream>
+#include <QMimeData>
+#include <QCoreApplication>
 
 FrameListViewModel::FrameListViewModel(): _movie(std::make_shared<Movie>())
 {

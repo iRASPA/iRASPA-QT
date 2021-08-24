@@ -26,6 +26,8 @@
 #include <QHeaderView>
 #include <QLineEdit>
 #include <QItemSelection>
+#include <QDrag>
+#include <QActionGroup>
 #include "atomtreeviewinsertatomcommand.h"
 #include "atomtreeviewinsertatomgroupcommand.h"
 #include "atomtreeviewdeleteselectioncommand.h"

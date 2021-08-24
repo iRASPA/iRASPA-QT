@@ -418,9 +418,7 @@
            <property name="handleWidth">
             <number>2</number>
            </property>
-           <widget class="RenderStackedWidget" name="stackedRenderers">
-            <widget class="GLWidget" name="glwidget"/>
-           </widget>
+           <widget class="RenderStackedWidget" name="stackedRenderers" native="true"/>
            <widget class="QSplitter" name="splitter">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -873,20 +871,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>GLWidget</class>
-   <extends>QOpenGLWidget</extends>
-   <header>glwidget.h</header>
-  </customwidget>
-  <customwidget>
    <class>ProjectTreeView</class>
    <extends>QTreeView</extends>
    <header>projecttreeview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>RenderStackedWidget</class>
-   <extends>QStackedWidget</extends>
-   <header>renderstackedwidget.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>iRASPAToolBar</class>
@@ -964,6 +951,12 @@
    <class>PythonViewController</class>
    <extends>QTextEdit</extends>
    <header>pythonviewcontroller.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RenderStackedWidget</class>
+   <extends>QWidget</extends>
+   <header>renderstackedwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

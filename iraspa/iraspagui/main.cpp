@@ -23,17 +23,26 @@
 #include <QApplication>
 #include <QFontDatabase>
 #include <QTranslator>
+#include <QLibraryInfo>
 
+#ifdef Q_OS_WIN
+ #include <windows.h>
+ #include <winuser.h>
+#endif
 int main(int argc, char *argv[])
 {
-  QSurfaceFormat format;
-  format.setRenderableType(QSurfaceFormat::OpenGL);
-  format.setSamples(1);
-  format.setVersion(3, 3);
-  format.setProfile(QSurfaceFormat::CoreProfile);
+  #if defined (USE_OPENGL)
+    QSurfaceFormat format;
+    format.setRenderableType(QSurfaceFormat::OpenGL);
+    format.setSamples(1);
+    format.setDepthBufferSize(0);
+    format.setStencilBufferSize(0);
+    format.setVersion(3, 3);
+    format.setProfile(QSurfaceFormat::CoreProfile);
 
-  #if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
-    QSurfaceFormat::setDefaultFormat(format);
+    #if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
+      QSurfaceFormat::setDefaultFormat(format);
+    #endif
   #endif
 
   #if (QT_VERSION >= QT_VERSION_CHECK(5,6,0))
@@ -44,7 +53,7 @@ int main(int argc, char *argv[])
 
   // https://vicrucann.github.io/tutorials/osg-qt-high-dpi/
 #ifdef Q_OS_WIN
-   SetProcessDPIAware(); // call before the main event loop
+   ::SetProcessDPIAware(); // call before the main event loop
 #endif
 
   QApplication a(argc, argv);

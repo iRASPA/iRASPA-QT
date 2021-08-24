@@ -21,15 +21,9 @@
 
 #pragma once
 
-#include "glwidget.h"
 #include "rkrenderkitprotocols.h"
 #include "rkrenderuniforms.h"
 #include "rkcamera.h"
 #include "rklight.h"
 #include "rkfontatlas.h"
-#include "cubegeometry.h"
-#include "quadgeometry.h"
-#include "spheregeometry.h"
-#include "cylindergeometry.h"
-#include "cappedcylindergeometry.h"
 

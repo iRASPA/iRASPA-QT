@@ -30,6 +30,8 @@
 #include "atomtreeviewchangeuniqueforcefieldnamecommand.h"
 #include <vector>
 #include <tuple>
+#include <QMimeData>
+#include <QCoreApplication>
 
 char AtomTreeViewModel::mimeType[] = "application/x-qt-iraspa-mime";
 

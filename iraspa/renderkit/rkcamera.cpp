@@ -27,13 +27,13 @@
 
 RKCamera::RKCamera()
 {
-  _zNear = 1.0;
+  _zNear = 0.1;
   _zFar = 1000.0;
 
-  _distance = double3(0.0, 0.0, 30.0);
+  _distance = double3(1.0, 0.0, 0.0);
   _orthoScale = 10.0;
-  _centerOfScene = double3(10,10,10);
-  _centerOfRotation = double3(10,10,10);
+  _centerOfScene = double3(0,0,0);
+  _centerOfRotation = double3(0,0,0);
   _panning = double3(0.0,0.0,0.0);
   _trucking = double3(0.0,0.0,0.0);
   _eye = _centerOfScene + _distance + _panning;
@@ -44,8 +44,13 @@ RKCamera::RKCamera()
   _aspectRatio = _windowWidth / _windowHeight;
   _boundingBox = SKBoundingBox(double3(0.0, 0.0, 0.0), double3(10.0, 10.0, 10.0));
   _boundingBoxAspectRatio = 1.0;
-  _frustrumType = FrustrumType::orthographic;
+  _frustrumType = FrustrumType::perspective;
   _resetDirectionType = ResetDirectionType::plus_Z;
+
+  _left=-1.0;
+  _right=1.0;
+  _bottom=-1.0;
+  _top=1.0;
 
   _viewMatrix = RKCamera::GluLookAt(_eye, _centerOfScene, double3(0.0, 1.0, 0.0));
 }

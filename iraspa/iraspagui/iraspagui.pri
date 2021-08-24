@@ -83,7 +83,9 @@ SOURCES += \
     $$PWD/pythonviewcontroller.cpp \
     $$PWD/helpbrowser.cpp \
     $$PWD/helpwidget.cpp \
-    $$PWD/projecttreeviewmodel.cpp
+    $$PWD/projecttreeviewmodel.cpp \
+    $$PWD/toolbarmenu.cpp \
+    $$PWD/toolbarwidget.cpp
 
 HEADERS += \
     $$PWD/appearanceprimitiveform.h \
@@ -165,7 +167,9 @@ HEADERS += \
     $$PWD/pythonviewcontroller.h \
     $$PWD/helpbrowser.h \
     $$PWD/helpwidget.h \
-    $$PWD/projecttreeviewmodel.h
+    $$PWD/projecttreeviewmodel.h \
+    $$PWD/toolbarmenu.h \
+    $$PWD/toolbarwidget.h
 
 FORMS += \
     $$PWD/appearanceprimitiveform.ui \

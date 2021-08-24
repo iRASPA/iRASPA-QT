@@ -76,30 +76,34 @@
 
 enum class Tracking
 {
-  none,
-  panning,                   // alt + right-mouse drag
-  trucking,                  // ctrl + right-mouse drag
-  addToSelection,            // command-key
-  newSelection,              // shift-key
-  draggedAddToSelection,     // drag + command
-  draggedNewSelection,       // drag + shift
-  backgroundClick,
-  measurement,               // alt-key
-  translateSelection,        // alt and command-key
-  other
+  none = 0,
+  panning = 1,                   // alt + right-mouse drag
+  trucking = 2,                  // ctrl + right-mouse drag
+  addToSelection = 3,            // command-key
+  newSelection = 4,              // shift-key
+  draggedAddToSelection = 5,     // drag + command
+  draggedNewSelection = 6,       // drag + shift
+  backgroundClick = 7,
+  measurement = 8,               // alt-key
+  translateSelection = 9,        // alt and command-key
+  other = 10
 };
 
+/*
 #if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
   class GLWidget : public QOpenGLWidget, public RKRenderViewController, public OpenGLShader, public LogReportingConsumer
 #else
   class GLWidget : public QGLWidget, public RKRenderViewController, public OpenGLShader, public LogReportingConsumer
 #endif
+     */
+
+class OpenGLWindow : public QOpenGLWindow, public RKRenderViewController, public OpenGLShader, public LogReportingConsumer
 {
   Q_OBJECT
 
 public:
-  GLWidget(QWidget* parent = nullptr );
-  ~GLWidget();
+  OpenGLWindow(QWidget* parent = nullptr , LogReporting *logReporter = nullptr);
+  ~OpenGLWindow();
   void redraw() override final;
   void redrawWithQuality(RKRenderQuality quality) override final;
 
@@ -222,73 +226,21 @@ private:
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;
 
-  Tracking _tracking;
+  Tracking _tracking = Tracking::none;
   QPoint _origin;
-
-  QStackedWidget *_controlPanel;
-  QFrame *_controlPanelCartesian;
-  QFrame *_controlPanelBodyFrame;
-  QToolButton *_buttonCartesianMinusTx;
-  QToolButton *_buttonCartesianPlusTx;
-  QToolButton *_buttonCartesianMinusTy;
-  QToolButton *_buttonCartesianPlusTy;
-  QToolButton *_buttonCartesianMinusTz;
-  QToolButton *_buttonCartesianPlusTz;
-  QToolButton *_buttonCartesianMinusRx;
-  QToolButton *_buttonCartesianPlusRx;
-  QToolButton *_buttonCartesianMinusRy;
-  QToolButton *_buttonCartesianPlusRy;
-  QToolButton *_buttonCartesianMinusRz;
-  QToolButton *_buttonCartesianPlusRz;
-
-  QToolButton *_buttonBodyFrameMinusTx;
-  QToolButton *_buttonBodyFramePlusTx;
-  QToolButton *_buttonBodyFrameMinusTy;
-  QToolButton *_buttonBodyFramePlusTy;
-  QToolButton *_buttonBodyFrameMinusTz;
-  QToolButton *_buttonBodyFramePlusTz;
-  QToolButton *_buttonBodyFrameMinusRx;
-  QToolButton *_buttonBodyFramePlusRx;
-  QToolButton *_buttonBodyFrameMinusRy;
-  QToolButton *_buttonBodyFramePlusRy;
-  QToolButton *_buttonBodyFrameMinusRz;
-  QToolButton *_buttonBodyFramePlusRz;
+  QPoint _draggedPos;
 
   QTimer *_timer;
   void timeoutEventHandler();
 protected:
-  void initializeGL() final override;
-  void resizeGL( int w, int h ) final override;
-  void paintGL() final override;
+  virtual void initializeGL() final override;
+  virtual void resizeGL( int w, int h ) final override;
+  virtual void paintGL() final override;
+  virtual void paintOverGL() final override;
+  virtual void paintUnderGL() final override;
   void keyPressEvent( QKeyEvent* e ) final override;
   void mousePressEvent(QMouseEvent *event) final override;
   void mouseMoveEvent(QMouseEvent *event) final override;
   void mouseReleaseEvent(QMouseEvent *event) final override;
   void wheelEvent(QWheelEvent *event ) final override;
-signals:
-  void pressedTranslateCartesianMinusX();
-  void pressedTranslateCartesianPlusX();
-  void pressedTranslateCartesianMinusY();
-  void pressedTranslateCartesianPlusY();
-  void pressedTranslateCartesianMinusZ();
-  void pressedTranslateCartesianPlusZ();
-  void pressedRotateCartesianMinusX();
-  void pressedRotateCartesianPlusX();
-  void pressedRotateCartesianMinusY();
-  void pressedRotateCartesianPlusY();
-  void pressedRotateCartesianMinusZ();
-  void pressedRotateCartesianPlusZ();
-
-  void pressedTranslateBodyFrameMinusX();
-  void pressedTranslateBodyFramePlusX();
-  void pressedTranslateBodyFrameMinusY();
-  void pressedTranslateBodyFramePlusY();
-  void pressedTranslateBodyFrameMinusZ();
-  void pressedTranslateBodyFramePlusZ();
-  void pressedRotateBodyFrameMinusX();
-  void pressedRotateBodyFramePlusX();
-  void pressedRotateBodyFrameMinusY();
-  void pressedRotateBodyFramePlusY();
-  void pressedRotateBodyFrameMinusZ();
-  void pressedRotateBodyFramePlusZ();
 };

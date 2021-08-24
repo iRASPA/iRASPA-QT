@@ -22,18 +22,18 @@
 #include "rkrenderuniforms.h"
 #include "mathkit.h"
 
-RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, double4x4 viewMatrix, double bloomLevel, double bloomPulse, int multiSampling)
+RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double bloomLevel, double bloomPulse, int multiSampling)
 {
-    double4x4 currentMvpMatrix = projectionMatrix * viewMatrix;
+    double4x4 currentMvpMatrix = projectionMatrix * modelViewMatrix;
     this->projectionMatrix = float4x4(projectionMatrix);
-    this->viewMatrix = float4x4(viewMatrix);
+    this->viewMatrix = float4x4(modelViewMatrix);
     this->mvpMatrix = float4x4(currentMvpMatrix);
     this->shadowMatrix = float4x4(currentMvpMatrix);
 
     this->projectionMatrixInverse = float4x4(double4x4::inverse(projectionMatrix));
-    this->viewMatrixInverse = float4x4(double4x4::inverse(viewMatrix));
+    this->viewMatrixInverse = float4x4(double4x4::inverse(modelViewMatrix));
 
-    double3x3 currentNormalMatrix = double3x3::transpose(double3x3::inverse(double3x3(viewMatrix)));
+    double3x3 currentNormalMatrix = double3x3::transpose(double3x3::inverse(double3x3(modelViewMatrix)));
     this->normalMatrix = float4x4(double4x4(currentNormalMatrix));
     this->bloomLevel = float(bloomLevel);
     this->bloomPulse = float(bloomPulse);
@@ -59,7 +59,7 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
   this->atomSaturation = float(structure->atomSaturation());
   this->atomValue = float(structure->atomValue());
 
-  this->ambientOcclusion = structure->atomAmbientOcclusion() ? GL_TRUE : GL_FALSE;
+  this->ambientOcclusion = structure->atomAmbientOcclusion();
   this->ambientOcclusionPatchNumber = int32_t(structure->atomAmbientOcclusionPatchNumber());
   this->ambientOcclusionPatchSize = float(structure->atomAmbientOcclusionPatchSize());
   this->ambientOcclusionInverseTextureSize = float(1.0/double(structure->atomAmbientOcclusionTextureSize()));
@@ -81,15 +81,15 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
   this->unitCellDiffuseColor = float(structure->unitCellDiffuseIntensity()) * float4(structure->unitCellDiffuseColor().redF(),structure->unitCellDiffuseColor().greenF(),
                                                                                      structure->unitCellDiffuseColor().blueF(),structure->unitCellDiffuseColor().alphaF());
 
-  this->atomHDR = structure->atomHDR() ? GL_TRUE : GL_FALSE;
+  this->atomHDR = structure->atomHDR();
   this->atomHDRExposure = float(structure->atomHDRExposure());
   this->atomSelectionIntensity = float(structure->atomSelectionIntensity());
-  this->clipAtomsAtUnitCell = structure->clipAtomsAtUnitCell() ? GL_TRUE : GL_FALSE;
+  this->clipAtomsAtUnitCell = structure->clipAtomsAtUnitCell();
 
-  this->bondHDR = structure->bondHDR() ? GL_TRUE : GL_FALSE;
+  this->bondHDR = structure->bondHDR();
   this->bondHDRExposure = float(structure->bondHDRExposure());
   this->bondSelectionIntensity = float(structure->bondSelectionIntensity());
-  this->clipBondsAtUnitCell = structure->clipBondsAtUnitCell() ? GL_TRUE : GL_FALSE;
+  this->clipBondsAtUnitCell = structure->clipBondsAtUnitCell();
 
   this->bondHue = float(structure->bondHue());
   this->bondSaturation = float(structure->bondSaturation());
@@ -203,7 +203,7 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     this->atomSaturation = structure->atomSaturation();
     this->atomValue = structure->atomValue();
 
-    this->ambientOcclusion = structure->atomAmbientOcclusion() ? GL_TRUE: GL_FALSE;
+    this->ambientOcclusion = structure->atomAmbientOcclusion();
     this->ambientOcclusionPatchNumber = int32_t(structure->atomAmbientOcclusionPatchNumber());
     this->ambientOcclusionPatchSize = float(structure->atomAmbientOcclusionPatchSize());
     this->ambientOcclusionInverseTextureSize = float(1.0/double(structure->atomAmbientOcclusionTextureSize()));
@@ -224,14 +224,14 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     this->unitCellDiffuseColor = float(structure->unitCellDiffuseIntensity()) * float4(structure->unitCellDiffuseColor().redF(),structure->unitCellDiffuseColor().greenF(),
                                                                                        structure->unitCellDiffuseColor().blueF(),structure->unitCellDiffuseColor().alphaF());
 
-    this->atomHDR = structure->atomHDR() ? GL_TRUE : GL_FALSE;
+    this->atomHDR = structure->atomHDR();
     this->atomHDRExposure = float(structure->atomHDRExposure());
     this->atomSelectionIntensity = float(structure->atomSelectionIntensity());
-    this->clipAtomsAtUnitCell = structure->clipAtomsAtUnitCell() ? GL_TRUE : GL_FALSE;
+    this->clipAtomsAtUnitCell = structure->clipAtomsAtUnitCell();
 
-    this->bondHDR = structure->bondHDR() ? GL_TRUE : GL_FALSE;
+    this->bondHDR = structure->bondHDR();
     this->bondHDRExposure = float(structure->bondHDRExposure());
-    this->clipBondsAtUnitCell = structure->clipBondsAtUnitCell() ? GL_TRUE : GL_FALSE;
+    this->clipBondsAtUnitCell = structure->clipBondsAtUnitCell();
 
     this->bondHue = float(structure->bondHue());
     this->bondSaturation = float(structure->bondSaturation());

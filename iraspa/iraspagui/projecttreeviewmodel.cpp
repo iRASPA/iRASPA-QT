@@ -24,7 +24,7 @@
 #include "projecttreeviewdropcopycommand.h"
 #include "projecttreeviewdropmovecommand.h"
 #include "projecttreeviewpasteprojectscommand.h"
-
+#include <QCoreApplication>
 
 ProjectTreeViewModel::ProjectTreeViewModel(): _projectTreeController(std::make_shared<ProjectTreeController>())
 {

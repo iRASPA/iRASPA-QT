@@ -26,7 +26,7 @@
 #include <QPoint>
 #include <QUrl>
 #include <QStackedWidget>
-#include <QRubberBand>
+#include <QToolButton>
 #include <iraspaproject.h>
 #include <iraspamainwindowconsumerprotocol.h>
 #include "atomtreeviewmodel.h"
@@ -35,7 +35,7 @@
 #include "logreporting.h"
 #include "moviemaker.h"
 
-class RenderStackedWidget : public QStackedWidget, public ProjectConsumer, public MainWindowConsumer, public LogReportingConsumer
+class RenderStackedWidget : public QWidget, public ProjectConsumer, public MainWindowConsumer, public LogReportingConsumer
 {
   Q_OBJECT
 
@@ -46,8 +46,32 @@ public:
   void setAtomModel(std::shared_ptr<AtomTreeViewModel> atomModel);
   void setBondModel(std::shared_ptr<BondListViewModel> bondModel);
   void setLogReportingWidget(LogReporting *logReporting) override final;
+  void updateControlPanel();
+  void setControlPanel(bool iskeyAltOn);
+
+  void hideToolBarMenuMenu();
+  void showToolBarMenuMenu();
 private:
+  enum class Tracking
+  {
+    none = 0,
+    panning = 1,                   // alt + right-mouse drag
+    trucking = 2,                  // ctrl + right-mouse drag
+    addToSelection = 3,            // command-key
+    newSelection = 4,              // shift-key
+    draggedAddToSelection = 5,     // drag + command
+    draggedNewSelection = 6,       // drag + shift
+    backgroundClick = 7,
+    measurement = 8,               // alt-key
+    translateSelection = 9,        // alt and command-key
+    other = 10
+  };
+  QWidget *renderWidget;
+  QWindow *renderWindow;
   MainWindow *_mainWindow;
+  QMenu *toolBar;
+
+  RKRenderViewController *renderViewController;
   LogReporting* _logReporter = nullptr;
   std::shared_ptr<AtomTreeViewModel> _atomModel;
   std::shared_ptr<BondListViewModel> _bondModel;
@@ -56,7 +80,6 @@ private:
   std::weak_ptr<iRASPAProject> _iRASPAProject;
   std::weak_ptr<RKCamera> _camera;
   std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _iraspa_structures;
-  QRubberBand* _rubberBand;
   Tracking _tracking;
   QPoint _origin;
   QPoint _panStartPoint;
@@ -68,6 +91,7 @@ private:
   void exportToXYZ() const;
   void exportToPOSCAR() const;
   void deleteSelection();
+  QStackedWidget *_controlPanel;
 protected:
   bool eventFilter(QObject *obj, QEvent *event) override final;
 public slots:

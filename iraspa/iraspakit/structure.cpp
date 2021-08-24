@@ -24,6 +24,7 @@
 #include <unordered_set>
 #include <symmetrykit.h>
 #include <simulationkit.h>
+#include <QFontInfo>
 #include "skatomtreecontroller.h"
 #include "skbondsetcontroller.h"
 

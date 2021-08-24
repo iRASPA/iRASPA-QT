@@ -31,6 +31,7 @@
 #include <QMimeData>
 #include <QFont>
 #include <QFontMetrics>
+#include <QDrag>
 
 ProjectTreeView::ProjectTreeView(QWidget* parent): iRASPATreeView(parent),
   _model(std::make_shared<ProjectTreeViewModel>()),

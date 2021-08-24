@@ -20,17 +20,15 @@
  ********************************************************************************************************************/
 
 #pragma once
+#include <QStackedWidget>
+#include <QToolButton>
+#include <QEvent>
+#include "renderstackedwidget.h"
 
-#include <forcefieldset.h>
-#include <forcefieldsets.h>
-#include <forcefieldtype.h>
-#include <constants.h>
-
-#if defined(USE_OPENGL)
-#include <skopenclenergygridunitcell.h>
-#include <skopenclmarchingcubes.h>
-#include <skopenclfindminmumenergygridunitcell.h>
-#include <skopenclvoidfractionunitcell.h>
-#endif
-
-
+class ToolbarWidget : public QStackedWidget
+{
+public:
+  ToolbarWidget(RenderStackedWidget *parent);
+protected:
+  bool eventFilter(QObject *object, QEvent *event) override final;
+};

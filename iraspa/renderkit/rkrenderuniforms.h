@@ -22,9 +22,11 @@
 #pragma once
 
 #include <mathkit.h>
-#include <QtOpenGL>
+
 #include <QColor>
 #include "rkrenderkitprotocols.h"
+
+//#include <QtOpenGL>
 
 const std::string  OpenGLVersionStringLiteral = R"foo(
 #version 330
@@ -93,8 +95,8 @@ struct RKInPerInstanceAttributesBonds
 
 struct RKTransformationUniforms
 {
-  float4x4 projectionMatrix = float4x4();
-  float4x4 viewMatrix = float4x4();
+  float4x4 projectionMatrix = float4x4(1.0);
+  float4x4 viewMatrix = float4x4(1.0);
   float4x4 mvpMatrix = float4x4();
   float4x4 shadowMatrix = float4x4();
   float4x4 projectionMatrixInverse = float4x4();
@@ -113,8 +115,8 @@ struct RKTransformationUniforms
   float4 padVector3 = float4();
   float4 padvector4 = float4();
 
-  //RKTransformationUniforms();
-  RKTransformationUniforms(double4x4 projectionMatrix, double4x4 viewMatrix, double bloomLevel, double bloomPulse, int multiSampling);
+  RKTransformationUniforms() {};
+  RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double bloomLevel, double bloomPulse, int multiSampling);
 };
 
 const std::string  OpenGLFrameUniformBlockStringLiteral = R"foo(
@@ -151,7 +153,7 @@ struct RKStructureUniforms
   float atomScaleFactor = 1.0f;
   int32_t numberOfMultiSamplePoints = 8;
 
-  int32_t ambientOcclusion = GL_FALSE;
+  int32_t ambientOcclusion = false;
   int32_t ambientOcclusionPatchNumber = 64;
   float ambientOcclusionPatchSize = 16.0f;
   float ambientOcclusionInverseTextureSize = float(1.0/1024.0);
@@ -161,10 +163,10 @@ struct RKStructureUniforms
   float atomValue = 1.0f;
   float pad111 = 1.0f;
 
-  int32_t atomHDR = GL_TRUE;
+  int32_t atomHDR = true;
   float atomHDRExposure = 1.5f;
   float atomSelectionIntensity = 0.5f;
-  int32_t clipAtomsAtUnitCell = GL_FALSE;
+  int32_t clipAtomsAtUnitCell = false;
 
   float4 atomAmbient = float4(1.0, 1.0, 1.0, 1.0);
   float4 atomDiffuse = float4(1.0, 1.0, 1.0, 1.0);
@@ -177,10 +179,10 @@ struct RKStructureUniforms
 
   //----------------------------------------  128 bytes boundary
 
-  int32_t bondHDR = GL_TRUE;
+  int32_t bondHDR = true;
   float bondHDRExposure = 1.5f;
   float bondSelectionIntensity = 1.0f;
-  int32_t clipBondsAtUnitCell = GL_FALSE;
+  int32_t clipBondsAtUnitCell = false;
 
 
   float4 bondAmbientColor = float4(1.0, 1.0, 1.0, 1.0);
@@ -220,7 +222,7 @@ struct RKStructureUniforms
   float atomAnnotationTextScaling = 1.0f;
   float atomSelectionScaling = 1.0f;
   float bondSelectionScaling = 1.25f;
-  int32_t colorAtomsWithBondColor = GL_FALSE;
+  int32_t colorAtomsWithBondColor = false;
 
   //----------------------------------------  512 bytes boundary
 
@@ -230,7 +232,7 @@ struct RKStructureUniforms
   float4 primitiveAmbientFrontSide = float4(0.0,0.0,0.0,1.0);
   float4 primitiveDiffuseFrontSide = float4(0.0,0.0,0.0,1.0);
   float4 primitiveSpecularFrontSide = float4(0.0,0.0,0.0,1.0);
-  int32_t primitiveFrontSideHDR = GL_TRUE;
+  int32_t primitiveFrontSideHDR = true;
   float primitiveFrontSideHDRExposure = 1.5f;
   float primitiveOpacity = 1.0f;
   float primitiveShininessFrontSide = 4.0f;
@@ -238,7 +240,7 @@ struct RKStructureUniforms
   float4 primitiveAmbientBackSide = float4(0.0,0.0,0.0,1.0);
   float4 primitiveDiffuseBackSide = float4(0.0,0.0,0.0,1.0);
   float4 primitiveSpecularBackSide = float4(0.0,0.0,0.0,1.0);
-  int32_t primitiveBackSideHDR = GL_TRUE;
+  int32_t primitiveBackSideHDR = true;
   float primitiveBackSideHDRExposure = 1.5f;
   float pad6 = 0.0f;
   float primitiveShininessBackSide = 4.0f;
@@ -432,7 +434,7 @@ struct RKIsosurfaceUniforms
   float4 ambientFrontSide = float4(0.0f, 0.0f, 0.0f, 1.0f);
   float4 diffuseFrontSide = float4(0.588235f, 0.670588f, 0.729412f, 1.0f);
   float4 specularFrontSide = float4(1.0f, 1.0f, 1.0f, 1.0f);
-  int32_t frontHDR = GL_TRUE;
+  int32_t frontHDR = true;
   float frontHDRExposure = 1.5;
   float pad1 = 0.0;
   float shininessFrontSide = 4.0;
@@ -440,7 +442,7 @@ struct RKIsosurfaceUniforms
   float4 ambientBackSide = float4(0.0f, 0.0f, 0.0f, 1.0f);
   float4 diffuseBackSide = float4(0.588235f, 0.670588f, 0.729412f, 1.0f);
   float4 specularBackSide = float4(0.9f, 0.9f, 0.9f, 1.0f);
-  int32_t backHDR = GL_TRUE;
+  int32_t backHDR = true;
   float backHDRExposure = 1.5;
   float pad2 = 0.0;
   float shininessBackSide = 4.0;

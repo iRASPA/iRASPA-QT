@@ -22,6 +22,7 @@
 #include "scene.h"
 #include "iraspastructure.h"
 #include <QFile>
+#include <QFileInfo>
 #include <QTextStream>
 #include <iostream>
 #include "skposcarparser.h"

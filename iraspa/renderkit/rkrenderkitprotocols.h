@@ -30,7 +30,6 @@
 #include <foundationkit.h>
 #include <symmetrykit.h>
 #include "rkfontatlas.h"
-
 #include "rklight.h"
 #include "rkcamera.h"
 

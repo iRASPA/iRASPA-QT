@@ -28,6 +28,9 @@
 #include "framelistviewdeleteselectioncommand.h"
 #include <optional>
 #include <algorithm>
+#include <QMimeData>
+#include <QDrag>
+#include <QClipboard>
 
 QSize FrameListView::sizeHint() const
 {

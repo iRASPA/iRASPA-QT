@@ -24,6 +24,9 @@
 #include <QSize>
 #include <array>
 #include <algorithm>
+#include <QPainter>
+#include <QFileInfo>
+#include <QBuffer>
 
 ProjectStructure::ProjectStructure(): _camera(std::make_shared<RKCamera>())
 {
@@ -198,6 +201,16 @@ SKBoundingBox ProjectStructure::renderBoundingBox() const
 
 bool ProjectStructure::hasSelectedObjects() const
 {
+  for (std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures: _sceneList->selectediRASPARenderStructures())
+  {
+    for(std::shared_ptr<iRASPAStructure> iraspa_structure: iraspa_structures)
+    {
+      if(iraspa_structure->structure()->hasSelectedAtoms())
+      {
+        return true;
+      }
+    }
+  }
   return false;
 }
 
