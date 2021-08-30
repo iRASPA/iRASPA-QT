@@ -25,6 +25,8 @@
 #include <QtOpenGL>
 #include <QOpenGLFunctions_3_3_Core>
 #include <array>
+#include <mathkit.h>
+#include "rkrenderuniforms.h"
 
 struct FontCharacter
 {
@@ -39,7 +41,7 @@ struct FontCharacter
   float yoff;   // glyph->bitmap_top
 };
 
-struct RKFontAtlas: public QOpenGLFunctions_3_3_Core
+struct RKFontAtlas
 {
   RKFontAtlas(QString fontName, int texture_size);
   ~RKFontAtlas();
@@ -63,4 +65,6 @@ struct RKFontAtlas: public QOpenGLFunctions_3_3_Core
   int save_png_SDFont(const char* orig_filename, const char* font_name, int img_width, int img_height, const std::vector< unsigned char > &img_data, const std::vector< FontCharacter > &packed_glyphs );
 
   unsigned char get_SDF_radial(unsigned char *fontmap, int w, int h, int x, int y, int max_radius );
+
+  std::vector<RKInPerInstanceAttributesText> buildMeshWithString(float4 position, float4 scale, QString text, RKTextAlignment alignment);
 };

@@ -1,5 +1,7 @@
 INCLUDEPATH += $$PWD
 
+include(geometry/geometry.pri)
+
 macx{
   SOURCES +=  $$PWD/makeviewmetal.mm
 }

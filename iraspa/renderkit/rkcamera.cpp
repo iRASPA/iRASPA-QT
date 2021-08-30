@@ -30,10 +30,10 @@ RKCamera::RKCamera()
   _zNear = 0.1;
   _zFar = 1000.0;
 
-  _distance = double3(1.0, 0.0, 0.0);
+  _distance = double3(0.0, 0.0, 30.0);
   _orthoScale = 10.0;
-  _centerOfScene = double3(0,0,0);
-  _centerOfRotation = double3(0,0,0);
+  _centerOfScene = double3(10,10,10);
+  _centerOfRotation = double3(10,10,10);
   _panning = double3(0.0,0.0,0.0);
   _trucking = double3(0.0,0.0,0.0);
   _eye = _centerOfScene + _distance + _panning;
@@ -44,13 +44,8 @@ RKCamera::RKCamera()
   _aspectRatio = _windowWidth / _windowHeight;
   _boundingBox = SKBoundingBox(double3(0.0, 0.0, 0.0), double3(10.0, 10.0, 10.0));
   _boundingBoxAspectRatio = 1.0;
-  _frustrumType = FrustrumType::perspective;
+  _frustrumType = FrustrumType::orthographic;
   _resetDirectionType = ResetDirectionType::plus_Z;
-
-  _left=-1.0;
-  _right=1.0;
-  _bottom=-1.0;
-  _top=1.0;
 
   _viewMatrix = RKCamera::GluLookAt(_eye, _centerOfScene, double3(0.0, 1.0, 0.0));
 }
@@ -128,6 +123,31 @@ double4x4 RKCamera::modelViewMatrix()
   // first rotate the actors, and then construct the modelView-matrix
   return _viewMatrix * double4x4::TransformationAroundArbitraryPoint(double4x4(_trackBallRotation * _worldRotation * referenceDirection()), _centerOfRotation);
 }
+
+double4x4 RKCamera::axesViewMatrix()
+{
+ return RKCamera::GluLookAt(double3(0.0,0.0,_distance.z), double3(-0.5*_panning.x,-0.5*_panning.y, _centerOfScene.z),
+                            double3(0, 1, 0));
+}
+
+double4x4 RKCamera::axesModelViewMatrix()
+{
+  // first rotate the actors, and then construct the modelView-matrix
+  return axesViewMatrix()* double4x4::TransformationAroundArbitraryPoint(double4x4(_trackBallRotation * _worldRotation * referenceDirection()), double3(0,0,0));
+}
+
+double4x4 RKCamera::axesProjectionMatrix(double axesSize)
+{
+  switch(_frustrumType)
+  {
+  case FrustrumType::orthographic:
+    return glFrustumfOrthographic(-axesSize, axesSize, -axesSize, axesSize, _zNear, _zFar);
+  case FrustrumType::perspective:
+    double scale = axesSize * _zNear / _distance.z;
+    return glFrustumfPerspective(-scale, scale, -scale, scale, _zNear, _zFar);
+  }
+}
+
 
 void RKCamera::setPanning(double panx, double pany)
 {
@@ -220,8 +240,8 @@ void RKCamera::updateCameraForWindowResize(double width, double height)
 
   _distance.z = std::max(_orthoScale * focalPoint + 0.5 * delta.z, 0.25);
 
-  _zNear = std::max(1.0, position().z - delta.length() * delta.length());
-  _zFar = position().z + delta.length() * delta.length();
+  _zNear = std::max(1.0, _distance.z - std::max({delta.x, delta.y, delta.z}));
+  _zFar = _distance.z + 2.0*delta.z;
 
   // halfHeight  half of frustum height at znear  znear∗tan(fov/2)
   // halfWidth   half of frustum width at znear   halfHeight×aspect
@@ -256,8 +276,8 @@ void RKCamera::setCameraToOrthographic()
   double inverseFocalPoint = tan(_angleOfView * 0.5);
   _orthoScale = std::max(_distance.z - 0.5 * delta.z, 0.25) * inverseFocalPoint;
 
-  _zNear = std::max(1.0, position().z - delta.length() * delta.length());
-  _zFar = position().z + delta.length() * delta.length();
+  _zNear = std::max(1.0, _distance.z - std::max({delta.x, delta.y, delta.z}));
+  _zFar = _distance.z + 2.0*delta.z;
 
   if (_aspectRatio > _boundingBoxAspectRatio)
   {

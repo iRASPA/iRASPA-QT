@@ -23,7 +23,6 @@
 #include "foundationkit.h"
 const int scaler = 16;
 
-
 RKFontAtlas::RKFontAtlas(QString fontName, int texture_size): width(texture_size), height(texture_size), textureData(texture_size * texture_size), _pdata( 4 * texture_size * texture_size, 0 ), characters()
 {
   QFont font;
@@ -32,28 +31,15 @@ RKFontAtlas::RKFontAtlas(QString fontName, int texture_size): width(texture_size
 
   renderSignedDistanceFont(rawFont, texture_size);
 
-  initializeOpenGLFunctions();
-
   for(size_t i=0; i<characters.size(); i++)
   {
     int index = characters[i].ID;
-    characterIndex[index] = i;
+    characterIndex[index] = int(i);
   }
-
-  glGenTextures(1, &texture);
-
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, textureData.data());
 }
 
 RKFontAtlas::~RKFontAtlas()
 {
-  glDeleteTextures(1, &texture);
 }
 
 QImage RKFontAtlas::mapForGlyph(QRawFont &rawFont, quint32 glyph_index)
@@ -80,7 +66,6 @@ QImage RKFontAtlas::mapForGlyph(QRawFont &rawFont, quint32 glyph_index)
 
 bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
 {
-
   int max_unicode_char= 255;
 
   //	Try all characters up to 255 values (it will auto-skip any without glyphs)
@@ -94,8 +79,7 @@ bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
   int sz = fontSizeForTextureSize(rawFont, texture_size, render_list, characters);
   rawFont.setPixelSize(sz*scaler);
 
-  //	render all the glyphs individually
-  qDebug() << "Rendering characters into a packed " + QString::number(texture_size) + " image";
+  // render all the glyphs individually
   int packed_glyph_index = 0;
   int tin = clock();
   for( unsigned int char_index = 0; char_index < render_list.size(); ++char_index )
@@ -151,17 +135,8 @@ bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
 
       delete [] smooth_buf;
     }
-    printf( "%i ", render_list[char_index] );
   }
   tin = clock() - tin;
-  printf( "\nRenderint took %1.3f seconds\n\n", 0.001f * tin );
-
-  //printf( "\nCompressing the image to PNG\n" );
-  //tin = save_png_SDFont(
-  //      "atlas", "test",
-  //      texture_size, texture_size,
-  //      _pdata, characters );
-  //printf( "Done in %1.3f seconds\n\n", 0.001f * tin );
 
   return true;
 }
@@ -175,7 +150,6 @@ int RKFontAtlas::fontSizeForTextureSize(QRawFont &rawFont, int texture_size, con
   while( keep_going )
   {
     sz <<= 1;
-    printf( " %i", sz );
     keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, c );
   }
   int sz_step = sz >> 2;
@@ -188,7 +162,6 @@ int RKFontAtlas::fontSizeForTextureSize(QRawFont &rawFont, int texture_size, con
     {
       sz -= sz_step;
     }
-    printf( " %i", sz );
     sz_step >>= 1;
     keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, c );
   }
@@ -196,7 +169,6 @@ int RKFontAtlas::fontSizeForTextureSize(QRawFont &rawFont, int texture_size, con
   while( (!keep_going) && (sz > 1) )
   {
     --sz;
-    printf( " %i", sz );
     keep_going = gen_pack_list(rawFont, sz, texture_size, render_list, c );
   }
   qDebug() <<  "Result number of pixels: " + QString::number(sz);
@@ -459,4 +431,86 @@ unsigned char RKFontAtlas::get_SDF_radial(
   if( d2 < 0.0 ) d2 = 0.0;
   if( d2 > 255.0 ) d2 = 255.0;
   return (unsigned char)(d2 + 0.5);
+}
+
+std::vector<RKInPerInstanceAttributesText> RKFontAtlas::buildMeshWithString(float4 position, float4 scale, QString text, RKTextAlignment alignment)
+{
+    float x = 0.0;
+    float y = 0.0;
+    float sx = 1.0;
+    float sy = 1.0;
+
+    std::vector<RKInPerInstanceAttributesText> subdata{};
+    QRectF rect = QRectF();
+    for (int i = 0 ; i < text.size(); i++)
+    {
+      int id = characterIndex[text[i].unicode()];
+      if(id >= 0 && id<=255)
+      {
+        float x2 = x + characters[id].xoff * sx;
+        float y2 = -y - characters[id].yoff * sy;
+        float w = characters[id].width * sx;
+        float h = characters[id].height * sy;
+
+        x += characters[id].xadv * sx;
+        y += characters[id].yadv * sy;
+
+        float4 vertex = float4(x2,y2,w,h);
+        rect=rect.united(QRectF(x2,y2,w,h));
+        float4 uv = float4(characters[id].x/width,characters[id].y/height,
+                           characters[id].width/width, characters[id].height/height);
+
+        RKInPerInstanceAttributesText atomText = RKInPerInstanceAttributesText(position, scale, vertex, uv);
+        subdata.push_back(atomText);
+      }
+    }
+
+    float2 shift(0.0,0.0);
+    switch(alignment)
+    {
+    case RKTextAlignment::center:
+    case RKTextAlignment::multiple_values:
+      shift = float2(0.0,0.0);
+      break;
+    case RKTextAlignment::left:
+      shift = float2(-rect.center().x(),0.0);
+      break;
+    case RKTextAlignment::right:
+      shift = float2(rect.center().x(),0.0);
+      break;
+    case RKTextAlignment::top:
+      shift = float2(0.0,rect.center().y());
+      break;
+    case RKTextAlignment::bottom:
+      shift = float2(0.0,-rect.center().y());
+      break;
+    case RKTextAlignment::topLeft:
+      shift = float2(-rect.center().x(),rect.center().y());
+      break;
+    case RKTextAlignment::topRight:
+      shift = float2(rect.center().x(),rect.center().y());
+      break;
+    case RKTextAlignment::bottomLeft:
+      shift = float2(-rect.center().x(), -rect.center().y());
+      break;
+    case RKTextAlignment::bottomRight:
+      shift = float2(rect.center().x(), -rect.center().y());
+      break;
+    }
+
+    for(RKInPerInstanceAttributesText &subdataText: subdata)
+    {
+      subdataText.vertexCoordinatesData.x -= rect.center().x();
+      subdataText.vertexCoordinatesData.y -= rect.center().y();
+      subdataText.vertexCoordinatesData.x += shift.x;
+      subdataText.vertexCoordinatesData.y += shift.y;
+
+      subdataText.vertexCoordinatesData.x /= 50.0;
+      subdataText.vertexCoordinatesData.y /= 50.0;
+      subdataText.vertexCoordinatesData.z /= 50.0;
+      subdataText.vertexCoordinatesData.w /= 50.0;
+    }
+
+    //std::copy(subdata.begin(), subdata.end(), std::inserter(atomData, atomData.end()));
+    return subdata;
 }

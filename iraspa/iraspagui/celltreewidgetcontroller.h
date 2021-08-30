@@ -69,7 +69,7 @@ private:
   std::vector<std::shared_ptr<iRASPAStructure>> _iraspa_structures{};
   void reloadCellProperties();
 
-	void reloadStructureType();
+  void reloadStructureType();
   void reloadBoundingBox();
   void reloadUnitCell();
   void reloadUnitCellLengths();

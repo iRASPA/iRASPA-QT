@@ -20,9 +20,10 @@
  ********************************************************************************************************************/
 
 #include "rkrenderuniforms.h"
+#include "rkrenderkitprotocols.h"
 #include "mathkit.h"
 
-RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double bloomLevel, double bloomPulse, int multiSampling)
+RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double4x4 axesProjectionMatrix, double4x4 axesModelViewMatrix, double bloomLevel, double bloomPulse, int multiSampling)
 {
     double4x4 currentMvpMatrix = projectionMatrix * modelViewMatrix;
     this->projectionMatrix = float4x4(projectionMatrix);
@@ -32,6 +33,10 @@ RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, d
 
     this->projectionMatrixInverse = float4x4(double4x4::inverse(projectionMatrix));
     this->viewMatrixInverse = float4x4(double4x4::inverse(modelViewMatrix));
+
+    this->axesProjectionMatrix = float4x4(axesProjectionMatrix);
+    this->axesViewMatrix = float4x4(axesModelViewMatrix);
+    this->axesMvpMatrix = float4x4(axesProjectionMatrix * axesModelViewMatrix);
 
     double3x3 currentNormalMatrix = double3x3::transpose(double3x3::inverse(double3x3(modelViewMatrix)));
     this->normalMatrix = float4x4(double4x4(currentNormalMatrix));
@@ -384,5 +389,51 @@ RKLightsUniforms::RKLightsUniforms(std::shared_ptr<RKRenderDataSource> project)
   }
 };
 
+RKGlobalAxesUniforms::RKGlobalAxesUniforms(std::shared_ptr<RKRenderDataSource> project)
+{
+  if(project)
+  {
+    axesBackgroundColor = float4(project->axes()->axesBackgroundColor().redF(),
+                                 project->axes()->axesBackgroundColor().greenF(),
+                                 project->axes()->axesBackgroundColor().blueF(),
+                                 project->axes()->axesBackgroundColor().alphaF());
+    axesBackGroundStyle = static_cast<typename std::underlying_type<RKGlobalAxes::BackgroundStyle>::type>(project->axes()->axesBackgroundStyle());
+
+    axesScale = float(project->axes()->axisScale());
+    centerScale = float(project->axes()->centerScale());
+    textOffset = float(project->axes()->textOffset());
+
+    textColor[0] = float4(project->axes()->textColorX().redF(),
+                          project->axes()->textColorX().greenF(),
+                          project->axes()->textColorX().blueF(),
+                          project->axes()->textColorX().alphaF());
+    textColor[1] = float4(project->axes()->textColorY().redF(),
+                          project->axes()->textColorY().greenF(),
+                          project->axes()->textColorY().blueF(),
+                          project->axes()->textColorY().alphaF());
+    textColor[2] = float4(project->axes()->textColorZ().redF(),
+                          project->axes()->textColorZ().greenF(),
+                          project->axes()->textColorZ().blueF(),
+                          project->axes()->textColorZ().alphaF());
+
+    textDisplacement[0] = float4(project->axes()->textDisplacementX().x,
+                                 project->axes()->textDisplacementX().y,
+                                 project->axes()->textDisplacementX().z,
+                                 1.0);
+    textDisplacement[1] = float4(project->axes()->textDisplacementY().x,
+                                 project->axes()->textDisplacementY().y,
+                                 project->axes()->textDisplacementY().z,
+                                 1.0);
+    textDisplacement[2] = float4(project->axes()->textDisplacementZ().x,
+                                 project->axes()->textDisplacementZ().y,
+                                 project->axes()->textDisplacementZ().z,
+                                 1.0);
+
+    textScale = float4(project->axes()->textScale().x,
+                       project->axes()->textScale().y,
+                       project->axes()->textScale().z,
+                       1.0);
+  }
+}
 
 

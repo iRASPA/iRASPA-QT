@@ -14,6 +14,7 @@ INCLUDEPATH += $$PWD
 
 SOURCES += \
     $$PWD/rkcamera.cpp \
+    $$PWD/rkglobalaxes.cpp \
     $$PWD/rklight.cpp \
     $$PWD/rkrenderkitprotocols.cpp \
     $$PWD/trackball.cpp \
@@ -23,6 +24,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/renderkit.h \
     $$PWD/rkcamera.h \
+    $$PWD/rkglobalaxes.h \
     $$PWD/rklight.h \
     $$PWD/rkrenderkitprotocols.h \
     $$PWD/trackball.h \

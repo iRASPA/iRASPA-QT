@@ -34,11 +34,12 @@
 #include "savepicturedialog.h"
 
 CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWidget(parent ),
-    _cameraCameraForm(new CameraCameraForm),
-    _cameraSelectionForm(new CameraSelectionForm),
-    _cameraLightsForm(new CameraLightsForm),
-    _cameraPicturesForm(new CameraPicturesForm),
-    _cameraBackgroundForm(new CameraBackgroundForm)
+    _cameraCameraForm(new CameraCameraForm(this)),
+    _cameraSelectionForm(new CameraSelectionForm(this)),
+    _cameraAxesForm(new CameraAxesForm(this)),
+    _cameraLightsForm(new CameraLightsForm(this)),
+    _cameraPicturesForm(new CameraPicturesForm(this)),
+    _cameraBackgroundForm(new CameraBackgroundForm(this))
 {
   this->setHeaderHidden(true);
   this->setRootIsDecorated(true);
@@ -120,6 +121,197 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
 
   _cameraSelectionForm->selectionIntensityDoubleSlider->setDoubleMinimum(0.0);
   _cameraSelectionForm->selectionIntensityDoubleSlider->setDoubleMaximum(2.0);
+
+  // Axes
+  //==========================================================================================================
+  QTreeWidgetItem* axesItem = new QTreeWidgetItem(this);
+  this->addTopLevelItem(axesItem);
+
+  pushButtonAxes = new QPushButton(tr("Axes"),this);
+  pushButtonAxes->setIcon(QIcon(":/iraspa/collapsed.png"));
+  pushButtonAxes->setStyleSheet("text-align:left;");
+  setItemWidget(axesItem,0,pushButtonAxes);
+
+  QTreeWidgetItem *childAxesItem = new QTreeWidgetItem(axesItem);
+  this->setItemWidget(childAxesItem,0, _cameraAxesForm);
+
+  _cameraAxesForm->cameraAxesPosition->insertItem(0,tr("None"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(1,tr("Bottom-Left"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(2,tr("Mid-Left"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(3,tr("Top-Left"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(4,tr("Mid-Top"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(5,tr("Top-Right"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(6,tr("Mid-Right"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(7,tr("Bottom-Right"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(8,tr("Mid-Bottom"));
+  _cameraAxesForm->cameraAxesPosition->insertItem(9,tr("Center"));
+
+  _cameraAxesForm->cameraAxesStyle->insertItem(0,tr("Default"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(1,tr("Thick RGB"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(2,tr("Thick"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(3,tr("Thin RGB"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(4,tr("Thin"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(5,tr("Beam-Arrow RGB"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(6,tr("Beam-Arrow"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(7,tr("Beam RGB"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(8,tr("Beam"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(9,tr("Squashed RGB"));
+  _cameraAxesForm->cameraAxesStyle->insertItem(10,tr("Squashed"));
+
+  _cameraAxesForm->cameraAxesBackgroundShape->insertItem(0,tr("None"));
+  _cameraAxesForm->cameraAxesBackgroundShape->insertItem(1,tr("Filled Circle"));
+  _cameraAxesForm->cameraAxesBackgroundShape->insertItem(2,tr("Filled Square"));
+  _cameraAxesForm->cameraAxesBackgroundShape->insertItem(3,tr("Filled Rounded Square"));
+  _cameraAxesForm->cameraAxesBackgroundShape->insertItem(4,tr("Circle"));
+  _cameraAxesForm->cameraAxesBackgroundShape->insertItem(5,tr("Square"));
+  _cameraAxesForm->cameraAxesBackgroundShape->insertItem(6,tr("Rounded Square"));
+
+  _cameraAxesForm->cameraAxesSize->setMinimum(0.0);
+  _cameraAxesForm->cameraAxesSize->setMaximum(100.0);
+  _cameraAxesForm->cameraAxesSize->setDecimals(5);
+  _cameraAxesForm->cameraAxesSize->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesSize->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesOffset->setMinimum(0.0);
+  _cameraAxesForm->cameraAxesOffset->setMaximum(100.0);
+  _cameraAxesForm->cameraAxesOffset->setDecimals(5);
+  _cameraAxesForm->cameraAxesOffset->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesOffset->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setDecimals(5);
+  _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesTextScalingX->setMinimum(0.0);
+  _cameraAxesForm->cameraAxesTextScalingX->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesTextScalingX->setDecimals(5);
+  _cameraAxesForm->cameraAxesTextScalingX->setSingleStep(0.5);
+  _cameraAxesForm->cameraAxesTextScalingX->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesTextScalingX->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesTextScalingY->setMinimum(0.0);
+  _cameraAxesForm->cameraAxesTextScalingY->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesTextScalingY->setDecimals(5);
+  _cameraAxesForm->cameraAxesTextScalingY->setSingleStep(0.5);
+  _cameraAxesForm->cameraAxesTextScalingY->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesTextScalingY->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesTextScalingZ->setMinimum(0.0);
+  _cameraAxesForm->cameraAxesTextScalingZ->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesTextScalingZ->setDecimals(5);
+  _cameraAxesForm->cameraAxesTextScalingZ->setSingleStep(0.5);
+  _cameraAxesForm->cameraAxesTextScalingZ->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesTextScalingZ->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesXTextDisplacementX->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesXTextDisplacementX->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesXTextDisplacementX->setDecimals(5);
+  _cameraAxesForm->cameraAxesXTextDisplacementX->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesXTextDisplacementX->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesXTextDisplacementX->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesXTextDisplacementY->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesXTextDisplacementY->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesXTextDisplacementY->setDecimals(5);
+  _cameraAxesForm->cameraAxesXTextDisplacementY->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesXTextDisplacementY->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesXTextDisplacementY->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesXTextDisplacementZ->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesXTextDisplacementZ->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesXTextDisplacementZ->setDecimals(5);
+  _cameraAxesForm->cameraAxesXTextDisplacementZ->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesXTextDisplacementZ->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesXTextDisplacementZ->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesYTextDisplacementX->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesYTextDisplacementX->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesYTextDisplacementX->setDecimals(5);
+  _cameraAxesForm->cameraAxesYTextDisplacementX->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesYTextDisplacementX->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesYTextDisplacementX->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesYTextDisplacementY->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesYTextDisplacementY->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesYTextDisplacementY->setDecimals(5);
+  _cameraAxesForm->cameraAxesYTextDisplacementY->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesYTextDisplacementY->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesYTextDisplacementY->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesYTextDisplacementZ->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesYTextDisplacementZ->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesYTextDisplacementZ->setDecimals(5);
+  _cameraAxesForm->cameraAxesYTextDisplacementZ->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesYTextDisplacementZ->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesYTextDisplacementZ->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesZTextDisplacementX->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesZTextDisplacementX->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesZTextDisplacementX->setDecimals(5);
+  _cameraAxesForm->cameraAxesZTextDisplacementX->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesZTextDisplacementX->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesZTextDisplacementX->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesZTextDisplacementY->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesZTextDisplacementY->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesZTextDisplacementY->setDecimals(5);
+  _cameraAxesForm->cameraAxesZTextDisplacementY->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesZTextDisplacementY->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesZTextDisplacementY->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraAxesForm->cameraAxesZTextDisplacementZ->setMinimum(-DBL_MAX);
+  _cameraAxesForm->cameraAxesZTextDisplacementZ->setMaximum(DBL_MAX);
+  _cameraAxesForm->cameraAxesZTextDisplacementZ->setDecimals(5);
+  _cameraAxesForm->cameraAxesZTextDisplacementZ->setSingleStep(0.1);
+  _cameraAxesForm->cameraAxesZTextDisplacementZ->setKeyboardTracking(false);
+  _cameraAxesForm->cameraAxesZTextDisplacementZ->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+
+
+  QObject::connect(_cameraAxesForm->cameraAxesPosition,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CameraTreeWidgetController::setAxesPosition);
+  QObject::connect(_cameraAxesForm->cameraAxesStyle,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CameraTreeWidgetController::setAxesStyle);
+  QObject::connect(_cameraAxesForm->cameraAxesSize,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesSize);
+  QObject::connect(_cameraAxesForm->cameraAxesOffset,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesOffset);
+
+  QObject::connect(_cameraAxesForm->cameraAxesBackgroundShape,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CameraTreeWidgetController::setAxesBackgroundStyle);
+  QObject::connect(_cameraAxesForm->cameraAxesBackgroundColor,&QPushButton::clicked,this,&CameraTreeWidgetController::setAxesBackgroundColor);
+  QObject::connect(_cameraAxesForm->cameraAxesBackgroundAdditionalSize,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesBackgroundAdditionalSize);
+
+
+  QObject::connect(_cameraAxesForm->cameraAxesTextScalingX,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesTextScalingX);
+  QObject::connect(_cameraAxesForm->cameraAxesTextScalingY,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesTextScalingY);
+  QObject::connect(_cameraAxesForm->cameraAxesTextScalingZ,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesTextScalingZ);
+
+  QObject::connect(_cameraAxesForm->cameraAxesTextColorX,&QPushButton::clicked,this,&CameraTreeWidgetController::setAxesTextolorX);
+  QObject::connect(_cameraAxesForm->cameraAxesTextColorY,&QPushButton::clicked,this,&CameraTreeWidgetController::setAxesTextolorY);
+  QObject::connect(_cameraAxesForm->cameraAxesTextColorZ,&QPushButton::clicked,this,&CameraTreeWidgetController::setAxesTextolorZ);
+
+  QObject::connect(_cameraAxesForm->cameraAxesXTextDisplacementX,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesXTextDisplacementX);
+  QObject::connect(_cameraAxesForm->cameraAxesXTextDisplacementY,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesXTextDisplacementY);
+  QObject::connect(_cameraAxesForm->cameraAxesXTextDisplacementZ,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesXTextDisplacementZ);
+  QObject::connect(_cameraAxesForm->cameraAxesYTextDisplacementX,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesYTextDisplacementX);
+  QObject::connect(_cameraAxesForm->cameraAxesYTextDisplacementY,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesYTextDisplacementY);
+  QObject::connect(_cameraAxesForm->cameraAxesYTextDisplacementZ,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesYTextDisplacementZ);
+  QObject::connect(_cameraAxesForm->cameraAxesZTextDisplacementX,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesZTextDisplacementX);
+  QObject::connect(_cameraAxesForm->cameraAxesZTextDisplacementY,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesZTextDisplacementY);
+  QObject::connect(_cameraAxesForm->cameraAxesZTextDisplacementZ,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesZTextDisplacementZ);
+
+
+  /*
+  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setMinimum(0.0);
+  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setDecimals(5);
+  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setSingleStep(0.1);
+  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setKeyboardTracking(false);
+  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cameraAxesForm->primitiveSelectionScalingDoubleSlider->setDoubleMinimum(1.0);
+  _cameraAxesForm->primitiveSelectionScalingDoubleSlider->setDoubleMaximum(1.25);
+*/
+
+
+  pushButtonAxes->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+  pushButtonAxes->resize(size().width(), fm.height());
 
   // Lights
   //==========================================================================================================
@@ -246,12 +438,14 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   //=========================================================================
   pushButtonCamera->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonSelection->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  pushButtonAxes->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonLights->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonPictures->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonBackground->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
   QObject::connect(pushButtonCamera, &QPushButton::clicked, this, &CameraTreeWidgetController::expandCameraItem);
   QObject::connect(pushButtonSelection, &QPushButton::clicked, this, &CameraTreeWidgetController::expandSelectionItem);
+  QObject::connect(pushButtonAxes, &QPushButton::clicked, this, &CameraTreeWidgetController::expandAxesItem);
   QObject::connect(pushButtonLights, &QPushButton::clicked, this, &CameraTreeWidgetController::expandLightsItem);
   QObject::connect(pushButtonPictures, &QPushButton::clicked, this, &CameraTreeWidgetController::expandPicturesItem);
   QObject::connect(pushButtonBackground, &QPushButton::clicked, this, &CameraTreeWidgetController::expandBackgroundItem);
@@ -316,9 +510,24 @@ void CameraTreeWidgetController::expandSelectionItem()
   }
 }
 
-void CameraTreeWidgetController::expandLightsItem()
+void CameraTreeWidgetController::expandAxesItem()
 {
   QModelIndex index = indexFromItem(topLevelItem(2),0);
+  if(this->isExpanded(index))
+  {
+    this->collapse(index);
+    pushButtonAxes->setIcon(QIcon(":/iraspa/collapsed.png"));
+  }
+  else
+  {
+    this->expand(index);
+    pushButtonAxes->setIcon(QIcon(":/iraspa/expanded.png"));
+  }
+}
+
+void CameraTreeWidgetController::expandLightsItem()
+{
+  QModelIndex index = indexFromItem(topLevelItem(3),0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -333,7 +542,7 @@ void CameraTreeWidgetController::expandLightsItem()
 
 void CameraTreeWidgetController::expandPicturesItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(3),0);
+  QModelIndex index = indexFromItem(topLevelItem(4),0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -348,7 +557,7 @@ void CameraTreeWidgetController::expandPicturesItem()
 
 void CameraTreeWidgetController::expandBackgroundItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(4),0);
+  QModelIndex index = indexFromItem(topLevelItem(5),0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -380,6 +589,9 @@ void CameraTreeWidgetController::reloadData()
   reloadCameraModelViewMatrix();
 
   reloadSelectionProperties();
+  reloadAxesProperties();
+  reloadAxesBackgroundProperties();
+  reloadAxesTextProperties();
   reloadLightsProperties();
   reloadPictureProperties();
   reloadBackgroundProperties();
@@ -658,6 +870,10 @@ void CameraTreeWidgetController::reloadCameraData()
   reloadCameraEulerAngles();
   reloadCameraModelViewMatrix();
 
+  reloadAxesProperties();
+  reloadAxesBackgroundProperties();
+  reloadAxesTextProperties();
+
   reloadSelectionProperties();
   reloadLightsProperties();
   reloadPictureProperties();
@@ -678,6 +894,10 @@ void CameraTreeWidgetController::setResetPercentage(const QString &resetPercenta
     if(succes)
     {
       camera->setResetFraction(newValue/100.0);
+
+      reloadCameraProjection();
+      emit updateRenderer();
+
       _mainWindow->documentWasModified();
     }
   }
@@ -1097,6 +1317,410 @@ void CameraTreeWidgetController::setSelectionIntensity(double level)
   emit rendererReloadSelectionData();
   emit updateRenderer();
 }
+
+// Global Axes properties
+//========================================================================================================================================
+
+void CameraTreeWidgetController::reloadAxesProperties()
+{
+  _cameraAxesForm->cameraAxesPosition->setDisabled(true);
+  _cameraAxesForm->cameraAxesStyle->setDisabled(true);
+  _cameraAxesForm->cameraAxesSize->setDisabled(true);
+  _cameraAxesForm->cameraAxesOffset->setDisabled(true);
+
+  if(_project)
+  {
+    _cameraAxesForm->cameraAxesPosition->setEnabled(true);
+    int positionIndex = static_cast<typename std::underlying_type<RKGlobalAxes::Position>::type>(_project->axes()->position());
+    whileBlocking(_cameraAxesForm->cameraAxesPosition)->setCurrentIndex(positionIndex);
+
+    _cameraAxesForm->cameraAxesStyle->setEnabled(true);
+    int styleIndex = static_cast<typename std::underlying_type<RKGlobalAxes::Style>::type>(_project->axes()->style());
+    whileBlocking(_cameraAxesForm->cameraAxesStyle)->setCurrentIndex(styleIndex);
+
+    _cameraAxesForm->cameraAxesSize->setEnabled(true);
+    whileBlocking(_cameraAxesForm->cameraAxesSize)->setValue(100.0 * _project->axes()->sizeScreenFraction());
+
+    _cameraAxesForm->cameraAxesOffset->setEnabled(true);
+    whileBlocking(_cameraAxesForm->cameraAxesOffset)->setValue(100.0 * _project->axes()->borderOffsetScreenFraction());
+  }
+}
+
+
+
+void CameraTreeWidgetController::setAxesPosition(int value)
+{
+  if(_project)
+  {
+    if(value>=0 && value<=int(RKGlobalAxes::Position::center))
+    {
+      _project->axes()->setPosition(RKGlobalAxes::Position(value));
+
+      reloadAxesProperties();
+      //emit rendererReloadData();
+      emit updateRenderer();
+
+      _mainWindow->documentWasModified();
+    }
+  }
+}
+
+void CameraTreeWidgetController::setAxesStyle(int value)
+{
+  if(_project)
+  {
+    if(value>=0 && value<=int(RKGlobalAxes::Style::squashed))
+    {
+      _project->axes()->setStyle(RKGlobalAxes::Style(value));
+
+      reloadAxesProperties();
+
+      emit rendererReloadData();
+      emit updateRenderer();
+
+      _mainWindow->documentWasModified();
+    }
+  }
+}
+
+void CameraTreeWidgetController::setAxesSize(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setSizeScreenFraction(value/100.0);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesOffset(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setBorderOffsetScreenFraction(value/100.0);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::reloadAxesBackgroundProperties()
+{
+  _cameraAxesForm->cameraAxesBackgroundShape->setDisabled(true);
+  _cameraAxesForm->cameraAxesBackgroundColor->setDisabled(true);
+  _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setDisabled(true);
+  if(_project)
+  {
+    _cameraAxesForm->cameraAxesBackgroundShape->setEnabled(true);
+    _cameraAxesForm->cameraAxesBackgroundColor->setEnabled(true);
+    _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setEnabled(true);
+    int positionIndex = static_cast<typename std::underlying_type<RKGlobalAxes::BackgroundStyle>::type>(_project->axes()->axesBackgroundStyle());
+    whileBlocking(_cameraAxesForm->cameraAxesBackgroundShape)->setCurrentIndex(positionIndex);
+
+    whileBlocking(_cameraAxesForm->cameraAxesBackgroundColor)->setColor(_project->axes()->axesBackgroundColor());
+    whileBlocking(_cameraAxesForm->cameraAxesBackgroundAdditionalSize)->setValue(_project->axes()->axesBackgroundAdditionalSize());
+  }
+}
+
+
+void CameraTreeWidgetController::setAxesBackgroundStyle(int value)
+{
+  if(_project)
+  {
+    if(value>=0 && value<=int(RKGlobalAxes::Style::squashed))
+    {
+      _project->axes()->setAxesBackgroundStyle(RKGlobalAxes::BackgroundStyle(value));
+
+      reloadAxesBackgroundProperties();
+
+      emit rendererReloadData();
+      emit updateRenderer();
+
+      _mainWindow->documentWasModified();
+    }
+  }
+}
+
+void CameraTreeWidgetController::setAxesBackgroundColor()
+{
+  if (_project)
+  {
+    QColor color = QColorDialog::getColor(_project->axes()->axesBackgroundColor(),this,"Choose Color",QColorDialog::ShowAlphaChannel);
+    if(color.isValid())
+    {
+      _project->axes()->setAxesBackgroundColor(color);
+
+      reloadAxesBackgroundProperties();
+
+      emit rendererReloadData();
+      emit updateRenderer();
+
+      _mainWindow->documentWasModified();
+    }
+  }
+}
+
+void CameraTreeWidgetController::setAxesBackgroundAdditionalSize(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setAxesBackgroundAdditionalSize(value);
+
+    reloadAxesBackgroundProperties();
+
+    emit rendererReloadData();
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::reloadAxesTextProperties()
+{
+  _cameraAxesForm->cameraAxesTextScalingX->setDisabled(true);
+  _cameraAxesForm->cameraAxesTextScalingY->setDisabled(true);
+  _cameraAxesForm->cameraAxesTextScalingZ->setDisabled(true);
+
+  _cameraAxesForm->cameraAxesTextColorX->setDisabled(true);
+  _cameraAxesForm->cameraAxesTextColorY->setDisabled(true);
+  _cameraAxesForm->cameraAxesTextColorZ->setDisabled(true);
+
+  _cameraAxesForm->cameraAxesXTextDisplacementX->setDisabled(true);
+  _cameraAxesForm->cameraAxesXTextDisplacementY->setDisabled(true);
+  _cameraAxesForm->cameraAxesXTextDisplacementZ->setDisabled(true);
+  _cameraAxesForm->cameraAxesYTextDisplacementX->setDisabled(true);
+  _cameraAxesForm->cameraAxesYTextDisplacementY->setDisabled(true);
+  _cameraAxesForm->cameraAxesYTextDisplacementZ->setDisabled(true);
+  _cameraAxesForm->cameraAxesZTextDisplacementX->setDisabled(true);
+  _cameraAxesForm->cameraAxesZTextDisplacementY->setDisabled(true);
+  _cameraAxesForm->cameraAxesZTextDisplacementZ->setDisabled(true);
+
+  if(_project)
+  {
+    _cameraAxesForm->cameraAxesTextScalingX->setEnabled(true);
+    _cameraAxesForm->cameraAxesTextScalingY->setEnabled(true);
+    _cameraAxesForm->cameraAxesTextScalingZ->setEnabled(true);
+
+    _cameraAxesForm->cameraAxesTextColorX->setEnabled(true);
+    _cameraAxesForm->cameraAxesTextColorY->setEnabled(true);
+    _cameraAxesForm->cameraAxesTextColorZ->setEnabled(true);
+
+    _cameraAxesForm->cameraAxesXTextDisplacementX->setEnabled(true);
+    _cameraAxesForm->cameraAxesXTextDisplacementY->setEnabled(true);
+    _cameraAxesForm->cameraAxesXTextDisplacementZ->setEnabled(true);
+    _cameraAxesForm->cameraAxesYTextDisplacementX->setEnabled(true);
+    _cameraAxesForm->cameraAxesYTextDisplacementY->setEnabled(true);
+    _cameraAxesForm->cameraAxesYTextDisplacementZ->setEnabled(true);
+    _cameraAxesForm->cameraAxesZTextDisplacementX->setEnabled(true);
+    _cameraAxesForm->cameraAxesZTextDisplacementY->setEnabled(true);
+    _cameraAxesForm->cameraAxesZTextDisplacementZ->setEnabled(true);
+
+    whileBlocking(_cameraAxesForm->cameraAxesTextScalingX)->setValue(_project->axes()->textScale().x);
+    whileBlocking(_cameraAxesForm->cameraAxesTextScalingY)->setValue(_project->axes()->textScale().y);
+    whileBlocking(_cameraAxesForm->cameraAxesTextScalingZ)->setValue(_project->axes()->textScale().z);
+
+    whileBlocking(_cameraAxesForm->cameraAxesTextColorX)->setColor(_project->axes()->textColorX());
+    whileBlocking(_cameraAxesForm->cameraAxesTextColorY)->setColor(_project->axes()->textColorY());
+    whileBlocking(_cameraAxesForm->cameraAxesTextColorZ)->setColor(_project->axes()->textColorZ());
+
+    whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementX)->setValue(_project->axes()->textDisplacementX().x);
+    whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementY)->setValue(_project->axes()->textDisplacementX().y);
+    whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementZ)->setValue(_project->axes()->textDisplacementX().z);
+    whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementX)->setValue(_project->axes()->textDisplacementY().x);
+    whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementY)->setValue(_project->axes()->textDisplacementY().y);
+    whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementZ)->setValue(_project->axes()->textDisplacementY().z);
+    whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementX)->setValue(_project->axes()->textDisplacementZ().x);
+    whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementY)->setValue(_project->axes()->textDisplacementZ().y);
+    whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementZ)->setValue(_project->axes()->textDisplacementZ().z);
+  }
+}
+
+void CameraTreeWidgetController::setAxesTextScalingX(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setTextScaleX(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesTextScalingY(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setTextScaleY(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesTextScalingZ(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setTextScaleZ(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+void CameraTreeWidgetController::setAxesTextolorX()
+{
+  if (_project)
+  {
+    QColor color = QColorDialog::getColor(_project->axes()->axesBackgroundColor(),this,"Choose Color");
+    if(color.isValid())
+    {
+      _project->axes()->setTextColorX(color);
+
+      reloadAxesTextProperties();
+
+      emit updateRenderer();
+
+      _mainWindow->documentWasModified();
+    }
+  }
+}
+
+void CameraTreeWidgetController::setAxesTextolorY()
+{
+  if (_project)
+  {
+    QColor color = QColorDialog::getColor(_project->axes()->axesBackgroundColor(),this,"Choose Color");
+    if(color.isValid())
+    {
+      _project->axes()->setTextColorY(color);
+
+      reloadAxesTextProperties();
+
+      emit updateRenderer();
+
+      _mainWindow->documentWasModified();
+    }
+  }
+}
+
+void CameraTreeWidgetController::setAxesTextolorZ()
+{
+  if (_project)
+  {
+    QColor color = QColorDialog::getColor(_project->axes()->axesBackgroundColor(),this,"Choose Color");
+    if(color.isValid())
+    {
+      _project->axes()->setTextColorZ(color);
+
+      reloadAxesTextProperties();
+
+      emit updateRenderer();
+
+      _mainWindow->documentWasModified();
+    }
+  }
+}
+
+void CameraTreeWidgetController::setAxesXTextDisplacementX(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setXTextDisplacementX(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesXTextDisplacementY(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setXTextDisplacementY(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesXTextDisplacementZ(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setXTextDisplacementZ(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesYTextDisplacementX(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setYTextDisplacementX(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesYTextDisplacementY(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setYTextDisplacementY(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesYTextDisplacementZ(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setYTextDisplacementZ(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesZTextDisplacementX(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setZTextDisplacementX(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesZTextDisplacementY(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setZTextDisplacementY(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setAxesZTextDisplacementZ(double value)
+{
+  if(_project)
+  {
+    _project->axes()->setZTextDisplacementZ(value);
+    emit updateRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
 
 // Light properties
 //========================================================================================================================================

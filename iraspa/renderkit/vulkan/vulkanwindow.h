@@ -48,6 +48,7 @@ class VulkanWindow : public QWindow, public RKRenderViewController
     virtual void reloadSelectionData()  override final;
     virtual void reloadRenderMeasurePointsData() override final;
     virtual void reloadBoundingBoxData() override final;
+    virtual void reloadGlobalAxesData() override final;
 
     virtual void reloadBackgroundImage()  override final;
 
@@ -60,6 +61,7 @@ class VulkanWindow : public QWindow, public RKRenderViewController
     virtual void updateStructureUniforms()  override final;
     virtual void updateIsosurfaceUniforms()  override final;
     virtual void updateLightUniforms()  override final;
+    virtual void updateGlobalAxesUniforms() override final;
 
     virtual void updateVertexArrays() override final;
 

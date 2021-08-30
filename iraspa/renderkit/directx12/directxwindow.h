@@ -43,6 +43,7 @@ public:
     virtual void reloadSelectionData()  override final;
     virtual void reloadRenderMeasurePointsData() override final;
     virtual void reloadBoundingBoxData() override final;
+    virtual void reloadGlobalAxesData() override final;
 
     virtual void reloadBackgroundImage()  override final;
 
@@ -51,10 +52,11 @@ public:
     virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures)  override final;
     virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures)  override final;
 
-    virtual void updateTransformUniforms()  override final;
-    virtual void updateStructureUniforms()  override final;
-    virtual void updateIsosurfaceUniforms()  override final;
-    virtual void updateLightUniforms()  override final;
+    virtual void updateTransformUniforms() override final;
+    virtual void updateStructureUniforms() override final;
+    virtual void updateIsosurfaceUniforms() override final;
+    virtual void updateLightUniforms() override final;
+    virtual void updateGlobalAxesUniforms() override final;
 
     virtual void updateVertexArrays() override final;
 

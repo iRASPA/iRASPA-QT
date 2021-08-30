@@ -32,6 +32,7 @@
 #include "rkfontatlas.h"
 #include "rklight.h"
 #include "rkcamera.h"
+#include "rkglobalaxes.h"
 
 // forward declaration
 struct RKInPerInstanceAttributesAtoms;
@@ -39,65 +40,7 @@ struct RKInPerInstanceAttributesBonds;
 struct RKInPerInstanceAttributesText;
 
 
-enum class RKBackgroundType: qint64
-{
-  color = 0, linearGradient = 1, radialGradient = 2, image = 3
-};
 
-enum class RKBondColorMode: qint64
-{
-  uniform = 0, split = 1, smoothed_split = 2, multiple_values = 3
-};
-
-enum class RKRenderQuality: qint64
-{
-  low = 0, medium = 1, high = 2, picture = 3
-};
-
-enum class RKImageQuality: qint64
-{
-  rgb_8_bits = 0, rgb_16_bits = 1, cmyk_8_bits = 2, cmyk_16_bits = 3
-};
-
-enum class RKImageDPI: qint64
-{
-  dpi_72 = 0, dpi_75 = 1, dpi_150 = 2, dpi_300 = 3, dpi_600 = 4, dpi_1200 = 5
-};
-
-enum class RKImageDimensions: qint64
-{
-  physical = 0, pixels = 1
-};
-
-enum class RKImageUnits: qint64
-{
-  inch = 0, cm = 1
-};
-
-enum class RKSelectionStyle: qint64
-{
-  None = 0, WorleyNoise3D = 1, striped = 2, glow = 3, multiple_values = 4
-};
-
-enum class RKTextStyle: qint64
-{
-  flatBillboard = 0, multiple_values = 1
-};
-
-enum class RKTextEffect: qint64
-{
-  none = 0, glow = 1, pulsate = 2, squiggle = 3, multiple_values = 4
-};
-
-enum class RKTextType: qint64
-{
-  none = 0, displayName = 1, identifier = 2, chemicalElement = 3, forceFieldType = 4, position = 5, charge = 6, multiple_values = 7
-};
-
-enum class RKTextAlignment: qint64
-{
-  center = 0, left = 1, right = 2, top = 3, bottom = 4, topLeft = 5, topRight = 6, bottomLeft = 7, bottomRight = 8, multiple_values = 9
-};
 
 
 
@@ -397,6 +340,8 @@ public:
   virtual bool showBoundingBox() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderBoundingBoxSpheres() const = 0;
   virtual std::vector<RKInPerInstanceAttributesBonds> renderBoundingBoxCylinders() const = 0;
+
+  virtual std::shared_ptr<RKGlobalAxes> axes() const = 0;
 };
 
 class RKRenderViewController
@@ -415,6 +360,7 @@ class RKRenderViewController
   virtual void reloadSelectionData() = 0;
   virtual void reloadRenderMeasurePointsData() = 0;
   virtual void reloadBoundingBoxData() = 0;
+  virtual void reloadGlobalAxesData() = 0;
 
   virtual void reloadBackgroundImage() = 0;
 
@@ -427,6 +373,7 @@ class RKRenderViewController
   virtual void updateStructureUniforms() = 0;
   virtual void updateIsosurfaceUniforms() = 0;
   virtual void updateLightUniforms() = 0;
+  virtual void updateGlobalAxesUniforms() = 0;
 
   virtual void updateVertexArrays() = 0;
 

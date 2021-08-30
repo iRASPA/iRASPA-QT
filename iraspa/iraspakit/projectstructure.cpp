@@ -460,6 +460,7 @@ QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<ProjectStruct
 
   stream << node->_movieFramesPerSecond;
   stream << node->_camera;
+  stream << node->_renderAxes;
 
   stream << node->_sceneList;
 
@@ -515,6 +516,11 @@ QDataStream &operator>>(QDataStream& stream, std::shared_ptr<ProjectStructure>& 
   stream >> node->_movieFramesPerSecond;
 
   stream >> node->_camera;
+
+  if(versionNumber >= 3) // introduced in version 3
+  {
+    stream >> node->_renderAxes;
+  }
 
   stream >> node->_sceneList;
 

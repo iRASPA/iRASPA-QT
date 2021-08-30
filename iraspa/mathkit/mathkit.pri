@@ -1,6 +1,7 @@
 INCLUDEPATH += $$PWD
 
 SOURCES += \
+    $$PWD/float3x4.cpp \
     $$PWD/simd_quatd.cpp \
     $$PWD/bool3.cpp \
     $$PWD/int3.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
     $$PWD/double4x4.cpp 
 
 HEADERS += \
+    $$PWD/float3x4.h \
     $$PWD/mathkit.h \
     $$PWD/simd_quatd.h \
     $$PWD/bool3.h \

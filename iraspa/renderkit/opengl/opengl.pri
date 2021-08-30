@@ -4,6 +4,10 @@ include(geometry/geometry.pri)
 
 SOURCES += \
     $$PWD/openglwindow.cpp \
+    $$PWD/openglglobalaxesbackgroundshader.cpp \
+    $$PWD/openglglobalaxesshader.cpp \
+    $$PWD/openglglobalaxessystemshader.cpp \
+    $$PWD/openglglobalaxestextshader.cpp \
     $$PWD/openglatompickingshader.cpp \
     $$PWD/openglatomselectionshader.cpp \
     $$PWD/openglatomshader.cpp \
@@ -89,6 +93,10 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/openglwindow.h \
+    $$PWD/openglglobalaxesbackgroundshader.h \
+    $$PWD/openglglobalaxesshader.h \
+    $$PWD/openglglobalaxessystemshader.h \
+    $$PWD/openglglobalaxestextshader.h \
     $$PWD/openglatompickingshader.h \
     $$PWD/openglatomselectionshader.h \
     $$PWD/openglatomshader.h \

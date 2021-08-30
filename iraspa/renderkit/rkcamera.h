@@ -63,6 +63,10 @@ public:
   void updateFieldOfView();
   void updateCameraForWindowResize(double width, double height);
 
+  double4x4 axesViewMatrix();
+  double4x4 axesModelViewMatrix();
+  double4x4 axesProjectionMatrix(double axesSize);
+
   void setCameraToOrthographic();
   bool isOrthographic() {return _frustrumType == FrustrumType::orthographic;}
   void setCameraToPerspective();

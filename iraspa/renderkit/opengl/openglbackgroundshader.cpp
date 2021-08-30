@@ -23,6 +23,7 @@
 #include <iostream>
 #include "glgeterror.h"
 #include "rkrenderuniforms.h"
+#include "backplanegeometry.h"
 #include "quadgeometry.h"
 #include "glgeterror.h"
 
@@ -89,7 +90,9 @@ void OpenGLBackgroundShader::initializeVertexArrayObject()
 
   glGenTextures(1, &_backgroundTexture);
   check_gl_error();
-  QuadGeometry quad = QuadGeometry();
+
+
+  BackPlaneGeometry quad = BackPlaneGeometry();
 
   glBindVertexArray(_vertexArray);
    check_gl_error();

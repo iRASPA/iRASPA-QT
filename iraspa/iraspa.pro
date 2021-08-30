@@ -91,14 +91,15 @@ macx{
 
   contains(DEFINES,USE_OPENGL) {
     #QMAKE_CXXFLAGS += -Wl,--stack,4194304
-    QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
+    QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct -fsanitize=address
     INCLUDEPATH += $$system(python-config --include | sed -e 's:-I::g')
     QMAKE_LFLAGS +=  -framework OpenCL -framework Python -framework Accelerate
-    LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+    LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz -fsanitize=address
   }
 }
 
 win32{
+  DEFINES += _CRT_SECURE_NO_WARNINGS
   contains(DEFINES,USE_VULKAN){
     DEFINES += VK_USE_PLATFORM_WIN32_KHR
     # CHANGE HERE TO YOUR SDK PATH:

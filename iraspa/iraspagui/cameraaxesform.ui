@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CameraAxesMainWidget</class>
+ <widget class="QWidget" name="CameraAxesMainWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>385</width>
+    <height>415</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Style</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Position</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="cameraAxesPosition"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="cameraAxesStyle"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Border Offset</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="CustomDoubleSpinBox" name="cameraAxesSize">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
+         <property name="maximum">
+          <double>100.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>%</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="3" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="CustomDoubleSpinBox" name="cameraAxesOffset">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>%</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="1">
+      <widget class="QComboBox" name="cameraAxesBackgroundShape"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Background Additional Size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Background Shape</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="cameraAxesBackgroundAdditionalSize"/>
+     </item>
+     <item row="0" column="2">
+      <widget class="SelectColorButton" name="cameraAxesBackgroundColor">
+       <property name="text">
+        <string>Color</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Text Properties</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>Scaling</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string>Z-Text Δ</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>X-Text Δ</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Y-Text Δ</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QDoubleSpinBox" name="cameraAxesXTextDisplacementZ"/>
+        </item>
+        <item row="1" column="2">
+         <widget class="QDoubleSpinBox" name="cameraAxesXTextDisplacementY"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="cameraAxesXTextDisplacementX"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDoubleSpinBox" name="cameraAxesTextScalingX"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QDoubleSpinBox" name="cameraAxesTextScalingY"/>
+        </item>
+        <item row="0" column="3">
+         <widget class="QDoubleSpinBox" name="cameraAxesTextScalingZ"/>
+        </item>
+        <item row="2" column="1">
+         <widget class="QDoubleSpinBox" name="cameraAxesYTextDisplacementX"/>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDoubleSpinBox" name="cameraAxesZTextDisplacementX"/>
+        </item>
+        <item row="2" column="2">
+         <widget class="QDoubleSpinBox" name="cameraAxesYTextDisplacementY"/>
+        </item>
+        <item row="3" column="2">
+         <widget class="QDoubleSpinBox" name="cameraAxesZTextDisplacementY"/>
+        </item>
+        <item row="2" column="3">
+         <widget class="QDoubleSpinBox" name="cameraAxesYTextDisplacementZ"/>
+        </item>
+        <item row="3" column="3">
+         <widget class="QDoubleSpinBox" name="cameraAxesZTextDisplacementZ"/>
+        </item>
+        <item row="1" column="4">
+         <widget class="SelectColorButton" name="cameraAxesTextColorX">
+          <property name="text">
+           <string>Color</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="4">
+         <widget class="SelectColorButton" name="cameraAxesTextColorY">
+          <property name="text">
+           <string>Color</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="4">
+         <widget class="SelectColorButton" name="cameraAxesTextColorZ">
+          <property name="text">
+           <string>Color</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SelectColorButton</class>
+   <extends>QPushButton</extends>
+   <header>selectcolorbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>customdoublespinbox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -36,6 +36,7 @@
 #include "iraspamainwindowconsumerprotocol.h"
 #include "cameracameraform.h"
 #include "cameraselectionform.h"
+#include "cameraaxesform.h"
 #include "cameralightsform.h"
 #include "camerapicturesform.h"
 #include "camerabackgroundform.h"
@@ -55,12 +56,14 @@ public:
 private:
   CameraCameraForm* _cameraCameraForm;
   CameraSelectionForm* _cameraSelectionForm;
+  CameraAxesForm* _cameraAxesForm;
   CameraLightsForm* _cameraLightsForm;
   CameraPicturesForm* _cameraPicturesForm;
   CameraBackgroundForm* _cameraBackgroundForm;
 
   QPushButton* pushButtonCamera;
   QPushButton* pushButtonSelection;
+  QPushButton* pushButtonAxes;
   QPushButton* pushButtonLights;
   QPushButton* pushButtonPictures;
   QPushButton* pushButtonBackground;
@@ -73,6 +76,7 @@ private:
 private slots:
   void expandCameraItem();
   void expandSelectionItem();
+  void expandAxesItem();
   void expandLightsItem();
   void expandPicturesItem();
   void expandBackgroundItem();
@@ -102,12 +106,35 @@ private slots:
   void setEulerAngleY(int angle);
   void setEulerAngleY(const QString &angleString);
 
-  void setSelectionIntensity(double level);
+  void setAxesPosition(int value);
+  void setAxesStyle(int value);
+  void setAxesSize(double value);
+  void setAxesOffset(double value);
 
+  void setAxesBackgroundStyle(int value);
+  void setAxesBackgroundColor();
+  void setAxesBackgroundAdditionalSize(double value);
+
+  void setAxesTextScalingX(double value);
+  void setAxesTextScalingY(double value);
+  void setAxesTextScalingZ(double value);
+  void setAxesTextolorX();
+  void setAxesTextolorY();
+  void setAxesTextolorZ();
+  void setAxesXTextDisplacementX(double value);
+  void setAxesXTextDisplacementY(double value);
+  void setAxesXTextDisplacementZ(double value);
+  void setAxesYTextDisplacementX(double value);
+  void setAxesYTextDisplacementY(double value);
+  void setAxesYTextDisplacementZ(double value);
+  void setAxesZTextDisplacementX(double value);
+  void setAxesZTextDisplacementY(double value);
+  void setAxesZTextDisplacementZ(double value);
+
+  void setSelectionIntensity(double level);
   void setAmbientLightIntensity(double intensity);
   void setDiffuseLightIntensity(double intensity);
   void setSpecularLightIntensity(double intensity);
-
   void setAmbientColor();
   void setDiffuseColor();
   void setSpecularColor();
@@ -150,7 +177,12 @@ public slots:
 
   void reloadSelectionProperties();
 
+  void reloadAxesProperties();
+  void reloadAxesBackgroundProperties();
+  void reloadAxesTextProperties();
+
   void reloadLightsProperties();
+
   void reloadPictureProperties();
 
   void reloadBackgroundProperties();

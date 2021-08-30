@@ -66,6 +66,7 @@
 #include "openglobjectshader.h"
 #include "openglselectionshader.h"
 #include "opengltextrenderingshader.h"
+#include "openglglobalaxesshader.h"
 
 #ifdef Q_OS_MACOS
   #include <OpenCL/opencl.h>
@@ -89,14 +90,6 @@ enum class Tracking
   other = 10
 };
 
-/*
-#if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
-  class GLWidget : public QOpenGLWidget, public RKRenderViewController, public OpenGLShader, public LogReportingConsumer
-#else
-  class GLWidget : public QGLWidget, public RKRenderViewController, public OpenGLShader, public LogReportingConsumer
-#endif
-     */
-
 class OpenGLWindow : public QOpenGLWindow, public RKRenderViewController, public OpenGLShader, public LogReportingConsumer
 {
   Q_OBJECT
@@ -116,6 +109,7 @@ public:
   void reloadSelectionData() override final;
   void reloadRenderMeasurePointsData() override final;
   void reloadBoundingBoxData() override final;
+  void reloadGlobalAxesData() override final;
   void reloadBackgroundImage() override final;
 
   void setLogReportingWidget(LogReporting *logReporting)  override final;
@@ -127,6 +121,7 @@ public:
   void updateStructureUniforms() override final;
   void updateIsosurfaceUniforms() override final;
   void updateLightUniforms() override final;
+  void updateGlobalAxesUniforms() override final;
 
   void updateVertexArrays() override final;
 
@@ -172,6 +167,7 @@ private:
   GLuint _structureUniformBuffer;
   GLuint _isosurfaceUniformBuffer;
   GLuint _lightsUniformBuffer;
+  GLuint _globalAxesUniformBuffer;
   GLsync _fence;
 
   std::weak_ptr<RKCamera> _camera;
@@ -181,6 +177,7 @@ private:
   OpenGLEnergySurface _energySurfaceShader;
 
   OpenGLBoundingBoxShader _boundingBoxShader;
+  OpenGLGlobalAxesShader _globalAxesShader;
 
   OpenGLAtomShader _atomShader;
   OpenGLBondShader _bondShader;
@@ -212,6 +209,7 @@ private:
   void initializeStructureUniforms();
   void initializeIsosurfaceUniforms();
   void initializeLightUniforms();
+  void initializeGlobalAxesUniforms();
 
   TrackBall _trackBall = TrackBall();
 

@@ -80,20 +80,19 @@ void OpenGLBoundingBoxShader::loadShader(void)
 void OpenGLBoundingBoxShader::initializeTransformUniforms()
 {
   const GLchar* uniformBlockName = "FrameUniformBlock";
-  GLuint program = _boundingBoxCylinderShader.program();
-  GLuint index = glGetUniformBlockIndex(_boundingBoxCylinderShader.program(), uniformBlockName);
-  glUniformBlockBinding(program, index, GLuint(0));
-  glUniformBlockBinding(program,index, GLuint(0));
+  GLuint index = glGetUniformBlockIndex(_boundingBoxSphereShader.program(), uniformBlockName);
+  glUniformBlockBinding(_boundingBoxSphereShader.program(), index, GLuint(0));
+  index = glGetUniformBlockIndex(_boundingBoxCylinderShader.program(), uniformBlockName);
+  glUniformBlockBinding(_boundingBoxCylinderShader.program(), index, GLuint(0));
 }
 
 
 void OpenGLBoundingBoxShader::initializeLightUniforms()
 {
   const GLchar* uniformBlockName = "LightsUniformBlock";
-  GLuint program = _boundingBoxCylinderShader.program();
-  GLuint index = glGetUniformBlockIndex(_boundingBoxCylinderShader.program(), uniformBlockName);
-  glUniformBlockBinding(program, index, GLuint(3));
-  glUniformBlockBinding(program, index, GLuint(3));
-
+  GLuint index = glGetUniformBlockIndex(_boundingBoxSphereShader.program(), uniformBlockName);
+  glUniformBlockBinding(_boundingBoxSphereShader.program(), index, GLuint(3));
+  index = glGetUniformBlockIndex(_boundingBoxCylinderShader.program(), uniformBlockName);
+  glUniformBlockBinding(_boundingBoxCylinderShader.program(), index, GLuint(3));
 }
 

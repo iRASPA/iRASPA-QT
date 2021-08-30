@@ -115,6 +115,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   // connect the camera tab
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::updateRenderer,ui->stackedRenderers, &RenderStackedWidget::redraw);
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererReloadBackgroundImage,ui->stackedRenderers, &RenderStackedWidget::reloadBackgroundImage);
+  //QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererReloadData,ui->stackedRenderers, &RenderStackedWidget::reloadData);
+  QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererReloadData,ui->stackedRenderers, &RenderStackedWidget::reloadData);
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererReloadSelectionData,ui->stackedRenderers, &RenderStackedWidget::reloadSelectionData);
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererCreatePicture,ui->stackedRenderers, &RenderStackedWidget::createPicture);
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererCreateMovie,ui->stackedRenderers, &RenderStackedWidget::createMovie);

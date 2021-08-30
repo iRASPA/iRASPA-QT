@@ -51,6 +51,8 @@ public:
   void initializeTransformUniforms();
   void initializeStructureUniforms();
   GLuint program() {return _program;}
+
+  static QCache<QString, RKFontAtlas> _cachedFontAtlas;
 private:
   GLuint _program;
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
@@ -61,14 +63,12 @@ private:
   GLint _instanceTextureUVAttributeLocation;
   GLint _fontAtlasTextureUniformLocation;
 
-  GLuint _fontAtlasTexture;
-
   std::vector<std::vector<size_t>> _numberOfDrawnAtoms;
   std::vector<std::vector<GLuint>> _vertexBuffer;
   std::vector<std::vector<GLuint>> _vertexArrayObject;
   std::vector<std::vector<GLuint>> _instanceBuffer;
 
-  QCache<QString, RKFontAtlas> _cachedFontAtlas{};
+
 
   static const std::string _vertexShaderSource;
   static const std::string _geometryShaderSource;

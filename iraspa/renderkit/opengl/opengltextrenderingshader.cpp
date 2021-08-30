@@ -27,15 +27,15 @@
 #include "cylindergeometry.h"
 #include "glgeterror.h"
 
+QCache<QString, RKFontAtlas> OpenGLTextRenderingShader::_cachedFontAtlas{};
 
-OpenGLTextRenderingShader::OpenGLTextRenderingShader(): _cachedFontAtlas()
+OpenGLTextRenderingShader::OpenGLTextRenderingShader()
 {
 
 }
 
 OpenGLTextRenderingShader::~OpenGLTextRenderingShader()
 {
-  glDeleteTextures(1, &_fontAtlasTexture);
 }
 
 void OpenGLTextRenderingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
@@ -71,12 +71,27 @@ void OpenGLTextRenderingShader::paintGL(GLuint structureUniformBuffer)
         check_gl_error();
 
         QString fontString = _renderStructures[i][j]->renderTextFont();
-        if(!_cachedFontAtlas.contains(fontString))
+        if(!OpenGLTextRenderingShader::_cachedFontAtlas.contains(fontString))
         {
+          GLuint texture;
+          glGenTextures(1, &texture);
+          check_gl_error();
+
+          glBindTexture(GL_TEXTURE_2D, texture);
+          check_gl_error();
+          glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
           RKFontAtlas* fontAtlas = new RKFontAtlas(fontString, 256);
-          _cachedFontAtlas.insert(fontString, fontAtlas);
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED, GL_UNSIGNED_BYTE, fontAtlas->textureData.data());
+          check_gl_error();
+          fontAtlas->texture = texture;
+
+          OpenGLTextRenderingShader::_cachedFontAtlas.insert(fontString, fontAtlas);
         }
-        RKFontAtlas *atlas = _cachedFontAtlas.object(fontString);
+        RKFontAtlas *atlas = OpenGLTextRenderingShader::_cachedFontAtlas.object(fontString);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, atlas->texture);
@@ -111,12 +126,22 @@ void OpenGLTextRenderingShader::initializeVertexArrayObject()
       QString fontString = _renderStructures[i][j]->renderTextFont();
       if(!_cachedFontAtlas.contains(fontString))
       {
+        GLuint texture;
+        glGenTextures(1, &texture);
+
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         RKFontAtlas* fontAtlas = new RKFontAtlas(fontString, 256);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED, GL_UNSIGNED_BYTE, fontAtlas->textureData.data());
+        fontAtlas->texture = texture;
+
         _cachedFontAtlas.insert(fontString, fontAtlas);
       }
       RKFontAtlas *atlas = _cachedFontAtlas.object(fontString);
-
-      qDebug() << "atlas " << atlas;
 
       glBindVertexArray(_vertexArrayObject[i][j]);
 

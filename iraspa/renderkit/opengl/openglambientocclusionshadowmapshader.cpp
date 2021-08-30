@@ -322,51 +322,70 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
 
   if(dataSource)
   {
+    //qDebug() << ((_heapchk() == _HEAPOK) ? "Heap okay" : "heap error");
+
     glGenBuffers(1, &structureAmbientOcclusionUniformBuffer);
+    check_gl_error();
     glGenBuffers(1, &shadowMapFrameUniformBuffer);
+    check_gl_error();
     glGenFramebuffers(1, &shadowMapFrameBufferObject);
+    check_gl_error();
     glGenTextures(1, &shadowMapDepthTexture);
+    check_gl_error();
 
-    glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer);
-    glUniformBlockBinding(_shadowMapProgram, glGetUniformBlockIndex(_shadowMapProgram, "StructureUniformBlock"), 1);
-    glUniformBlockBinding(_ambientOcclusionProgram, glGetUniformBlockIndex(_ambientOcclusionProgram, "StructureUniformBlock"), 1);
-
-    glBindBuffer(GL_UNIFORM_BUFFER, shadowMapFrameUniformBuffer);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 2, shadowMapFrameUniformBuffer);
-    glUniformBlockBinding(_shadowMapProgram, glGetUniformBlockIndex(_shadowMapProgram, "ShadowUniformBlock"), 2);
-    glUniformBlockBinding(_ambientOcclusionProgram, glGetUniformBlockIndex(_ambientOcclusionProgram, "ShadowUniformBlock"), 2);
 
     // create Framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFrameBufferObject);
+    check_gl_error();
+
+    glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
+    check_gl_error();
+    glUniformBlockBinding(_shadowMapProgram, glGetUniformBlockIndex(_shadowMapProgram, "StructureUniformBlock"), 1);
+    check_gl_error();
+    glUniformBlockBinding(_ambientOcclusionProgram, glGetUniformBlockIndex(_ambientOcclusionProgram, "StructureUniformBlock"), 1);
+    check_gl_error();
+
+    glBindBuffer(GL_UNIFORM_BUFFER, shadowMapFrameUniformBuffer);
+    check_gl_error();
+    glUniformBlockBinding(_shadowMapProgram, glGetUniformBlockIndex(_shadowMapProgram, "ShadowUniformBlock"), 2);
+    check_gl_error();
+    glUniformBlockBinding(_ambientOcclusionProgram, glGetUniformBlockIndex(_ambientOcclusionProgram, "ShadowUniformBlock"), 2);
+    check_gl_error();
+
 
     // only create depth-texture
     glDrawBuffer(GL_NONE);
+    check_gl_error();
     glReadBuffer(GL_NONE);
+    check_gl_error();
 
     glBindTexture(GL_TEXTURE_2D, shadowMapDepthTexture);
+    check_gl_error();
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+    check_gl_error();
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 2048, 2048, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    check_gl_error();
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapDepthTexture, 0);
+    check_gl_error();
 
     glBindTexture(GLenum(GL_TEXTURE_2D), 0);
+    check_gl_error();
 
     // check framebuffer completeness
     GLenum status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER));
+    check_gl_error();
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
       std::cout << "initializeShadowMapFrameBuffer fatal error: framebuffer incomplete " << status << std::endl;
     }
     glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0);
-
-    //std::vector<std::shared_ptr<RKRenderStructure>> structures = flatten(_renderStructures);
-
+    check_gl_error();
 
     for(size_t i=0;i<_renderStructures.size();i++)
     {
@@ -378,9 +397,12 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
           {
              std::vector<uint16_t>* textureData = _cache.object(_renderStructures[i][j].get());
              glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
+             check_gl_error();
              glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, _renderStructures[i][j]->atomAmbientOcclusionTextureSize(),
                           _renderStructures[i][j]->atomAmbientOcclusionTextureSize(), 0, GL_RED, GL_HALF_FLOAT, textureData->data());
+             check_gl_error();
              glBindTexture(GLenum(GL_TEXTURE_2D), 0);
+             check_gl_error();
           }
           else
           {
@@ -398,12 +420,15 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
             }
 
             glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
+            check_gl_error();
             if(_renderStructures[i].size()>0)
             {
               glBufferData(GL_UNIFORM_BUFFER, sizeof(RKStructureUniforms) * _renderStructures[i].size(), structureUniforms.data(), GL_DYNAMIC_DRAW);
               check_gl_error();
             }
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
+            check_gl_error();
+
 
             SKBoundingBox boundingBox = dataSource->renderBoundingBox();
             double largestRadius = boundingBox.boundingSphereRadius();
@@ -466,31 +491,41 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
               shadowMapFrameUniforms.push_back(shadowMapFrameUniform);
             }
 
-            glBindBuffer(GL_UNIFORM_BUFFER, shadowMapFrameUniformBuffer);
-            glBufferData(GL_UNIFORM_BUFFER, sizeof(RKShadowUniforms) * maxk, shadowMapFrameUniforms.data(), GL_DYNAMIC_DRAW);
-            glBindBuffer(GL_UNIFORM_BUFFER, 0);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _ambientOcclusionFrameBufferObject[i][j]);
+            check_gl_error();
 
-            glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, i * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+            glBindBuffer(GL_UNIFORM_BUFFER, shadowMapFrameUniformBuffer);
+            check_gl_error();
+
+            glBufferData(GL_UNIFORM_BUFFER, sizeof(RKShadowUniforms) * maxk, shadowMapFrameUniforms.data(), GL_DYNAMIC_DRAW);
+            check_gl_error();
+
+            //glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
+            //check_gl_error();
+
+            //glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, i * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+            //check_gl_error();
 
             // clear the ambient-occlusion texture
             int textureSize = _renderStructures[i][j]->atomAmbientOcclusionTextureSize();
+            qDebug() << "size: " << textureSize;
             glViewport(0,0,textureSize,textureSize);
-
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _ambientOcclusionFrameBufferObject[i][j]);
+            check_gl_error();
 
             GLuint clearColor[4] = {0, 0, 0, 0};
             glClearBufferuiv(GL_COLOR, 0, clearColor);
+            check_gl_error();
 
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
+            check_gl_error();
 
             for(int k=0;k<maxk;k++)
             {
-              glEnable(GL_DEPTH_TEST);
-              glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-
               // create shadow map for direction d_k
               glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFrameBufferObject);
 
+              glEnable(GL_DEPTH_TEST);
+              glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
               glClear(GL_DEPTH_BUFFER_BIT);
 
               glViewport(0,0,2048,2048);
@@ -501,7 +536,7 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
               {
                 if (_renderStructures[i][l]->isVisible() && _atomShader._numberOfDrawnAtoms[i][l] > 0)
                 {
-                   glBindVertexArray(_atomShadowMapVertexArrayObject[i][l]);
+                  glBindVertexArray(_atomShadowMapVertexArrayObject[i][l]);
 
                   glBindBufferRange(GL_UNIFORM_BUFFER, 2, shadowMapFrameUniformBuffer, k * sizeof(RKShadowUniforms), sizeof(RKShadowUniforms));
 
@@ -562,31 +597,32 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
             glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_HALF_FLOAT, textureData->data());
             glBindTexture(GL_TEXTURE_2D, 0);
             _cache.insert(_renderStructures[i][j].get(), textureData);
+
           }
         }
       }
     }
 
+   // qDebug() << ((_heapchk() == _HEAPOK) ? "Heap okay" : "heap error");
+
     glDeleteTextures(1, &shadowMapDepthTexture);
+    check_gl_error();
     glDeleteFramebuffers(1, &shadowMapFrameBufferObject);
+    check_gl_error();
     glDeleteBuffers(1, &shadowMapFrameUniformBuffer);
+    check_gl_error();
     glDeleteBuffers(1, &structureAmbientOcclusionUniformBuffer);
+    check_gl_error();
+
+   //  qDebug() << ((_heapchk() == _HEAPOK) ? "Heap okay" : "heap error");
   }
 }
 
 const std::string OpenGLAmbientOcclusionShadowMapShader::_vertexAmbientOcclusionShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLStructureUniformBlockStringLiteral +
+OpenGLShadowUniformBlockStringLiteral +
 std::string(R"foo(
-layout (std140) uniform ShadowUniformBlock
-{
-  mat4 projectionMatrix;
-  mat4 viewMatrix;
-  mat4 shadowMatrix;
-  mat4 normalMatrix;
-} shadowUniforms;
-
-
 
 // Inputs from vertex shader
 out VS_OUT
@@ -630,16 +666,8 @@ void main()
 const std::string OpenGLAmbientOcclusionShadowMapShader::_fragmentAmbientOcclusionShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLStructureUniformBlockStringLiteral +
+OpenGLShadowUniformBlockStringLiteral +
 std::string(R"foo(
-layout (std140) uniform ShadowUniformBlock
-{
-  mat4 projectionMatrix;
-  mat4 viewMatrix;
-  mat4 shadowMatrix;
-  mat4 normalMatrix;
-} shadowUniforms;
-
-
 
 vec3 coordinateFromTexturePosition(vec2 texturePosition)
 {
@@ -699,14 +727,8 @@ void main()
 const std::string OpenGLAmbientOcclusionShadowMapShader::_vertexShadowMapShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLStructureUniformBlockStringLiteral +
+OpenGLShadowUniformBlockStringLiteral +
 std::string(R"foo(
-layout (std140) uniform ShadowUniformBlock
-{
-  mat4 projectionMatrix;
-  mat4 viewMatrix;
-  mat4 shadowMatrix;
-  mat4 normalMatrix;
-} shadowUniforms;
 
 in vec4 vertexPosition;
 in vec4 instancePosition;

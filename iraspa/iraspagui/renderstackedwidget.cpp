@@ -166,7 +166,6 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
         {
             if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
             {
-                qDebug() << "TRUE";
               renderViewController->setRenderDataSource(projectStructure);
             }
           }
@@ -196,7 +195,6 @@ void RenderStackedWidget::setSelectedRenderFrames(std::vector<std::vector<std::s
   }
 
   _iraspa_structures = iraspa_structures;
-  qDebug() << "setRenderStructures parent";
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->setRenderStructures(renderStructures);

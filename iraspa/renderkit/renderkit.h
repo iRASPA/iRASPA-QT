@@ -24,6 +24,7 @@
 #include "rkrenderkitprotocols.h"
 #include "rkrenderuniforms.h"
 #include "rkcamera.h"
+#include "rkglobalaxes.h"
 #include "rklight.h"
 #include "rkfontatlas.h"
 

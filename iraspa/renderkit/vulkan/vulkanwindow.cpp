@@ -161,7 +161,13 @@ void VulkanWindow::reloadRenderMeasurePointsData()
 {
 
 }
+
 void VulkanWindow::reloadBoundingBoxData()
+{
+
+}
+
+void VulkanWindow::reloadGlobalAxesData()
 {
 
 }
@@ -201,6 +207,11 @@ void VulkanWindow::updateIsosurfaceUniforms()
 
 }
 void VulkanWindow::updateLightUniforms()
+{
+
+}
+
+void VulkanWindow::updateGlobalAxesUniforms()
 {
 
 }

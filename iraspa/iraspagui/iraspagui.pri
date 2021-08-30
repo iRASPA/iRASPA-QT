@@ -8,6 +8,7 @@ SOURCES += \
     $$PWD/atomtreeviewpushbuttonstyleditemdelegate.cpp \
     $$PWD/bondlistpushbuttonstyleditemdelegate.cpp \
     $$PWD/bondlistviewcomboboxstyleditemdelegate.cpp \
+    $$PWD/cameraaxesform.cpp \
     $$PWD/celltransformcontentform.cpp \
     $$PWD/frameliststyleditemdelegate.cpp \
     $$PWD/framelistviewproxystyle.cpp \
@@ -92,6 +93,7 @@ HEADERS += \
     $$PWD/atomtreeviewpushbuttonstyleditemdelegate.h \
     $$PWD/bondlistpushbuttonstyleditemdelegate.h \
     $$PWD/bondlistviewcomboboxstyleditemdelegate.h \
+    $$PWD/cameraaxesform.h \
     $$PWD/celltransformcontentform.h \
     $$PWD/frameliststyleditemdelegate.h \
     $$PWD/framelistviewproxystyle.h \
@@ -173,6 +175,7 @@ HEADERS += \
 
 FORMS += \
     $$PWD/appearanceprimitiveform.ui \
+    $$PWD/cameraaxesform.ui \
     $$PWD/celltransformcontentform.ui \
     $$PWD/mainwindow.ui \
     $$PWD/aboutdialog.ui \

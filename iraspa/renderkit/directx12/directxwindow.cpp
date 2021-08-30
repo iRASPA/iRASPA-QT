@@ -114,7 +114,13 @@ void DirectXWindow::reloadRenderMeasurePointsData()
 {
 
 }
+
 void DirectXWindow::reloadBoundingBoxData()
+{
+
+}
+
+void DirectXWindow::reloadGlobalAxesData()
 {
 
 }
@@ -154,6 +160,11 @@ void DirectXWindow::updateIsosurfaceUniforms()
 
 }
 void DirectXWindow::updateLightUniforms()
+{
+
+}
+
+void DirectXWindow::updateGlobalAxesUniforms()
 {
 
 }

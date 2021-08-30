@@ -47,12 +47,6 @@
     #include <QtPlatformHeaders/QGLXNativeContext>
   #endif
 #endif
-/*
-#if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
-  GLWidget::GLWidget(QWidget* parent ): QOpenGLWidget(parent),
-#else
-  GLWidget::GLWidget(QWidget* parent ): QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
-#endif*/
 
 OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGLWindow(),
     _isOpenGLInitialized(false),
@@ -62,6 +56,7 @@ OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGL
     _blurShader(),
     _energySurfaceShader(),
     _boundingBoxShader(),
+    _globalAxesShader(),
     _atomShader(),
     _bondShader(),
     _objectShader(),
@@ -111,6 +106,7 @@ void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> sourc
 
   _dataSource = source;
   _boundingBoxShader.setRenderDataSource(source);
+  _globalAxesShader.setRenderDataSource(source);
   if(std::shared_ptr<RKRenderDataSource> dataSource = source)
   {
     _camera = dataSource->camera();
@@ -216,6 +212,8 @@ void OpenGLWindow::initializeGL()
   _blurShader.initializeOpenGLFunctions();
   _energySurfaceShader.initializeOpenGLFunctions();
   _boundingBoxShader.initializeOpenGLFunctions();
+  _globalAxesShader.initializeOpenGLFunctions();
+
 
   _atomShader.initializeOpenGLFunctions();
   _bondShader.initializeOpenGLFunctions();
@@ -468,6 +466,7 @@ void OpenGLWindow::initializeGL()
   _blurShader.loadShader();
   _energySurfaceShader.loadShader();
   _boundingBoxShader.loadShader();
+  _globalAxesShader.loadShader();
   _atomShader.loadShader();
   _bondShader.loadShader();
   _objectShader.loadShader();
@@ -478,6 +477,7 @@ void OpenGLWindow::initializeGL()
 
   _energySurfaceShader.generateBuffers();
   _boundingBoxShader.generateBuffers();
+  _globalAxesShader.generateBuffers();
   _unitCellShader.generateBuffers();
   _bondShader.generatePermanentBuffers();
   _textShader.generateTextures();
@@ -487,6 +487,7 @@ void OpenGLWindow::initializeGL()
   _energySurfaceShader.initializeVertexArrayObject();
   _blurShader.initializeVertexArrayObject();
   _boundingBoxShader.initializeVertexArrayObject();
+  _globalAxesShader.initializeVertexArrayObject();
   _atomShader.initializeVertexArrayObject();
   _bondShader.initializeVertexArrayObject();
   _objectShader.initializeVertexArrayObject();
@@ -502,6 +503,8 @@ void OpenGLWindow::initializeGL()
   initializeIsosurfaceUniforms();
   check_gl_error();
   initializeLightUniforms();
+  check_gl_error();
+  initializeGlobalAxesUniforms();
   check_gl_error();
 
   glGenVertexArrays(1,&_downSamplerVertexArray);
@@ -1235,7 +1238,13 @@ void OpenGLWindow::paintGL()
     updateTransformUniforms();
     check_gl_error();
     updateIsosurfaceUniforms();
+    check_gl_error();
     updateLightUniforms();
+    check_gl_error();
+    updateGlobalAxesUniforms();
+    check_gl_error();
+
+    glDepthFunc(GL_LEQUAL);
 
     glViewport(0,0,_width,_height);
 
@@ -1245,6 +1254,9 @@ void OpenGLWindow::paintGL()
     glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
     drawSceneToFramebuffer(_sceneFrameBuffer);
     check_gl_error();
+
+    //glEnable (GL_DEPTH_TEST);
+    //_globalAxesShader.paintGL(_sceneFrameBuffer, _width * _devicePixelRatio, _height * _devicePixelRatio);
 
     glViewport(0,0,_width,_height);
     _blurShader.paintGL(_glowSelectionTexture, _width, _height);
@@ -1489,7 +1501,6 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer)
 
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
-  glDisable(GL_CULL_FACE);
   check_gl_error();
 
   // clear the color, depth, and stencil buffer
@@ -1524,12 +1535,16 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer)
     _selectionShader.paintGL(camera, _quality, _structureUniformBuffer);
 
     _textShader.paintGL(_structureUniformBuffer);
+
+    _globalAxesShader.paintGL(_width * _devicePixelRatio, _height * _devicePixelRatio);
   }
 
+  glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
   glDrawBuffer(GL_COLOR_ATTACHMENT1);
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT);
   check_gl_error();
+
   _selectionShader.paintGLGlow(_structureUniformBuffer);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
 }
@@ -1727,6 +1742,8 @@ void OpenGLWindow::initializeTransformUniforms()
   check_gl_error();
   _boundingBoxShader.initializeTransformUniforms();
   check_gl_error();
+  _globalAxesShader.initializeTransformUniforms();
+  check_gl_error();
   _atomShader.initializeTransformUniforms();
   check_gl_error();
   _bondShader.initializeTransformUniforms();
@@ -1749,8 +1766,11 @@ void OpenGLWindow::initializeTransformUniforms()
 
 void OpenGLWindow::updateTransformUniforms()
 {
+  makeCurrent();
   double4x4 projectionMatrix = double4x4();
   double4x4 viewMatrix = double4x4();
+  double4x4 axesProjectionMatrix = double4x4();
+  double4x4 axesModelViewMatrix = double4x4();
   double bloomLevel = 1.0;;
   double bloomPulse = 1.0;
 
@@ -1758,13 +1778,21 @@ void OpenGLWindow::updateTransformUniforms()
   {
     projectionMatrix = camera->projectionMatrix();
     viewMatrix = camera->modelViewMatrix();
+
+    if(_dataSource)
+    {
+      double totalAxesSize = _dataSource->axes()->totalAxesSize();
+      axesProjectionMatrix = camera->axesProjectionMatrix(totalAxesSize);
+      axesModelViewMatrix = camera->axesModelViewMatrix();
+    }
+
     bloomLevel = camera->bloomLevel();
     bloomPulse = camera->bloomPulse();
   }
 
   glBindBuffer(GL_UNIFORM_BUFFER, _frameUniformBuffer);
   check_gl_error();
-  RKTransformationUniforms transformationUniforms = RKTransformationUniforms(projectionMatrix, viewMatrix, bloomLevel, bloomPulse, _multiSampling);
+  RKTransformationUniforms transformationUniforms = RKTransformationUniforms(projectionMatrix, viewMatrix, axesProjectionMatrix, axesModelViewMatrix, bloomLevel, bloomPulse, _multiSampling);
   glBufferData (GL_UNIFORM_BUFFER, sizeof(RKTransformationUniforms), &transformationUniforms, GL_DYNAMIC_DRAW);
   check_gl_error();
   glBindBuffer(GL_UNIFORM_BUFFER,0);
@@ -1799,6 +1827,7 @@ void OpenGLWindow::initializeStructureUniforms()
 
 void OpenGLWindow::updateStructureUniforms()
 {
+  makeCurrent();
   glBindBuffer(GL_UNIFORM_BUFFER, _structureUniformBuffer);
 
   std::vector<RKStructureUniforms> structureUniforms = std::vector<RKStructureUniforms>();
@@ -1838,6 +1867,7 @@ void OpenGLWindow::initializeIsosurfaceUniforms()
 
 void OpenGLWindow::updateIsosurfaceUniforms()
 {
+  makeCurrent();
   std::vector<RKIsosurfaceUniforms> isosurfaceUniforms;
 
   if(_dataSource)
@@ -1863,6 +1893,7 @@ void OpenGLWindow::updateIsosurfaceUniforms()
 }
 
 
+
 void OpenGLWindow::initializeLightUniforms()
 {
   glGenBuffers(1, &_lightsUniformBuffer);
@@ -1873,6 +1904,7 @@ void OpenGLWindow::initializeLightUniforms()
 
   _energySurfaceShader.initializeLightUniforms();
   _boundingBoxShader.initializeLightUniforms();
+  _globalAxesShader.initializeLightUniforms();
   _atomShader.initializeLightUniforms();
   _bondShader.initializeLightUniforms();
   _objectShader.initializeLightUniforms();
@@ -1885,21 +1917,61 @@ void OpenGLWindow::initializeLightUniforms()
   check_gl_error();
 }
 
+
+
 void OpenGLWindow::updateLightUniforms()
 {
+  makeCurrent();
   RKLightsUniforms lightUniforms = RKLightsUniforms(_dataSource);
   glBindBuffer(GL_UNIFORM_BUFFER, _lightsUniformBuffer);
   glBufferData(GL_UNIFORM_BUFFER, lightUniforms.lights.size() * sizeof(RKLightUniform), lightUniforms.lights.data(), GL_DYNAMIC_DRAW);
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void OpenGLWindow::initializeGlobalAxesUniforms()
+{
+  glGenBuffers(1, &_globalAxesUniformBuffer);
+  check_gl_error();
+
+  glBindBuffer(GL_UNIFORM_BUFFER, _globalAxesUniformBuffer);
+  check_gl_error();
+
+  glBindBufferBase(GL_UNIFORM_BUFFER, 5, _globalAxesUniformBuffer);
+  check_gl_error();
+
+  _globalAxesShader.initializeGlobalAxesUniforms();
+  check_gl_error();
+
+  RKGlobalAxesUniforms uniformData = RKGlobalAxesUniforms(_dataSource);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(RKGlobalAxesUniforms), &uniformData, GL_DYNAMIC_DRAW);
+
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  check_gl_error();
+}
+
+void OpenGLWindow::updateGlobalAxesUniforms()
+{
+  if(_dataSource)
+  {
+    makeCurrent();
+    RKGlobalAxesUniforms uniformData = RKGlobalAxesUniforms(_dataSource);
+    glBindBuffer(GL_UNIFORM_BUFFER, _globalAxesUniformBuffer);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(RKGlobalAxesUniforms), &uniformData, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  }
+}
+
+
 
 void OpenGLWindow::reloadData()
 {
   makeCurrent();
 
+  qDebug() << "OpenGLWindow::reloadData";
+
   _energySurfaceShader.reloadData();
   _boundingBoxShader.reloadData();
+  _globalAxesShader.reloadData();
 
   _atomShader.reloadData();
   _atomShader.reloadAmbientOcclusionData(_dataSource, RKRenderQuality::low);
@@ -1921,6 +1993,7 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
 
   _energySurfaceShader.reloadData();
   _boundingBoxShader.reloadData();
+  _globalAxesShader.reloadData();
 
   _atomShader.reloadData();
   _atomShader.reloadAmbientOcclusionData(_dataSource, quality);
@@ -1970,6 +2043,12 @@ void OpenGLWindow::reloadBoundingBoxData()
 {
   makeCurrent();
 }
+
+void OpenGLWindow::reloadGlobalAxesData()
+{
+  makeCurrent();
+}
+
 
 void OpenGLWindow::reloadSelectionData()
 {

@@ -24,9 +24,71 @@
 #include <mathkit.h>
 
 #include <QColor>
-#include "rkrenderkitprotocols.h"
+//#include "rkrenderkitprotocols.h"
 
+class RKRenderStructure;
+class RKRenderDataSource;
 //#include <QtOpenGL>
+
+enum class RKBackgroundType: qint64
+{
+  color = 0, linearGradient = 1, radialGradient = 2, image = 3
+};
+
+enum class RKBondColorMode: qint64
+{
+  uniform = 0, split = 1, smoothed_split = 2, multiple_values = 3
+};
+
+enum class RKRenderQuality: qint64
+{
+  low = 0, medium = 1, high = 2, picture = 3
+};
+
+enum class RKImageQuality: qint64
+{
+  rgb_8_bits = 0, rgb_16_bits = 1, cmyk_8_bits = 2, cmyk_16_bits = 3
+};
+
+enum class RKImageDPI: qint64
+{
+  dpi_72 = 0, dpi_75 = 1, dpi_150 = 2, dpi_300 = 3, dpi_600 = 4, dpi_1200 = 5
+};
+
+enum class RKImageDimensions: qint64
+{
+  physical = 0, pixels = 1
+};
+
+enum class RKImageUnits: qint64
+{
+  inch = 0, cm = 1
+};
+
+enum class RKSelectionStyle: qint64
+{
+  None = 0, WorleyNoise3D = 1, striped = 2, glow = 3, multiple_values = 4
+};
+
+enum class RKTextStyle: qint64
+{
+  flatBillboard = 0, multiple_values = 1
+};
+
+enum class RKTextEffect: qint64
+{
+  none = 0, glow = 1, pulsate = 2, squiggle = 3, multiple_values = 4
+};
+
+enum class RKTextType: qint64
+{
+  none = 0, displayName = 1, identifier = 2, chemicalElement = 3, forceFieldType = 4, position = 5, charge = 6, multiple_values = 7
+};
+
+enum class RKTextAlignment: qint64
+{
+  center = 0, left = 1, right = 2, top = 3, bottom = 4, topLeft = 5, topRight = 6, bottomLeft = 7, bottomRight = 8, multiple_values = 9
+};
 
 const std::string  OpenGLVersionStringLiteral = R"foo(
 #version 330
@@ -41,6 +103,16 @@ struct RKVertex
   float4 normal;
   float2 st;
   float2 pad = float2();
+};
+
+struct RKPrimitiveVertex
+{
+  RKPrimitiveVertex(float4 pos, float4 norm, float4 c, float2 uv): position(pos), normal(norm), color(c), st(uv) {}
+  float4 position;
+  float4 normal;
+  float4 color;
+  float2 st;
+  float2 pad;
 };
 
 struct RKTextVertex
@@ -103,6 +175,11 @@ struct RKTransformationUniforms
   float4x4 viewMatrixInverse = float4x4();
   float4x4 normalMatrix = float4x4();
 
+  float4x4 axesProjectionMatrix = float4x4();
+  float4x4 axesViewMatrix = float4x4();
+  float4x4 axesMvpMatrix = float4x4();
+  float4x4 padMatrix = float4x4();
+
   // moved 'numberOfMultiSamplePoints' to here (for downsampling when no structures are present)
   float numberOfMultiSamplePoints = 8.0;
   float intPad1;
@@ -116,7 +193,7 @@ struct RKTransformationUniforms
   float4 padvector4 = float4();
 
   RKTransformationUniforms() {};
-  RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double bloomLevel, double bloomPulse, int multiSampling);
+  RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double4x4 axesProjectionMatrix, double4x4 axesModelViewMatrix, double bloomLevel, double bloomPulse, int multiSampling);
 };
 
 const std::string  OpenGLFrameUniformBlockStringLiteral = R"foo(
@@ -126,11 +203,15 @@ layout (std140) uniform FrameUniformBlock
   mat4 viewMatrix;
   mat4 mvpMatrix;
   mat4 shadowMatrix;
-
-
   mat4 projectionMatrixInverse;
   mat4 viewMatrixInverse;
   mat4 normalMatrix;
+
+  mat4 axesProjectionMatrix;
+  mat4 axesViewMatrix;
+  mat4 axesMvpMatrix;
+  mat4 padMatrix;
+
   float numberOfMultiSamplePoints;
   float padInt1;
   float padInt2;
@@ -758,4 +839,33 @@ vec2 cellular3D(vec3 P, float jitter)
   return sqrt(d11.xy); // F1, F2
 #endif
 }
+)foo";
+
+
+struct RKGlobalAxesUniforms
+{
+  float4 axesBackgroundColor = float4(0.8f,0.8f,0.8f,0.05f);
+  float3x4 textColor = float3x4(float4(0.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 0.0f, 0.0f, 1.0f));
+  float3x4 textDisplacement = float3x4(float4(0.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 0.0f, 0.0f, 1.0f), float4(0.0f, 0.0f, 0.0f, 1.0f));
+  int32_t axesBackGroundStyle = 1;
+  float axesScale = 5.0f;
+  float centerScale = 0.0f;
+  float textOffset = 0.0f;
+  float4 textScale = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+  RKGlobalAxesUniforms(std::shared_ptr<RKRenderDataSource> project);
+};
+
+const std::string  OpenGLGlobalAxesUniformBlockStringLiteral = R"foo(
+layout (std140) uniform GlobalAxesUniformBlock
+{
+  vec4 axesBackgroundColor;
+  vec4 textColor[3];
+  vec4 textDisplacement[3];
+  int axesBackGroundStyle;
+  float axesScale;
+  float centerScale;
+  float textOffset;
+  vec4 textScale;
+} globalAxesUniforms;
 )foo";

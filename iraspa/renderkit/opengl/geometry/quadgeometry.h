@@ -33,9 +33,9 @@ public:
 private:
   std::vector<short> _indices = {0, 1, 2, 3};
   std::vector<RKVertex> _vertices = {RKVertex(float4(-1.0, -1.0, 0.0, 1.0), float4(0.0, 0.0, 1.0, 1.0), float2()),
-                           RKVertex(float4( 1.0, -1.0, 0.0, 1.0), float4(0.0, 0.0, 1.0, 1.0), float2()),
-                           RKVertex(float4(-1.0, 1.0, 0.0, 1.0), float4(0.0, 0.0, 1.0, 1.0), float2()),
-                           RKVertex(float4( 1.0, 1.0, 0.0, 1.0), float4(0.0, 0.0, 1.0, 1.0), float2())};
+                                     RKVertex(float4( 1.0, -1.0, 0.0, 1.0), float4(0.0, 0.0, 1.0, 1.0), float2()),
+                                     RKVertex(float4(-1.0,  1.0, 0.0, 1.0), float4(0.0, 0.0, 1.0, 1.0), float2()),
+                                     RKVertex(float4( 1.0,  1.0, 0.0, 1.0), float4(0.0, 0.0, 1.0, 1.0), float2())};
 
 };
 
