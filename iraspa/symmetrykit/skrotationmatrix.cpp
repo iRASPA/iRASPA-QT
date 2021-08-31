@@ -28,14 +28,14 @@ SKRotationMatrix::SKRotationMatrix()
 
 SKRotationMatrix::SKRotationMatrix(int3 v1, int3 v2, int3 v3)
 {
-  m11 = v1.x; m21 = v1.y; m31 = v1.z;
-  m12 = v2.x; m22 = v2.y; m32 = v2.z;
-  m13 = v3.x; m23 = v3.y; m33 = v3.z;
+  int3x3.m11 = v1.x; int3x3.m21 = v1.y; int3x3.m31 = v1.z;
+  int3x3.m12 = v2.x; int3x3.m22 = v2.y; int3x3.m32 = v2.z;
+  int3x3.m13 = v3.x; int3x3.m23 = v3.y; int3x3.m33 = v3.z;
 }
 
 std::ostream& operator<<(std::ostream& os, const SKRotationMatrix& m)
 {
-    os << "SKRotationMatrix: " << m.m11 << '/' << m.m12 << '/' << m.m13 << '/' << m.m21 << '/' << m.m22 << '/' << m.m23 << '/' << m.m31 << '/' << m.m32 << '/' << m.m33 << '/';
+    os << "SKRotationMatrix: " << m.int3x3.m11 << '/' << m.int3x3.m12 << '/' << m.int3x3.m13 << '/' << m.int3x3.m21 << '/' << m.int3x3.m22 << '/' << m.int3x3.m23 << '/' << m.int3x3.m31 << '/' << m.int3x3.m32 << '/' << m.int3x3.m33 << '/';
     return os;
 }
 
@@ -54,54 +54,22 @@ SKRotationMatrix SKRotationMatrix::proper()
 
 SKRotationMatrix SKRotationMatrix::operator * (const SKRotationMatrix& b) const
 {
-  SKRotationMatrix r;
-
-
-  r.m11 = m11 * b.m11 + m12 * b.m21 + m13 * b.m31;
-  r.m21 = m21 * b.m11 + m22 * b.m21 + m23 * b.m31;
-  r.m31 = m31 * b.m11 + m32 * b.m21 + m33 * b.m31;
-
-  r.m12 = m11 * b.m12 + m12 * b.m22 + m13 * b.m32;
-  r.m22 = m21 * b.m12 + m22 * b.m22 + m23 * b.m32;
-  r.m32 = m31 * b.m12 + m32 * b.m22 + m33 * b.m32;
-
-  r.m13 = m11 * b.m13 + m12 * b.m23 + m13 * b.m33;
-  r.m23 = m21 * b.m13 + m22 * b.m23 + m23 * b.m33;
-  r.m33 = m31 * b.m13 + m32 * b.m23 + m33 * b.m33;
-
-
-  return r;
+  return SKRotationMatrix(this->int3x3 * b.int3x3);
 }
 
 int3 SKRotationMatrix::operator * (const int3& b) const
 {
-  int3 r(0,0,0);
-
-  r.x = m11 * b.x + m12 * b.y + m13 * b.z;
-  r.y = m21 * b.x + m22 * b.y + m23 * b.z;
-  r.z = m31 * b.x + m32 * b.y + m33 * b.z;
-
-  return r;
+  return this->int3x3 * b;
 }
 
 double3 SKRotationMatrix::operator * (const double3& b) const
 {
-  double3 r;
-
-  r.x = m11 * b.x + m12 * b.y + m13 * b.z;
-  r.y = m21 * b.x + m22 * b.y + m23 * b.z;
-  r.z = m31 * b.x + m32 * b.y + m33 * b.z;
-
-  return r;
+  return double3x3(this->int3x3) * b;
 }
 
 SKRotationMatrix SKRotationMatrix::operator-() const
 {
-  SKRotationMatrix r;
-  r.m11 = -m11; r.m21 = -m21; r.m31 = -m31;
-  r.m12 = -m12; r.m22 = -m22; r.m32 = -m32;
-  r.m13 = -m13; r.m23 = -m23; r.m33 = -m33;
-  return r;
+  return -this->int3x3;
 }
 
 SKRotationMatrix SKRotationMatrix::zero = SKRotationMatrix(int3(0,0,0),int3(0,0,0),int3(0,0,0));

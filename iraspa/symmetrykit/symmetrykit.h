@@ -34,5 +34,8 @@
 #include <skspacegroup.h>
 #include <skcifparser.h>
 #include <skpdbparser.h>
+#include <skposcarparser.h>
 #include <skelement.h>
+#include <sksymmetrycell.h>
+#include <skposcarlegacyparser.h>
 

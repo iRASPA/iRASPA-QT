@@ -60,15 +60,15 @@ namespace std
     {
       // Compute individual hash values for two data members and combine them using XOR and bit shifting
       int3 normalizedTranslation = k.normalizedTranslation();
-      int r1 = (k.rotation().m11+1);
-      int r2 = (3 * (k.rotation().m12+1));
-      int r3 = ((3*3) * (k.rotation().m13+1));
-      int r4 = ((3*3*3) * (k.rotation().m12+1));
-      int r5 = ((3*3*3*3) * (k.rotation().m22+1));
-      int r6 = ((3*3*3*3*3) * (k.rotation().m32+1));
-      int r7 = ((3*3*3*3*3*3) * (k.rotation().m31+1));
-      int r8 = ((3*3*3*3*3*3*3) * (k.rotation().m23+1));
-      int r9 = ((3*3*3*3*3*3*3*3) * (k.rotation().m33+1));
+      int r1 = (k.rotation().int3x3.m11+1);
+      int r2 = (3 * (k.rotation().int3x3.m12+1));
+      int r3 = ((3*3) * (k.rotation().int3x3.m13+1));
+      int r4 = ((3*3*3) * (k.rotation().int3x3.m12+1));
+      int r5 = ((3*3*3*3) * (k.rotation().int3x3.m22+1));
+      int r6 = ((3*3*3*3*3) * (k.rotation().int3x3.m32+1));
+      int r7 = ((3*3*3*3*3*3) * (k.rotation().int3x3.m31+1));
+      int r8 = ((3*3*3*3*3*3*3) * (k.rotation().int3x3.m23+1));
+      int r9 = ((3*3*3*3*3*3*3*3) * (k.rotation().int3x3.m33+1));
       int v1 = ((3*3*3*3*3*3*3*3*12) * normalizedTranslation.x);
       int v2 = ((3*3*3*3*3*3*3*3*12*12) * normalizedTranslation.y);
       int v3 = ((3*3*3*3*3*3*3*3*12*12*12) * normalizedTranslation.z);

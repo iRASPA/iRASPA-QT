@@ -37,6 +37,8 @@ public:
   virtual ~SKParser() = 0;
   virtual bool startParsing() = 0;
   std::vector<std::vector<std::shared_ptr<SKStructure>>> movies();
+
+  std::vector<std::tuple<double3, int, double> > firstTestFrame();
 protected:
   double _a,_b,_c;
   double _alpha,_beta,_gamma;

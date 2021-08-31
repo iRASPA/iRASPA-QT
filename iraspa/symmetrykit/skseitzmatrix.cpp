@@ -75,15 +75,15 @@ std::vector<SKSeitzMatrix> SKSeitzMatrix::SeitzMatrices(std::string encoding)
 
 bool SKSeitzMatrix::operator==(SKSeitzMatrix const& rhs) const
 {
-    return (_rotation.m11 == rhs.rotation().m11) &&
-           (_rotation.m21 == rhs.rotation().m21) &&
-           (_rotation.m31 == rhs.rotation().m31) &&
-           (_rotation.m12 == rhs.rotation().m12) &&
-           (_rotation.m22 == rhs.rotation().m22) &&
-           (_rotation.m32 == rhs.rotation().m32) &&
-           (_rotation.m13 == rhs.rotation().m13) &&
-           (_rotation.m23 == rhs.rotation().m23) &&
-           (_rotation.m33 == rhs.rotation().m33) &&
+    return (_rotation.int3x3.m11 == rhs.rotation().int3x3.m11) &&
+           (_rotation.int3x3.m21 == rhs.rotation().int3x3.m21) &&
+           (_rotation.int3x3.m31 == rhs.rotation().int3x3.m31) &&
+           (_rotation.int3x3.m12 == rhs.rotation().int3x3.m12) &&
+           (_rotation.int3x3.m22 == rhs.rotation().int3x3.m22) &&
+           (_rotation.int3x3.m32 == rhs.rotation().int3x3.m32) &&
+           (_rotation.int3x3.m13 == rhs.rotation().int3x3.m13) &&
+           (_rotation.int3x3.m23 == rhs.rotation().int3x3.m23) &&
+           (_rotation.int3x3.m33 == rhs.rotation().int3x3.m33) &&
            ((_translation.x%12) == (rhs.translation().x%12)) &&
            ((_translation.y%12) == (rhs.translation().y%12)) &&
            ((_translation.z%12) == (rhs.translation().z%12));

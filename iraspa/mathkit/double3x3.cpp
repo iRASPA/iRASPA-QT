@@ -21,6 +21,7 @@
 
 #include "double3x3.h"
 #include "double4x4.h"
+#include "int3x3.h"
 
 #include <cmath>
 #include <qmath.h>
@@ -71,6 +72,12 @@ double3x3::double3x3(simd_quatd q)
    m23 = 2.0 * (tmp1 - tmp2)*invs ;
 }
 
+double3x3::double3x3(int3x3 m)
+{
+  m11=m.m11; m21=m.m21; m31=m.m31;
+  m12=m.m12; m22=m.m22; m32=m.m32;
+  m13=m.m13; m23=m.m23; m33=m.m33;
+}
 double double3x3::determinant(void)
 {
   double determinant =

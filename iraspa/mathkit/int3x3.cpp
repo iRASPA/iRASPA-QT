@@ -40,6 +40,13 @@ int3x3::int3x3(int3 v1, int3 v2, int3 v3)
   m13 = v3.x; m23 = v3.y; m33 = v3.z;
 }
 
+int3x3::int3x3(double3x3 m)
+{
+  m11 = int(rint(m.m11)); m21 = int(rint(m.m21)); m31 = int(rint(m.m31));
+  m12 = int(rint(m.m12)); m22 = int(rint(m.m22)); m32 = int(rint(m.m32));
+  m13 = int(rint(m.m13)); m23 = int(rint(m.m23)); m33 = int(rint(m.m33));
+}
+
 int3x3 int3x3::operator * (const int3x3& b) const
 {
   int3x3 r;

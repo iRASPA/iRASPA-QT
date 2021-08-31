@@ -10,6 +10,7 @@ SOURCES += \
     $$PWD/skmmcifparser.cpp \
     $$PWD/skmmcifwriter.cpp \
     $$PWD/skpdbwriter.cpp \
+    $$PWD/skposcarlegacyparser.cpp \
     $$PWD/skposcarparser.cpp \
     $$PWD/skposcarwriter.cpp \
     $$PWD/skspacegroup.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
     $$PWD/skspacegroupsetting.cpp \
     $$PWD/skseitzmatrix.cpp \
     $$PWD/skrotationmatrix.cpp \
+    $$PWD/sksymmetrycell.cpp \
     $$PWD/sksymmetryoperationset.cpp \
     $$PWD/skpointgroup.cpp \
     $$PWD/skonethirdseitzmatrix.cpp \
@@ -41,9 +43,11 @@ HEADERS += \
     $$PWD/skmmcifparser.h \
     $$PWD/skmmcifwriter.h \
     $$PWD/skpdbwriter.h \
+    $$PWD/skposcarlegacyparser.h \
     $$PWD/skposcarparser.h \
     $$PWD/skposcarwriter.h \
     $$PWD/skstructure.h \
+    $$PWD/sksymmetrycell.h \
     $$PWD/skxyzparser.h \
     $$PWD/skxyzwriter.h \
     $$PWD/symmetrykit.h \

@@ -26,10 +26,13 @@
 #include "skdefinitions.h"
 
 
-struct SKRotationMatrix: public int3x3
+struct SKRotationMatrix
 {
   SKRotationMatrix();
+  SKRotationMatrix(int3x3 m) {this->int3x3 = m;}
   SKRotationMatrix(int3 v1, int3 v2, int3 v3);
+
+  int3x3 int3x3;
 
  // SKRotationMatrix proper();
  friend std::ostream& operator<<(std::ostream& os, const SKRotationMatrix& setting);

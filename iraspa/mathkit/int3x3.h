@@ -22,13 +22,13 @@
 #pragma once
 
 #include "int3.h"
+#include "double3x3.h"
 
-struct int3x3
+union int3x3
 {
   int m[9];
   int mm[3][3];
   int v[3];
-  int denominator = 1;
   struct {int m11, m21, m31,     // 1st column
               m12, m22, m32,     // 2nd column
               m13, m23, m33;     // 3rd column
@@ -41,6 +41,7 @@ struct int3x3
   int3x3();
   int3x3(int value);
   int3x3(int3 v1, int3 v2, int3 v3);
+  int3x3(double3x3 m);
 
   int3x3 operator * (const int3x3& right) const;
   int3 operator * (const int3& right) const;

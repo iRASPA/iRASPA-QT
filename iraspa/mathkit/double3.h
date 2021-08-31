@@ -41,6 +41,7 @@ union double3
   double3 operator + (const double3& right) const;
   double3 operator - (const double3& right) const;
   double length() {return sqrt(x*x+y*y+z*z);}
+  double length_squared() const {return (x*x+y*y+z*z);}
   double length() const {return sqrt(x*x+y*y+z*z);}
   double3 normalise();
   double3 fract();
@@ -64,6 +65,8 @@ union double3
   friend double3 operator*(double value, const double3 &v);
   friend double3 operator/(const double3 &v, double value);
   friend double3 operator/(double value, const double3 &v);
+  friend double3 operator-(const double3 &v);
+  double3& operator+=(const double3 &v1) {this->x += v1.x, this->y += v1.y, this->z += v1.z; return *this;}
   friend std::ostream& operator<<(std::ostream& out, const double3& vec) ;
 
   friend QDataStream &operator<<(QDataStream &, const double3 &);

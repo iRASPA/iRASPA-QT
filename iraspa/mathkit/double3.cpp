@@ -171,6 +171,11 @@ double3 operator/(double value, const double3 &v)
   return double3(v.x/value, v.y/value, v.z/value);
 }
 
+double3 operator-(const double3 &v)
+{
+  return double3(-v.x, -v.y, -v.z);
+}
+
 std::ostream& operator<<(std::ostream& out, const double3& vec) // output
 {
   out << vec.x;

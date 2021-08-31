@@ -27,6 +27,8 @@
 
 union double4x4;
 
+union int3x3;
+
 union double3x3
 {
   double m[9];
@@ -67,6 +69,8 @@ union double3x3
           };
   double3x3(simd_quatd q);
 
+  double3x3(int3x3 m);
+
   double3x3(double lattice[3][3]);
   double* data() {return m;}
 
@@ -83,6 +87,7 @@ union double3x3
   void solve_angles_2( double3 &res, double3 lambdas );
   void EigenSystemSymmetric(double3 &eigenvalues,double3x3 &eigenvectors);
 
+  double3x3 operator-() {return double3x3(-v[0], -v[1], -v[2]);}
 
   friend std::ostream& operator<<(std::ostream& out, const double3x3& vec);
 

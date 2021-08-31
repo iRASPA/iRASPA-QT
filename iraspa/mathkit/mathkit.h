@@ -38,5 +38,6 @@
 #include <float3x4.h>
 #include <float4x4.h>
 #include <double4x4.h>
+#include <double4x3.h>
 #include <simd_quatd.h>
 
