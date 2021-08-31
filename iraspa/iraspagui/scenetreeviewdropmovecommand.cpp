@@ -55,7 +55,7 @@ SceneTreeViewDropMoveCommand::SceneTreeViewDropMoveCommand(MainWindow *mainWindo
     beginRow = 0;
   }
 
-  for(std::shared_ptr<Movie> movie : _movies)
+  for(const std::shared_ptr<Movie> &movie : _movies)
   {
     if(_newParent == _sceneTreeViewModel->parentForMovie(movie) && *_newParent->findChildIndex(movie) < beginRow)
     {

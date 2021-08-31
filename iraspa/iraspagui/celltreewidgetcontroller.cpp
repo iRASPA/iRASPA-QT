@@ -1229,17 +1229,17 @@ std::optional<iRASPAStructureType> CellTreeWidgetController::structureType()
     return std::nullopt;
 	}
   std::unordered_set<iRASPAStructureType, enum_hash> set = std::unordered_set<iRASPAStructureType, enum_hash>{};
-  for (std::shared_ptr<iRASPAStructure> iraspa_structure : _iraspa_structures)
-	{
+  for (const std::shared_ptr<iRASPAStructure> &iraspa_structure : _iraspa_structures)
+  {
     iRASPAStructureType value = iraspa_structure->structure()->structureType();
     set.emplace(value);
-	}
+  }
 
-	if (set.size() == 1)
-	{
+  if (set.size() == 1)
+  {
     iRASPAStructureType value = *set.begin();
     return value;
-	}
+  }
   return std::nullopt;
 }
 
@@ -1249,7 +1249,7 @@ SKBoundingBox CellTreeWidgetController::boundingBox()
   {
     double3 minimum = double3(DBL_MAX,DBL_MAX, DBL_MAX);
     double3 maximum = double3(-DBL_MAX,-DBL_MAX, -DBL_MAX);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure : _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure : _iraspa_structures)
     {
       std::shared_ptr<Structure> structure = iraspa_structure->structure();
       SKBoundingBox transformedBoundingBox = structure->transformedBoundingBox();
@@ -1273,7 +1273,7 @@ std::optional<double> CellTreeWidgetController::unitCellAX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().ax);
   }
@@ -1293,7 +1293,7 @@ std::optional<double> CellTreeWidgetController::unitCellAY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().ay);
   }
@@ -1312,7 +1312,7 @@ std::optional<double> CellTreeWidgetController::unitCellAZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().az);
   }
@@ -1332,7 +1332,7 @@ std::optional<double> CellTreeWidgetController::unitCellBX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().bx);
   }
@@ -1351,7 +1351,7 @@ std::optional<double> CellTreeWidgetController::unitCellBY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().by);
   }
@@ -1370,7 +1370,7 @@ std::optional<double> CellTreeWidgetController::unitCellBZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().bz);
   }
@@ -1389,7 +1389,7 @@ std::optional<double> CellTreeWidgetController::unitCellCX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().cx);
   }
@@ -1408,7 +1408,7 @@ std::optional<double> CellTreeWidgetController::unitCellCY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().cy);
   }
@@ -1427,7 +1427,7 @@ std::optional<double> CellTreeWidgetController::unitCellCZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->unitCell().cz);
   }
@@ -1446,7 +1446,7 @@ std::optional<double> CellTreeWidgetController::unitCellLengthA()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->a());
   }
@@ -1462,7 +1462,7 @@ void CellTreeWidgetController::setUnitCellLengthA(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setLengthA(value);
       iraspa_structure->structure()->reComputeBoundingBox();
@@ -1488,7 +1488,7 @@ std::optional<double> CellTreeWidgetController::unitCellLengthB()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->b());
   }
@@ -1504,7 +1504,7 @@ void CellTreeWidgetController::setUnitCellLengthB(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setLengthB(value);
       iraspa_structure->structure()->reComputeBoundingBox();
@@ -1530,7 +1530,7 @@ std::optional<double> CellTreeWidgetController::unitCellLengthC()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->c());
   }
@@ -1546,7 +1546,7 @@ void CellTreeWidgetController::setUnitCellLengthC(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setLengthC(value);
       iraspa_structure->structure()->reComputeBoundingBox();
@@ -1572,7 +1572,7 @@ std::optional<double> CellTreeWidgetController::unitCellAngleAlpha()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->alpha() * 180.0/M_PI);
   }
@@ -1588,7 +1588,7 @@ void CellTreeWidgetController::setUnitCellAngleAlpha(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setAlphaAngle(value * M_PI / 180.0);
       iraspa_structure->structure()->reComputeBoundingBox();
@@ -1614,7 +1614,7 @@ std::optional<double> CellTreeWidgetController::unitCellAngleBeta()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->beta() * 180.0/M_PI);
   }
@@ -1630,7 +1630,7 @@ void CellTreeWidgetController::setUnitCellAngleBeta(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setBetaAngle(value * M_PI / 180.0);
       iraspa_structure->structure()->reComputeBoundingBox();
@@ -1656,7 +1656,7 @@ std::optional<double> CellTreeWidgetController::unitCellAngleGamma()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->gamma() * 180.0/M_PI);
   }
@@ -1672,7 +1672,7 @@ void CellTreeWidgetController::setUnitCellAngleGamma(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setGammaAngle(value * M_PI / 180.0);
       iraspa_structure->structure()->reComputeBoundingBox();
@@ -1699,7 +1699,7 @@ std::optional<double> CellTreeWidgetController::unitCellVolume()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->volume());
   }
@@ -1720,7 +1720,7 @@ std::optional<double> CellTreeWidgetController::unitCellPerpendicularWidthX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->perpendicularWidths().x);
   }
@@ -1740,7 +1740,7 @@ std::optional<double> CellTreeWidgetController::unitCellPerpendicularWidthY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->perpendicularWidths().y);
   }
@@ -1761,7 +1761,7 @@ std::optional<double> CellTreeWidgetController::unitCellPerpendicularWidthZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->perpendicularWidths().z);
   }
@@ -1782,7 +1782,7 @@ std::optional<int> CellTreeWidgetController::maximumReplicasX()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->maximumReplicaX());
   }
@@ -1799,7 +1799,7 @@ void CellTreeWidgetController::setMaximumReplicasX(int value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       if (value >= iraspa_structure->structure()->cell()->minimumReplicaX())
       {
@@ -1828,7 +1828,7 @@ std::optional<int> CellTreeWidgetController::maximumReplicasY()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->maximumReplicaY());
   }
@@ -1845,7 +1845,7 @@ void CellTreeWidgetController::setMaximumReplicasY(int value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       if (value >= iraspa_structure->structure()->cell()->minimumReplicaY())
       {
@@ -1874,7 +1874,7 @@ std::optional<int> CellTreeWidgetController::maximumReplicasZ()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->maximumReplicaZ());
   }
@@ -1891,7 +1891,7 @@ void CellTreeWidgetController::setMaximumReplicasZ(int value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       if (value >= iraspa_structure->structure()->cell()->minimumReplicaZ())
       {
@@ -1920,7 +1920,7 @@ std::optional<int> CellTreeWidgetController::minimumReplicasX()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->minimumReplicaX());
   }
@@ -1937,7 +1937,7 @@ void CellTreeWidgetController::setMinimumReplicasX(int value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       if (value <= iraspa_structure->structure()->cell()->maximumReplicaX())
       {
@@ -1966,7 +1966,7 @@ std::optional<int> CellTreeWidgetController::minimumReplicasY()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->minimumReplicaY());
   }
@@ -1983,7 +1983,7 @@ void CellTreeWidgetController::setMinimumReplicasY(int value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       if (value <= iraspa_structure->structure()->cell()->maximumReplicaY())
       {
@@ -2012,7 +2012,7 @@ std::optional<int> CellTreeWidgetController::minimumReplicasZ()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->cell()->minimumReplicaZ());
   }
@@ -2029,7 +2029,7 @@ void CellTreeWidgetController::setMinimumReplicasZ(int value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       if (value <= iraspa_structure->structure()->cell()->maximumReplicaZ())
       {
@@ -2059,7 +2059,7 @@ std::optional<double> CellTreeWidgetController::rotationAngle()
   }
 
   std::set<double> set = std::set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double angle = iraspa_structure->structure()->rotationDelta();
     set.insert(angle);
@@ -2076,7 +2076,7 @@ void CellTreeWidgetController::setRotationAngle(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setRotationDelta(angle);
     }
@@ -2090,7 +2090,7 @@ void CellTreeWidgetController::rotateYawPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->rotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->orientation();
@@ -2116,7 +2116,7 @@ void CellTreeWidgetController::rotateYawMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->rotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->orientation();
@@ -2142,7 +2142,7 @@ void CellTreeWidgetController::rotatePitchPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->rotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->orientation();
@@ -2168,7 +2168,7 @@ void CellTreeWidgetController::rotatePitchMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->rotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->orientation();
@@ -2194,7 +2194,7 @@ void CellTreeWidgetController::rotateRollPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->rotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->orientation();
@@ -2220,7 +2220,7 @@ void CellTreeWidgetController::rotateRollMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->rotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->orientation();
@@ -2250,7 +2250,7 @@ std::optional<double> CellTreeWidgetController::EulerAngleX()
   }
 
   std::set<double> set = std::set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     simd_quatd orientation = iraspa_structure->structure()->orientation();
     double EulerAngle = orientation.EulerAngles().x * 180.0 / M_PI;
@@ -2268,7 +2268,7 @@ void CellTreeWidgetController::setEulerAngleX(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       simd_quatd orientation = iraspa_structure->structure()->orientation();
       double3 EulerAngles = orientation.EulerAngles();
@@ -2299,7 +2299,7 @@ std::optional<double> CellTreeWidgetController::EulerAngleY()
   }
 
   std::set<double> set = std::set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     simd_quatd orientation = iraspa_structure->structure()->orientation();
     int EulerAngle = orientation.EulerAngles().y * 180.0 / M_PI;
@@ -2317,7 +2317,7 @@ void CellTreeWidgetController::setEulerAngleY(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       simd_quatd orientation = iraspa_structure->structure()->orientation();
       double3 EulerAngles = orientation.EulerAngles();
@@ -2348,7 +2348,7 @@ std::optional<double> CellTreeWidgetController::EulerAngleZ()
   }
 
   std::set<double> set = std::set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     simd_quatd orientation = iraspa_structure->structure()->orientation();
     int EulerAngle = orientation.EulerAngles().z * 180.0 / M_PI;
@@ -2366,7 +2366,7 @@ void CellTreeWidgetController::setEulerAngleZ(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       simd_quatd orientation = iraspa_structure->structure()->orientation();
       double3 EulerAngles = orientation.EulerAngles();
@@ -2397,7 +2397,7 @@ std::optional<double>  CellTreeWidgetController::originX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->origin().x);
   }
@@ -2414,7 +2414,7 @@ void CellTreeWidgetController::setOriginX(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setOriginX(value);
     }
@@ -2439,7 +2439,7 @@ std::optional<double>  CellTreeWidgetController::originY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->origin().y);
   }
@@ -2456,7 +2456,7 @@ void CellTreeWidgetController::setOriginY(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setOriginY(value);
     }
@@ -2481,7 +2481,7 @@ std::optional<double>  CellTreeWidgetController::originZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->origin().z);
   }
@@ -2498,7 +2498,7 @@ void CellTreeWidgetController::setOriginZ(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setOriginZ(value);
     }
@@ -2648,7 +2648,7 @@ std::optional<bool> CellTreeWidgetController::flipAxisA()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->cell()->contentFlip().x;
     set.insert(value);
@@ -2663,7 +2663,7 @@ std::optional<bool> CellTreeWidgetController::flipAxisA()
 
 void CellTreeWidgetController::setFlipAxisA(bool state)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->cell()->setContentFlipX(state);
   }
@@ -2680,7 +2680,7 @@ std::optional<bool> CellTreeWidgetController::flipAxisB()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->cell()->contentFlip().y;
     set.insert(value);
@@ -2695,7 +2695,7 @@ std::optional<bool> CellTreeWidgetController::flipAxisB()
 
 void CellTreeWidgetController::setFlipAxisB(bool state)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->cell()->setContentFlipY(state);
   }
@@ -2712,7 +2712,7 @@ std::optional<bool> CellTreeWidgetController::flipAxisC()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->cell()->contentFlip().z;
     set.insert(value);
@@ -2727,7 +2727,7 @@ std::optional<bool> CellTreeWidgetController::flipAxisC()
 
 void CellTreeWidgetController::setFlipAxisC(bool state)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->cell()->setContentFlipZ(state);
   }
@@ -2744,7 +2744,7 @@ std::optional<double> CellTreeWidgetController::shiftAxisA()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->cell()->contentShift().x;
     set.insert(value);
@@ -2761,12 +2761,12 @@ void CellTreeWidgetController::setShiftAxisA(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setContentShiftX(value);
     }
     reloadTransformContentProperties();
-    rendererReloadData();
+    emit rendererReloadData();
 
     _mainWindow->documentWasModified();
   }
@@ -2779,7 +2779,7 @@ std::optional<double> CellTreeWidgetController::shiftAxisB()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->cell()->contentShift().y;
     set.insert(value);
@@ -2796,12 +2796,12 @@ void CellTreeWidgetController::setShiftAxisB(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setContentShiftY(value);
     }
     reloadTransformContentProperties();
-    rendererReloadData();
+    emit rendererReloadData();
 
     _mainWindow->documentWasModified();
   }
@@ -2814,7 +2814,7 @@ std::optional<double> CellTreeWidgetController::shiftAxisC()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->cell()->contentShift().z;
     set.insert(value);
@@ -2831,12 +2831,12 @@ void CellTreeWidgetController::setShiftAxisC(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->cell()->setContentShiftZ(value);
     }
     reloadTransformContentProperties();
-    rendererReloadData();
+    emit rendererReloadData();
 
     _mainWindow->documentWasModified();
   }
@@ -3235,7 +3235,7 @@ std::optional<double> CellTreeWidgetController::structuralMass()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureMass();
     set.insert(value);
@@ -3255,7 +3255,7 @@ std::optional<double> CellTreeWidgetController::structuralDensity()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureDensity();
     set.insert(value);
@@ -3275,7 +3275,7 @@ std::optional<double> CellTreeWidgetController::structureHeliumVoidFraction()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureHeliumVoidFraction();
     set.insert(value);
@@ -3296,7 +3296,7 @@ std::optional<double> CellTreeWidgetController::structureSpecificVolume()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureSpecificVolume();
     set.insert(value);
@@ -3316,7 +3316,7 @@ std::optional<double> CellTreeWidgetController::structureAccessiblePoreVolume()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureAccessiblePoreVolume();
     set.insert(value);
@@ -3333,7 +3333,7 @@ void CellTreeWidgetController::setFrameworkProbeMolecule(int value)
 {
   if(value>=0 && value<int(Structure::ProbeMolecule::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setFrameworkProbeMolecule(Structure::ProbeMolecule(value));
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -3359,7 +3359,7 @@ std::optional<Structure::ProbeMolecule> CellTreeWidgetController::frameworkProbe
     return std::nullopt;
   }
   std::unordered_set<Structure::ProbeMolecule, enum_hash> set = std::unordered_set<Structure::ProbeMolecule, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::ProbeMolecule value = iraspa_structure->structure()->frameworkProbeMolecule();
     set.insert(value);
@@ -3379,7 +3379,7 @@ std::optional<double> CellTreeWidgetController::structureVolumetricNitrogenSurfa
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureVolumetricNitrogenSurfaceArea();
     set.insert(value);
@@ -3399,7 +3399,7 @@ std::optional<double> CellTreeWidgetController::structureGravimetricNitrogenSurf
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureGravimetricNitrogenSurfaceArea();
     set.insert(value);
@@ -3419,7 +3419,7 @@ std::optional<int> CellTreeWidgetController::structureNumberOfChannelSystems()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureNumberOfChannelSystems();
     set.insert(value);
@@ -3434,7 +3434,7 @@ std::optional<int> CellTreeWidgetController::structureNumberOfChannelSystems()
 
 void CellTreeWidgetController::setStructureNumberOfChannelSystems(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setStructureNumberOfChannelSystems(value);
   }
@@ -3449,7 +3449,7 @@ std::optional<int> CellTreeWidgetController::structureNumberOfInaccessiblePocket
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int value = iraspa_structure->structure()->structureNumberOfInaccessiblePockets();
     set.insert(value);
@@ -3464,7 +3464,7 @@ std::optional<int> CellTreeWidgetController::structureNumberOfInaccessiblePocket
 
 void CellTreeWidgetController::setStructureNumberOfInaccessiblePockets(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setStructureNumberOfInaccessiblePockets(value);
   }
@@ -3478,7 +3478,7 @@ std::optional<int> CellTreeWidgetController::structureDimensionalityOfPoreSystem
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int value = iraspa_structure->structure()->structureDimensionalityOfPoreSystem();
     set.insert(value);
@@ -3493,7 +3493,7 @@ std::optional<int> CellTreeWidgetController::structureDimensionalityOfPoreSystem
 
 void CellTreeWidgetController::setStructureDimensionalityOfPoreSystem(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setStructureDimensionalityOfPoreSystem(value);
   }
@@ -3507,7 +3507,7 @@ std::optional<double> CellTreeWidgetController::structureLargestCavityDiameter()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureLargestCavityDiameter();
     set.insert(value);
@@ -3522,7 +3522,7 @@ std::optional<double> CellTreeWidgetController::structureLargestCavityDiameter()
 
 void CellTreeWidgetController::setStructureLargestCavityDiameter(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setStructureLargestCavityDiameter(value);
   }
@@ -3536,7 +3536,7 @@ std::optional<double> CellTreeWidgetController::structureRestrictingPoreLimiting
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureRestrictingPoreLimitingDiameter();
     set.insert(value);
@@ -3551,7 +3551,7 @@ std::optional<double> CellTreeWidgetController::structureRestrictingPoreLimiting
 
 void CellTreeWidgetController::setStructureRestrictingPoreLimitingDiameter(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setStructureRestrictingPoreLimitingDiameter(value);
   }
@@ -3565,7 +3565,7 @@ std::optional<double> CellTreeWidgetController::structureLargestCavityDiameterAl
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->structureLargestCavityDiameterAlongAviablePath();
     set.insert(value);
@@ -3580,7 +3580,7 @@ std::optional<double> CellTreeWidgetController::structureLargestCavityDiameterAl
 
 void CellTreeWidgetController::setStructureLargestCavityDiameterAlongAviablePath(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setStructureLargestCavityDiameterAlongAviablePath(value);
   }
@@ -3995,7 +3995,7 @@ std::optional<int> CellTreeWidgetController::symmetrySpaceGroupHallNumber()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int value = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().HallNumber();
     set.insert(value);
@@ -4026,7 +4026,7 @@ std::optional<int> CellTreeWidgetController::symmetrySpaceGroupStamdardNumber()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int value = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().number();
     set.insert(value);
@@ -4059,7 +4059,7 @@ std::optional<QString> CellTreeWidgetController::symmetryHolohedryString()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int pointGroup = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroup();
     QString value = SKPointGroup::pointGroupData[pointGroup].holohedryString();
@@ -4080,7 +4080,7 @@ std::optional<QString> CellTreeWidgetController::symmetryQualifierString()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().qualifier();
     set.insert(value);
@@ -4100,7 +4100,7 @@ std::optional<double> CellTreeWidgetController::symmetryPrecision()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->cell()->precision();
     set.insert(value);
@@ -4115,7 +4115,7 @@ std::optional<double> CellTreeWidgetController::symmetryPrecision()
 
 void CellTreeWidgetController::setSymmetryPrecision(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->cell()->setPrecision(value);
   }
@@ -4130,7 +4130,7 @@ std::optional<QString> CellTreeWidgetController::symmetryCenteringString()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().centringString();
     set.insert(value);
@@ -4150,7 +4150,7 @@ std::optional<bool> CellTreeWidgetController::symmetryInversion()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool inversion = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().inversionAtOrigin();
     set.insert(inversion);
@@ -4171,7 +4171,7 @@ std::optional<QString> CellTreeWidgetController::symmetryInversionCenterString()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int HallNumber = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().HallNumber();
     QString string = SKSpaceGroup::inversionCenterString(HallNumber);
@@ -4192,7 +4192,7 @@ std::optional<bool> CellTreeWidgetController::symmetryCentrosymmetric()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int pointGroup = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroup();
     bool centroSymmetric = SKPointGroup::pointGroupData[pointGroup].centrosymmetric();
@@ -4213,7 +4213,7 @@ std::optional<bool> CellTreeWidgetController::symmetryEnantiomorphic()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int pointGroup = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroup();
     bool enantiomorphic = SKPointGroup::pointGroupData[pointGroup].enantiomorphic();
@@ -4235,7 +4235,7 @@ std::optional<int> CellTreeWidgetController::symmetryPointGroup()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     int pointGroup = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroup();
     set.insert(pointGroup);
@@ -4256,7 +4256,7 @@ std::optional<QString> CellTreeWidgetController::symmetrySymmorphicity()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure>&iraspa_structure: _iraspa_structures)
   {
     QString symmorphicity = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().symmorphicityString();
     set.insert(symmorphicity);

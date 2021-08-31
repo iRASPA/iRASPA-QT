@@ -1733,7 +1733,7 @@ void AppearanceTreeWidgetController::setRotationAngle(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setPrimitiveRotationDelta(angle);
     }
@@ -1750,7 +1750,7 @@ std::optional<double> AppearanceTreeWidgetController::rotationAngle()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->primitiveRotationDelta());
   }
@@ -1766,7 +1766,7 @@ void AppearanceTreeWidgetController::rotateYawPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
@@ -1791,7 +1791,7 @@ void AppearanceTreeWidgetController::rotateYawMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
@@ -1816,7 +1816,7 @@ void AppearanceTreeWidgetController::rotatePitchPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
@@ -1841,7 +1841,7 @@ void AppearanceTreeWidgetController::rotatePitchMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
@@ -1866,7 +1866,7 @@ void AppearanceTreeWidgetController::rotateRollPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
@@ -1891,7 +1891,7 @@ void AppearanceTreeWidgetController::rotateRollMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
@@ -1916,7 +1916,7 @@ void AppearanceTreeWidgetController::setEulerAngleX(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
       double3 EulerAngles = orientation.EulerAngles();
@@ -1946,7 +1946,7 @@ std::optional<double> AppearanceTreeWidgetController::EulerAngleX()
   }
 
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
     double3 EulerAngle = orientation.EulerAngles();
@@ -1964,7 +1964,7 @@ void AppearanceTreeWidgetController::setEulerAngleY(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
       double3 EulerAngles = orientation.EulerAngles();
@@ -1998,7 +1998,7 @@ std::optional<double> AppearanceTreeWidgetController::EulerAngleY()
   }
 
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
     double3 EulerAngle = orientation.EulerAngles();
@@ -2017,7 +2017,7 @@ void AppearanceTreeWidgetController::setEulerAngleZ(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
       double3 EulerAngles = orientation.EulerAngles();
@@ -2051,7 +2051,7 @@ std::optional<double> AppearanceTreeWidgetController::EulerAngleZ()
   }
 
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
     double3 EulerAngle = orientation.EulerAngles();
@@ -2072,7 +2072,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixAX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().ax);
   }
@@ -2088,7 +2088,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixAX(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.ax = value;
@@ -2119,7 +2119,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixAY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().ay);
   }
@@ -2135,7 +2135,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixAY(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.ay = value;
@@ -2166,7 +2166,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixAZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().az);
   }
@@ -2182,7 +2182,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixAZ(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.az = value;
@@ -2213,7 +2213,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixBX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().bx);
   }
@@ -2229,7 +2229,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixBX(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.bx = value;
@@ -2260,7 +2260,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixBY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().by);
   }
@@ -2276,7 +2276,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixBY(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.by = value;
@@ -2307,7 +2307,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixBZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().bz);
   }
@@ -2323,7 +2323,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixBZ(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.bz = value;
@@ -2354,7 +2354,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixCX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().cx);
   }
@@ -2370,7 +2370,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixCX(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.cx = value;
@@ -2401,7 +2401,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixCY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().cy);
   }
@@ -2417,7 +2417,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixCY(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.cy = value;
@@ -2448,7 +2448,7 @@ std::optional<double> AppearanceTreeWidgetController::transformationMatrixCZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->transformationMatrix().cz);
   }
@@ -2464,7 +2464,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixCZ(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
       matrix.cz = value;
@@ -2496,7 +2496,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveOpacity()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->primitiveOpacity());
   }
@@ -2512,7 +2512,7 @@ void AppearanceTreeWidgetController::setPrimitiveOpacity(double opacity)
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setPrimitiveOpacity(opacity);
     }
@@ -2531,7 +2531,7 @@ std::optional<int> AppearanceTreeWidgetController::primitiveNumberOfSides()
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     set.insert(iraspa_structure->structure()->primitiveNumberOfSides());
   }
@@ -2547,7 +2547,7 @@ void AppearanceTreeWidgetController::setPrimitiveNumberOfSides(int numberOfSides
 {
   if(!_iraspa_structures.empty())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setPrimitiveNumberOfSides(numberOfSides);
     }
@@ -2570,7 +2570,7 @@ std::optional<bool> AppearanceTreeWidgetController::primitiveIsCapped()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->primitiveIsCapped();
     set.insert(value);
@@ -2584,7 +2584,7 @@ std::optional<bool> AppearanceTreeWidgetController::primitiveIsCapped()
 
 void AppearanceTreeWidgetController::setPrimitiveIsCapped(bool state)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setPrimitiveIsCapped(bool(state));
   }
@@ -2599,7 +2599,7 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionStyle(int value)
 {
   if(value>=0 && value<int(RKSelectionStyle::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setPrimitiveSelectionStyle(RKSelectionStyle(value));
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -2618,7 +2618,7 @@ std::optional<RKSelectionStyle> AppearanceTreeWidgetController::primitiveSelecti
     return std::nullopt;
   }
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     RKSelectionStyle value = iraspa_structure->structure()->primitiveSelectionStyle();
     set.insert(value);
@@ -2633,7 +2633,7 @@ std::optional<RKSelectionStyle> AppearanceTreeWidgetController::primitiveSelecti
 
 void AppearanceTreeWidgetController::setPrimitiveSelectionStyleNu(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setPrimitiveSelectionFrequency(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -2651,7 +2651,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionStyleNu(
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->primitiveSelectionFrequency();
     set.insert(value);
@@ -2666,7 +2666,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionStyleNu(
 
 void AppearanceTreeWidgetController::setPrimitiveSelectionStyleRho(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setPrimitiveSelectionDensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -2684,7 +2684,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionStyleRho
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->primitiveSelectionDensity();
     set.insert(value);
@@ -2699,7 +2699,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionStyleRho
 
 void AppearanceTreeWidgetController::setPrimitiveSelectionIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setPrimitiveSelectionIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -2717,7 +2717,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionIntensit
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->primitiveSelectionIntensity();
     set.insert(value);
@@ -2732,7 +2732,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionIntensit
 
 void AppearanceTreeWidgetController::setPrimitiveSelectionScaling(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setPrimitiveSelectionScaling(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -2750,7 +2750,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionScaling(
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->primitiveSelectionScaling();
     set.insert(value);
@@ -2766,7 +2766,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionScaling(
 
 void AppearanceTreeWidgetController::setPrimitiveHue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setPrimitiveHue(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -2784,7 +2784,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveHue()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->primitiveHue();
     set.insert(value);
@@ -2799,7 +2799,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveHue()
 
 void AppearanceTreeWidgetController::setPrimitiveSaturation(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setPrimitiveSaturation(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -2817,7 +2817,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSaturation()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->primitiveSaturation();
     set.insert(value);
@@ -2832,7 +2832,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSaturation()
 
 void AppearanceTreeWidgetController::setPrimitiveValue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setPrimitiveValue(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -2850,7 +2850,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveValue()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->primitiveValue();
     set.insert(value);
@@ -2868,7 +2868,7 @@ std::optional<double> AppearanceTreeWidgetController::primitiveValue()
 
 void AppearanceTreeWidgetController::setFrontPrimitiveHighDynamicRange(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setFrontPrimitiveHDR(bool(value));
   }
@@ -2885,7 +2885,7 @@ std::optional<bool> AppearanceTreeWidgetController::frontPrimitiveHighDynamicRan
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->frontPrimitiveHDR();
     set.insert(value);
@@ -2900,7 +2900,7 @@ std::optional<bool> AppearanceTreeWidgetController::frontPrimitiveHighDynamicRan
 
 void AppearanceTreeWidgetController::setFrontPrimitiveHDRExposure(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setFrontPrimitiveHDRExposure(value);
   }
@@ -2917,7 +2917,7 @@ std::optional<double> AppearanceTreeWidgetController::frontPrimitiveHDRExposure(
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->frontPrimitiveHDRExposure();
     set.insert(value);
@@ -2932,7 +2932,7 @@ std::optional<double> AppearanceTreeWidgetController::frontPrimitiveHDRExposure(
 
 void AppearanceTreeWidgetController::setFrontPrimitiveAmbientLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setFrontPrimitiveAmbientIntensity(value);
   }
@@ -2949,7 +2949,7 @@ std::optional<double> AppearanceTreeWidgetController::frontPrimitiveAmbientLight
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->frontPrimitiveAmbientIntensity();
     set.insert(value);
@@ -2968,7 +2968,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveAmbientLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setFrontPrimitiveAmbientColor(color);
     }
@@ -2986,7 +2986,7 @@ std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveAmbientLight
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->frontPrimitiveAmbientColor();
     set.insert(value);
@@ -3001,7 +3001,7 @@ std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveAmbientLight
 
 void AppearanceTreeWidgetController::setFrontPrimitiveDiffuseLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setFrontPrimitiveDiffuseIntensity(value);
   }
@@ -3018,7 +3018,7 @@ std::optional<double> AppearanceTreeWidgetController::frontPrimitiveDiffuseLight
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->frontPrimitiveDiffuseIntensity();
     set.insert(value);
@@ -3037,7 +3037,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setFrontPrimitiveDiffuseColor(color);
     }
@@ -3055,7 +3055,7 @@ std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveDiffuseLight
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->frontPrimitiveDiffuseColor();
     set.insert(value);
@@ -3070,7 +3070,7 @@ std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveDiffuseLight
 
 void AppearanceTreeWidgetController::setFrontPrimitiveSpecularLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setFrontPrimitiveSpecularIntensity(value);
   }
@@ -3087,7 +3087,7 @@ std::optional<double> AppearanceTreeWidgetController::frontPrimitiveSpecularLigh
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->frontPrimitiveSpecularIntensity();
     set.insert(value);
@@ -3106,7 +3106,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveSpecularLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setFrontPrimitiveSpecularColor(color);
     }
@@ -3124,7 +3124,7 @@ std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveSpecularLigh
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->frontPrimitiveSpecularColor();
     set.insert(value);
@@ -3139,7 +3139,7 @@ std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveSpecularLigh
 
 void AppearanceTreeWidgetController::setFrontPrimitiveShininess(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setFrontPrimitiveShininess(value);
   }
@@ -3156,7 +3156,7 @@ std::optional<double> AppearanceTreeWidgetController::frontPrimitiveShininess()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->frontPrimitiveShininess();
     set.insert(value);
@@ -3172,7 +3172,7 @@ std::optional<double> AppearanceTreeWidgetController::frontPrimitiveShininess()
 
 void AppearanceTreeWidgetController::setBackPrimitiveHighDynamicRange(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBackPrimitiveHDR(bool(value));
   }
@@ -3189,7 +3189,7 @@ std::optional<bool> AppearanceTreeWidgetController::backPrimitiveHighDynamicRang
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->backPrimitiveHDR();
     set.insert(value);
@@ -3204,7 +3204,7 @@ std::optional<bool> AppearanceTreeWidgetController::backPrimitiveHighDynamicRang
 
 void AppearanceTreeWidgetController::setBackPrimitiveHDRExposure(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBackPrimitiveHDRExposure(value);
   }
@@ -3221,7 +3221,7 @@ std::optional<double> AppearanceTreeWidgetController::backPrimitiveHDRExposure()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->backPrimitiveHDRExposure();
     set.insert(value);
@@ -3236,7 +3236,7 @@ std::optional<double> AppearanceTreeWidgetController::backPrimitiveHDRExposure()
 
 void AppearanceTreeWidgetController::setBackPrimitiveAmbientLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBackPrimitiveAmbientIntensity(value);
   }
@@ -3253,7 +3253,7 @@ std::optional<double> AppearanceTreeWidgetController::backPrimitiveAmbientLightI
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->backPrimitiveAmbientIntensity();
     set.insert(value);
@@ -3272,7 +3272,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveAmbientLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setBackPrimitiveAmbientColor(color);
     }
@@ -3290,7 +3290,7 @@ std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveAmbientLightC
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->backPrimitiveAmbientColor();
     set.insert(value);
@@ -3305,7 +3305,7 @@ std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveAmbientLightC
 
 void AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBackPrimitiveDiffuseIntensity(value);
   }
@@ -3322,7 +3322,7 @@ std::optional<double> AppearanceTreeWidgetController::backPrimitiveDiffuseLightI
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->backPrimitiveDiffuseIntensity();
     set.insert(value);
@@ -3341,7 +3341,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setBackPrimitiveDiffuseColor(color);
     }
@@ -3359,7 +3359,7 @@ std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveDiffuseLightC
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->backPrimitiveDiffuseColor();
     set.insert(value);
@@ -3374,7 +3374,7 @@ std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveDiffuseLightC
 
 void AppearanceTreeWidgetController::setBackPrimitiveSpecularLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBackPrimitiveSpecularIntensity(value);
   }
@@ -3391,7 +3391,7 @@ std::optional<double> AppearanceTreeWidgetController::backPrimitiveSpecularLight
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->backPrimitiveSpecularIntensity();
     set.insert(value);
@@ -3410,7 +3410,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveSpecularLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setBackPrimitiveSpecularColor(color);
     }
@@ -3428,7 +3428,7 @@ std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveSpecularLight
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->backPrimitiveSpecularColor();
     set.insert(value);
@@ -3443,7 +3443,7 @@ std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveSpecularLight
 
 void AppearanceTreeWidgetController::setBackPrimitiveShininess(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBackPrimitiveShininess(value);
   }
@@ -3460,7 +3460,7 @@ std::optional<double> AppearanceTreeWidgetController::backPrimitiveShininess()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->backPrimitiveShininess();
     set.insert(value);
@@ -4181,7 +4181,7 @@ void AppearanceTreeWidgetController::reloadAtomShininess()
 
 void AppearanceTreeWidgetController::setRepresentationType(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     if(value>=0 && value<int(Structure::RepresentationType::multiple_values))
     {
@@ -4203,7 +4203,7 @@ std::optional<Structure::RepresentationType> AppearanceTreeWidgetController::rep
     return std::nullopt;
   }
   std::unordered_set<Structure::RepresentationType, enum_hash> set = std::unordered_set<Structure::RepresentationType, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::RepresentationType value = iraspa_structure->structure()->atomRepresentationType();
     set.insert(value);
@@ -4220,7 +4220,7 @@ void AppearanceTreeWidgetController::setRepresentationStyle(int value)
 {
   if(value >= 0 && value <= int(Structure::RepresentationStyle::multiple_values))  // also include "Custom"
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setRepresentationStyle(Structure::RepresentationStyle(value), _mainWindow->colorSets());
     }
@@ -4240,7 +4240,7 @@ std::optional<Structure::RepresentationStyle> AppearanceTreeWidgetController::re
     return std::nullopt;
   }
   std::unordered_set<Structure::RepresentationStyle, enum_hash> set = std::unordered_set<Structure::RepresentationStyle, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::RepresentationStyle value = iraspa_structure->structure()->atomRepresentationStyle();
     set.insert(value);
@@ -4258,7 +4258,7 @@ void AppearanceTreeWidgetController::setColorSchemeComboBoxIndex([[maybe_unused]
   QString stringValue = _appearanceAtomsForm->colorSchemeComboBox->currentText();
   if(QString::compare(stringValue, "Multiple values") != 0)
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(stringValue, _mainWindow->colorSets());
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4277,7 +4277,7 @@ std::optional<QString> AppearanceTreeWidgetController::colorSchemeIdentifier()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->atomColorSchemeIdentifier();
     set.insert(value);
@@ -4294,7 +4294,7 @@ void AppearanceTreeWidgetController::setColorSchemeOrder(int value)
 {
   if(value>=0 && value<int(SKColorSet::ColorSchemeOrder::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setColorSchemeOrder(SKColorSet::ColorSchemeOrder(value));
       iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(iraspa_structure->structure()->atomColorSchemeIdentifier(), _mainWindow->colorSets());
@@ -4314,7 +4314,7 @@ std::optional<SKColorSet::ColorSchemeOrder> AppearanceTreeWidgetController::colo
     return std::nullopt;
   }
   std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash> set = std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     SKColorSet::ColorSchemeOrder value = iraspa_structure->structure()->colorSchemeOrder();
     set.insert(value);
@@ -4332,7 +4332,7 @@ void AppearanceTreeWidgetController::setForcefieldSchemeComboBoxIndex([[maybe_un
   QString stringValue = _appearanceAtomsForm->forceFieldComboBox->currentText();
   if(QString::compare(stringValue, "Multiple values") != 0)
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAtomForceFieldIdentifier(stringValue,_mainWindow->forceFieldSets());
     }
@@ -4352,7 +4352,7 @@ std::optional<QString> AppearanceTreeWidgetController::forceFieldSchemeIdentifie
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->atomForceFieldIdentifier();
     set.insert(value);
@@ -4369,7 +4369,7 @@ void AppearanceTreeWidgetController::setForceFieldSchemeOrder(int value)
 {
   if(value>=0 && value<int(ForceFieldSet::ForceFieldSchemeOrder::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder(value));
       iraspa_structure->structure()->updateForceField(_mainWindow->forceFieldSets());
@@ -4391,7 +4391,7 @@ std::optional<ForceFieldSet::ForceFieldSchemeOrder> AppearanceTreeWidgetControll
     return std::nullopt;
   }
   std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash> set = std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     ForceFieldSet::ForceFieldSchemeOrder value = iraspa_structure->structure()->forceFieldSchemeOrder();
     set.insert(value);
@@ -4408,7 +4408,7 @@ void AppearanceTreeWidgetController::setAtomSelectionStyle(int value)
 {
   if(value>=0 && value<int(RKSelectionStyle::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAtomSelectionStyle(RKSelectionStyle(value));
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4427,7 +4427,7 @@ std::optional<RKSelectionStyle> AppearanceTreeWidgetController::atomSelectionSty
     return std::nullopt;
   }
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     RKSelectionStyle value = iraspa_structure->structure()->atomSelectionStyle();
     set.insert(value);
@@ -4442,7 +4442,7 @@ std::optional<RKSelectionStyle> AppearanceTreeWidgetController::atomSelectionSty
 
 void AppearanceTreeWidgetController::setAtomSelectionStyleNu(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomSelectionFrequency(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4460,7 +4460,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionStyleNu()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomSelectionFrequency();
     set.insert(value);
@@ -4475,7 +4475,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionStyleNu()
 
 void AppearanceTreeWidgetController::setAtomSelectionStyleRho(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomSelectionDensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4493,7 +4493,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionStyleRho()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomSelectionDensity();
     set.insert(value);
@@ -4508,7 +4508,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionStyleRho()
 
 void AppearanceTreeWidgetController::setAtomSelectionIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setSelectionIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4526,7 +4526,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionIntensity()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomSelectionIntensity();
     set.insert(value);
@@ -4541,7 +4541,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionIntensity()
 
 void AppearanceTreeWidgetController::setAtomSelectionScaling(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomSelectionScaling(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4559,7 +4559,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionScaling()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomSelectionScaling();
     set.insert(value);
@@ -4576,7 +4576,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionScaling()
 
 void AppearanceTreeWidgetController::setAtomDrawAtoms(int state)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setDrawAtoms(bool(state));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4594,7 +4594,7 @@ std::optional<bool> AppearanceTreeWidgetController::atomDrawAtoms()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->drawAtoms();
     set.insert(value);
@@ -4608,7 +4608,7 @@ std::optional<bool> AppearanceTreeWidgetController::atomDrawAtoms()
 
 void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSpinBox(double size)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomScaleFactor(size);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4630,7 +4630,7 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderBegin()
 
 void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderIntermediate(double size)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomScaleFactor(size);
   }
@@ -4641,7 +4641,7 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderIntermediate(
 
 void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderFinal()
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->recheckRepresentationStyle();
   }
@@ -4662,7 +4662,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSizeScaling()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomScaleFactor();
     set.insert(value);
@@ -4678,7 +4678,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSizeScaling()
 
 void AppearanceTreeWidgetController::setAtomHighDynamicRange(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomHDR(bool(value));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4696,7 +4696,7 @@ std::optional<bool> AppearanceTreeWidgetController::atomHighDynamicRange()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->atomHDR();
     set.insert(value);
@@ -4711,7 +4711,7 @@ std::optional<bool> AppearanceTreeWidgetController::atomHighDynamicRange()
 
 void AppearanceTreeWidgetController::setAtomHDRExposure(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomHDRExposure(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4729,7 +4729,7 @@ std::optional<double> AppearanceTreeWidgetController::atomHDRExposure()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomHDRExposure();
     set.insert(value);
@@ -4744,7 +4744,7 @@ std::optional<double> AppearanceTreeWidgetController::atomHDRExposure()
 
 void AppearanceTreeWidgetController::setAtomHue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomHue(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4762,7 +4762,7 @@ std::optional<double> AppearanceTreeWidgetController::atomHue()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomHue();
     set.insert(value);
@@ -4777,7 +4777,7 @@ std::optional<double> AppearanceTreeWidgetController::atomHue()
 
 void AppearanceTreeWidgetController::setAtomSaturation(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomSaturation(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4795,7 +4795,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSaturation()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomSaturation();
     set.insert(value);
@@ -4810,7 +4810,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSaturation()
 
 void AppearanceTreeWidgetController::setAtomValue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomValue(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4828,7 +4828,7 @@ std::optional<double> AppearanceTreeWidgetController::atomValue()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomValue();
     set.insert(value);
@@ -4843,7 +4843,7 @@ std::optional<double> AppearanceTreeWidgetController::atomValue()
 
 void AppearanceTreeWidgetController::setAtomAmbientOcclusion(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomAmbientOcclusion(bool(value));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4861,7 +4861,7 @@ std::optional<bool> AppearanceTreeWidgetController::atomAmbientOcclusion()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->atomAmbientOcclusion();
     set.insert(value);
@@ -4875,7 +4875,7 @@ std::optional<bool> AppearanceTreeWidgetController::atomAmbientOcclusion()
 
 void AppearanceTreeWidgetController::setAtomAmbientLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomAmbientIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4893,7 +4893,7 @@ std::optional<double> AppearanceTreeWidgetController::atomAmbientLightIntensity(
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomAmbientIntensity();
     set.insert(value);
@@ -4912,7 +4912,7 @@ void AppearanceTreeWidgetController::setAtomAmbientLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAtomAmbientColor(color);
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4931,7 +4931,7 @@ std::optional<QColor> AppearanceTreeWidgetController::atomAmbientLightColor()
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->atomAmbientColor();
     set.insert(value);
@@ -4946,7 +4946,7 @@ std::optional<QColor> AppearanceTreeWidgetController::atomAmbientLightColor()
 
 void AppearanceTreeWidgetController::setAtomDiffuseLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomDiffuseIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -4964,7 +4964,7 @@ std::optional<double> AppearanceTreeWidgetController::atomDiffuseLightIntensity(
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomDiffuseIntensity();
     set.insert(value);
@@ -4983,7 +4983,7 @@ void AppearanceTreeWidgetController::setAtomDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAtomDiffuseColor(color);
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5002,7 +5002,7 @@ std::optional<QColor> AppearanceTreeWidgetController::atomDiffuseLightColor()
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->atomDiffuseColor();
     set.insert(value);
@@ -5017,7 +5017,7 @@ std::optional<QColor> AppearanceTreeWidgetController::atomDiffuseLightColor()
 
 void AppearanceTreeWidgetController::setAtomSpecularLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomSpecularIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5035,7 +5035,7 @@ std::optional<double> AppearanceTreeWidgetController::atomSpecularLightIntensity
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomSpecularIntensity();
     set.insert(value);
@@ -5054,7 +5054,7 @@ void AppearanceTreeWidgetController::setAtomSpecularLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAtomSpecularColor(color);
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5073,7 +5073,7 @@ std::optional<QColor> AppearanceTreeWidgetController::atomSpecularLightColor()
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->atomSpecularColor();
     set.insert(value);
@@ -5088,7 +5088,7 @@ std::optional<QColor> AppearanceTreeWidgetController::atomSpecularLightColor()
 
 void AppearanceTreeWidgetController::setAtomShininess(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAtomShininess(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5106,7 +5106,7 @@ std::optional<double> AppearanceTreeWidgetController::atomShininess()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->atomShininess();
     set.insert(value);
@@ -5637,7 +5637,7 @@ void AppearanceTreeWidgetController::reloadBondShininess()
 
 void AppearanceTreeWidgetController::setBondDrawBonds(int state)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setDrawBonds(bool(state));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5655,7 +5655,7 @@ std::optional<bool> AppearanceTreeWidgetController::bondDrawBonds()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->drawBonds();
     set.insert(value);
@@ -5670,7 +5670,7 @@ std::optional<bool> AppearanceTreeWidgetController::bondDrawBonds()
 
 void AppearanceTreeWidgetController::setBondSizeScaling(double size)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondScaleFactor(size);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5689,7 +5689,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSizeScaling()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondScaleFactor();
     set.insert(value);
@@ -5704,7 +5704,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSizeScaling()
 
 void AppearanceTreeWidgetController::setBondColorMode(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondColorMode(RKBondColorMode(value));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5722,7 +5722,7 @@ std::optional<RKBondColorMode> AppearanceTreeWidgetController::bondColorMode()
     return std::nullopt;
   }
   std::unordered_set<RKBondColorMode, enum_hash> set = std::unordered_set<RKBondColorMode, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     RKBondColorMode value = iraspa_structure->structure()->bondColorMode();
     set.insert(value);
@@ -5739,7 +5739,7 @@ void AppearanceTreeWidgetController::setBondSelectionStyle(int value)
 {
   if(value>=0 && value<int(RKSelectionStyle::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setBondSelectionStyle(RKSelectionStyle(value));
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5758,7 +5758,7 @@ std::optional<RKSelectionStyle> AppearanceTreeWidgetController::bondSelectionSty
     return std::nullopt;
   }
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     RKSelectionStyle value = iraspa_structure->structure()->bondSelectionStyle();
     set.insert(value);
@@ -5773,7 +5773,7 @@ std::optional<RKSelectionStyle> AppearanceTreeWidgetController::bondSelectionSty
 
 void AppearanceTreeWidgetController::setBondSelectionStyleNu(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondSelectionFrequency(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5791,7 +5791,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionStyleNu()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondSelectionFrequency();
     set.insert(value);
@@ -5806,7 +5806,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionStyleNu()
 
 void AppearanceTreeWidgetController::setBondSelectionStyleRho(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondSelectionDensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5824,7 +5824,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionStyleRho()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondSelectionDensity();
     set.insert(value);
@@ -5839,7 +5839,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionStyleRho()
 
 void AppearanceTreeWidgetController::setBondSelectionIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondSelectionIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5857,7 +5857,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionIntensity()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondSelectionIntensity();
     set.insert(value);
@@ -5872,7 +5872,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionIntensity()
 
 void AppearanceTreeWidgetController::setBondSelectionScaling(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondSelectionScaling(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5890,7 +5890,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionScaling()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondSelectionScaling();
     set.insert(value);
@@ -5907,7 +5907,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionScaling()
 
 void AppearanceTreeWidgetController::setBondHighDynamicRange(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondHDR(bool(value));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5925,7 +5925,7 @@ std::optional<bool> AppearanceTreeWidgetController::bondHighDynamicRange()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->bondHDR();
     set.insert(value);
@@ -5940,7 +5940,7 @@ std::optional<bool> AppearanceTreeWidgetController::bondHighDynamicRange()
 
 void AppearanceTreeWidgetController::setBondHDRExposure(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondHDRExposure(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5958,7 +5958,7 @@ std::optional<double> AppearanceTreeWidgetController::bondHDRExposure()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondHDRExposure();
     set.insert(value);
@@ -5973,7 +5973,7 @@ std::optional<double> AppearanceTreeWidgetController::bondHDRExposure()
 
 void AppearanceTreeWidgetController::setBondHue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondHue(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -5991,7 +5991,7 @@ std::optional<double> AppearanceTreeWidgetController::bondHue()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondHue();
     set.insert(value);
@@ -6006,7 +6006,7 @@ std::optional<double> AppearanceTreeWidgetController::bondHue()
 
 void AppearanceTreeWidgetController::setBondSaturation(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondSaturation(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6024,7 +6024,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSaturation()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondSaturation();
     set.insert(value);
@@ -6039,7 +6039,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSaturation()
 
 void AppearanceTreeWidgetController::setBondValue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondValue(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6057,7 +6057,7 @@ std::optional<double> AppearanceTreeWidgetController::bondValue()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondValue();
     set.insert(value);
@@ -6072,7 +6072,7 @@ std::optional<double> AppearanceTreeWidgetController::bondValue()
 
 void AppearanceTreeWidgetController::setBondAmbientOcclusion(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondAmbientOcclusion(bool(value));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6090,7 +6090,7 @@ std::optional<bool> AppearanceTreeWidgetController::bondAmbientOcclusion()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->bondAmbientOcclusion();
     set.insert(value);
@@ -6104,7 +6104,7 @@ std::optional<bool> AppearanceTreeWidgetController::bondAmbientOcclusion()
 
 void AppearanceTreeWidgetController::setBondAmbientLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondAmbientIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6122,7 +6122,7 @@ std::optional<double> AppearanceTreeWidgetController::bondAmbientLightIntensity(
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondAmbientIntensity();
     set.insert(value);
@@ -6141,7 +6141,7 @@ void AppearanceTreeWidgetController::setBondAmbientLightColor()
   if(color.isValid())
   {
     _appearanceBondsForm->bondAmbientColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setBondAmbientColor(color);
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6160,7 +6160,7 @@ std::optional<QColor> AppearanceTreeWidgetController::bondAmbientLightColor()
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->bondAmbientColor();
     set.insert(value);
@@ -6175,7 +6175,7 @@ std::optional<QColor> AppearanceTreeWidgetController::bondAmbientLightColor()
 
 void AppearanceTreeWidgetController::setBondDiffuseLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondDiffuseIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6193,7 +6193,7 @@ std::optional<double> AppearanceTreeWidgetController::bondDiffuseLightIntensity(
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondDiffuseIntensity();
     set.insert(value);
@@ -6212,7 +6212,7 @@ void AppearanceTreeWidgetController::setBondDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceBondsForm->bondDiffuseColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setBondDiffuseColor(color);
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6231,7 +6231,7 @@ std::optional<QColor> AppearanceTreeWidgetController::bondDiffuseLightColor()
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->bondDiffuseColor();
     set.insert(value);
@@ -6246,7 +6246,7 @@ std::optional<QColor> AppearanceTreeWidgetController::bondDiffuseLightColor()
 
 void AppearanceTreeWidgetController::setBondSpecularLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondSpecularIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6264,7 +6264,7 @@ std::optional<double> AppearanceTreeWidgetController::bondSpecularLightIntensity
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondSpecularIntensity();
     set.insert(value);
@@ -6283,7 +6283,7 @@ void AppearanceTreeWidgetController::setBondSpecularLightColor()
   if(color.isValid())
   {
     _appearanceBondsForm->bondSpecularColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setBondSpecularColor(color);
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6302,7 +6302,7 @@ std::optional<QColor> AppearanceTreeWidgetController::bondSpecularLightColor()
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->bondSpecularColor();
     set.insert(value);
@@ -6317,7 +6317,7 @@ std::optional<QColor> AppearanceTreeWidgetController::bondSpecularLightColor()
 
 void AppearanceTreeWidgetController::setBondShininess(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setBondShininess(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6335,7 +6335,7 @@ std::optional<double> AppearanceTreeWidgetController::bondShininessy()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->bondShininess();
     set.insert(value);
@@ -6460,7 +6460,7 @@ void AppearanceTreeWidgetController::reloadUnitCellDiffuseLight()
 
 void AppearanceTreeWidgetController::setDrawUnitCell(int state)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setDrawUnitCell(bool(state));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6478,7 +6478,7 @@ std::optional<bool> AppearanceTreeWidgetController::drawUnitCell()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->drawUnitCell();
     set.insert(value);
@@ -6492,7 +6492,7 @@ std::optional<bool> AppearanceTreeWidgetController::drawUnitCell()
 
 void AppearanceTreeWidgetController::setUnitCellSizeScaling(double size)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setUnitCellScaleFactor(size);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6510,7 +6510,7 @@ std::optional<double> AppearanceTreeWidgetController::unitCellSizeScaling()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->unitCellScaleFactor();
     set.insert(value);
@@ -6525,7 +6525,7 @@ std::optional<double> AppearanceTreeWidgetController::unitCellSizeScaling()
 
 void AppearanceTreeWidgetController::setUnitCellDiffuseLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setUnitCellDiffuseIntensity(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6543,7 +6543,7 @@ std::optional<double> AppearanceTreeWidgetController::unitCellDiffuseLightIntens
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->unitCellDiffuseIntensity();
     set.insert(value);
@@ -6562,7 +6562,7 @@ void AppearanceTreeWidgetController::setUnitCellDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceUnitCellForm->diffuseColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setUnitCellDiffuseColor(color);
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -6581,7 +6581,7 @@ std::optional<QColor> AppearanceTreeWidgetController::unitCellDiffuseLightColor(
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->unitCellDiffuseColor();
     set.insert(value);
@@ -7216,7 +7216,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideShininess()
 
 void AppearanceTreeWidgetController::setDrawAdsorptionSurface(int state)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setDrawAdsorptionSurface(bool(state));
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -7234,7 +7234,7 @@ std::optional<bool> AppearanceTreeWidgetController::drawAdsorptionSurface()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->drawAdsorptionSurface();
     set.insert(value);
@@ -7251,7 +7251,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule(int value
 {
   if(value>=0 && value<int(Structure::ProbeMolecule::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAdsorptionSurfaceProbeMolecule(Structure::ProbeMolecule(value));
       iraspa_structure->structure()->recheckRepresentationStyle();
@@ -7273,7 +7273,7 @@ std::optional<Structure::ProbeMolecule> AppearanceTreeWidgetController::adsorpti
     return std::nullopt;
   }
   std::unordered_set<Structure::ProbeMolecule, enum_hash> set = std::unordered_set<Structure::ProbeMolecule, enum_hash>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::ProbeMolecule value = iraspa_structure->structure()->adsorptionSurfaceProbeMolecule();
     set.insert(value);
@@ -7288,7 +7288,7 @@ std::optional<Structure::ProbeMolecule> AppearanceTreeWidgetController::adsorpti
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceIsoValue(value);
   }
@@ -7305,7 +7305,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceIsovalue(
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceIsoValue();
     set.insert(value);
@@ -7326,7 +7326,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceMinimumVa
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceMinimumValue();
     set.insert(value);
@@ -7344,7 +7344,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity(double value)
 {
   if(value>=0 && value<=1.0)
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAdsorptionSurfaceOpacity(value);
     }
@@ -7362,7 +7362,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOpacity()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceOpacity();
     set.insert(value);
@@ -7377,7 +7377,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOpacity()
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceHue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceHue(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -7395,7 +7395,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceHue()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceHue();
     set.insert(value);
@@ -7410,7 +7410,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceHue()
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceSaturation(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceSaturation(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -7428,7 +7428,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceSaturatio
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceSaturation();
     set.insert(value);
@@ -7443,7 +7443,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceSaturatio
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceValue(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceValue(value);
     iraspa_structure->structure()->recheckRepresentationStyle();
@@ -7461,7 +7461,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceValue()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceValue();
     set.insert(value);
@@ -7477,7 +7477,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceValue()
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideHighDynamicRange(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceFrontSideHDR(bool(value));
   }
@@ -7494,7 +7494,7 @@ std::optional<bool> AppearanceTreeWidgetController::adsorptionSurfaceInsideHighD
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool state = iraspa_structure->structure()->adsorptionSurfaceFrontSideHDR();
     set.insert(state);
@@ -7509,7 +7509,7 @@ std::optional<bool> AppearanceTreeWidgetController::adsorptionSurfaceInsideHighD
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideHDRExposure(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceFrontSideHDRExposure(value);
   }
@@ -7526,7 +7526,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideHDR
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideHDRExposure();
     set.insert(value);
@@ -7541,7 +7541,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideHDR
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideAmbientLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceFrontSideAmbientIntensity(value);
   }
@@ -7558,7 +7558,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideAmb
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideAmbientIntensity();
     set.insert(value);
@@ -7576,7 +7576,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideAmbientLightColor
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAdsorptionSurfaceFrontSideAmbientColor(color);
     }
@@ -7594,7 +7594,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideAmb
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor color = iraspa_structure->structure()->adsorptionSurfaceFrontSideAmbientColor();
     set.insert(color);
@@ -7609,7 +7609,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideAmb
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideDiffuseLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceFrontSideDiffuseIntensity(value);
   }
@@ -7626,7 +7626,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideDif
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideDiffuseIntensity();
     set.insert(value);
@@ -7644,7 +7644,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideDiffuseLightColor
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAdsorptionSurfaceFrontSideDiffuseColor(color);
     }
@@ -7662,7 +7662,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideDif
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor color = iraspa_structure->structure()->adsorptionSurfaceFrontSideDiffuseColor();
     set.insert(color);
@@ -7677,7 +7677,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideDif
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideSpecularLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceFrontSideSpecularIntensity(value);
   }
@@ -7694,7 +7694,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideSpe
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideSpecularIntensity();
     set.insert(value);
@@ -7712,7 +7712,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideSpecularLightColo
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAdsorptionSurfaceFrontSideSpecularColor(color);
     }
@@ -7730,7 +7730,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideSpe
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor color = iraspa_structure->structure()->adsorptionSurfaceFrontSideSpecularColor();
     set.insert(color);
@@ -7745,7 +7745,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideSpe
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideShininess(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceFrontSideShininess(value);
   }
@@ -7762,7 +7762,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideShi
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideShininess();
     set.insert(value);
@@ -7777,7 +7777,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideShi
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideHighDynamicRange(int value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceBackSideHDR(bool(value));
   }
@@ -7794,7 +7794,7 @@ std::optional<bool> AppearanceTreeWidgetController::adsorptionSurfaceOutsideHigh
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     bool value = iraspa_structure->structure()->adsorptionSurfaceBackSideHDR();
     set.insert(value);
@@ -7809,7 +7809,7 @@ std::optional<bool> AppearanceTreeWidgetController::adsorptionSurfaceOutsideHigh
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideHDRExposure(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceBackSideHDRExposure(value);
   }
@@ -7826,7 +7826,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideHD
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceBackSideHDRExposure();
     set.insert(value);
@@ -7841,7 +7841,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideHD
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceBackSideAmbientIntensity(value);
   }
@@ -7858,7 +7858,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideAm
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceBackSideAmbientIntensity();
     set.insert(value);
@@ -7876,7 +7876,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightColo
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAdsorptionSurfaceBackSideAmbientColor(color);
     }
@@ -7894,7 +7894,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideAm
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->adsorptionSurfaceBackSideAmbientColor();
     set.insert(value);
@@ -7909,7 +7909,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideAm
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceBackSideDiffuseIntensity(value);
   }
@@ -7926,7 +7926,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideDi
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceBackSideDiffuseIntensity();
     set.insert(value);
@@ -7944,7 +7944,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightColo
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAdsorptionSurfaceBackSideDiffuseColor(color);
     }
@@ -7962,7 +7962,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideDi
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->adsorptionSurfaceBackSideDiffuseColor();
     set.insert(value);
@@ -7977,7 +7977,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideDi
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightIntensity(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceBackSideSpecularIntensity(value);
   }
@@ -7994,7 +7994,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideSp
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceBackSideSpecularIntensity();
     set.insert(value);
@@ -8012,7 +8012,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightCol
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setAdsorptionSurfaceBackSideSpecularColor(color);
     }
@@ -8030,7 +8030,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideSp
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->adsorptionSurfaceBackSideSpecularColor();
     set.insert(value);
@@ -8045,7 +8045,7 @@ std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideSp
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideShininess(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAdsorptionSurfaceBackSideShininess(value);
   }
@@ -8062,7 +8062,7 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideSh
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->adsorptionSurfaceBackSideShininess();
     set.insert(value);
@@ -8349,7 +8349,7 @@ void AppearanceTreeWidgetController::setAnnotationType(int value)
 {
   if(value >= 0 && value <= int(RKTextType::multiple_values))  // also include "Custom"
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setRenderTextType(RKTextType(value));
     }
@@ -8368,7 +8368,7 @@ std::optional<RKTextType> AppearanceTreeWidgetController::annotationType()
     return std::nullopt;
   }
   std::set<RKTextType> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     RKTextType value = iraspa_structure->structure()->renderTextType();
     set.insert(value);
@@ -8383,7 +8383,7 @@ std::optional<RKTextType> AppearanceTreeWidgetController::annotationType()
 
 void AppearanceTreeWidgetController::setAnnotationFontFamily(QString value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setRenderTextFont(value);
   }
@@ -8396,7 +8396,7 @@ void AppearanceTreeWidgetController::setAnnotationFontFamily(QString value)
 
 void AppearanceTreeWidgetController::setAnnotationFontMember(QString value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString fontName = iraspa_structure->structure()->renderTextFont();
 
@@ -8423,7 +8423,7 @@ std::optional<QString> AppearanceTreeWidgetController::annotationFont()
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->renderTextFont();
     set.insert(value);
@@ -8442,7 +8442,7 @@ void AppearanceTreeWidgetController::setAnnotationTextColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setRenderTextColor(color);
     }
@@ -8460,7 +8460,7 @@ std::optional<QColor> AppearanceTreeWidgetController::annotationTextColor()
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QColor value = iraspa_structure->structure()->renderTextColor();
     set.insert(value);
@@ -8478,7 +8478,7 @@ void AppearanceTreeWidgetController::setAnnotationAlignment(int value)
 {
   if(value >= 0 && value <= int(RKTextAlignment::multiple_values))  // also include "Custom"
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setRenderTextAlignment(RKTextAlignment(value));
     }
@@ -8497,7 +8497,7 @@ std::optional<RKTextAlignment> AppearanceTreeWidgetController::annotationAlignme
     return std::nullopt;
   }
   std::set<RKTextAlignment> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     RKTextAlignment value = iraspa_structure->structure()->renderTextAlignment();
     set.insert(value);
@@ -8514,7 +8514,7 @@ void AppearanceTreeWidgetController::setAnnotationStyle(int value)
 {
   if(value >= 0 && value <= int(RKTextStyle::multiple_values))  // also include "Custom"
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setRenderTextStyle(RKTextStyle(value));
     }
@@ -8533,7 +8533,7 @@ std::optional<RKTextStyle> AppearanceTreeWidgetController::annotationStyle()
     return std::nullopt;
   }
   std::set<RKTextStyle> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     RKTextStyle value = iraspa_structure->structure()->renderTextStyle();
     set.insert(value);
@@ -8550,7 +8550,7 @@ void AppearanceTreeWidgetController::setAnnotationScaling(double value)
 {
   if(value>=0)
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setRenderTextScaling(value);
     }
@@ -8568,7 +8568,7 @@ std::optional<double> AppearanceTreeWidgetController::annotationScaling()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->renderTextScaling();
     set.insert(value);
@@ -8584,7 +8584,7 @@ std::optional<double> AppearanceTreeWidgetController::annotationScaling()
 
 void AppearanceTreeWidgetController::setAnnotationOffsetX(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setRenderTextOffsetX(value);
   }
@@ -8601,7 +8601,7 @@ std::optional<double> AppearanceTreeWidgetController::annotationOffsetX()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->renderTextOffset().x;
     set.insert(value);
@@ -8616,7 +8616,7 @@ std::optional<double> AppearanceTreeWidgetController::annotationOffsetX()
 
 void AppearanceTreeWidgetController::setAnnotationOffsetY(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setRenderTextOffsetY(value);
   }
@@ -8633,7 +8633,7 @@ std::optional<double> AppearanceTreeWidgetController::annotationOffsetY()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->renderTextOffset().y;
     set.insert(value);
@@ -8648,7 +8648,7 @@ std::optional<double> AppearanceTreeWidgetController::annotationOffsetY()
 
 void AppearanceTreeWidgetController::setAnnotationOffsetZ(double value)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setRenderTextOffsetZ(value);
   }
@@ -8665,7 +8665,7 @@ std::optional<double> AppearanceTreeWidgetController::annotationOffsetZ()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     double value = iraspa_structure->structure()->renderTextOffset().z;
     set.insert(value);

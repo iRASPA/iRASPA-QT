@@ -171,11 +171,11 @@ std::vector<std::shared_ptr<SKAtomCopy>> SKAtomTreeController::allAtomCopies() c
 
   std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = flattenedLeafNodes();
 
-  for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
-      for(std::shared_ptr<SKAtomCopy> copy: atom->copies())
+      for(const std::shared_ptr<SKAtomCopy> &copy: atom->copies())
       {
         atomCopies.push_back(copy);
       }
@@ -190,7 +190,7 @@ std::vector<std::shared_ptr<SKAtomCopy>> SKAtomTreeController::atomCopies() cons
 
   std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = flattenedLeafNodes();
 
-  for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -212,7 +212,7 @@ void SKAtomTreeController::setTags()
 
   int atomIndex=0;
   int asymmetricAtomIndex=0;
-  for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {

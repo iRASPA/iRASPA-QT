@@ -46,9 +46,9 @@ void FrameListViewInsertCommand::redo()
 
   if(FrameListViewModel* model = qobject_cast<FrameListViewModel*>(_frameListView->model()))
   {
-    model->layoutAboutToBeChanged();
+    emit model->layoutAboutToBeChanged();
     whileBlocking(model)->insertRow(_row, _movie, newStructure);
-    model->layoutChanged();
+    emit model->layoutChanged();
 
 
     // update selection of moved nodes _after_ all is moved
@@ -74,9 +74,9 @@ void FrameListViewInsertCommand::undo()
 
   if(FrameListViewModel* model = qobject_cast<FrameListViewModel*>(_frameListView->model()))
   {
-    model->layoutAboutToBeChanged();
+    emit model->layoutAboutToBeChanged();
     whileBlocking(model)->removeRow(_row, _movie);
-    model->layoutChanged();
+    emit model->layoutChanged();
 
     _movie->setSelection(_oldSelection);
     _sceneList->setSelectedFrameIndex(_selectedFrame);

@@ -62,7 +62,7 @@ SceneTreeViewPasteProjectsCommand::SceneTreeViewPasteProjectsCommand(MainWindow 
 void SceneTreeViewPasteProjectsCommand::redo()
 {
   int row = _row;
-  _sceneTreeViewModel->layoutAboutToBeChanged();
+  emit _sceneTreeViewModel->layoutAboutToBeChanged();
 
   if(_sceneListParent)
   {
@@ -71,12 +71,12 @@ void SceneTreeViewPasteProjectsCommand::redo()
   }
 
 
-  for(std::shared_ptr<Movie> node : _nodes)
+  for(const std::shared_ptr<Movie> &node : _nodes)
   {
     whileBlocking(_sceneTreeViewModel)->insertRow(row, _sceneParent, node);
     row += 1;
   }
-  _sceneTreeViewModel->layoutChanged();
+  emit _sceneTreeViewModel->layoutChanged();
 
   if(_mainWindow)
   {
@@ -84,10 +84,10 @@ void SceneTreeViewPasteProjectsCommand::redo()
     _projectStructure->camera()->resetForNewBoundingBox(boundingBox);
 
     _sceneList->setSelection(_newSelection);
-    _sceneTreeViewModel->updateSelection();
+    emit _sceneTreeViewModel->updateSelection();
 
     _mainWindow->reloadSelectionDetailViews();
-    _mainWindow->rendererReloadData();
+    emit _mainWindow->rendererReloadData();
     _mainWindow->recheckRemovalButtons();
 
     _mainWindow->documentWasModified();
@@ -96,18 +96,18 @@ void SceneTreeViewPasteProjectsCommand::redo()
 
 void SceneTreeViewPasteProjectsCommand::undo()
 {
-  _sceneTreeViewModel->layoutAboutToBeChanged();
+  emit _sceneTreeViewModel->layoutAboutToBeChanged();
 
   if(_sceneListParent)
   {
     _sceneTreeViewModel->removeRow(0);
   }
 
-  for(std::shared_ptr<Movie> node : _nodes)
+  for(const std::shared_ptr<Movie> &node : _nodes)
   {
     whileBlocking(_sceneTreeViewModel)->removeRow(_row, _sceneParent, node);
   }
-  _sceneTreeViewModel->layoutChanged();
+  emit _sceneTreeViewModel->layoutChanged();
 
   if(_mainWindow)
   {
@@ -115,10 +115,10 @@ void SceneTreeViewPasteProjectsCommand::undo()
     _projectStructure->camera()->resetForNewBoundingBox(boundingBox);
 
     _sceneList->setSelection(_oldSelection);
-    _sceneTreeViewModel->updateSelection();
+    emit _sceneTreeViewModel->updateSelection();
 
     _mainWindow->reloadSelectionDetailViews();
-    _mainWindow->rendererReloadData();
+    emit _mainWindow->rendererReloadData();
     _mainWindow->recheckRemovalButtons();
 
     _mainWindow->documentWasModified();

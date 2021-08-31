@@ -44,17 +44,17 @@ void ProjectTreeViewDropCopyCommand::redo()
 {
   if(std::shared_ptr<ProjectTreeController> projectTreeController = _projectTreeController.lock())
   {
-    _projectTreeViewModel->layoutAboutToBeChanged();
+    emit _projectTreeViewModel->layoutAboutToBeChanged();
     for(auto const &[projectTreeNode, indexPath] : _nodes.second)
     {
       int row = int(indexPath.lastIndex());
       std::shared_ptr<ProjectTreeNode> parentNode = projectTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
       whileBlocking(_projectTreeViewModel)->insertRow(row, parentNode, projectTreeNode);
     }
-    _projectTreeViewModel->layoutChanged();
+    emit _projectTreeViewModel->layoutChanged();
 
     projectTreeController->setSelectionIndexPaths(_nodes);
-    _projectTreeViewModel->updateSelection();
+    emit _projectTreeViewModel->updateSelection();
 
     std::shared_ptr<ProjectTreeNode> selectedProject = projectTreeController->selectedTreeNode();
     if(selectedProject)
@@ -71,17 +71,17 @@ void ProjectTreeViewDropCopyCommand::undo()
 {
   if(std::shared_ptr<ProjectTreeController> projectTreeController = _projectTreeController.lock())
   {
-    _projectTreeViewModel->layoutAboutToBeChanged();
+    emit _projectTreeViewModel->layoutAboutToBeChanged();
     for(const auto &[projectTreeNode, indexPath] : _reversedNodes.second)
     {
       int row = int(indexPath.lastIndex());
       std::shared_ptr<ProjectTreeNode> parentNode = projectTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
       whileBlocking(_projectTreeViewModel)->removeRow(row, parentNode);
     }
-    _projectTreeViewModel->layoutChanged();
+    emit _projectTreeViewModel->layoutChanged();
 
     projectTreeController->setSelectionIndexPaths(_selection);
-    _projectTreeViewModel->updateSelection();
+    emit _projectTreeViewModel->updateSelection();
 
     std::shared_ptr<ProjectTreeNode> selectedProject = projectTreeController->selectedTreeNode();
     _mainWindow->propagateProject(selectedProject, _mainWindow);

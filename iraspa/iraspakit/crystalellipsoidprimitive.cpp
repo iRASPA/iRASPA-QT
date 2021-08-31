@@ -99,7 +99,7 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderCry
   bool3 contentFlip = _cell->contentFlip();
 
   uint32_t asymmetricAtomIndex = 0;
-  for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -163,7 +163,7 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderSel
   bool3 contentFlip = _cell->contentFlip();
 
   uint32_t asymmetricAtomIndex = 0;
-  for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -233,7 +233,7 @@ std::set<int> CrystalEllipsoidPrimitive::filterCartesianAtomPositions(std::funct
 
     uint32_t asymmetricAtomIndex = 0;
 
-    for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+    for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
     {
       if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
@@ -315,7 +315,7 @@ void CrystalEllipsoidPrimitive::expandSymmetry()
 {
   std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-  for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -503,7 +503,7 @@ std::shared_ptr<Structure> CrystalEllipsoidPrimitive::flattenHierarchy() const
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
       std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
-      for(std::shared_ptr<SKAtomCopy> atomCopy : asymmetricAtom->copies())
+      for(const std::shared_ptr<SKAtomCopy> &atomCopy : asymmetricAtom->copies())
       {
         std::shared_ptr<SKAtomCopy> newAtomCopy = std::make_shared<SKAtomCopy>(newAsymmetricAtom, atomCopy->position());
         newAsymmetricAtom->copies().push_back(newAtomCopy);

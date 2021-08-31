@@ -453,9 +453,9 @@ void ElementListWidgetController::addNewForceFieldAtomType()
     QObject::connect(form->sigmaDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&ElementListWidgetController::setSigmaParameter, Qt::UniqueConnection);
     QObject::connect(form->atomicMassDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&ElementListWidgetController::setMass, Qt::UniqueConnection);
 
-    for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
+    for(const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures : _structures)
     {
-      for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+      for(const std::shared_ptr<iRASPAStructure> &iraspa_structure : iraspa_structures)
       {
         iraspa_structure->structure()->updateForceField(forceFieldSets);
       }
@@ -534,9 +534,9 @@ void ElementListWidgetController::selectColorButton()
                       QString::number(color.green()) + QString(",")  + QString::number(color.blue()) + QString(");  border: 1px solid black;}");
           button->setStyleSheet(style);
 
-          for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
+          for(const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures : _structures)
           {
-            for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+            for(const std::shared_ptr<iRASPAStructure> &iraspa_structure : iraspa_structures)
             {
               QString colorScheme = iraspa_structure->structure()->atomColorSchemeIdentifier();
               iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(colorScheme, _mainWindow->colorSets());
@@ -569,9 +569,9 @@ void ElementListWidgetController::setEpsilonParameter(double parameter)
 
       atomTypeList[*row].setEpsilonPotentialParameter(parameter);
 
-      for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
+      for(const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures : _structures)
       {
-        for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+        for(const std::shared_ptr<iRASPAStructure> &iraspa_structure : iraspa_structures)
         {
           qDebug() << "Updating epsilon";
           iraspa_structure->structure()->updateForceField(forceFieldSets);
@@ -603,9 +603,9 @@ void ElementListWidgetController::setSigmaParameter(double parameter)
 
       atomTypeList[*row].setSigmaPotentialParameter(parameter);
 
-      for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
+      for(const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures : _structures)
       {
-        for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+        for(const std::shared_ptr<iRASPAStructure> &iraspa_structure : iraspa_structures)
         {
           iraspa_structure->structure()->updateForceField(forceFieldSets);
         }
@@ -635,9 +635,9 @@ void ElementListWidgetController::setMass(double mass)
 
       atomTypeList[*row].setMass(mass);
 
-      for(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures : _structures)
+      for(const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures : _structures)
       {
-        for(std::shared_ptr<iRASPAStructure> iraspa_structure : iraspa_structures)
+        for(const std::shared_ptr<iRASPAStructure> &iraspa_structure : iraspa_structures)
         {
           iraspa_structure->structure()->recomputeDensityProperties();
         }

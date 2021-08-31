@@ -52,7 +52,8 @@ void SceneTreeViewInsertInitialSceneCommand::redo()
 
   if(_mainWindow)
   {
-    _sceneTreeView->reloadSelection();
+    if(_sceneTreeView)
+      _sceneTreeView->reloadSelection();
     _mainWindow->recheckRemovalButtons();
 
     _mainWindow->documentWasModified();
@@ -72,7 +73,8 @@ void SceneTreeViewInsertInitialSceneCommand::undo()
 
   if(_mainWindow)
   {
-    _sceneTreeView->reloadSelection();
+    if(_sceneTreeView)
+      _sceneTreeView->reloadSelection();
     _mainWindow->recheckRemovalButtons();
 
     _mainWindow->documentWasModified();

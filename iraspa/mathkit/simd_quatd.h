@@ -43,14 +43,14 @@ union simd_quatd
   simd_quatd operator +(const simd_quatd& right) const;
   simd_quatd operator /(const double& right) const;
   simd_quatd operator *(const simd_quatd& right) const;
-  static simd_quatd data120[120];
-  static simd_quatd data60[60];
-  static simd_quatd data600[600];
-  static simd_quatd data300[300];
-  static simd_quatd data1992[1992];
-  static double weights1992[1992];
-  static simd_quatd data360[360];
-  static double weights360[360];
+  static const simd_quatd data120[120];
+  static const simd_quatd data60[60];
+  static const simd_quatd data600[600];
+  static const simd_quatd data300[300];
+  static const simd_quatd data1992[1992];
+  static const double weights1992[1992];
+  static const simd_quatd data360[360];
+  static const double weights360[360];
 
   friend QDataStream &operator<<(QDataStream &, const simd_quatd &);
   friend QDataStream &operator>>(QDataStream &, simd_quatd &);

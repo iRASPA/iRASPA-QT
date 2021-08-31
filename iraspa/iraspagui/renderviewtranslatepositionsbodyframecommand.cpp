@@ -37,9 +37,9 @@ RenderViewTranslatePositionsBodyFrameCommand::RenderViewTranslatePositionsBodyFr
   setText(QString("Translate atom selection"));
   _structures = projectStructure->sceneList()->invalidatediRASPAStructures();
 
-  for(std::vector<std::shared_ptr<iRASPAStructure>> _iraspaSubStructures : _iraspaStructures)
+  for(const std::vector<std::shared_ptr<iRASPAStructure>> &_iraspaSubStructures : _iraspaStructures)
   {
-    for(std::shared_ptr<iRASPAStructure> iraspaStructure : _iraspaSubStructures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspaStructure : _iraspaSubStructures)
     {
       new RenderViewTranslatePositionsBodyFrameSubCommand(_mainWindow, iraspaStructure, translation, this);
     }

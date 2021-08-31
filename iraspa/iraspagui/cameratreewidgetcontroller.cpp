@@ -1040,7 +1040,7 @@ void CameraTreeWidgetController::setAngleOfView(double d)
   {
     camera->setAngleOfView(d * M_PI/180.0);
     emit updateRenderer();
-    emit reloadCameraModelViewMatrix();
+    reloadCameraModelViewMatrix();
 
     _mainWindow->documentWasModified();
   }

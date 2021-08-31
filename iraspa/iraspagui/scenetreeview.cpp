@@ -137,7 +137,7 @@ void SceneTreeView::reloadSelection()
       {
         QModelIndex parentItem = model()->index(*sceneIndex,0,QModelIndex());
         std::set<std::shared_ptr<Movie>> selectedMovies = scene->selectedMovies();
-        for(std::shared_ptr<Movie> movie: selectedMovies)
+        for(const std::shared_ptr<Movie> &movie: selectedMovies)
         {
           std::optional<int> movieIndex = scene->findChildIndex(movie);
           if(movieIndex)

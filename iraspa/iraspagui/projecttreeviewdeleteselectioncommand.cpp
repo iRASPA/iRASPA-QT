@@ -44,14 +44,14 @@ ProjectTreeViewDeleteSelectionCommand::ProjectTreeViewDeleteSelectionCommand(Mai
 
 void ProjectTreeViewDeleteSelectionCommand::redo()
 {
-  _model->layoutAboutToBeChanged();
+  emit _model->layoutAboutToBeChanged();
   for(const auto &[projectNode, indexPath] : _reversedDeletedSelection.second)
   {
     int row = int(indexPath.lastIndex());
     std::shared_ptr<ProjectTreeNode> parentNode = _projectTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
     whileBlocking(_model)->removeRow(row, parentNode);
   }
-  _model->layoutChanged();
+  emit _model->layoutChanged();
 
   _projectTreeController->clearSelection();
 
@@ -64,13 +64,13 @@ void ProjectTreeViewDeleteSelectionCommand::redo()
 
 void ProjectTreeViewDeleteSelectionCommand::undo()
 {
-  _model->layoutAboutToBeChanged();
+  emit _model->layoutAboutToBeChanged();
   for(const auto &[projectNode, indexPath] : _deletedSelection.second)
   {
     std::shared_ptr<ProjectTreeNode> parentNode = _projectTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
     whileBlocking(_model)->insertRow(int(indexPath.lastIndex()), parentNode, projectNode);
   }
-  _model->layoutChanged();
+  emit _model->layoutChanged();
 
   _projectTreeController->setSelectionIndexPaths(_selection);
   emit _model->updateSelection();

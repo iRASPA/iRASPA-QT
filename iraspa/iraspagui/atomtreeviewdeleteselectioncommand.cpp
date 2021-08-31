@@ -55,12 +55,12 @@ void AtomTreeViewDeleteSelectionCommand::redo()
 {
   if(_bondModel->isActive(_iraspaStructure))
   {
-    _bondModel->layoutAboutToBeChanged();
+    emit _bondModel->layoutAboutToBeChanged();
     for(const auto &[bondItem, row] : _reverseBondSelection)
     {
       whileBlocking(_bondModel)->removeRow(row);
     }
-    _bondModel->layoutChanged();
+    emit _bondModel->layoutChanged();
 
     _bondListController->setSelection(BondSelectionNodesAndIndexSet());
     emit _bondModel->updateSelection();
@@ -76,14 +76,14 @@ void AtomTreeViewDeleteSelectionCommand::redo()
 
   if(_atomModel->isActive(_iraspaStructure))
   {
-    _atomModel->layoutAboutToBeChanged();
+    emit _atomModel->layoutAboutToBeChanged();
     for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
     {
       int row = int(indexPath.lastIndex());
       std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
       whileBlocking(_atomModel)->removeRow(row, parentNode);
     }
-    _atomModel->layoutChanged();
+    emit _atomModel->layoutChanged();
 
     _atomTreeController->clearSelection();
     emit _atomModel->updateSelection();
@@ -115,13 +115,13 @@ void AtomTreeViewDeleteSelectionCommand::undo()
 {
   if(_atomModel->isActive(_iraspaStructure))
   {
-    _atomModel->layoutAboutToBeChanged();
+    emit _atomModel->layoutAboutToBeChanged();
     for(const auto &[atomNode, indexPath] : _atomSelection.second)
     {
       std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
       whileBlocking(_atomModel)->insertRow(int(indexPath.lastIndex()), parentNode, atomNode);
     }
-    _atomModel->layoutChanged();
+    emit _atomModel->layoutChanged();
 
     _atomTreeController->setSelectionIndexPaths(_atomSelection);
     emit _atomModel->updateSelection();
@@ -139,12 +139,12 @@ void AtomTreeViewDeleteSelectionCommand::undo()
 
   if(_bondModel->isActive(_iraspaStructure))
   {
-    _bondModel->layoutAboutToBeChanged();
+    emit _bondModel->layoutAboutToBeChanged();
     for(const auto &[bondItem, row] : _bondSelection)
     {
       whileBlocking(_bondModel)->insertRow(row, bondItem);
     }
-    _bondModel->layoutChanged();
+    emit _bondModel->layoutChanged();
 
     _bondListController->setSelection(_bondSelection);
     emit _bondModel->updateSelection();

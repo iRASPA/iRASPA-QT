@@ -94,12 +94,12 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
 
       if(_bondListViewModel->isActive(_iraspaStructure))
       {
-        _bondListViewModel->layoutAboutToBeChanged();
+        emit _bondListViewModel->layoutAboutToBeChanged();
         for(const auto &[bondItem, row] : _reverseBondSelection)
         {
           whileBlocking(_bondListViewModel)->removeRow(row);
         }
-        _bondListViewModel->layoutChanged();
+        emit _bondListViewModel->layoutChanged();
 
         _bondSetController->setSelection(BondSelectionNodesAndIndexSet());
         emit _bondListViewModel->updateSelection();
@@ -115,14 +115,14 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
 
       if(_atomTreeViewModel->isActive(_iraspaStructure))
       {
-        _atomTreeViewModel->layoutAboutToBeChanged();
+        emit _atomTreeViewModel->layoutAboutToBeChanged();
         for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
         {
           int row = int(indexPath.lastIndex());
           std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
           whileBlocking(_atomTreeViewModel)->removeRow(row, parentNode);
         }
-        _atomTreeViewModel->layoutChanged();
+        emit _atomTreeViewModel->layoutChanged();
 
         _atomTreeController->clearSelection();
         emit _atomTreeViewModel->updateSelection();
@@ -157,13 +157,13 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::undo()
 
   if(_atomTreeViewModel->isActive(_iraspaStructure))
   {
-    _atomTreeViewModel->layoutAboutToBeChanged();
+    emit _atomTreeViewModel->layoutAboutToBeChanged();
     for(const auto &[atomNode, indexPath] : _atomSelection.second)
     {
       std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
       whileBlocking(_atomTreeViewModel)->insertRow(int(indexPath.lastIndex()), parentNode, atomNode);
     }
-    _atomTreeViewModel->layoutChanged();
+    emit _atomTreeViewModel->layoutChanged();
 
     _atomTreeController->setSelectionIndexPaths(_atomSelection);
     emit _atomTreeViewModel->updateSelection();
@@ -181,12 +181,12 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::undo()
 
   if(_bondListViewModel->isActive(_iraspaStructure))
   {
-    _bondListViewModel->layoutAboutToBeChanged();
+    emit _bondListViewModel->layoutAboutToBeChanged();
     for(const auto &[bondItem, row] : _bondSelection)
     {
       whileBlocking(_bondListViewModel)->insertRow(row, bondItem);
     }
-    _bondListViewModel->layoutChanged();
+    emit _bondListViewModel->layoutChanged();
 
     _bondSetController->setSelection(_bondSelection);
     emit _bondListViewModel->updateSelection();

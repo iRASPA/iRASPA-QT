@@ -198,7 +198,7 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<SKAsymmetricAtom> &
 
   stream >> asymmetricAtom->_copies;
 
-  for(std::shared_ptr<SKAtomCopy> atom: asymmetricAtom->_copies)
+  for(const std::shared_ptr<SKAtomCopy> &atom: asymmetricAtom->_copies)
   {
     atom->_parent = asymmetricAtom;
   }

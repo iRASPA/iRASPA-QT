@@ -74,7 +74,7 @@ QString SKPOSCARWriter::string()
   outputString += countString + "\n";
 
   outputString += QString("Direct\n");
-  for(std::shared_ptr<SKAsymmetricAtom> atom : sortedAtoms)
+  for(const std::shared_ptr<SKAsymmetricAtom> &atom : sortedAtoms)
   {
     QString positionX = QString("%1").arg(atom->position().x - _origin.x, 12, 'f', 8, ' ');
     QString positionY = QString("%1").arg(atom->position().y - _origin.y, 12, 'f', 8, ' ');

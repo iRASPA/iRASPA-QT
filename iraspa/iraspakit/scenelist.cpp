@@ -94,7 +94,7 @@ bool SceneList::insertChild(size_t row, std::shared_ptr<Scene> child)
 void SceneList::setSelectedFrameIndex(size_t frameIndex)
 {
   _selectedFrameIndex = frameIndex;
-  for(std::shared_ptr<Scene> scene : _scenes)
+  for(const std::shared_ptr<Scene> &scene : _scenes)
   {
     for(std::shared_ptr<Movie> movie : scene->movies())
     {
@@ -127,12 +127,12 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::allIRASPAS
 {
   std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> sceneStructures = std::vector<std::vector<std::shared_ptr<iRASPAStructure>>>();
 
-  for(std::shared_ptr<Scene> scene : _scenes)
+  for(const std::shared_ptr<Scene> &scene : _scenes)
   {
     std::vector<std::shared_ptr<iRASPAStructure>> structures = std::vector<std::shared_ptr<iRASPAStructure>>();
-    for(std::shared_ptr<Movie> movie: scene->movies())
+    for(const std::shared_ptr<Movie> &movie: scene->movies())
     {
-      for(std::shared_ptr<iRASPAStructure> frame: movie->frames())
+      for(const std::shared_ptr<iRASPAStructure> &frame: movie->frames())
       {
         structures.push_back(frame);
       }
@@ -146,11 +146,11 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::allIRASPAS
 std::vector<std::shared_ptr<iRASPAStructure>> SceneList::flattenedAllIRASPAStructures()
 {
   std::vector<std::shared_ptr<iRASPAStructure>> structures{};
-  for(std::shared_ptr<Scene> scene: scenes())
+  for(const std::shared_ptr<Scene> &scene: scenes())
   {
-    for(std::shared_ptr<Movie> movie: scene->movies())
+    for(const std::shared_ptr<Movie> &movie: scene->movies())
     {
-      for(std::shared_ptr<iRASPAStructure> frame: movie->frames())
+      for(const std::shared_ptr<iRASPAStructure> &frame: movie->frames())
       {
         structures.push_back(frame);
       }
@@ -165,9 +165,9 @@ std::vector<std::shared_ptr<iRASPAStructure>> SceneList::selectedMoviesIRASPAStr
   std::vector<std::shared_ptr<iRASPAStructure>> structures{};
   for(std::shared_ptr<Scene> scene: scenes())
   {
-    for(std::shared_ptr<Movie> movie: scene->selectedMovies())
+    for(const std::shared_ptr<Movie> &movie: scene->selectedMovies())
     {
-      for(std::shared_ptr<iRASPAStructure> frame: movie->frames())
+      for(const std::shared_ptr<iRASPAStructure> &frame: movie->frames())
       {
         structures.push_back(frame);
       }
@@ -182,7 +182,7 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::invalidate
   std::vector<std::shared_ptr<iRASPAStructure>> invalidatedStructures{};
 
   std::vector<FrameSelectionIndexSet> sceneSelectedIndexes{};
-  for(std::shared_ptr<Scene> scene : _scenes)
+  for(const std::shared_ptr<Scene> &scene : _scenes)
   {
     FrameSelectionIndexSet selectedIndexes{};
     for(std::shared_ptr<Movie> movie: scene->movies())
@@ -197,7 +197,7 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::invalidate
 
   std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> sceneStructures{};
   int sceneIndex=0;
-  for(std::shared_ptr<Scene> scene : _scenes)
+  for(const std::shared_ptr<Scene> &scene : _scenes)
   {
     FrameSelectionIndexSet selectedIndexes = sceneSelectedIndexes[sceneIndex];
     std::vector<std::shared_ptr<iRASPAStructure>> structures = std::vector<std::shared_ptr<iRASPAStructure>>();
@@ -221,12 +221,12 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::selectediR
 {
   std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> sceneStructures{};
 
-  for(std::shared_ptr<Scene> scene : _scenes)
+  for(const std::shared_ptr<Scene> &scene : _scenes)
   {
     std::vector<std::shared_ptr<iRASPAStructure>> structures = std::vector<std::shared_ptr<iRASPAStructure>>();
     for(std::shared_ptr<Movie> movie: scene->movies())
     {
-      for(std::shared_ptr<iRASPAStructure> selectedFrame: movie->selectedFrames())
+      for(const std::shared_ptr<iRASPAStructure> &selectedFrame: movie->selectedFrames())
       {
         structures.push_back(selectedFrame);
       }

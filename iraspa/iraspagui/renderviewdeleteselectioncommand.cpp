@@ -39,9 +39,9 @@ RenderViewDeleteSelectionCommand::RenderViewDeleteSelectionCommand(MainWindow *m
   _structures = projectStructure->sceneList()->invalidatediRASPAStructures();
   std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures = projectStructure->sceneList()->selectediRASPARenderStructures();
 
-  for(std::vector<std::shared_ptr<iRASPAStructure>> scene : structures)
+  for(const std::vector<std::shared_ptr<iRASPAStructure>> &scene : structures)
   {
-    for(std::shared_ptr<iRASPAStructure> iraspaStructure : scene)
+    for(const std::shared_ptr<iRASPAStructure> &iraspaStructure : scene)
     {
       AtomSelectionIndexPaths atomSelection = iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
       BondSelectionNodesAndIndexSet bondSelection = iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();

@@ -102,7 +102,7 @@ std::vector<RKInPerInstanceAttributesAtoms> MolecularCrystal::renderAtoms() cons
   std::vector<RKInPerInstanceAttributesAtoms> atomData = std::vector<RKInPerInstanceAttributesAtoms>();
 
   uint32_t asymmetricAtomIndex = 0;
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -340,7 +340,7 @@ std::vector<RKInPerInstanceAttributesAtoms> MolecularCrystal::renderSelectedAtom
 
   std::vector<RKInPerInstanceAttributesAtoms> atomData = std::vector<RKInPerInstanceAttributesAtoms>();
 
-  for (std::shared_ptr<SKAtomTreeNode> node : atomTreeNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : atomTreeNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -482,7 +482,7 @@ std::set<int> MolecularCrystal::filterCartesianAtomPositions(std::function<bool(
 
     uint32_t asymmetricAtomIndex = 0;
 
-    for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+    for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
     {
       if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
@@ -554,7 +554,7 @@ std::set<int> MolecularCrystal::filterCartesianBondPositions(std::function<bool(
       if (isVisible)
       {
         const std::vector<std::shared_ptr<SKBond>> bonds = asymmetricBond->copies();
-        for(std::shared_ptr<SKBond> bond : bonds)
+        for(const std::shared_ptr<SKBond> &bond : bonds)
         {
           double3 fractionalPosition1 = _cell->inverseUnitCell()  * (bond->atom1()->position() + contentShift);
           double3 adjustedFractionalPosition1 = double3::flip(fractionalPosition1, contentFlip, double3(1.0,1.0,1.0));
@@ -627,7 +627,7 @@ SKBoundingBox MolecularCrystal::boundingBox() const
   std::vector<double3> atomData = std::vector<double3>();
 
 
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -669,7 +669,7 @@ void MolecularCrystal::expandSymmetry()
 {
   std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -761,7 +761,7 @@ std::shared_ptr<Structure> MolecularCrystal::flattenHierarchy() const
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
       std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
-      for(std::shared_ptr<SKAtomCopy> atomCopy : asymmetricAtom->copies())
+      for(const std::shared_ptr<SKAtomCopy> &atomCopy : asymmetricAtom->copies())
       {
         std::shared_ptr<SKAtomCopy> newAtomCopy = std::make_shared<SKAtomCopy>(newAsymmetricAtom, atomCopy->position());
         newAsymmetricAtom->copies().push_back(newAtomCopy);
@@ -1198,7 +1198,7 @@ std::vector<double3> MolecularCrystal::atomPositions() const
   std::vector<double3> atomData = std::vector<double3>();
 
 
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -1239,7 +1239,7 @@ std::vector<double3> MolecularCrystal::atomUnitCellPositions() const
   std::vector<double3> atomData = std::vector<double3>();
 
 
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -1263,7 +1263,7 @@ std::vector<double2> MolecularCrystal::potentialParameters() const
 
   std::vector<double2> atomData = std::vector<double2>();
 
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -1299,7 +1299,7 @@ std::vector<RKInPerInstanceAttributesText> MolecularCrystal::atomTextData(RKFont
   std::vector<RKInPerInstanceAttributesText> atomData{};
 
   uint32_t asymmetricAtomIndex = 0;
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {

@@ -50,7 +50,7 @@ void OpenGLAmbientOcclusionShadowMapShader::setRenderStructures(std::vector<std:
 
 void OpenGLAmbientOcclusionShadowMapShader::invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderStructure>> structures)
 {
-  for(std::shared_ptr<RKRenderStructure> structure : structures)
+  for(const std::shared_ptr<RKRenderStructure> &structure : structures)
   {
     _cache.remove(structure.get());
   }
@@ -459,8 +459,8 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
             std::vector<RKShadowUniforms> shadowMapFrameUniforms = std::vector<RKShadowUniforms>();
 
             int maxk=360;
-            simd_quatd *directions;
-            double *weights;
+            const simd_quatd *directions;
+            const double *weights;
             if(quality == RKRenderQuality::picture)
             {
               maxk = 1992;

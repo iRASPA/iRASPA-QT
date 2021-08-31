@@ -49,12 +49,12 @@ void FrameListViewDeleteSelectionCommand::redo()
 
   if(FrameListViewModel *model = qobject_cast<FrameListViewModel*>(_frameListView->model()))
   {
-    model->layoutAboutToBeChanged();
+    emit model->layoutAboutToBeChanged();
     for(const auto &[frame, row] : _reversedDeletedSelection)
     {
       whileBlocking(model)->removeRow(row, _movie);
     }
-    model->layoutChanged();
+    emit model->layoutChanged();
 
     _sceneList->setSelectedFrameIndex(_selectedFrameIndex);
     emit model->updateSelection();
@@ -73,12 +73,12 @@ void FrameListViewDeleteSelectionCommand::undo()
 {
   if(FrameListViewModel *model = qobject_cast<FrameListViewModel*>(_frameListView->model()))
   {
-    model->layoutAboutToBeChanged();
+    emit model->layoutAboutToBeChanged();
     for(const auto &[frame, row] : _deletedSelection)
     {
       whileBlocking(model)->insertRow(row, _movie, frame);
     }
-    model->layoutChanged();
+    emit model->layoutChanged();
 
     _movie->setSelection(_selection);
     emit model->updateSelection();

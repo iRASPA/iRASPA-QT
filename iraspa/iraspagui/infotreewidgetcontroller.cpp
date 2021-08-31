@@ -862,7 +862,7 @@ std::optional<QString> InfoTreeWidgetController::authorFirstName()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorFirstName();
     set.insert(value);
@@ -877,7 +877,7 @@ std::optional<QString> InfoTreeWidgetController::authorFirstName()
 
 void InfoTreeWidgetController::setAuthorFirstName(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorFirstName(name);
   }
@@ -892,7 +892,7 @@ std::optional<QString> InfoTreeWidgetController::authorMiddleName()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorMiddleName();
     set.insert(value);
@@ -907,7 +907,7 @@ std::optional<QString> InfoTreeWidgetController::authorMiddleName()
 
 void InfoTreeWidgetController::setAuthorMiddleName(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorMiddleName(name);
   }
@@ -922,7 +922,7 @@ std::optional<QString> InfoTreeWidgetController::authorLastName()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorLastName();
     set.insert(value);
@@ -937,7 +937,7 @@ std::optional<QString> InfoTreeWidgetController::authorLastName()
 
 void InfoTreeWidgetController::setAuthorLastName(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorLastName(name);
   }
@@ -952,7 +952,7 @@ std::optional<QString> InfoTreeWidgetController::authorOrchidID()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorOrchidID();
     set.insert(value);
@@ -967,7 +967,7 @@ std::optional<QString> InfoTreeWidgetController::authorOrchidID()
 
 void InfoTreeWidgetController::setAuthorOrchidID(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorOrchidID(name);
   }
@@ -982,7 +982,7 @@ std::optional<QString> InfoTreeWidgetController::authorResearcherID()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorResearcherID();
     set.insert(value);
@@ -997,7 +997,7 @@ std::optional<QString> InfoTreeWidgetController::authorResearcherID()
 
 void InfoTreeWidgetController::setAuthorResearcherID(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorResearcherID(name);
   }
@@ -1012,7 +1012,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationUniversityName
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorAffiliationUniversityName();
     set.insert(value);
@@ -1027,7 +1027,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationUniversityName
 
 void InfoTreeWidgetController::setAuthorAffiliationUniversityName(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorAffiliationUniversityName(name);
   }
@@ -1042,7 +1042,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationFacultyName()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorAffiliationFacultyName();
     set.insert(value);
@@ -1057,7 +1057,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationFacultyName()
 
 void InfoTreeWidgetController::setAuthorAffiliationFacultyName(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorAffiliationFacultyName(name);
   }
@@ -1072,7 +1072,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationInstituteName(
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorAffiliationInstituteName();
     set.insert(value);
@@ -1087,7 +1087,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationInstituteName(
 
 void InfoTreeWidgetController::setAuthorAffiliationInstituteName(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorAffiliationInstituteName(name);
   }
@@ -1102,7 +1102,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationCityName()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorAffiliationCityName();
     set.insert(value);
@@ -1117,7 +1117,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationCityName()
 
 void InfoTreeWidgetController::setAuthorAffiliationCityName(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorAffiliationCityName(name);
   }
@@ -1132,7 +1132,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationCountryName()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->authorAffiliationCountryName();
     set.insert(value);
@@ -1147,7 +1147,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationCountryName()
 
 void InfoTreeWidgetController::setAuthorAffiliationCountryName(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setAuthorAffiliationCountryName(name);
   }
@@ -1647,7 +1647,7 @@ std::optional<QDate> InfoTreeWidgetController::creationDate()
     return std::nullopt;
   }
   std::set<QDate> set = std::set<QDate>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QDate value = iraspa_structure->structure()->creationDate();
     set.insert(value);
@@ -1662,7 +1662,7 @@ std::optional<QDate> InfoTreeWidgetController::creationDate()
 
 void InfoTreeWidgetController::setCreationDate(QDate date)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationDate(date);
   }
@@ -1677,7 +1677,7 @@ std::optional<QString> InfoTreeWidgetController::creationTemperature()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationTemperature();
     set.insert(value);
@@ -1692,7 +1692,7 @@ std::optional<QString> InfoTreeWidgetController::creationTemperature()
 
 void InfoTreeWidgetController::setCreationTemperature(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationTemperature(name);
   }
@@ -1707,7 +1707,7 @@ std::optional<Structure::TemperatureScale> InfoTreeWidgetController::creationTem
     return std::nullopt;
   }
   std::set<Structure::TemperatureScale> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::TemperatureScale value = iraspa_structure->structure()->creationTemperatureScale();
     set.insert(value);
@@ -1724,7 +1724,7 @@ void InfoTreeWidgetController::setCreationTemperatureScale(int value)
 {
   if(value>=0 && value<int(Structure::TemperatureScale::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setCreationTemperatureScale(Structure::TemperatureScale(value));
     }
@@ -1740,7 +1740,7 @@ std::optional<QString> InfoTreeWidgetController::creationPressure()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationPressure();
     set.insert(value);
@@ -1755,7 +1755,7 @@ std::optional<QString> InfoTreeWidgetController::creationPressure()
 
 void InfoTreeWidgetController::setCreationPressure(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationPressure(name);
   }
@@ -1770,7 +1770,7 @@ std::optional<Structure::PressureScale> InfoTreeWidgetController::creationPressu
     return std::nullopt;
   }
   std::set<Structure::PressureScale> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::PressureScale value = iraspa_structure->structure()->creationPressureScale();
     set.insert(value);
@@ -1787,7 +1787,7 @@ void InfoTreeWidgetController::setCreationPressureScale(int value)
 {
   if(value>=0 && value<int(Structure::PressureScale::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setCreationPressureScale(Structure::PressureScale(value));
     }
@@ -1803,7 +1803,7 @@ std::optional<Structure::CreationMethod> InfoTreeWidgetController::creationMetho
     return std::nullopt;
   }
   std::set<Structure::CreationMethod> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::CreationMethod value = iraspa_structure->structure()->creationMethod();
     set.insert(value);
@@ -1820,7 +1820,7 @@ void InfoTreeWidgetController::setCreationMethod(int value)
 {
   if(value>=0 && value<int(Structure::CreationMethod::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setCreationMethod(Structure::CreationMethod(value));
     }
@@ -1836,7 +1836,7 @@ std::optional<Structure::UnitCellRelaxationMethod> InfoTreeWidgetController::cre
     return std::nullopt;
   }
   std::set<Structure::UnitCellRelaxationMethod> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::UnitCellRelaxationMethod value = iraspa_structure->structure()->creationUnitCellRelaxationMethod();
     set.insert(value);
@@ -1853,7 +1853,7 @@ void InfoTreeWidgetController::setCreationRelaxUnitCell(int value)
 {
   if(value>=0 && value<int(Structure::UnitCellRelaxationMethod::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setCreationUnitCellRelaxationMethod(Structure::UnitCellRelaxationMethod(value));
     }
@@ -1869,7 +1869,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsSoftware
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationAtomicPositionsSoftwarePackage();
     set.insert(value);
@@ -1884,7 +1884,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsSoftware
 
 void InfoTreeWidgetController::setCreationAtomicPositionsSoftwarePackage(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationAtomicPositionsSoftwarePackage(name);
   }
@@ -1899,7 +1899,7 @@ std::optional<Structure::IonsRelaxationAlgorithm> InfoTreeWidgetController::crea
     return std::nullopt;
   }
   std::set<Structure::IonsRelaxationAlgorithm> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::IonsRelaxationAlgorithm value = iraspa_structure->structure()->creationAtomicPositionsIonsRelaxationAlgorithm();
     set.insert(value);
@@ -1916,7 +1916,7 @@ void InfoTreeWidgetController::setCreationAtomicPositionsAlgorithm(int value)
 {
   if(value>=0 && value<int(Structure::IonsRelaxationAlgorithm::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setCreationAtomicPositionsIonsRelaxationAlgorithm(Structure::IonsRelaxationAlgorithm(value));
     }
@@ -1932,7 +1932,7 @@ std::optional<Structure::IonsRelaxationCheck> InfoTreeWidgetController::creation
     return std::nullopt;
   }
   std::set<Structure::IonsRelaxationCheck> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     Structure::IonsRelaxationCheck value = iraspa_structure->structure()->creationAtomicPositionsIonsRelaxationCheck();
     set.insert(value);
@@ -1949,7 +1949,7 @@ void InfoTreeWidgetController::setCreationAtomicPositionsEigenvalues(int value)
 {
   if(value>=0 && value<int(Structure::IonsRelaxationCheck::multiple_values))
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
       iraspa_structure->structure()->setCreationAtomicPositionsIonsRelaxationCheck(Structure::IonsRelaxationCheck(value));
     }
@@ -1965,7 +1965,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsForceFie
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationAtomicPositionsForcefield();
     set.insert(value);
@@ -1980,7 +1980,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsForceFie
 
 void InfoTreeWidgetController::setCreationAtomicPositionsForceField(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationAtomicPositionsForcefield(name);
   }
@@ -1995,7 +1995,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsForceFie
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationAtomicPositionsForcefieldDetails();
     set.insert(value);
@@ -2010,7 +2010,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsForceFie
 
 void InfoTreeWidgetController::setCreationAtomicPositionsForceFieldDetails(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationAtomicPositionsForcefieldDetails(name);
   }
@@ -2025,7 +2025,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicChargesSoftwarePa
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationAtomicChargesSoftwarePackage();
     set.insert(value);
@@ -2040,7 +2040,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicChargesSoftwarePa
 
 void InfoTreeWidgetController::setCreationAtomicChargesSoftwarePackage(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationAtomicChargesSoftwarePackage(name);
   }
@@ -2055,7 +2055,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicChargesAlgorithm(
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationAtomicChargesAlgorithms();
     set.insert(value);
@@ -2070,7 +2070,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicChargesAlgorithm(
 
 void InfoTreeWidgetController::setCreationAtomicChargesAlgorithm(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationAtomicChargesAlgorithms(name);
   }
@@ -2086,7 +2086,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicChargesForceField
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationAtomicChargesForcefield();
     set.insert(value);
@@ -2101,7 +2101,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicChargesForceField
 
 void InfoTreeWidgetController::setCreationAtomicChargesForceField(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationAtomicChargesForcefield(name);
   }
@@ -2116,7 +2116,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicChargesForceField
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->creationAtomicChargesForcefieldDetails();
     set.insert(value);
@@ -2131,7 +2131,7 @@ std::optional<QString> InfoTreeWidgetController::creationAtomicChargesForceField
 
 void InfoTreeWidgetController::setCreationAtomicChargesForceFieldDetails(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCreationAtomicChargesForcefieldDetails(name);
   }
@@ -2225,7 +2225,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalFormulaMoiety()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->chemicalFormulaMoiety();
     set.insert(value);
@@ -2240,7 +2240,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalFormulaMoiety()
 
 void InfoTreeWidgetController::setChemicalFormulaMoiety(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setChemicalFormulaMoiety(name);
   }
@@ -2255,7 +2255,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalFormulaSum()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->chemicalFormulaSum();
     set.insert(value);
@@ -2270,7 +2270,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalFormulaSum()
 
 void InfoTreeWidgetController::setChemicalFormulaSum(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setChemicalFormulaSum(name);
   }
@@ -2285,7 +2285,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalNameSystematic()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->chemicalNameSystematic();
     set.insert(value);
@@ -2300,7 +2300,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalNameSystematic()
 
 void InfoTreeWidgetController::setChemicalNameSystematic(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setChemicalNameSystematic(name);
   }
@@ -2476,7 +2476,7 @@ std::optional<QString> InfoTreeWidgetController::citationArticleTitle()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->citationArticleTitle();
     set.insert(value);
@@ -2491,7 +2491,7 @@ std::optional<QString> InfoTreeWidgetController::citationArticleTitle()
 
 void InfoTreeWidgetController::setCitationArticleTitle(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCitationArticleTitle(name);
   }
@@ -2506,7 +2506,7 @@ std::optional<QString> InfoTreeWidgetController::citationJournalTitle()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->citationJournalTitle();
     set.insert(value);
@@ -2521,7 +2521,7 @@ std::optional<QString> InfoTreeWidgetController::citationJournalTitle()
 
 void InfoTreeWidgetController::setCitationJournalTitle(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCitationJournalTitle(name);
   }
@@ -2536,7 +2536,7 @@ std::optional<QString> InfoTreeWidgetController::citationArticleAuthors()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->citationAuthors();
     set.insert(value);
@@ -2551,7 +2551,7 @@ std::optional<QString> InfoTreeWidgetController::citationArticleAuthors()
 
 void InfoTreeWidgetController::setCitationArticleAuthors(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCitationAuthors(name);
   }
@@ -2566,7 +2566,7 @@ std::optional<QString> InfoTreeWidgetController::InfoTreeWidgetController::citat
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->citationJournalVolume();
     set.insert(value);
@@ -2581,7 +2581,7 @@ std::optional<QString> InfoTreeWidgetController::InfoTreeWidgetController::citat
 
 void InfoTreeWidgetController::setCitationJournalVolume(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCitationJournalVolume(name);
   }
@@ -2596,7 +2596,7 @@ std::optional<QString> InfoTreeWidgetController::citationJournalNumber()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->citationJournalNumber();
     set.insert(value);
@@ -2611,7 +2611,7 @@ std::optional<QString> InfoTreeWidgetController::citationJournalNumber()
 
 void InfoTreeWidgetController::setCitationJournalNumber(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCitationJournalNumber(name);
   }
@@ -2626,7 +2626,7 @@ std::optional<QDate> InfoTreeWidgetController::citationPublicationDate()
     return std::nullopt;
    }
   std::set<QDate> set = std::set<QDate>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QDate value = iraspa_structure->structure()->citationPublicationDate();
     set.insert(value);
@@ -2641,7 +2641,7 @@ std::optional<QDate> InfoTreeWidgetController::citationPublicationDate()
 
 void InfoTreeWidgetController::setCitationPublicationDate(QDate date)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCitationPublicationDate(date);
   }
@@ -2656,7 +2656,7 @@ std::optional<QString> InfoTreeWidgetController::citationDOI()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->citationDOI();
     set.insert(value);
@@ -2671,7 +2671,7 @@ std::optional<QString> InfoTreeWidgetController::citationDOI()
 
 void InfoTreeWidgetController::setCitationDOI(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCitationDOI(name);
   }
@@ -2686,7 +2686,7 @@ std::optional<QString> InfoTreeWidgetController::citationDatabaseCodes()
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     QString value = iraspa_structure->structure()->citationDatebaseCodes();
     set.insert(value);
@@ -2701,7 +2701,7 @@ std::optional<QString> InfoTreeWidgetController::citationDatabaseCodes()
 
 void InfoTreeWidgetController::setCitationDatabaseCodes(QString name)
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
     iraspa_structure->structure()->setCitationDatebaseCodes(name);
   }

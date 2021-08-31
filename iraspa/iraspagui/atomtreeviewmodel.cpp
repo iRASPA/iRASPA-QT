@@ -83,7 +83,7 @@ QModelIndexList AtomTreeViewModel::selectedIndexes()
   if(_iraspaStructure)
   {
     std::set<IndexPath> selectedIndexPaths = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths().second;
-    for(IndexPath indexPath : selectedIndexPaths)
+    for(const IndexPath &indexPath : selectedIndexPaths)
     {
       std::shared_ptr<SKAtomTreeNode> node = _iraspaStructure->structure()->atomsTreeController()->nodeAtIndexPath(indexPath);
       int localRow = int(indexPath.lastIndex());
@@ -630,7 +630,8 @@ bool AtomTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
           beginRow -= 1;
         }
 
-        moves.push_back(std::make_tuple(atom, parentNode->shared_from_this(), beginRow));
+        if(parentNode)
+          moves.push_back(std::make_tuple(atom, parentNode->shared_from_this(), beginRow));
 
         beginRow += 1;
       }

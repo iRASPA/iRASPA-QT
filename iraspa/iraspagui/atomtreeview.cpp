@@ -251,7 +251,7 @@ void AtomTreeView::selectionChanged(const QItemSelection &selected, const QItemS
 
         // remove bonds that are connected to this atom from the selection
         int bondIndex=0;
-        for(std::shared_ptr<SKAsymmetricBond> bond : bondListControler->arrangedObjects())
+        for(const std::shared_ptr<SKAsymmetricBond> &bond : bondListControler->arrangedObjects())
         {
           if(bond->atom1() == atom->representedObject() || bond->atom2() == atom->representedObject())
           {

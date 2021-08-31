@@ -828,7 +828,7 @@ void MainWindow::importFile()
 
       if(asSeparateProject)
       {
-        for(QUrl url : fileURLs)
+        for(const QUrl &url : fileURLs)
         {
           QString fileName = url.toString();
           QFileInfo fileInfo(fileName);

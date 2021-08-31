@@ -90,7 +90,7 @@ enum class RKTextAlignment: qint64
   center = 0, left = 1, right = 2, top = 3, bottom = 4, topLeft = 5, topRight = 6, bottomLeft = 7, bottomRight = 8, multiple_values = 9
 };
 
-const std::string  OpenGLVersionStringLiteral = R"foo(
+const std::string OpenGLVersionStringLiteral = R"foo(
 #version 330
 )foo";
 

@@ -69,7 +69,7 @@ std::shared_ptr<Scene> SceneTreeViewModel::parentForMovie(const std::shared_ptr<
   {
     for(std::shared_ptr<Scene> currentScene: _sceneList->scenes())
     {
-      for(std::shared_ptr<Movie> currentMovie: currentScene->movies())
+      for(const std::shared_ptr<Movie> &currentMovie: currentScene->movies())
       {
         if (currentMovie == movie)
         {
@@ -286,7 +286,9 @@ QVariant SceneTreeViewModel::data(const QModelIndex &index, int role) const
   {
     return scene->displayName().toUpper();
   }
-  return QString(item->displayName());
+  if(item)
+    return QString(item->displayName());
+  return QString();
 }
 
 bool SceneTreeViewModel::setData(const QModelIndex &index, const QVariant &value, int role)

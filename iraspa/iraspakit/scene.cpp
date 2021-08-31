@@ -134,7 +134,7 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
 
     std::vector<std::vector<std::shared_ptr<SKStructure>>> movies = parser->movies();
 
-    for (std::vector<std::shared_ptr<SKStructure>> movieFrames : movies)
+    for (const std::vector<std::shared_ptr<SKStructure>> &movieFrames : movies)
     {
       std::vector<std::shared_ptr<iRASPAStructure>> iraspastructures{};
       for (std::shared_ptr<SKStructure> frame : movieFrames)

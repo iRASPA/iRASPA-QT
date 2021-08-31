@@ -633,9 +633,12 @@ static int get_index_with_least_atoms(const Cell *cell)
     mapping[i] = 0;
   }
 
-  for (i = 0; i < cell->size; i++) {
-    for (j = 0; j < cell->size; j++) {
-      if (cell->types[i] == cell->types[j]) {
+  for (i = 0; i < cell->size; i++)
+  {
+    for (j = 0; j < cell->size; j++)
+    {
+      if (cell->types[i] == cell->types[j])
+      {
         mapping[j]++;
         break;
       }
@@ -644,8 +647,10 @@ static int get_index_with_least_atoms(const Cell *cell)
 
   min = mapping[0];
   min_index = 0;
-  for (i = 0; i < cell->size; i++) {
-    if (min > mapping[i] && mapping[i] >0) {
+  for (i = 0; i < cell->size; i++)
+  {
+    if (min > mapping[i] && mapping[i] >0)
+    {
       min = mapping[i];
       min_index = i;
     }
@@ -695,7 +700,8 @@ get_space_group_operations(SPGCONST PointSymmetry *lattice_sym,
     }
   }
 
-  if ((symmetry = sym_alloc_symmetry(total_num_sym)) == NULL) {
+  if ((symmetry = sym_alloc_symmetry(total_num_sym)) == NULL)
+  {
     goto ret;
   }
 

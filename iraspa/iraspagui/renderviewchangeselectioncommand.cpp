@@ -46,7 +46,7 @@ void RenderViewChangeSelectionCommand::redo()
   emit _atomModel->updateSelection();
   emit _bondModel->updateSelection();
   emit _mainWindow->rendererReloadData();
-  emit _mainWindow->updateControlPanel();
+  _mainWindow->updateControlPanel();
 }
 
 void RenderViewChangeSelectionCommand::undo()
@@ -55,5 +55,5 @@ void RenderViewChangeSelectionCommand::undo()
   emit _atomModel->updateSelection();
   emit _bondModel->updateSelection();
   emit _mainWindow->rendererReloadData();
-  emit _mainWindow->updateControlPanel();
+  _mainWindow->updateControlPanel();
 }

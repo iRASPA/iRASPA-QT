@@ -181,7 +181,7 @@ SKBoundingBox ProjectStructure::renderBoundingBox() const
    double3 minimum = double3(DBL_MAX, DBL_MAX, DBL_MAX);
    double3 maximum = double3(-DBL_MAX, -DBL_MAX, -DBL_MAX);
 
-   for(std::shared_ptr<iRASPAStructure> frame: flattenedRenderStructures)
+   for(const std::shared_ptr<iRASPAStructure> &frame: flattenedRenderStructures)
    {
      // for rendering the bounding-box is in the global coordinate space (adding the frame origin)
      SKBoundingBox currentBoundingBox  = frame->structure()->transformedBoundingBox() + frame->structure()->origin();
@@ -201,9 +201,9 @@ SKBoundingBox ProjectStructure::renderBoundingBox() const
 
 bool ProjectStructure::hasSelectedObjects() const
 {
-  for (std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures: _sceneList->selectediRASPARenderStructures())
+  for (const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures: _sceneList->selectediRASPARenderStructures())
   {
-    for(std::shared_ptr<iRASPAStructure> iraspa_structure: iraspa_structures)
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: iraspa_structures)
     {
       if(iraspa_structure->structure()->hasSelectedAtoms())
       {
@@ -403,9 +403,9 @@ double ProjectStructure::imageDotsPerInchValue()
 size_t ProjectStructure::maxNumberOfMoviesFrames()
 {
   size_t maxNumberOfFrames=0;
-  for(std::shared_ptr<Scene> scene : _sceneList->scenes())
+  for(const std::shared_ptr<Scene> &scene : _sceneList->scenes())
   {
-    for(std::shared_ptr<Movie> movie : scene->movies())
+    for(const std::shared_ptr<Movie> &movie : scene->movies())
     {
       maxNumberOfFrames = std::max(movie->frames().size(), maxNumberOfFrames);
     }

@@ -71,7 +71,7 @@ AtomTreeViewInvertSelectionCommand::AtomTreeViewInvertSelectionCommand(MainWindo
 
   const std::vector<std::shared_ptr<SKAsymmetricBond>> asymmetricBonds = structure->bondSetController()->arrangedObjects();
   int index=0;
-  for(std::shared_ptr<SKAsymmetricBond> asymmetricBond: asymmetricBonds)
+  for(const std::shared_ptr<SKAsymmetricBond> &asymmetricBond: asymmetricBonds)
   {
     const bool containsAtom1 = invertedAsymmetricAtoms.find(asymmetricBond->atom1()) != invertedAsymmetricAtoms.end();
     const bool containsAtom2 = invertedAsymmetricAtoms.find(asymmetricBond->atom2()) != invertedAsymmetricAtoms.end();

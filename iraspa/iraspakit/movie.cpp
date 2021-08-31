@@ -103,7 +103,7 @@ std::shared_ptr<Movie> Movie::shallowClone()
 void Movie::setVisibility(bool visibility)
 {
   _isVisible = visibility;
-  for(std::shared_ptr<iRASPAStructure> frame : _frames)
+  for(const std::shared_ptr<iRASPAStructure> &frame : _frames)
   {
     frame->structure()->setVisibility(visibility);
   }

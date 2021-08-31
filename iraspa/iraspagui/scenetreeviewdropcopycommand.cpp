@@ -55,7 +55,7 @@ SceneTreeViewDropCopyCommand::SceneTreeViewDropCopyCommand(MainWindow *mainWindo
     beginRow = 0;
   }
 
-  for(std::shared_ptr<Movie> movie : _movies)
+  for(const std::shared_ptr<Movie> &movie : _movies)
   {
     new SceneTreeViewDragAndDropInsertMovieSubCommand(_sceneTreeViewModel, _newParent, movie, beginRow, this);
     beginRow += 1;

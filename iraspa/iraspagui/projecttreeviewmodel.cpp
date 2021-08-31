@@ -116,7 +116,7 @@ QModelIndexList ProjectTreeViewModel::selectedIndexes()
   if(_projectTreeController)
   {
     std::set<IndexPath> selectedIndexPaths = _projectTreeController->selectionIndexPaths().second;
-    for(IndexPath indexPath : selectedIndexPaths)
+    for(const IndexPath &indexPath : selectedIndexPaths)
     {
       std::shared_ptr<ProjectTreeNode> node = _projectTreeController->nodeAtIndexPath(indexPath);
       int localRow = int(indexPath.lastIndex());

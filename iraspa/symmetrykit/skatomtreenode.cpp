@@ -138,7 +138,7 @@ std::vector<std::shared_ptr<SKAtomTreeNode>> SKAtomTreeNode::flattenedNodes()
   std::vector<std::shared_ptr<SKAtomTreeNode>> nodes{};
 
   std::vector<std::shared_ptr<SKAtomTreeNode>> otherNodes = this->descendantNodes();
-  for(std::shared_ptr<SKAtomTreeNode> child : otherNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &child : otherNodes)
   {
     nodes.push_back(child);
   }
@@ -150,7 +150,7 @@ std::vector<std::shared_ptr<SKAtomTreeNode>> SKAtomTreeNode::flattenedLeafNodes(
   std::vector<std::shared_ptr<SKAtomTreeNode>> nodes{};
 
   std::vector<std::shared_ptr<SKAtomTreeNode>> otherNodes = this->descendantLeafNodes();
-  for(std::shared_ptr<SKAtomTreeNode> child : otherNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &child : otherNodes)
   {
     nodes.push_back(child);
   }
@@ -167,7 +167,7 @@ std::vector<std::shared_ptr<SKAtomTreeNode>> SKAtomTreeNode::flattenedGroupNodes
   }
 
   std::vector<std::shared_ptr<SKAtomTreeNode>> otherNodes = this->descendantGroupNodes();
-  for(std::shared_ptr<SKAtomTreeNode> child : otherNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &child : otherNodes)
   {
     nodes.push_back(child);
   }
@@ -206,7 +206,7 @@ std::vector<std::shared_ptr<SKAtomTreeNode>> SKAtomTreeNode::descendants()
     else
     {
       std::vector<std::shared_ptr<SKAtomTreeNode>> otherNodes = child->descendants();
-      for(std::shared_ptr<SKAtomTreeNode> node : otherNodes)
+      for(const std::shared_ptr<SKAtomTreeNode> &node : otherNodes)
       {
         descendants.push_back(node);
       }
@@ -225,7 +225,7 @@ std::vector<std::shared_ptr<SKAtomTreeNode>> SKAtomTreeNode::descendantNodes()
       if (child->_isGroup)
       {
         std::vector<std::shared_ptr<SKAtomTreeNode>> otherNodes = child->descendantNodes();
-        for(std::shared_ptr<SKAtomTreeNode> node : otherNodes)
+        for(const std::shared_ptr<SKAtomTreeNode> &node : otherNodes)
         {
           descendants.push_back(node);
         }
@@ -248,7 +248,7 @@ std::vector<std::shared_ptr<SKAtomTreeNode>> SKAtomTreeNode::descendantLeafNodes
     else
     {
       std::vector<std::shared_ptr<SKAtomTreeNode>> otherNodes = child->descendantLeafNodes();
-      for(std::shared_ptr<SKAtomTreeNode> node : otherNodes)
+      for(const std::shared_ptr<SKAtomTreeNode> &node : otherNodes)
       {
         descendants.push_back(node);
       }
@@ -267,7 +267,7 @@ std::vector<std::shared_ptr<SKAtomTreeNode>> SKAtomTreeNode::descendantGroupNode
     {
       descendants.push_back(child);
       std::vector<std::shared_ptr<SKAtomTreeNode>> otherNodes = child->descendantGroupNodes();
-      for(std::shared_ptr<SKAtomTreeNode> node : otherNodes)
+      for(const std::shared_ptr<SKAtomTreeNode> &node : otherNodes)
       {
         descendants.push_back(node);
       }
@@ -282,7 +282,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> SKAtomTreeNode::flattenedObjects(
   std::vector<std::shared_ptr<SKAsymmetricAtom>> objects{};
 
   std::vector<std::shared_ptr<SKAsymmetricAtom>> groupObjects = this->descendantObjects();
-  for(std::shared_ptr<SKAsymmetricAtom> object : groupObjects)
+  for(const std::shared_ptr<SKAsymmetricAtom> &object : groupObjects)
   {
     objects.push_back(object);
   }
@@ -299,7 +299,7 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> SKAtomTreeNode::descendantObjects
     if(child->_isGroup)
     {
       std::vector<std::shared_ptr<SKAsymmetricAtom>> groupObjects = child->descendantObjects();
-      for(std::shared_ptr<SKAsymmetricAtom> object : groupObjects)
+      for(const std::shared_ptr<SKAsymmetricAtom> &object : groupObjects)
       {
         descendants.push_back(object);
       }
@@ -314,14 +314,14 @@ std::vector<std::shared_ptr<SKAsymmetricAtom>> SKAtomTreeNode::descendantObjects
 
 void SKAtomTreeNode::updateFilteredChildren(std::function<bool(std::shared_ptr<SKAtomTreeNode>)> predicate)
 {
-  for(std::shared_ptr<SKAtomTreeNode> child : this->_childNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &child : this->_childNodes)
   {
     child->_matchesFilter = true;
     child->_matchesFilter = predicate(shared_from_this());
   }
 
   this->_filteredAndSortedNodes.clear();
-  for(std::shared_ptr<SKAtomTreeNode> child : this->_childNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &child : this->_childNodes)
   {
     if (child->_matchesFilter) this->_filteredAndSortedNodes.push_back(child);
   }
@@ -352,7 +352,7 @@ void SKAtomTreeNode::updateFilteredChildrenRecursively(std::function<bool(std::s
   }
 
   this->_filteredAndSortedNodes.clear();
-  for(std::shared_ptr<SKAtomTreeNode> child : this->_childNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &child : this->_childNodes)
   {
     if (child->_matchesFilter) this->_filteredAndSortedNodes.push_back(child);
   }
@@ -363,7 +363,7 @@ void SKAtomTreeNode::setFilteredNodesAsMatching()
   this->_matchesFilter = false;
 
   this->_filteredAndSortedNodes.clear();
-  for(std::shared_ptr<SKAtomTreeNode> child : this->_childNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &child : this->_childNodes)
   {
     this->_filteredAndSortedNodes.push_back(child);
   }
@@ -453,7 +453,7 @@ QDataStream &operator>>(QDataStream& stream, std::shared_ptr<SKAtomTreeNode>& no
   stream >> node->_representedObject;
   stream >> node->_childNodes;
 
-  for(std::shared_ptr<SKAtomTreeNode> child : node->_childNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &child : node->_childNodes)
   {
     child->_parent = node;
   }

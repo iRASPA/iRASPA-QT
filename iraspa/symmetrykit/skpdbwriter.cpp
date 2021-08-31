@@ -51,7 +51,7 @@ QString SKPDBWriter::string()
   }
 
   int counter = 1;
-  for(std::shared_ptr<SKAsymmetricAtom> atom : _atoms)
+  for(const std::shared_ptr<SKAsymmetricAtom> &atom : _atoms)
   {
     int atomicNumber = atom->elementIdentifier();
     SKElement element = PredefinedElements::predefinedElements[atomicNumber];

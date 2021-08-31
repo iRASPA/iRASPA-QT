@@ -167,7 +167,7 @@ std::vector<std::shared_ptr<ProjectTreeNode>> ProjectTreeNode::flattenedNodes()
   std::vector<std::shared_ptr<ProjectTreeNode>> nodes{shared_from_this()};
 
   std::vector<std::shared_ptr<ProjectTreeNode>> otherNodes = this->descendantNodes();
-  for(std::shared_ptr<ProjectTreeNode> child : otherNodes)
+  for(const std::shared_ptr<ProjectTreeNode> &child : otherNodes)
   {
     nodes.push_back(child);
   }
@@ -184,7 +184,7 @@ std::vector<std::shared_ptr<ProjectTreeNode>> ProjectTreeNode::flattenedLeafNode
   }
 
   std::vector<std::shared_ptr<ProjectTreeNode>> otherNodes = this->descendantLeafNodes();
-  for(std::shared_ptr<ProjectTreeNode> child : otherNodes)
+  for(const std::shared_ptr<ProjectTreeNode> &child : otherNodes)
   {
     nodes.push_back(child);
   }
@@ -201,7 +201,7 @@ std::vector<std::shared_ptr<ProjectTreeNode>> ProjectTreeNode::flattenedGroupNod
   }
 
   std::vector<std::shared_ptr<ProjectTreeNode>> otherNodes = this->descendantGroupNodes();
-  for(std::shared_ptr<ProjectTreeNode> child : otherNodes)
+  for(const std::shared_ptr<ProjectTreeNode> &child : otherNodes)
   {
     nodes.push_back(child);
   }
@@ -240,7 +240,7 @@ std::vector<std::shared_ptr<ProjectTreeNode>> ProjectTreeNode::descendants()
     else
     {
       std::vector<std::shared_ptr<ProjectTreeNode>> otherNodes = child->descendants();
-      for(std::shared_ptr<ProjectTreeNode> node : otherNodes)
+      for(const std::shared_ptr<ProjectTreeNode> &node : otherNodes)
       {
         descendants.push_back(node);
       }
@@ -259,7 +259,7 @@ std::vector<std::shared_ptr<ProjectTreeNode>> ProjectTreeNode::descendantNodes()
       if (child->representedObject()->isGroup())
       {
         std::vector<std::shared_ptr<ProjectTreeNode>> otherNodes = child->descendantNodes();
-        for(std::shared_ptr<ProjectTreeNode> node : otherNodes)
+        for(const std::shared_ptr<ProjectTreeNode> &node : otherNodes)
         {
           descendants.push_back(node);
         }
@@ -281,7 +281,7 @@ std::vector<std::shared_ptr<ProjectTreeNode>> ProjectTreeNode::descendantLeafNod
     else
     {
       std::vector<std::shared_ptr<ProjectTreeNode>> otherNodes = child->descendantLeafNodes();
-      for(std::shared_ptr<ProjectTreeNode> node : otherNodes)
+      for(const std::shared_ptr<ProjectTreeNode> &node : otherNodes)
       {
         descendants.push_back(node);
       }
@@ -300,7 +300,7 @@ std::vector<std::shared_ptr<ProjectTreeNode>> ProjectTreeNode::descendantGroupNo
     {
       descendants.push_back(child);
       std::vector<std::shared_ptr<ProjectTreeNode>> otherNodes = child->descendantGroupNodes();
-      for(std::shared_ptr<ProjectTreeNode> node : otherNodes)
+      for(const std::shared_ptr<ProjectTreeNode> &node : otherNodes)
       {
         descendants.push_back(node);
       }
@@ -315,7 +315,7 @@ std::vector<std::shared_ptr<iRASPAProject>> ProjectTreeNode::flattenedObjects()
   std::vector<std::shared_ptr<iRASPAProject>> objects{this->_representedObject};
 
   std::vector<std::shared_ptr<iRASPAProject>> groupObjects = this->descendantObjects();
-  for(std::shared_ptr<iRASPAProject> object : groupObjects)
+  for(const std::shared_ptr<iRASPAProject> &object : groupObjects)
   {
     objects.push_back(object);
   }
@@ -332,7 +332,7 @@ std::vector<std::shared_ptr<iRASPAProject>> ProjectTreeNode::descendantObjects()
     if(child->representedObject()->isGroup())
     {
       std::vector<std::shared_ptr<iRASPAProject>> groupObjects = child->descendantObjects();
-      for(std::shared_ptr<iRASPAProject> object : groupObjects)
+      for(const std::shared_ptr<iRASPAProject> &object : groupObjects)
       {
         descendants.push_back(object);
       }
@@ -347,14 +347,14 @@ std::vector<std::shared_ptr<iRASPAProject>> ProjectTreeNode::descendantObjects()
 
 void ProjectTreeNode::updateFilteredChildren(std::function<bool(std::shared_ptr<ProjectTreeNode>)> predicate)
 {
-  for(std::shared_ptr<ProjectTreeNode> child : this->_childNodes)
+  for(const std::shared_ptr<ProjectTreeNode> &child : this->_childNodes)
   {
     child->_matchesFilter = true;
     child->_matchesFilter = predicate(shared_from_this());
   }
 
   this->_filteredAndSortedNodes.clear();
-  for(std::shared_ptr<ProjectTreeNode> child : this->_childNodes)
+  for(const std::shared_ptr<ProjectTreeNode> &child : this->_childNodes)
   {
     if (child->_matchesFilter) this->_filteredAndSortedNodes.push_back(child);
   }
@@ -386,7 +386,7 @@ void ProjectTreeNode::updateFilteredChildrenRecursively(std::function<bool(std::
   }
 
   this->_filteredAndSortedNodes.clear();
-  for(std::shared_ptr<ProjectTreeNode> child : this->_childNodes)
+  for(const std::shared_ptr<ProjectTreeNode> &child : this->_childNodes)
   {
     if (child->_matchesFilter) this->_filteredAndSortedNodes.push_back(child);
   }
@@ -397,7 +397,7 @@ void ProjectTreeNode::setFilteredNodesAsMatching()
   this->_matchesFilter = false;
 
   this->_filteredAndSortedNodes.clear();
-  for(std::shared_ptr<ProjectTreeNode> child : this->_childNodes)
+  for(const std::shared_ptr<ProjectTreeNode> &child : this->_childNodes)
   {
     this->_filteredAndSortedNodes.push_back(child);
   }

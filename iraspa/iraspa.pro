@@ -91,10 +91,18 @@ macx{
 
   contains(DEFINES,USE_OPENGL) {
     #QMAKE_CXXFLAGS += -Wl,--stack,4194304
-    QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct -fsanitize=address
     INCLUDEPATH += $$system(python-config --include | sed -e 's:-I::g')
     QMAKE_LFLAGS +=  -framework OpenCL -framework Python -framework Accelerate
-    LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz -fsanitize=address
+
+    CONFIG(debug, debug|release){
+      QMAKE_CXXFLAGS += -g -O0 -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct  #-fsanitize=address
+      LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz #-fsanitize=address
+      }
+      else
+      {
+        QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
+        LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+    }
   }
 }
 
@@ -115,8 +123,11 @@ win32{
     }
   }
 
-  QMAKE_CXXFLAGS += /F 4194304 /Zi /MD
-  QMAKE_LFLAGS   += /STACK:4194304  /INCREMENTAL:NO /DEBUG /MD
+  QMAKE_CXXFLAGS_DEBUG += /F 4194304 -fsanitize=address /Zi /Od /MDd
+  QMAKE_LFLAGS_DEBUG   += /STACK:4194304  /INCREMENTAL:NO /DEBUG /MDd
+
+  QMAKE_CXXFLAGS_RELEASE += /F 4194304 /Zi /MD
+  QMAKE_LFLAGS_RELEASE   += /STACK:4194304  /INCREMENTAL:NO /DEBUG /MD
 
   INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include"
   INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include/python2.7"
@@ -139,7 +150,7 @@ win32{
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/zlibd.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/OpenCL.lib"
     LIBS += secur32.lib ws2_32.lib bcrypt.lib kernel32.lib cfgmgr32.lib user32.lib ole32.lib advapi32.lib msvcrtd.lib
-  } else {
+} else {
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avutil.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avfilter.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avformat.lib"

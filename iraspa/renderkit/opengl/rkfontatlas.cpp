@@ -221,8 +221,9 @@ bool RKFontAtlas::gen_pack_list(QRawFont &rawFont, int pixel_size, int pack_tex_
       add_me.yoff = -rint(rect.y());
 
 
-      add_me.xadv = rint(rawFont.advancesForGlyphIndexes(glyph_index2)[0].x());
-      add_me.yadv = rint(rawFont.advancesForGlyphIndexes(glyph_index2)[0].y());
+      const QList<QPointF> pointList = rawFont.advancesForGlyphIndexes(glyph_index2);
+      add_me.xadv = rint(pointList[0].x());
+      add_me.yadv = rint(pointList[0].y());
       //	so scale them (the 1.5's have to do with the padding
       //	border and the sampling locations for the SDF)
       add_me.xoff = add_me.xoff / scaler - 1.5;

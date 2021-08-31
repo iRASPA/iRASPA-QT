@@ -46,7 +46,7 @@ void OpenGLEnergySurface::setLogReportingWidget(LogReporting *logReporting)
 
 void OpenGLEnergySurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRenderStructure>> structures)
 {
-  for(std::shared_ptr<RKRenderStructure> structure : structures)
+  for(const std::shared_ptr<RKRenderStructure> &structure : structures)
   {
      _cache.remove(structure.get());
   }

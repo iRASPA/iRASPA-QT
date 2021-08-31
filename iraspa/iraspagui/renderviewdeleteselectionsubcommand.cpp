@@ -58,12 +58,12 @@ void RenderViewDeleteSelectionSubCommand::redo()
 {
   if(_bondModel->isActive(_iraspaStructure))
   {
-    _bondModel->layoutAboutToBeChanged();
+    emit _bondModel->layoutAboutToBeChanged();
     for(const auto &[bondItem, row] : _reverseBondSelection)
     {
       whileBlocking(_bondModel)->removeRow(row);
     }
-    _bondModel->layoutChanged();
+    emit _bondModel->layoutChanged();
   }
   else
   {
@@ -75,12 +75,12 @@ void RenderViewDeleteSelectionSubCommand::redo()
 
   if(_atomModel->isActive(_iraspaStructure))
   {
-    _atomModel->layoutAboutToBeChanged();
+    emit _atomModel->layoutAboutToBeChanged();
     for(const auto &[projectNode, parentNode, row] : _reverseSelectedAtomNodes)
     {
       whileBlocking(_atomModel)->removeRow(row, parentNode);
     }
-    _atomModel->layoutChanged();
+    emit _atomModel->layoutChanged();
   }
   else
   {
@@ -101,12 +101,12 @@ void RenderViewDeleteSelectionSubCommand::undo()
 {
   if(_atomModel->isActive(_iraspaStructure))
   {
-    _atomModel->layoutAboutToBeChanged();
+    emit _atomModel->layoutAboutToBeChanged();
     for(const auto &[projectNode, parentNode, row] : _selectedAtomNodes)
     {
       whileBlocking(_atomModel)->insertRow(row, parentNode, projectNode);
     }
-    _atomModel->layoutChanged();
+    emit _atomModel->layoutChanged();
   }
   else
   {
@@ -118,12 +118,12 @@ void RenderViewDeleteSelectionSubCommand::undo()
 
   if(_bondModel->isActive(_iraspaStructure))
   {
-    _bondModel->layoutAboutToBeChanged();
+    emit _bondModel->layoutAboutToBeChanged();
     for(const auto &[bondItem, row] : _bondSelection)
     {
       whileBlocking(_bondModel)->insertRow(row, bondItem);
     }
-    _bondModel->layoutChanged();
+    emit _bondModel->layoutChanged();
   }
   else
   {

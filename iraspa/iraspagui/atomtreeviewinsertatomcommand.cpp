@@ -70,7 +70,8 @@ void AtomTreeViewInsertAtomCommand::redo()
   _structure->computeBonds();
   _structure->setRepresentationColorSchemeIdentifier(_structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
   _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
-  emit _atomTreeView->rendererReloadData();
+  if(_atomTreeView)
+    emit _atomTreeView->rendererReloadData();
 
   _mainWindow->documentWasModified();
 }
@@ -102,8 +103,10 @@ void AtomTreeViewInsertAtomCommand::undo()
   _structure->reComputeBoundingBox();
   _structure->computeBonds();
   _structure->setRepresentationColorSchemeIdentifier(_structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
-  _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
-  emit _atomTreeView->rendererReloadData();
+  if(_mainWindow)
+    _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
+  if(_atomTreeView)
+    emit _atomTreeView->rendererReloadData();
 
   _mainWindow->documentWasModified();
 }

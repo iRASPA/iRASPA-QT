@@ -256,7 +256,7 @@ void SKCIFParser::parseLoop(QString& string)
   {
     std::map<QString,QString> dictionary{};
 
-    for(QString tag : tags)
+    for(const QString &tag : tags)
     {
       if ((value = parseValue()))
       {

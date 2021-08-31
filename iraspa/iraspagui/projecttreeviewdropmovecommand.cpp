@@ -44,7 +44,7 @@ void ProjectTreeViewDropMoveCommand::redo()
   _reverseMoves.clear();
   _newSelection.second.clear();
 
-  _projectTreeViewModel->layoutAboutToBeChanged();
+  emit _projectTreeViewModel->layoutAboutToBeChanged();
   for(const auto &[projectTreeNode, parentNode, insertionRow, moved] : _nodes)
   {
     _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(projectTreeNode, projectTreeNode->parent(), projectTreeNode->row(), moved));
@@ -63,7 +63,7 @@ void ProjectTreeViewDropMoveCommand::redo()
 
     whileBlocking(_projectTreeViewModel)->insertRow(insertionRow, parentNode, projectTreeNode);
   }
-  _projectTreeViewModel->layoutChanged();
+  emit _projectTreeViewModel->layoutChanged();
 
   // update selection of moved nodes _after_ all is moved
   // (indexPaths have been changed, including the indexPath of the parentNode)
@@ -90,7 +90,7 @@ void ProjectTreeViewDropMoveCommand::redo()
 
 void ProjectTreeViewDropMoveCommand::undo()
 {
-  _projectTreeViewModel->layoutAboutToBeChanged();
+  emit _projectTreeViewModel->layoutAboutToBeChanged();
   for(const auto &[projectTreeNode, parentNode, insertionRow, moved] : _reverseMoves)
   {
     whileBlocking(_projectTreeViewModel)->removeRow(int(projectTreeNode->row()), projectTreeNode->parent());
@@ -107,7 +107,7 @@ void ProjectTreeViewDropMoveCommand::undo()
       whileBlocking(_projectTreeViewModel)->insertRow(insertionRow, parentNode, projectTreeNode);
     }
   }
-  _projectTreeViewModel->layoutChanged();
+  emit _projectTreeViewModel->layoutChanged();
 
   std::shared_ptr<ProjectTreeNode> selectedProject = _projectTreeController->nodeAtIndexPath(_oldSelection.first);
   if(selectedProject)

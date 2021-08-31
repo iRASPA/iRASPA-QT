@@ -45,7 +45,7 @@ void AtomTreeViewDropMoveCommand::redo()
 
   if(_model->isActive(_iraspaStructure))
   {
-    _model->layoutAboutToBeChanged();
+    emit _model->layoutAboutToBeChanged();
     for(const auto &[atom, parentNode, insertionRow]  : _moves)
     {
       _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
@@ -64,7 +64,7 @@ void AtomTreeViewDropMoveCommand::redo()
       whileBlocking(_model)->insertRow(insertionRow, parentNode,atom);
     }
     _iraspaStructure->structure()->atomsTreeController()->setTags();
-    _model->layoutChanged();
+    emit _model->layoutChanged();
 
     // update selection of moved nodes _after_ all is moved
     // (indexPaths have been changed, including the indexPath of the parentNode)
@@ -104,7 +104,7 @@ void AtomTreeViewDropMoveCommand::undo()
 {
   if(_model->isActive(_iraspaStructure))
   {
-    _model->layoutAboutToBeChanged();
+    emit _model->layoutAboutToBeChanged();
     for(const auto &[atom, parentNode, insertionRow]  : _reverseMoves)
     {
       whileBlocking(_model)->removeRow(atom->row(), atom->parent());
@@ -119,7 +119,7 @@ void AtomTreeViewDropMoveCommand::undo()
       whileBlocking(_model)->insertRow(insertionRow, parentNode, atom);
     }
     _iraspaStructure->structure()->atomsTreeController()->setTags();
-    _model->layoutChanged();
+    emit _model->layoutChanged();
 
     _iraspaStructure->structure()->atomsTreeController()->setSelectionIndexPaths(_oldSelection);
     emit _model->updateSelection();

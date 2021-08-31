@@ -858,7 +858,7 @@ void RenderStackedWidget::showBoundingBox(bool checked)
   if(std::shared_ptr<ProjectStructure> project = this->_project.lock())
   {
     project->setShowBoundingBox(checked);
-    emit reloadData();
+    reloadData();
   }
 }
 

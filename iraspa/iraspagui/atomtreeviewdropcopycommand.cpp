@@ -43,14 +43,14 @@ void AtomTreeViewDropCopyCommand::redo()
 
   if(_model->isActive(_iraspaStructure))
   {
-    _model->layoutAboutToBeChanged();
+    emit _model->layoutAboutToBeChanged();
     for(const auto &[atom, parentNode, insertionRow] : _moves)
     {
       _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
 
       whileBlocking(_model)->insertRow(insertionRow, parentNode,atom);
     }
-    _model->layoutChanged();
+    emit _model->layoutChanged();
   }
   else
   {
@@ -70,13 +70,13 @@ void AtomTreeViewDropCopyCommand::undo()
 {
   if(_model->isActive(_iraspaStructure))
   {
-    _model->layoutAboutToBeChanged();
+    emit _model->layoutAboutToBeChanged();
     for(const auto &[atom, parentNode, insertionRow] : _reverseMoves)
     {
       whileBlocking(_model)->removeRow(atom->row(), atom->parent());
     }
 
-    _model->layoutChanged();
+    emit _model->layoutChanged();
   }
   else
   {

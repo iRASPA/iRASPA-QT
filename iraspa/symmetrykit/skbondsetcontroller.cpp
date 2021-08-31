@@ -224,7 +224,7 @@ void SKBondSetController::correctBondSelectionDueToAtomSelection()
                         {return pair.first->representedObject();});
 
   int bondIndex=0;
-  for(std::shared_ptr<SKAsymmetricBond> bond : _arrangedObjects)
+  for(const std::shared_ptr<SKAsymmetricBond> &bond : _arrangedObjects)
   {
     // if one the atoms of the bond is selected then so must be the bond
     const bool Atom1isSelected = selectedAtoms.find(bond->atom1()) != selectedAtoms.end();

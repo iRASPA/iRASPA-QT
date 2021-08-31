@@ -75,7 +75,7 @@ std::vector<RKInPerInstanceAttributesAtoms> PolygonalPrismPrimitive::renderPrimi
   std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
   uint32_t asymmetricAtomIndex = 0;
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -126,7 +126,7 @@ std::vector<RKInPerInstanceAttributesAtoms> PolygonalPrismPrimitive::renderSelec
   std::set<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->selectedTreeNodes();
 
   uint32_t asymmetricAtomIndex = 0;
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
@@ -180,7 +180,7 @@ std::set<int> PolygonalPrismPrimitive::filterCartesianAtomPositions(std::functio
     std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
     uint32_t asymmetricAtomIndex = 0;
-    for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+    for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
     {
       if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
@@ -226,7 +226,7 @@ SKBoundingBox PolygonalPrismPrimitive::boundingBox() const
     return SKBoundingBox(double3(0.0,0.0,0.0), double3(0.0, 0.0, 0.0));
   }
 
-  for (std::shared_ptr<SKAtomCopy> atom : atoms)
+  for (const std::shared_ptr<SKAtomCopy> &atom : atoms)
   {
     double3 CartesianPosition = atom->position();
     minimum.x = std::min(minimum.x, CartesianPosition.x);
@@ -247,7 +247,7 @@ void PolygonalPrismPrimitive::expandSymmetry()
 {
   std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-  for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
@@ -273,7 +273,7 @@ std::shared_ptr<Structure> PolygonalPrismPrimitive::flattenHierarchy() const
     if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = node->representedObject())
     {
       std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
-      for(std::shared_ptr<SKAtomCopy> atomCopy : asymmetricAtom->copies())
+      for(const std::shared_ptr<SKAtomCopy> &atomCopy : asymmetricAtom->copies())
       {
         std::shared_ptr<SKAtomCopy> newAtomCopy = std::make_shared<SKAtomCopy>(newAsymmetricAtom, atomCopy->position());
         newAsymmetricAtom->copies().push_back(newAtomCopy);

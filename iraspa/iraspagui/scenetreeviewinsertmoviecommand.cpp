@@ -60,7 +60,8 @@ void SceneTreeViewInsertMovieCommand::redo()
   {
     SKBoundingBox boundingBox = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(boundingBox);
-    _sceneTreeView->reloadSelection();
+    if(_sceneTreeView)
+      _sceneTreeView->reloadSelection();
     _mainWindow->recheckRemovalButtons();
 
     _mainWindow->documentWasModified();
@@ -87,8 +88,10 @@ void SceneTreeViewInsertMovieCommand::undo()
   if(_mainWindow)
   {
     SKBoundingBox boundingBox = _projectStructure->renderBoundingBox();
-    _projectStructure->camera()->resetForNewBoundingBox(boundingBox);
-    _sceneTreeView->reloadSelection();
+    if(_projectStructure)
+      _projectStructure->camera()->resetForNewBoundingBox(boundingBox);
+    if(_sceneTreeView)
+      _sceneTreeView->reloadSelection();
     _mainWindow->recheckRemovalButtons();
 
     _mainWindow->documentWasModified();

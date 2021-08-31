@@ -42,13 +42,13 @@ void ProjectTreeViewPasteProjectsCommand::redo()
 {
   qDebug() << "PASTING MOVIE";
   int row = _row;
-  _projectTreeViewModel->layoutAboutToBeChanged();
-  for(std::shared_ptr<ProjectTreeNode> node : _nodes)
+  emit _projectTreeViewModel->layoutAboutToBeChanged();
+  for(const std::shared_ptr<ProjectTreeNode> &node : _nodes)
   {
     whileBlocking(_projectTreeViewModel)->insertRow(row, _parentNode, node);
     row += 1;
   }
-  _projectTreeViewModel->layoutChanged();
+  emit _projectTreeViewModel->layoutChanged();
 
   _mainWindow->documentWasModified();
 }
@@ -56,12 +56,12 @@ void ProjectTreeViewPasteProjectsCommand::redo()
 void ProjectTreeViewPasteProjectsCommand::undo()
 {
   int row = _row;
-  _projectTreeViewModel->layoutAboutToBeChanged();
-  for(std::shared_ptr<ProjectTreeNode> node : _nodes)
+  emit _projectTreeViewModel->layoutAboutToBeChanged();
+  for(const std::shared_ptr<ProjectTreeNode> &node : _nodes)
   {
     whileBlocking(_projectTreeViewModel)->removeRow(row, _parentNode);
   }
-  _projectTreeViewModel->layoutChanged();
+  emit _projectTreeViewModel->layoutChanged();
 
   _mainWindow->documentWasModified();
 }

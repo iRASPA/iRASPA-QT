@@ -585,7 +585,7 @@ void Structure::convertAsymmetricAtomsToCartesian()
 {
   double3x3 unitCell = _cell->unitCell();
   std::vector<std::shared_ptr<SKAtomTreeNode>> atomTreeNodes = _atomsTreeController->flattenedLeafNodes();
-  for(std::shared_ptr<SKAtomTreeNode> atomTreeNode: atomTreeNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &atomTreeNode: atomTreeNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = atomTreeNode->representedObject())
     {
@@ -599,7 +599,7 @@ void Structure::convertAsymmetricAtomsToFractional()
 {
   double3x3 inverseUnitCell = _cell->inverseUnitCell();
   std::vector<std::shared_ptr<SKAtomTreeNode>> atomTreeNodes = _atomsTreeController->flattenedLeafNodes();
-  for(std::shared_ptr<SKAtomTreeNode> atomTreeNode: atomTreeNodes)
+  for(const std::shared_ptr<SKAtomTreeNode> &atomTreeNode: atomTreeNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = atomTreeNode->representedObject())
     {
@@ -918,7 +918,7 @@ void Structure::setBondScaleFactor(double value)
   {
     std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-    for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+    for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
     {
       if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
@@ -1150,7 +1150,7 @@ void Structure::setRepresentationStyle(RepresentationStyle style)
 
 	std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-	for (std::shared_ptr<SKAtomTreeNode> node : asymmetricAtomNodes)
+    for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
 	{
 		if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
 		{
@@ -1338,7 +1338,7 @@ void Structure::setRepresentationType(RepresentationType type)
     _atomRepresentationType = type;
     std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-    for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+    for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
     {
       if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
@@ -1378,7 +1378,7 @@ void Structure::setRepresentationColorSchemeIdentifier(const QString colorScheme
     _atomColorSchemeIdentifier = colorSchemeName;
     std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-    for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+    for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
     {
       if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
@@ -1449,7 +1449,7 @@ void Structure::updateForceField(ForceFieldSets &forceFieldSets)
     switch(_atomForceFieldOrder)
     {
     case ForceFieldSet::ForceFieldSchemeOrder::elementOnly:
-      for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+      for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
       {
         if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
         {
@@ -1465,7 +1465,7 @@ void Structure::updateForceField(ForceFieldSets &forceFieldSets)
       }
       break;
     case ForceFieldSet::ForceFieldSchemeOrder::forceFieldFirst:
-      for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+      for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
       {
         if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
         {
@@ -1491,8 +1491,7 @@ void Structure::updateForceField(ForceFieldSets &forceFieldSets)
       }
       break;
     case ForceFieldSet::ForceFieldSchemeOrder::forceFieldOnly:
-        qDebug() << "ForceFieldSet::ForceFieldSchemeOrder::forceFieldOnly";
-      for(std::shared_ptr<SKAtomTreeNode> node: asymmetricAtomNodes)
+      for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
       {
         if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
         {
@@ -1709,7 +1708,7 @@ void Structure::toggleAtomSelection(int asymmetricAtomId)
     selectedAtom = atomNodes[asymmetricAtomId];
     std::shared_ptr<SKAsymmetricAtom> atom = selectedAtom->representedObject();
     int bondIndex=0;
-    for(std::shared_ptr<SKAsymmetricBond> bond : bondSetController()->arrangedObjects())
+    for(const std::shared_ptr<SKAsymmetricBond> &bond : bondSetController()->arrangedObjects())
     {
       if(atom == bond->atom1() || atom == bond->atom2())
       {
@@ -1779,7 +1778,7 @@ void Structure::recomputeDensityProperties()
   std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = _atomsTreeController->atomCopies();
 
   _structureMass = 0.0;
-  for(std::shared_ptr<SKAtomCopy> atom : atomCopies)
+  for(const std::shared_ptr<SKAtomCopy> &atom : atomCopies)
   {
     int elementId = atom->parent()->elementIdentifier();
     _structureMass +=  PredefinedElements::predefinedElements[elementId]._mass;

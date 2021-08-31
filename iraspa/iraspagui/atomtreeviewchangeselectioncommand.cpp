@@ -65,7 +65,7 @@ void AtomTreeViewChangeSelectionCommand::redo()
   if(_main_window)
   {
     emit _main_window->rendererReloadData();
-    emit _main_window->updateControlPanel();
+    _main_window->updateControlPanel();
   }
 }
 
@@ -90,7 +90,7 @@ void AtomTreeViewChangeSelectionCommand::undo()
   if(_main_window)
   {
     emit _main_window->rendererReloadData();
-    emit _main_window->updateControlPanel();
+    _main_window->updateControlPanel();
   }
 }
 

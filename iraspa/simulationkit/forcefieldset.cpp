@@ -29,7 +29,7 @@ ForceFieldSet::ForceFieldSet()
   this->_editable = false;
 
   this->_atomTypeList.clear();   // = forcefieldset._atomTypes;
-  for(auto forceFieldType : _defaultForceField)
+  for(const auto &forceFieldType : _defaultForceField)
   {
     _atomTypeList.push_back(forceFieldType);
   }
@@ -42,7 +42,7 @@ ForceFieldSet::ForceFieldSet(QString name, ForceFieldSet& forcefieldset, bool ed
   this->_editable = editable;
 
   this->_atomTypeList.clear();
-  for(ForceFieldType forceFieldType : forcefieldset._atomTypeList)
+  for(const ForceFieldType &forceFieldType : forcefieldset._atomTypeList)
   {
    // std::shared_ptr<ForceFieldType> newForceFieldType = std::make_shared<ForceFieldType>(forceFieldType->forceFieldStringIdentifier(), forceFieldType->atomicNumber(), forceFieldType->potentialParameters(),
    //                                                                                      forceFieldType->mass(), forceFieldType->userDefinedRadius(), forceFieldType->editable());

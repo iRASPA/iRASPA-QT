@@ -61,7 +61,7 @@ QString SKmmCIFWriter::string()
   outputString += QString("_atom_site.charge\n");
 
   int counter = 1;
-  for(std::shared_ptr<SKAsymmetricAtom> atom : _atoms)
+  for(const std::shared_ptr<SKAsymmetricAtom> &atom : _atoms)
   {
     int atomicNumber = atom->elementIdentifier();
     SKElement element = PredefinedElements::predefinedElements[atomicNumber];

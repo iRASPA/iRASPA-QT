@@ -48,14 +48,14 @@ void FrameListViewDropCopyCommand::redo()
 
   emit _frameListViewModel->invalidateCachedAmbientOcclusionTexture(_sceneList->allIRASPAStructures());
 
-  _frameListViewModel->layoutAboutToBeChanged();
-  for(auto [iraspStructure, insertionRow] : _nodes)
+  emit _frameListViewModel->layoutAboutToBeChanged();
+  for(const auto &[iraspStructure, insertionRow] : _nodes)
   {
     _reverseMoves.push_back(std::make_pair(iraspStructure, iraspStructure->row()));
 
     whileBlocking(_frameListViewModel)->insertRow(insertionRow, iraspStructure);
   }
-  _frameListViewModel->layoutChanged();
+  emit _frameListViewModel->layoutChanged();
 
   // update selection of moved nodes _after_ all is moved
   // (indexPaths have been changed, including the indexPath of the parentNode)
@@ -75,12 +75,12 @@ void FrameListViewDropCopyCommand::redo()
 
 void FrameListViewDropCopyCommand::undo()
 {
-  _frameListViewModel->layoutAboutToBeChanged();
+  emit _frameListViewModel->layoutAboutToBeChanged();
   for(const auto &[iraspStructure, insertionRow] : _reverseMoves)
   {
     whileBlocking(_frameListViewModel)->removeRow(int(iraspStructure->row()));
   }
-  _frameListViewModel->layoutChanged();
+  emit _frameListViewModel->layoutChanged();
 
   _movie->setSelection(_oldSelection);
   emit _frameListViewModel->updateSelection();
