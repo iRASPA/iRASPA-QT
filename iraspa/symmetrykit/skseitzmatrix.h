@@ -33,46 +33,27 @@ class SKSeitzMatrix
 {
 public:
   SKSeitzMatrix();
-  SKSeitzMatrix(SKRotationMatrix rotation, int3 translation);
-  SKSeitzMatrix(char xvalue, char yvalue, char zvalue);
-  static std::vector<SKSeitzMatrix> SeitzMatrices(std::string encoding);
-
-  SKRotationMatrix rotation() const {return _rotation;}
-  int3 translation() const {return _translation;}
-  void setTranslation(int3 t) {_translation = t;}
-  int3 normalizedTranslation() const {return int3(_translation.x%12, _translation.y%12, _translation.z%12);}
-
-  double3 operator * (const double3& right) const;
-  SKSeitzMatrix operator * (const SKSeitzMatrix &right) const;
-  bool operator==(SKSeitzMatrix const& rhs) const;
+  SKSeitzMatrix(SKRotationMatrix rotation, double3 translation);
+  const SKRotationMatrix &rotation() const {return _rotation;}
+  const double3 &translation() const {return _translation;}
 private:
   SKRotationMatrix _rotation;
-  int3 _translation;   // denominator = 12
+  double3 _translation;
 
-  static std::vector<SKOneThirdSeitzMatrix> _SeitzData;
+  friend bool operator==(const SKSeitzMatrix& lhs, const SKSeitzMatrix& rhs);
 };
 
+/*
 namespace std
 {
   template <> struct hash<SKSeitzMatrix>
   {
     size_t operator()(const SKSeitzMatrix& k) const
     {
-      // Compute individual hash values for two data members and combine them using XOR and bit shifting
-      int3 normalizedTranslation = k.normalizedTranslation();
-      int r1 = (k.rotation().int3x3.m11+1);
-      int r2 = (3 * (k.rotation().int3x3.m12+1));
-      int r3 = ((3*3) * (k.rotation().int3x3.m13+1));
-      int r4 = ((3*3*3) * (k.rotation().int3x3.m12+1));
-      int r5 = ((3*3*3*3) * (k.rotation().int3x3.m22+1));
-      int r6 = ((3*3*3*3*3) * (k.rotation().int3x3.m32+1));
-      int r7 = ((3*3*3*3*3*3) * (k.rotation().int3x3.m31+1));
-      int r8 = ((3*3*3*3*3*3*3) * (k.rotation().int3x3.m23+1));
-      int r9 = ((3*3*3*3*3*3*3*3) * (k.rotation().int3x3.m33+1));
-      int v1 = ((3*3*3*3*3*3*3*3*12) * normalizedTranslation.x);
-      int v2 = ((3*3*3*3*3*3*3*3*12*12) * normalizedTranslation.y);
-      int v3 = ((3*3*3*3*3*3*3*3*12*12*12) * normalizedTranslation.z);
-      return r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9 + v1 + v2 + v3;
+      std::size_t h=0;
+      double3 translation = double3::fract(k.translation());
+      hash_combine(h, k.rotation(), int(translation.x*100), int(translation.y*100), int(translation.z*100));
+      return h;
     }
   };
-}
+}*/

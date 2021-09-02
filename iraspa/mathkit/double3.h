@@ -28,6 +28,7 @@
 
 #include "int3.h"
 #include "bool3.h"
+#include "hashcombine.h"
 
 union double3
 {
@@ -45,6 +46,7 @@ union double3
   double length() const {return sqrt(x*x+y*y+z*z);}
   double3 normalise();
   double3 fract();
+  static double3 abs(double3 v1);
 
   static double3 randomVectorOnUnitSphere();
 
@@ -89,4 +91,5 @@ union double3
     }
   };
 };
+
 

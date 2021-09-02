@@ -21,13 +21,22 @@
 
 #pragma once
 
-#include <map>
+#include <unordered_set>
+#include <vector>
+#include "skseitzintegermatrix.h"
+#include "skdefinitions.h"
 
-class SKRotationalOccuranceTable
+class SKIntegerSymmetryOperationSet
 {
 public:
-  SKRotationalOccuranceTable(int axis_6m, int axis_4m, int axis_3m, int axis_2m, int axis_1m, int axis_1,int axis_2,int axis_3,int axis_4, int axis_6);
-  std::map<int, int> occurance;
+  SKIntegerSymmetryOperationSet();
+  SKIntegerSymmetryOperationSet(std::unordered_set<SKSeitzIntegerMatrix> operations);
+  SKIntegerSymmetryOperationSet(std::vector<SKSeitzIntegerMatrix> operations);
 
-  friend bool operator== (const SKRotationalOccuranceTable& c1, const SKRotationalOccuranceTable& c2);
+  size_t size() {return _operations.size();}
+  SKIntegerSymmetryOperationSet fullSeitzMatrices();
+  std::unordered_set<SKSeitzIntegerMatrix> operations() {return _operations;}
+private:
+  std::unordered_set<SKSeitzIntegerMatrix> _operations;
+  Centring _centring;
 };

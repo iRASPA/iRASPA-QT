@@ -20,6 +20,7 @@
  ********************************************************************************************************************/
 
 #include "double3.h"
+#include <cmath>
 
 double3 double3::operator + (const double3& right) const
 {
@@ -95,6 +96,11 @@ double3 double3::fract()
     s.z -= 1.0;
   }
   return s;
+}
+
+double3 double3::abs(double3 v1)
+{
+  return double3(std::abs(v1.x), std::abs(v1.y), std::abs(v1.z));
 }
 
 double double3::dot(const double3 &v1, const double3 &v2)

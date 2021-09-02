@@ -19,15 +19,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#pragma once
+#include "skpointsymmetryset.h"
 
-#include <map>
-
-class SKRotationalOccuranceTable
+SKPointSymmetrySet::SKPointSymmetrySet(std::vector<SKRotationMatrix> rotations): _rotations(rotations)
 {
-public:
-  SKRotationalOccuranceTable(int axis_6m, int axis_4m, int axis_3m, int axis_2m, int axis_1m, int axis_1,int axis_2,int axis_3,int axis_4, int axis_6);
-  std::map<int, int> occurance;
-
-  friend bool operator== (const SKRotationalOccuranceTable& c1, const SKRotationalOccuranceTable& c2);
-};
+}

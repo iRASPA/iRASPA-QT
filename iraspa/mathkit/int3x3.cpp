@@ -87,3 +87,19 @@ int3x3 int3x3::operator-() const
   r.m13 = -m13; r.m23 = -m23; r.m33 = -m33;
   return r;
 }
+
+int int3x3::determinant(void) const
+{
+  int determinant =
+   + m11 * (m22 * m33 - m23 * m32)
+   - m12 * (m21 * m33 - m23 * m31)
+   + m13 * (m21 * m32 - m22 * m31);
+
+   return determinant;
+}
+
+int int3x3::trace() const
+{
+  return m11+m22+m33;
+}
+

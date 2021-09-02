@@ -25,6 +25,9 @@
 #include <cstdlib>
 #include <QDataStream>
 
+union double3x3;
+union double3;
+
 union int3
 {
   int32_t v[3];
@@ -37,6 +40,7 @@ union int3
 
   int3 operator + (const int3& right) const;
   int3 operator - (const int3& right) const;
+  double3 operator *(const double3x3& right) const;
 
   friend QDataStream &operator<<(QDataStream &, const int3 &);
   friend QDataStream &operator>>(QDataStream &, int3 &);

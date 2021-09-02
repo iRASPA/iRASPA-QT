@@ -2,13 +2,13 @@
 #include "qfuzzycompare.h"
 #include <symmetrykit.h>
 
-class SmallestPrimitiveCell : public QObject
+class FindPointGroupNoPartialOccupancies : public QObject
 {
   Q_OBJECT
 
 public:
-  SmallestPrimitiveCell();
-  ~SmallestPrimitiveCell();
+  FindPointGroupNoPartialOccupancies();
+  ~FindPointGroupNoPartialOccupancies();
 
 private slots:
   void initTestCase();
@@ -23,7 +23,4 @@ private slots:
   void test_case_cubic();
   void test_case_virtual();
 };
-
-//#include "tst_smallestprimitivecell.moc"
-
 

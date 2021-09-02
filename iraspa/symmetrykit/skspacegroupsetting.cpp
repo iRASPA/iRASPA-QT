@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& os, const SKSpaceGroupSetting& setting)
     return os;
 }
 
-SKSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
+SKIntegerSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
 {
   assert(_encodedSeitz.size() % 3 == 0);
   assert(_encodedSeitz.size()>0);
@@ -111,7 +111,7 @@ SKSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
 
   size_t size = centrosymmetric ? 2 * m : m;
   std::vector<int3> translationVectors = _latticeTranslations;
-  std::vector<SKSeitzMatrix> matrices = std::vector<SKSeitzMatrix>();
+  std::vector<SKSeitzIntegerMatrix> matrices = std::vector<SKSeitzIntegerMatrix>();
   matrices.resize(size * translationVectors.size());
 
   for(size_t i=0;i<m;i++)
@@ -120,7 +120,7 @@ SKSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
     char y = _encodedSeitz[3 * i + 1];
     char z = _encodedSeitz[3 * i + 2];
 
-    matrices[i] = SKSeitzMatrix(x,y,z);
+    matrices[i] = SKSeitzIntegerMatrix(x,y,z);
   }
 
   if (centrosymmetric)
@@ -131,10 +131,10 @@ SKSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
       char y = _encodedSeitz[3 * i + 1];
       char z = _encodedSeitz[3 * i + 2];
 
-      SKSeitzMatrix seitz = SKSeitzMatrix(x,y,z);
+      SKSeitzIntegerMatrix seitz = SKSeitzIntegerMatrix(x,y,z);
 
       int3 translation = seitz.translation() + seitz.rotation() * _inversionCenter;
-      matrices[m+i] = SKSeitzMatrix(-seitz.rotation(), translation);
+      matrices[m+i] = SKSeitzIntegerMatrix(-seitz.rotation(), translation);
     }
   }
 
@@ -148,6 +148,6 @@ SKSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
     }
   }
 
-  return SKSymmetryOperationSet(matrices);
+  return SKIntegerSymmetryOperationSet(matrices);
 }
 

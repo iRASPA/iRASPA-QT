@@ -1,5 +1,5 @@
 #include <QtTest>
-
+#include "qfuzzycompare.h"
 #include <symmetrykit.h>
 
 class SmallestPrimitiveCellNoPartialOccupancies : public QObject

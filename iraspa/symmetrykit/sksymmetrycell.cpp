@@ -20,11 +20,28 @@
  ********************************************************************************************************************/
 
 #include "sksymmetrycell.h"
+#include "skrotationmatrix.h"
 #include <cmath>
+#include <cfloat>
+#include <algorithm>
 
 SKSymmetryCell::SKSymmetryCell()
 {
 
+}
+
+SKSymmetryCell::SKSymmetryCell(double3x3 metricTensor)
+{
+  double A = metricTensor[0][0];
+  double B = metricTensor[1][1];
+  double C = metricTensor[2][2];
+
+  this->_a = sqrt(A);
+  this->_b = sqrt(B);
+  this->_c = sqrt(C);
+  this->_alpha = acos(metricTensor[1][2]/(sqrt(B)*sqrt(C)));
+  this->_beta = acos(metricTensor[0][2]/(sqrt(A)*sqrt(C)));
+  this->_gamma = acos(metricTensor[0][1]/(sqrt(A)*sqrt(B)));
 }
 
 double3x3 SKSymmetryCell::cell()
@@ -158,6 +175,68 @@ bool SKSymmetryCell::testTranslationalSymmetry(double3 translationVector, std::v
   return true;
 }
 
+bool SKSymmetryCell::testSymmetry(double3 translationVector, SKRotationMatrix rotationMatrix, std::vector<std::tuple<double3, int, double>> atoms, double3x3 unitCell, bool allowPartialOccupancies, double precision = 1e-2)
+{
+  for(size_t i=0;i<atoms.size();i++)
+  {
+    double3 rotatedAndTranslatedPosition = rotationMatrix * std::get<0>(atoms[i]) + translationVector;
+
+    bool isFound = false;
+    for(size_t j=0;j<atoms.size();j++)
+    {
+      if(allowPartialOccupancies || std::get<1>(atoms[i]) == std::get<1>(atoms[j]))
+      {
+        double3 dr = rotatedAndTranslatedPosition - std::get<0>(atoms[j]);
+        dr.x -= rint(dr.x);
+        dr.y -= rint(dr.y);
+        dr.z -= rint(dr.z);
+        if ((unitCell * dr).length_squared() < precision * precision)
+        {
+          isFound = true;
+          break;
+        }
+      }
+    }
+
+    // if no overlap is found then we can immediately return 'false'
+    if(!isFound)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+  /// Computes translation vectors for symmetry operations
+  ///
+  /// - parameter unitCell:            the unit cell
+  /// - parameter fractionalPositions: the fractional positions of the atomic configuration
+  /// - parameter rotationMatrix:      the symmetry elements
+  /// - parameter symmetryPrecision:   the precision of the search (default: 1e-2)
+  ///
+  /// - returns: the list of translation vectors, including (0,0,0)
+std::vector<double3> SKSymmetryCell::primitiveTranslationVectors(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> reducedAtoms, std::vector<std::tuple<double3, int, double>> atoms, SKRotationMatrix rotationMatrix, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
+{
+    std::vector<double3> translationVectors{};
+
+  if(reducedAtoms.size()>0)
+  {
+    double3 origin = rotationMatrix * std::get<0>(reducedAtoms[0]);
+
+    for(size_t i=0;i<reducedAtoms.size();i++)
+    {
+      double3 vec = std::get<0>(reducedAtoms[i]) - origin;
+
+      if(SKSymmetryCell::testSymmetry(vec, rotationMatrix, atoms, unitCell, allowPartialOccupancies, symmetryPrecision))
+      {
+        translationVectors.push_back(vec);
+      }
+    }
+  }
+  return translationVectors;
+}
+
   /// Compute the Delaunay reduced cell
   ///
   /// - parameter unitCell:          the original unit cell
@@ -231,3 +310,158 @@ bool SKSymmetryCell::testTranslationalSymmetry(double3 translationVector, std::v
 
     return std::nullopt;
   }
+
+  // Determining the lattice symmetry is equivalent to determining the Bravais type.
+SKPointSymmetrySet SKSymmetryCell::findLatticeSymmetry(double3x3 reducedLattice, double symmetryPrecision = 3.0)
+{
+  const std::vector<int3> latticeAxes = {
+     int3( 1, 0, 0),
+     int3( 0, 1, 0),
+     int3( 0, 0, 1),
+     int3(-1, 0, 0),
+     int3( 0,-1, 0),
+     int3( 0, 0,-1),
+     int3( 0, 1, 1),
+     int3( 1, 0, 1),
+     int3( 1, 1, 0),
+     int3( 0,-1,-1),
+     int3(-1, 0,-1),
+     int3(-1,-1, 0),
+     int3( 0, 1,-1),
+     int3(-1, 0, 1),
+     int3( 1,-1, 0),
+     int3( 0,-1, 1),
+     int3( 1, 0,-1),
+     int3(-1, 1, 0),
+     int3( 1, 1, 1),
+     int3(-1,-1,-1),
+     int3(-1, 1, 1),
+     int3( 1,-1, 1),
+     int3( 1, 1,-1),
+     int3( 1,-1,-1),
+     int3(-1, 1,-1),
+     int3(-1,-1, 1)
+    };
+
+    std::vector<SKRotationMatrix> pointSymmetries{};
+
+    double3x3 latticeMetricMatrix = reducedLattice.transpose() * reducedLattice;
+
+    // uses a stored list of all possible lattice vectors and loop over all possible permutations
+    for(const int3 &firstAxis: latticeAxes)
+    {
+      for(const int3 &secondAxis: latticeAxes)
+      {
+        for(const int3 &thirdAxis: latticeAxes)
+        {
+          SKRotationMatrix axes = SKRotationMatrix(firstAxis, secondAxis, thirdAxis);
+          int determinant = axes.int3x3.determinant();
+
+          // if the determinant is 1 or -1 we have a (proper) rotation  (6960 proper rotations)
+          if (determinant == 1 || determinant == -1)
+          {
+            double3x3 transformationMatrix = double3x3(axes.int3x3);
+
+            // the inverse of a rotation matrix is its transpose, so we use the transpose here
+            double3x3 newLattice = reducedLattice * transformationMatrix;
+            double3x3 transformedLatticeMetricMatrix = newLattice.transpose() * newLattice;
+
+            if (SKSymmetryCell::checkMetricSimilarity(transformedLatticeMetricMatrix, latticeMetricMatrix, symmetryPrecision))
+            {
+              pointSymmetries.push_back(axes);
+            }
+          }
+        }
+      }
+    }
+
+    double3x3 transform = (reducedLattice.inverse() * reducedLattice);
+    std::vector<SKRotationMatrix> newpointSymmetries{};
+    for(const SKRotationMatrix & pointSymmetry: pointSymmetries)
+    {
+      SKRotationMatrix mat = SKRotationMatrix(transform.inverse() * double3x3(pointSymmetry.int3x3) * transform);
+
+      // avoid duplicate rotation matrices
+      if(!(std::find(newpointSymmetries.begin(),newpointSymmetries.end(), mat) != newpointSymmetries.end()))
+      {
+        newpointSymmetries.push_back(mat);
+      }
+    }
+
+    return SKPointSymmetrySet(newpointSymmetries);
+}
+
+bool SKSymmetryCell::checkMetricSimilarity(double3x3 transformedMetricTensor, double3x3 metricTensor, double symmetryPrecision = 1e-2)
+{
+  SKSymmetryCell metricCell = SKSymmetryCell(metricTensor);
+  SKSymmetryCell transformedMetricCell = SKSymmetryCell(transformedMetricTensor);
+
+  double3 lengthDifference = double3(abs(metricCell._a - transformedMetricCell._a),
+                                     abs(metricCell._b - transformedMetricCell._b),
+                                     abs(metricCell._c - transformedMetricCell._c));
+  double3 angleDifference = double3(sin(abs(metricCell._alpha - transformedMetricCell._alpha)),
+                                    sin(abs(metricCell._beta - transformedMetricCell._beta)),
+                                    sin(abs(metricCell._gamma - transformedMetricCell._gamma)));
+
+  // check on lengths
+  if(lengthDifference.length() > symmetryPrecision)
+  {
+    return false;
+  }
+
+  // check on angles
+  if(abs(std::max({angleDifference.x,angleDifference.y,angleDifference.z})) > symmetryPrecision)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+std::vector<std::tuple<double3, int, double>> SKSymmetryCell::trim(std::vector<std::tuple<double3, int, double>> atoms, double3x3 from, double3x3 to, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
+{
+  double3x3 changeOfBasis = to.inverse() * from;
+
+  std::vector<std::tuple<double3, int, double>> trimmedAtoms{};
+  std::transform(atoms.begin(), atoms.end(),  std::back_inserter(trimmedAtoms),
+                   [changeOfBasis](const std::tuple<double3, int, double> &atom) -> std::tuple<double3, int, double>
+                       {return std::make_tuple(double3::fract(changeOfBasis * std::get<0>(atom)), std::get<1>(atom),std::get<2>(atom));});
+
+  std::vector<size_t> overlapTable = std::vector<size_t>(trimmedAtoms.size());
+  std::fill(overlapTable.begin(), overlapTable.end(), -1);
+
+  std::vector<std::tuple<double3, int, double>> result{};
+
+  for(size_t i=0;i<trimmedAtoms.size();i++)
+  {
+    overlapTable[i] = i;
+    for(size_t j=0;j<trimmedAtoms.size();j++)
+    {
+      if(std::get<1>(trimmedAtoms[i]) == std::get<1>(trimmedAtoms[j]))
+      {
+        double3 dr = double3::abs(std::get<0>(trimmedAtoms[i]) - std::get<0>(trimmedAtoms[j]));
+        dr.x -= rint(dr.x);
+        dr.y -= rint(dr.y);
+        dr.z -= rint(dr.z);
+        if ((to * dr).length_squared() < symmetryPrecision * symmetryPrecision)
+        {
+          if(overlapTable[j] == j)
+          {
+            overlapTable[i] = j;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  for(size_t i=0;i<trimmedAtoms.size();i++)
+  {
+    if(overlapTable[i] == i)
+    {
+      result.push_back(trimmedAtoms[i]);
+    }
+  }
+
+  return result;
+}

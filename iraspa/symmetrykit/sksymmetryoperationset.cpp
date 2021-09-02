@@ -20,24 +20,39 @@
  ********************************************************************************************************************/
 
 #include "sksymmetryoperationset.h"
+#include <algorithm>
+#include <set>
 
 SKSymmetryOperationSet::SKSymmetryOperationSet()
 {
 
 }
 
-SKSymmetryOperationSet::SKSymmetryOperationSet(std::unordered_set<SKSeitzMatrix> operations)
-{
-  _operations = operations;
-  _centring = Centring::primitive;
-}
 
 SKSymmetryOperationSet::SKSymmetryOperationSet(std::vector<SKSeitzMatrix> operations)
 {
-  _operations = std::unordered_set<SKSeitzMatrix>(operations.begin(),operations.end());
+  _operations = operations;
+/*
+  std::unordered_set<SKSeitzMatrix> seen;
+
+  // remove doubles but leave order intact
+  auto newEnd = remove_if(_operations.begin(), _operations.end(), [&seen](const SKSeitzMatrix& value)
+  {
+      if (seen.find(value) != end(seen))
+          return true;
+
+      seen.insert(value);
+      return false;
+  });
+  _operations.erase(newEnd, _operations.end());
+*/
 }
 
-SKSymmetryOperationSet SKSymmetryOperationSet::fullSeitzMatrices()
+const std::vector<SKRotationMatrix> SKSymmetryOperationSet::rotations() const
 {
-  return SKSymmetryOperationSet();
+  std::vector<SKRotationMatrix> rotationMatrices{};
+
+  std::transform(_operations.begin(), _operations.end(), std::back_inserter(rotationMatrices), [](SKSeitzMatrix m){return m.rotation();} );
+
+  return rotationMatrices;
 }

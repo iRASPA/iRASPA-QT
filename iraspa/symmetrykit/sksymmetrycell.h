@@ -23,17 +23,24 @@
 
 #include <mathkit.h>
 #include <optional>
+#include "skpointsymmetryset.h"
 
 class SKSymmetryCell
 {
 public:
     SKSymmetryCell();
+    SKSymmetryCell(double3x3 metricTensor);
     double3x3 cell();
     double3x3 metricTensor();
     double volume();
     static double3x3 findSmallestPrimitiveCell(std::vector<std::tuple<double3, int, double> > reducedAtoms, std::vector<std::tuple<double3, int, double> > atoms, double3x3 unitCell, bool allowPartialOccupancies, double symmetryPrecision);
     static bool testTranslationalSymmetry(double3 translationVector, std::vector<std::tuple<double3, int, double>> atoms, double3x3 unitCell, bool allowPartialOccupancies, double precision);
+    static bool testSymmetry(double3 translationVector, SKRotationMatrix rotationMatrix, std::vector<std::tuple<double3, int, double>> atoms, double3x3 unitCell, bool allowPartialOccupancies, double precision);
+    static std::vector<double3> primitiveTranslationVectors(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> reducedAtoms, std::vector<std::tuple<double3, int, double>> atoms, SKRotationMatrix rotationMatrix, bool allowPartialOccupancies, double symmetryPrecision);
     static std::optional<double3x3> computeDelaunayReducedCell(double3x3 unitCell, double symmetryPrecision);
+    static SKPointSymmetrySet findLatticeSymmetry(double3x3 reducedLattice, double symmetryPrecision);
+    static bool checkMetricSimilarity(double3x3 transformedMetricTensor, double3x3 metricTensor, double symmetryPrecision);
+    static std::vector<std::tuple<double3, int, double>> trim(std::vector<std::tuple<double3, int, double>> atoms, double3x3 from, double3x3 to, bool allowPartialOccupancies, double symmetryPrecision);
 private:
     double _a;
     double _b;

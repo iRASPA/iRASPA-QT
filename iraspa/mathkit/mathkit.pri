@@ -23,6 +23,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/double4x3.h \
     $$PWD/float3x4.h \
+    $$PWD/hashcombine.h \
     $$PWD/mathkit.h \
     $$PWD/simd_quatd.h \
     $$PWD/bool3.h \

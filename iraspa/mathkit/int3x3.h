@@ -23,6 +23,7 @@
 
 #include "int3.h"
 #include "double3x3.h"
+#include "hashcombine.h"
 
 union int3x3
 {
@@ -46,4 +47,21 @@ union int3x3
   int3x3 operator * (const int3x3& right) const;
   int3 operator * (const int3& right) const;
   int3x3 operator-() const;
+
+  int determinant(void) const;
+  int trace(void) const;
 };
+
+
+namespace std
+{
+  template <> struct hash<int3x3>
+  {
+    size_t operator()(const int3x3& k) const
+    {
+      std::size_t h=0;
+      hash_combine(h, k.m11, k.m12, k.m13, k.m21, k.m22, k.m23, k.m31, k.m32, k.m33);
+      return h;
+    }
+  };
+}

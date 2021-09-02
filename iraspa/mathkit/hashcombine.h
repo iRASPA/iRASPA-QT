@@ -21,13 +21,13 @@
 
 #pragma once
 
-#include <map>
+#include <functional>
 
-class SKRotationalOccuranceTable
-{
-public:
-  SKRotationalOccuranceTable(int axis_6m, int axis_4m, int axis_3m, int axis_2m, int axis_1m, int axis_1,int axis_2,int axis_3,int axis_4, int axis_6);
-  std::map<int, int> occurance;
+inline void hash_combine(std::size_t& seed) { }
 
-  friend bool operator== (const SKRotationalOccuranceTable& c1, const SKRotationalOccuranceTable& c2);
-};
+template <typename T, typename... Rest>
+inline void hash_combine(std::size_t& seed, const T& v, Rest... rest) {
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+    hash_combine(seed, rest...);
+}

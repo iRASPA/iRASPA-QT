@@ -22,6 +22,7 @@
 #pragma once
 
 #include <unordered_set>
+#include <set>
 #include <vector>
 #include "skseitzmatrix.h"
 #include "skdefinitions.h"
@@ -30,13 +31,13 @@ class SKSymmetryOperationSet
 {
 public:
   SKSymmetryOperationSet();
-  SKSymmetryOperationSet(std::unordered_set<SKSeitzMatrix> operations);
   SKSymmetryOperationSet(std::vector<SKSeitzMatrix> operations);
 
   size_t size() {return _operations.size();}
   SKSymmetryOperationSet fullSeitzMatrices();
-  std::unordered_set<SKSeitzMatrix> operations() {return _operations;}
+  std::vector<SKSeitzMatrix> operations() {return _operations;}
+  const std::vector<SKRotationMatrix> rotations() const;
 private:
-  std::unordered_set<SKSeitzMatrix> _operations;
+  std::vector<SKSeitzMatrix> _operations;
   Centring _centring;
 };

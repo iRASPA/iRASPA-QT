@@ -21,26 +21,12 @@ void SmallestPrimitiveCell::cleanupTestCase()
 
 }
 
-bool qFuzzyCompare(double3x3 p1, double3x3 p2, double epsilon)
-{
-    return ((qAbs(p1.m11 - p2.m11) <= epsilon) &&
-            (qAbs(p1.m12 - p2.m12) <= epsilon) &&
-            (qAbs(p1.m13 - p2.m13) <= epsilon) &&
-            (qAbs(p1.m21 - p2.m21) <= epsilon) &&
-            (qAbs(p1.m22 - p2.m22) <= epsilon) &&
-            (qAbs(p1.m23 - p2.m23) <= epsilon) &&
-            (qAbs(p1.m31 - p2.m31) <= epsilon) &&
-            (qAbs(p1.m32 - p2.m32) <= epsilon) &&
-            (qAbs(p1.m33 - p2.m33) <= epsilon));
-}
-
-
 void SmallestPrimitiveCell::test_case_triclinic()
 {
   const std::map<QString, double3x3> testData =
   {
-    std::make_pair("SpglibTestData/data/triclinic/POSCAR-001" , double3x3(double3(4.9159976868, 0.0000000000, 0.0000000000), double3(2.4574988436, 4.2582449067, 0.0000000000), double3(0.0000000000, 0.0000000000, 5.4069974558))),
-    std::make_pair("SpglibTestData/data/triclinic/POSCAR-002" , double3x3(double3(-5.5089974078, -0.0000000000, -0.0000000000), double3(1.7074361851, -2.5382443466, -6.0543179877), double3(2.3104709548, -6.6161727417, -0.0000000000)))
+    std::make_pair("SpglibTestData/triclinic/POSCAR-001" , double3x3(double3(4.9159976868, 0.0000000000, 0.0000000000), double3(2.4574988436, 4.2582449067, 0.0000000000), double3(0.0000000000, 0.0000000000, 5.4069974558))),
+    std::make_pair("SpglibTestData/triclinic/POSCAR-002" , double3x3(double3(-5.5089974078, -0.0000000000, -0.0000000000), double3(1.7074361851, -2.5382443466, -6.0543179877), double3(2.3104709548, -6.6161727417, -0.0000000000)))
   };
 
   for(auto &[fileName, unitCellTargetValue]: testData)

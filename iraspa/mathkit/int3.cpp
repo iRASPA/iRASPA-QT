@@ -20,6 +20,8 @@
  ********************************************************************************************************************/
 
 #include "int3.h"
+#include "double3x3.h"
+
 
 int3 int3::operator + (const int3& right) const
 {
@@ -41,6 +43,13 @@ int3 int3::operator - (const int3& right) const
   a.z=z-right.z;
 
   return a;
+}
+
+double3 int3::operator * (const double3x3& right) const
+{
+  return double3(this->x * right[0][0] + this->y * right[0][1] + this->z * right[0][2],
+                 this->x * right[1][0] + this->y * right[1][1] + this->z * right[1][2],
+                 this->x * right[2][0] + this->y * right[2][1] + this->z * right[2][2]);
 }
 
 int modulo(int a, int b)

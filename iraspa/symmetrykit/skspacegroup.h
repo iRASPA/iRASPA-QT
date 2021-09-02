@@ -26,6 +26,8 @@
 #include <QString>
 #include <optional>
 #include "skspacegroupsetting.h"
+#include "skpointsymmetryset.h"
+#include "sksymmetryoperationset.h"
 
 class SKSpaceGroup
 {
@@ -42,6 +44,8 @@ public:
   static const std::array<SKSpaceGroupSetting,531>& spaceGroupData() {return SKSpaceGroup::_spaceGroupData;}
   static const std::vector<std::vector<int>>  spaceGroupHallData;
   static const std::array<SKSpaceGroupSetting, 531> _spaceGroupData;
+  static SKSymmetryOperationSet findSpaceGroupSymmetry(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> reducedAtoms, std::vector<std::tuple<double3, int, double>> atoms, SKPointSymmetrySet latticeSymmetries, bool allowPartialOccupancies, double symmetryPrecision);
+
 private:
   SKSpaceGroupSetting _spaceGroupSetting = SKSpaceGroup::_spaceGroupData[1];
   

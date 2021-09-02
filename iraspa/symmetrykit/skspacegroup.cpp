@@ -20,6 +20,8 @@
  ********************************************************************************************************************/
 
 #include "skspacegroup.h"
+#include "sksymmetrycell.h"
+#include "skseitzmatrix.h"
 #include <iostream>
 #include <QDebug>
 
@@ -118,7 +120,7 @@ std::optional<int> SKSpaceGroup::HallNumberFromSpaceGroupNumber([[maybe_unused]]
 
 std::vector<double3> SKSpaceGroup::listOfSymmetricPositions(double3 pos)
 {
-  std::unordered_set<SKSeitzMatrix> seitzMatrices = _spaceGroupSetting.fullSeitzMatrices().operations();
+  std::unordered_set<SKSeitzIntegerMatrix> seitzMatrices = _spaceGroupSetting.fullSeitzMatrices().operations();
   size_t m = seitzMatrices.size();
 
   std::vector<double3> positions = std::vector<double3>{};
@@ -161,6 +163,28 @@ QString SKSpaceGroup::inversionCenterString(int HallNumber)
   QString latticeStringY = inversionCenter.y == 0 ? "0" : QString::number(inversionCenter.y/gcd.y) + "/" + QString::number(12/gcd.y);
   QString latticeStringZ = inversionCenter.z == 0 ? "0" : QString::number(inversionCenter.z/gcd.z) + "/" + QString::number(12/gcd.z);
   return "(" + latticeStringX + "," + latticeStringY + "," + latticeStringZ + ")";
+}
+
+SKSymmetryOperationSet SKSpaceGroup::findSpaceGroupSymmetry(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> reducedAtoms, std::vector<std::tuple<double3, int, double>> atoms, SKPointSymmetrySet latticeSymmetries, bool allowPartialOccupancies, double symmetryPrecision= 1e-2)
+{
+  std::vector<SKSeitzMatrix> spaceGroupSymmetries{};
+
+  for(const SKRotationMatrix &rotationMatrix: latticeSymmetries.rotations())
+  {
+    std::vector<double3> translations = SKSymmetryCell::primitiveTranslationVectors(unitCell, reducedAtoms, atoms, rotationMatrix, allowPartialOccupancies, symmetryPrecision);
+
+    for(const double3& translation: translations)
+    {
+      SKSeitzMatrix matrix = SKSeitzMatrix(rotationMatrix, translation);
+
+      // avoid duplicate Seitz-matrices
+      if(!(std::find(spaceGroupSymmetries.begin(),spaceGroupSymmetries.end(), matrix) != spaceGroupSymmetries.end()))
+      {
+        spaceGroupSymmetries.push_back(matrix);
+      }
+    }
+  }
+  return SKSymmetryOperationSet(spaceGroupSymmetries);
 }
 
 QDataStream &operator<<(QDataStream &stream, const SKSpaceGroup &spaceGroup)

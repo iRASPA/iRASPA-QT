@@ -20,10 +20,39 @@
  ********************************************************************************************************************/
 
 #include "skpointgroup.h"
+#include "sksymmetrycell.h"
+#include "skrotationmatrix.h"
+#include "skpointsymmetryset.h"
+#include "sksymmetryoperationset.h"
+#include "skspacegroup.h"
+#include "skrotationaloccurancetable.h"
+#include "skrotationmatrix.h"
 
 SKPointGroup::SKPointGroup(SKRotationalOccuranceTable table, qint64 number, QString symbol, QString schoenflies, Holohedry holohedry, Laue laue, bool centrosymmetric, bool enantiomorphic):
     _table(table), _number(number), _symbol(symbol), _schoenflies(schoenflies), _holohedry(holohedry), _laue(laue), _centrosymmetric(centrosymmetric), _enantiomorphic(enantiomorphic)
 {
+}
+
+SKPointGroup::SKPointGroup(SKPointSymmetrySet pointSymmetry):_table(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+{
+  SKRotationalOccuranceTable table = SKRotationalOccuranceTable(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  std::vector<SKRotationMatrix> rotationMatrices = pointSymmetry.rotations();
+
+  for(const SKRotationMatrix &rotation: rotationMatrices)
+  {
+    int type = static_cast<typename std::underlying_type<SKRotationMatrix::RotationType>::type>(rotation.type());
+    table.occurance[type] += 1;
+  }
+
+  for(const SKPointGroup &pointGroup: pointGroupData)
+  {
+    if(pointGroup.table() == table)
+    {
+      *this = pointGroup;
+      return;
+    }
+  }
 }
 
 QString SKPointGroup::holohedryString() const
@@ -81,6 +110,47 @@ QString SKPointGroup::LaueString() const
   }
   return QString();
 }
+
+std::optional<SKPointGroup> SKPointGroup::findPointGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
+{
+  std::vector<std::tuple<double3, int, double> > reducedAtoms{};
+
+  if(allowPartialOccupancies)
+  {
+    reducedAtoms = atoms;
+  }
+  else
+  {
+    std::map<int, int> histogram{};
+    for(const std::tuple<double3, int, double> &atom: atoms)
+    {
+      histogram[std::get<1>(atom)] = histogram[std::get<1>(atom)] + 1;
+    }
+    std::map<int,int>::iterator index = std::min_element(histogram.begin(), histogram.end(),
+                                       [](const auto& l, const auto& r) { return l.second < r.second; });
+    int leastOccuringAtomType = index->first;
+
+    std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
+  }
+  double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+
+  std::optional<double3x3> primitiveDelaunayUnitCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
+
+  if(primitiveDelaunayUnitCell)
+  {
+    SKPointSymmetrySet latticeSymmetries = SKSymmetryCell::findLatticeSymmetry(*primitiveDelaunayUnitCell, symmetryPrecision);
+
+    std::vector<std::tuple<double3, int, double> >positionInPrimitiveCell = SKSymmetryCell::trim(atoms, unitCell, *primitiveDelaunayUnitCell, allowPartialOccupancies, symmetryPrecision);
+
+    SKSymmetryOperationSet spaceGroupSymmetries = SKSpaceGroup::findSpaceGroupSymmetry(unitCell, positionInPrimitiveCell, positionInPrimitiveCell, latticeSymmetries, allowPartialOccupancies, symmetryPrecision);
+
+    SKPointSymmetrySet pointSymmetry = SKPointSymmetrySet(spaceGroupSymmetries.rotations());
+
+    return SKPointGroup(pointSymmetry);
+  }
+  return std::nullopt;
+}
+
 
 QDataStream &operator<<(QDataStream &stream, const SKPointGroup &pointGroup)
 {

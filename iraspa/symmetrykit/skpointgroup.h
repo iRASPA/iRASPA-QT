@@ -27,13 +27,17 @@
 #include <QDataStream>
 #include "skdefinitions.h"
 #include "skrotationaloccurancetable.h"
+#include "skpointsymmetryset.h"
+#include <mathkit.h>
 
 class SKPointGroup
 {
 public:
   SKPointGroup(SKRotationalOccuranceTable table, qint64 number, QString symbol, QString schoenflies, Holohedry holohedry, Laue laue, bool centrosymmetric, bool enantiomorphic);
+  SKPointGroup(SKPointSymmetrySet set);
   static std::vector<SKPointGroup> pointGroupData;
 
+  qint64 number() {return _number;}
   Holohedry holohedry() const {return _holohedry;}
   QString holohedryString() const;
   QString LaueString() const;
@@ -41,6 +45,9 @@ public:
   QString schoenflies() {return _schoenflies;}
   bool centrosymmetric() {return _centrosymmetric;}
   bool enantiomorphic() {return _enantiomorphic;}
+
+  static std::optional<SKPointGroup> findPointGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision);
+  const SKRotationalOccuranceTable &table() const {return _table;}
 private:
   SKRotationalOccuranceTable _table;
   qint64 _number = 0;

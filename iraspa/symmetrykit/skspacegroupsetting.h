@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 #include <mathkit.h>
-#include "sksymmetryoperationset.h"
+#include "skintegersymmetryoperationset.h"
 #include "skdefinitions.h"
 #include "skpointgroup.h"
 
@@ -37,7 +37,7 @@ public:
                       bool inversionAtOrigin, int3 inversionCenter, Symmorphicity symmorphicity, bool standard, Centring centring,
                       std::vector<int3> latticeTranslations, qint64 pointGroupNumber, std::string schoenflies, std::string generators,
                       std::string encoding, int3x3 toPrimitiveTransformation);
-  SKSymmetryOperationSet fullSeitzMatrices();
+  SKIntegerSymmetryOperationSet fullSeitzMatrices();
 
   qint64 number() const {return _spaceGroupNumber;}
   qint64 HallNumber() const {return _HallNumber;}

@@ -18,12 +18,18 @@ LIBS += -L/usr/local/lib -llzma -lz
 TEMPLATE = app
 
 HEADERS +=   \
+  qfuzzycompare.h \
   tst_symmetrykitsmallestprimitivecellnopartialoccupancies.h \
-  tst_symmetrykitsmallestprimitivecell.h 
+  tst_symmetrykitsmallestprimitivecell.h \
+  tst_symmetrykitfindpointgroupnopartialoccupancies.h \
+  tst_symmetrykitfindpointgroup.h 
 
 SOURCES +=  main.cpp \
+  qfuzzycompare.cpp \
   tst_symmetrykitsmallestprimitivecellnopartialoccupancies.cpp \
-  tst_symmetrykitsmallestprimitivecell.cpp 
+  tst_symmetrykitsmallestprimitivecell.cpp \
+  tst_symmetrykitfindpointgroupnopartialoccupancies.cpp \
+  tst_symmetrykitfindpointgroup.cpp 
 
 install_test_files.path = $$OUT_PWD
 install_test_files.files = $$PWD/spglibtestdata

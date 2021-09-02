@@ -32,6 +32,23 @@ struct SKRotationMatrix
   SKRotationMatrix(int3x3 m) {this->int3x3 = m;}
   SKRotationMatrix(int3 v1, int3 v2, int3 v3);
 
+  enum class RotationType: int
+  {
+    axis_6m = -6,
+    axis_4m = -4,
+    axis_3m = -3,
+    axis_2m = -2,
+    axis_1m = -1,
+    none = 0,
+    axis_1 = 1,
+    axis_2 = 2,
+    axis_3 = 3,
+    axis_4 = 4,
+    axis_6 = 6
+  };
+
+  SKRotationMatrix::RotationType type() const;
+
   int3x3 int3x3;
 
  // SKRotationMatrix proper();
@@ -41,6 +58,8 @@ struct SKRotationMatrix
   int3 operator * (const int3& right) const;
   double3 operator * (const double3& right) const;
   SKRotationMatrix operator-() const;
+
+  friend bool operator==(const SKRotationMatrix& lhs, const SKRotationMatrix& rhs);
 
   static SKRotationMatrix zero;
   static SKRotationMatrix identity;
@@ -91,4 +110,19 @@ struct SKRotationMatrix
   static SKRotationMatrix r_2iprime_001;
   static SKRotationMatrix r_2doubleprime_001;
   static SKRotationMatrix r_2idoubleprime_001;
+
+  static std::vector<std::tuple<SKRotationMatrix, int3, int3>> twoFoldSymmetryOperations;
 };
+
+
+namespace std
+{
+  template <> struct hash<SKRotationMatrix>
+  {
+    size_t operator()(const SKRotationMatrix& k) const
+    {
+      std::hash<int3x3> hash_fn;
+      return hash_fn(k.int3x3);
+    }
+  };
+}

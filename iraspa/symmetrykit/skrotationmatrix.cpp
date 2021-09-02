@@ -33,6 +33,49 @@ SKRotationMatrix::SKRotationMatrix(int3 v1, int3 v2, int3 v3)
   int3x3.m13 = v3.x; int3x3.m23 = v3.y; int3x3.m33 = v3.z;
 }
 
+SKRotationMatrix::RotationType SKRotationMatrix::type() const
+{
+  int determinant = int3x3.determinant();
+
+  if(determinant == -1)
+  {
+    switch(int3x3.trace())
+    {
+    case -3:
+      return RotationType::axis_1m;
+    case -2:
+      return RotationType::axis_6m;
+    case -1:
+      return RotationType::axis_4m;
+    case 0:
+      return RotationType::axis_3m;
+    case 1:
+      return RotationType::axis_2m;
+
+    default:
+      return RotationType::none;
+    }
+  }
+  else
+  {
+    switch(int3x3.trace())
+    {
+    case -1:
+      return RotationType::axis_2;
+    case 0:
+      return RotationType::axis_3;
+    case 1:
+      return RotationType::axis_4;
+    case 2:
+      return RotationType::axis_6;
+    case 3:
+      return RotationType::axis_1;
+    default:
+      return RotationType::none;
+    }
+  }
+}
+
 std::ostream& operator<<(std::ostream& os, const SKRotationMatrix& m)
 {
     os << "SKRotationMatrix: " << m.int3x3.m11 << '/' << m.int3x3.m12 << '/' << m.int3x3.m13 << '/' << m.int3x3.m21 << '/' << m.int3x3.m22 << '/' << m.int3x3.m23 << '/' << m.int3x3.m31 << '/' << m.int3x3.m32 << '/' << m.int3x3.m33 << '/';
@@ -70,6 +113,19 @@ double3 SKRotationMatrix::operator * (const double3& b) const
 SKRotationMatrix SKRotationMatrix::operator-() const
 {
   return -this->int3x3;
+}
+
+bool operator==(const SKRotationMatrix& lhs, const SKRotationMatrix& rhs)
+{
+  return (lhs.int3x3.m11 == rhs.int3x3.m11) &&
+         (lhs.int3x3.m12 == rhs.int3x3.m12) &&
+         (lhs.int3x3.m13 == rhs.int3x3.m13) &&
+         (lhs.int3x3.m21 == rhs.int3x3.m21) &&
+         (lhs.int3x3.m22 == rhs.int3x3.m22) &&
+         (lhs.int3x3.m23 == rhs.int3x3.m23) &&
+         (lhs.int3x3.m31 == rhs.int3x3.m31) &&
+         (lhs.int3x3.m32 == rhs.int3x3.m32) &&
+         (lhs.int3x3.m33 == rhs.int3x3.m33);
 }
 
 SKRotationMatrix SKRotationMatrix::zero = SKRotationMatrix(int3(0,0,0),int3(0,0,0),int3(0,0,0));
@@ -121,3 +177,88 @@ SKRotationMatrix SKRotationMatrix::r_2prime_001 = SKRotationMatrix(int3(0,-1,0),
 SKRotationMatrix SKRotationMatrix::r_2iprime_001 = r_2prime_001;
 SKRotationMatrix SKRotationMatrix::r_2doubleprime_001 = SKRotationMatrix(int3(0,1,0),int3(1,0,0),int3(0,0,-1)); // a+b
 SKRotationMatrix SKRotationMatrix::r_2idoubleprime_001 = r_2doubleprime_001;
+
+std::vector<std::tuple<SKRotationMatrix, int3, int3>> SKRotationMatrix::twoFoldSymmetryOperations=
+{
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(-1, 0, 1), int3(-1, 1, 0)) , int3(-1, 1, 1) , int3(0, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(-1, 1, -1), int3(0, 0, -1)) , int3(1, -2, 1) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(-1, 1, 0), int3(0, 0, -1)) , int3(-1, 2, 0) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(-1, 1, 1), int3(0, 0, -1)) , int3(-1, 2, 1) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(-1, 0, -1), int3(1, -1, 0)) , int3(1, -1, 1) , int3(0, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(-1, -1, 1)) , int3(-1, -1, 2) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(-1, 0, 1)) , int3(-1, 0, 2) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(-1, 1, 1)) , int3(-1, 1, 2) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, -1, 1), int3(0, 0, -1), int3(0, -1, 0)) , int3(0, -1, 1) , int3(1, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, -1, -1), int3(0, 0, 1), int3(0, 1, 0)) , int3(0, 1, 1) , int3(-1, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, -1, 0), int3(0, 1, 0), int3(0, -1, -1)) , int3(0, 1, 0) , int3(1, -2, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, -1, 0), int3(0, 1, 0), int3(0, 0, -1)) , int3(0, 1, 0) , int3(-1, 2, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, -1, 0), int3(0, 1, 0), int3(0, 1, -1)) , int3(0, 1, 0) , int3(-1, 2, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(0, -1, 1)) , int3(0, -1, 2) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, -1), int3(0, -1, -1), int3(0, 0, 1)) , int3(0, 0, 1) , int3(-1, -1, 2)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, -1), int3(0, -1, 0), int3(0, 0, 1)) , int3(0, 0, 1) , int3(-1, 0, 2)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, -1), int3(0, -1, 1), int3(0, 0, 1)) , int3(0, 0, 1) , int3(-1, 1, 2)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, -1), int3(0, 0, 1)) , int3(0, 0, 1) , int3(0, -1, 2)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(0, 0, 1)) , int3(0, 0, 1) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 1), int3(0, 0, 1)) , int3(0, 0, 1) , int3(0, 1, 2)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 1), int3(0, -1, -1), int3(0, 0, 1)) , int3(0, 0, 1) , int3(1, -1, 2)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 1), int3(0, -1, 0), int3(0, 0, 1)) , int3(0, 0, 1) , int3(1, 0, 2)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 1), int3(0, -1, 1), int3(0, 0, 1)) , int3(0, 0, 1) , int3(1, 1, 2)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(0, 1, 1)) , int3(0, 1, 2) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, 0, -1), int3(0, -1, 0)) , int3(0, -1, 1) , int3(0, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, 0, 1), int3(0, 1, 0)) , int3(0, 1, 1) , int3(0, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, 1, 0), int3(0, -1, -1)) , int3(0, 1, 0) , int3(0, -2, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, 1, -1), int3(0, 0, -1)) , int3(0, -2, 1) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, 1, 0), int3(0, 0, -1)) , int3(0, 1, 0) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, 1, 1), int3(0, 0, -1)) , int3(0, 2, 1) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, 1, 0), int3(0, 1, -1)) , int3(0, 1, 0) , int3(0, 2, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 1, -1), int3(0, 0, -1), int3(0, -1, 0)) , int3(0, -1, 1) , int3(-1, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 1, 1), int3(0, 0, 1), int3(0, 1, 0)) , int3(0, 1, 1) , int3(1, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 1, 0), int3(0, 1, 0), int3(0, -1, -1)) , int3(0, 1, 0) , int3(-1, -2, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 1, 0), int3(0, 1, 0), int3(0, 0, -1)) , int3(0, 1, 0) , int3(1, 2, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 1, 0), int3(0, 1, 0), int3(0, 1, -1)) , int3(0, 1, 0) , int3(1, 2, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(1, -1, 1)) , int3(1, -1, 2) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(1, 0, 1)) , int3(1, 0, 2) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(0, -1, 0), int3(1, 1, 1)) , int3(1, 1, 2) , int3(0, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(1, 0, -1), int3(-1, -1, 0)) , int3(-1, -1, 1) , int3(0, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(1, 1, -1), int3(0, 0, -1)) , int3(-1, -2, 1) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(1, 1, 0), int3(0, 0, -1)) , int3(1, 2, 0) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(1, 1, 1), int3(0, 0, -1)) , int3(1, 2, 1) , int3(0, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(-1, 0, 0), int3(1, 0, 1), int3(1, 1, 0)) , int3(1, 1, 1) , int3(0, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, -1, 0), int3(-1, 0, 0), int3(-1, 1, -1)) , int3(-1, 1, 0) , int3(-1, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 0, -1), int3(-1, -1, 1), int3(-1, 0, 0)) , int3(-1, 0, 1) , int3(-1, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, -1, -1), int3(-1, 0, 1), int3(0, 0, -1)) , int3(-1, 1, 1) , int3(-1, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(0, -1, 0), int3(-1, 0, 0), int3(0, 0, -1)) , int3(-1, 1, 0) , int3(-1, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(0, -1, 1), int3(-1, 0, -1), int3(0, 0, -1)) , int3(1, -1, 1) , int3(-1, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(0, -1, 0), int3(-1, 0, 0), int3(1, -1, -1)) , int3(-1, 1, 0) , int3(1, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 0, 1), int3(-1, -1, -1), int3(1, 0, 0)) , int3(1, 0, 1) , int3(1, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, -1, -1), int3(0, -1, 0), int3(-1, 1, 0)) , int3(-1, 1, 1) , int3(-1, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 0, -1), int3(0, -1, 0), int3(-1, 0, 0)) , int3(-1, 0, 1) , int3(-1, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 1, -1), int3(0, -1, 0), int3(-1, -1, 0)) , int3(-1, -1, 1) , int3(-1, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, -1, 1), int3(0, -1, 0), int3(1, -1, 0)) , int3(1, -1, 1) , int3(1, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 0, 1), int3(0, -1, 0), int3(1, 0, 0)) , int3(1, 0, 1) , int3(1, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 1, 1), int3(0, -1, 0), int3(1, 1, 0)) , int3(1, 1, 1) , int3(1, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 0, -1), int3(1, -1, -1), int3(-1, 0, 0)) , int3(-1, 0, 1) , int3(-1, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 1, 0), int3(1, 0, 0), int3(-1, -1, -1)) , int3(1, 1, 0) , int3(-1, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 1, -1), int3(1, 0, -1), int3(0, 0, -1)) , int3(-1, -1, 1) , int3(1, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(0, 1, 0), int3(1, 0, 0), int3(0, 0, -1)) , int3(1, 1, 0) , int3(1, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(0, 1, 1), int3(1, 0, 1), int3(0, 0, -1)) , int3(1, 1, 1) , int3(1, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(0, 0, 1), int3(1, -1, 1), int3(1, 0, 0)) , int3(1, 0, 1) , int3(1, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(0, 1, 0), int3(1, 0, 0), int3(1, 1, -1)) , int3(1, 1, 0) , int3(1, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(-1, -1, 0), int3(-1, 0, -1)) , int3(1, 0, 0) , int3(-2, 1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(-1, -1, 0), int3(0, 0, -1)) , int3(1, 0, 0) , int3(-2, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(-1, -1, 0), int3(1, 0, -1)) , int3(1, 0, 0) , int3(2, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(0, -1, 0), int3(-1, 0, -1)) , int3(1, 0, 0) , int3(-2, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(1, -1, -1), int3(0, -1, 0), int3(0, 0, -1)) , int3(-2, 1, 1) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, -1, 0), int3(0, -1, 0), int3(0, 0, -1)) , int3(-2, 1, 0) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, -1, 1), int3(0, -1, 0), int3(0, 0, -1)) , int3(2, -1, 1) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, -1), int3(0, -1, 0), int3(0, 0, -1)) , int3(-2, 0, 1) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(0, -1, 0), int3(0, 0, -1)) , int3(1, 0, 0) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 1), int3(0, -1, 0), int3(0, 0, -1)) , int3(2, 0, 1) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 1, -1), int3(0, -1, 0), int3(0, 0, -1)) , int3(-2, -1, 1) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 1, 0), int3(0, -1, 0), int3(0, 0, -1)) , int3(2, 1, 0) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 1, 1), int3(0, -1, 0), int3(0, 0, -1)) , int3(2, 1, 1) , int3(1, 0, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(0, -1, 0), int3(1, 0, -1)) , int3(1, 0, 0) , int3(2, 0, 1)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(1, -1, 0), int3(-1, 0, -1)) , int3(1, 0, 0) , int3(-2, -1, 1)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(1, -1, 0), int3(0, 0, -1)) , int3(1, 0, 0) , int3(2, 1, 0)),
+  std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(1, -1, 0), int3(1, 0, -1)) , int3(1, 0, 0) , int3(2, 1, 1))
+};
