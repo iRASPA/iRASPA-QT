@@ -29,6 +29,7 @@ SOURCES += \
     $$PWD/skatomtreenode.cpp \
     $$PWD/skbondsetcontroller.cpp \
     $$PWD/skpdbparser.cpp \
+    $$PWD/skspacegroupdatabase.cpp \
     $$PWD/skspacegroupsetting.cpp \
     $$PWD/skrotationmatrix.cpp \
     $$PWD/sksymmetrycell.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     $$PWD/skrotationalchangeofbasis.h \
     $$PWD/skseitzintegermatrix.h \
     $$PWD/skseitzmatrix.h \
+    $$PWD/skspacegroupdatabase.h \
     $$PWD/skstructure.h \
     $$PWD/sksymmetrycell.h \
     $$PWD/sksymmetryoperationset.h \

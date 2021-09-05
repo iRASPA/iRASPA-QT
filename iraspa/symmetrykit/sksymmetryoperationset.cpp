@@ -32,20 +32,6 @@ SKSymmetryOperationSet::SKSymmetryOperationSet()
 SKSymmetryOperationSet::SKSymmetryOperationSet(std::vector<SKSeitzMatrix> operations)
 {
   _operations = operations;
-/*
-  std::unordered_set<SKSeitzMatrix> seen;
-
-  // remove doubles but leave order intact
-  auto newEnd = remove_if(_operations.begin(), _operations.end(), [&seen](const SKSeitzMatrix& value)
-  {
-      if (seen.find(value) != end(seen))
-          return true;
-
-      seen.insert(value);
-      return false;
-  });
-  _operations.erase(newEnd, _operations.end());
-*/
 }
 
 const std::vector<SKRotationMatrix> SKSymmetryOperationSet::rotations() const

@@ -39,4 +39,5 @@
 #include <sksymmetrycell.h>
 #include <skposcarlegacyparser.h>
 #include <skpointgroup.h>
+#include <skspacegroupdatabase.h>
 

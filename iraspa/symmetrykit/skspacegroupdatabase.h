@@ -21,24 +21,14 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <mathkit.h>
-#include "skrotationmatrix.h"
-#include "skonethirdseitzmatrix.h"
-#include "skdefinitions.h"
+#include "skspacegroupsetting.h"
 
-
-class SKSeitzMatrix
+struct SKSpaceGroupDataBase
 {
 public:
-  SKSeitzMatrix();
-  SKSeitzMatrix(SKRotationMatrix rotation, double3 translation);
-  const SKRotationMatrix &rotation() const {return _rotation;}
-  const double3 &translation() const {return _translation;}
-private:
-  SKRotationMatrix _rotation;
-  double3 _translation;
+    SKSpaceGroupDataBase();
 
-  friend bool operator==(const SKSeitzMatrix& lhs, const SKSeitzMatrix& rhs);
+    static const std::array<SKSpaceGroupSetting, 531> spaceGroupData;
+    //static std::map<int, std::vector<int>> spaceGroupHallData;
+    static const std::vector<std::vector<int>> spaceGroupHallData;
 };

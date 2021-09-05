@@ -362,7 +362,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
 
   _cellSymmetryForm->spaceGroupHallNamecomboBox->clear();
   int index=0;
-  for(const SKSpaceGroupSetting& spaceGroup : SKSpaceGroup::spaceGroupData())
+  for(const SKSpaceGroupSetting& spaceGroup : SKSpaceGroupDataBase::spaceGroupData)
   {
     _cellSymmetryForm->spaceGroupHallNamecomboBox->addItem(QString::number(index) + " " + spaceGroup.HallString());
     index++;
@@ -4041,7 +4041,7 @@ std::optional<int> CellTreeWidgetController::symmetrySpaceGroupStamdardNumber()
 
 void CellTreeWidgetController::setSymmetrySpaceGroupStandardNumber(int value)
 {
-  int HallNumber = SKSpaceGroup::spaceGroupHallData[value].front();
+  int HallNumber = SKSpaceGroupDataBase::spaceGroupHallData[value].front();
 
   CellTreeWidgetChangeSpaceGroupCommand *changeCommand = new CellTreeWidgetChangeSpaceGroupCommand(_mainWindow, this, _projectStructure, _iraspa_structures, HallNumber, nullptr);
 
