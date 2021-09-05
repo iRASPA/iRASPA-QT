@@ -26,13 +26,11 @@
 #include <vector>
 #include <mathkit.h>
 #include "skintegersymmetryoperationset.h"
-#include "skdefinitions.h"
-#include "skpointgroup.h"
 
 
 class SKSpaceGroupSetting
 {
-public:
+public:  
   SKSpaceGroupSetting(qint64 number, qint64 spaceGroupNumber, qint64 order, char ext, QString qualifier, QString HM, QString oldHM, QString Hall,
                       bool inversionAtOrigin, int3 inversionCenter, Symmorphicity symmorphicity, bool standard, Centring centring,
                       std::vector<int3> latticeTranslations, qint64 pointGroupNumber, std::string schoenflies, std::string generators,
@@ -43,7 +41,7 @@ public:
   qint64 HallNumber() const {return _HallNumber;}
   QString HallString() const {return _HallString;}
   QString HMString() const {return _HMString;}
-  qint64 pointGroup() const {return _pointGroupNumber;}
+  qint64 pointGroupNumber() const {return _pointGroupNumber;}
   QString qualifier() const {return _qualifier;}
   Symmorphicity symmorphicity() const {return _symmorphicity;}
   QString symmorphicityString() const;

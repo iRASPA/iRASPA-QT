@@ -25,7 +25,8 @@
 #include <set>
 #include <vector>
 #include "skseitzmatrix.h"
-#include "skdefinitions.h"
+#include "skspacegroupsetting.h"
+#include "sktransformationmatrix.h"
 
 class SKSymmetryOperationSet
 {
@@ -37,6 +38,8 @@ public:
   SKSymmetryOperationSet fullSeitzMatrices();
   std::vector<SKSeitzMatrix> operations() {return _operations;}
   const std::vector<SKRotationMatrix> rotations() const;
+  const SKSymmetryOperationSet changedBasis(SKTransformationMatrix transformationMatrix) const;
+  const SKSymmetryOperationSet addingCenteringOperations(Centring centering) const;
 private:
   std::vector<SKSeitzMatrix> _operations;
   Centring _centring;

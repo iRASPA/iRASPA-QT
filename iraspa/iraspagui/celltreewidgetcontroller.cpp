@@ -4061,8 +4061,8 @@ std::optional<QString> CellTreeWidgetController::symmetryHolohedryString()
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
-    int pointGroup = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroup();
-    QString value = SKPointGroup::pointGroupData[pointGroup].holohedryString();
+    int pointGroupNumber = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroupNumber();
+    QString value = SKPointGroup::pointGroupData[pointGroupNumber].holohedryString();
     set.insert(value);
   }
 
@@ -4194,8 +4194,8 @@ std::optional<bool> CellTreeWidgetController::symmetryCentrosymmetric()
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
-    int pointGroup = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroup();
-    bool centroSymmetric = SKPointGroup::pointGroupData[pointGroup].centrosymmetric();
+    int pointGroupNumber = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroupNumber();
+    bool centroSymmetric = SKPointGroup::pointGroupData[pointGroupNumber].centrosymmetric();
     set.insert(centroSymmetric);
   }
 
@@ -4215,8 +4215,8 @@ std::optional<bool> CellTreeWidgetController::symmetryEnantiomorphic()
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
-    int pointGroup = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroup();
-    bool enantiomorphic = SKPointGroup::pointGroupData[pointGroup].enantiomorphic();
+    int pointGroupNumber = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroupNumber();
+    bool enantiomorphic = SKPointGroup::pointGroupData[pointGroupNumber].enantiomorphic();
     set.insert(enantiomorphic);
   }
 
@@ -4237,8 +4237,8 @@ std::optional<int> CellTreeWidgetController::symmetryPointGroup()
   std::unordered_set<int> set = std::unordered_set<int>{};
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
-    int pointGroup = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroup();
-    set.insert(pointGroup);
+    int pointGroupNumber = iraspa_structure->structure()->spaceGroup().spaceGroupSetting().pointGroupNumber();
+    set.insert(pointGroupNumber);
   }
 
   if(set.size() == 1)

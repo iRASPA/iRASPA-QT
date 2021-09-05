@@ -38,4 +38,5 @@
 #include <skelement.h>
 #include <sksymmetrycell.h>
 #include <skposcarlegacyparser.h>
+#include <skpointgroup.h>
 

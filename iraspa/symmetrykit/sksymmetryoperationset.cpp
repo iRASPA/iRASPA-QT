@@ -56,3 +56,60 @@ const std::vector<SKRotationMatrix> SKSymmetryOperationSet::rotations() const
 
   return rotationMatrices;
 }
+
+// the transformationMatrix does not have a translational part
+const SKSymmetryOperationSet SKSymmetryOperationSet::changedBasis(SKTransformationMatrix transformationMatrix) const
+{
+  std::vector<SKSeitzMatrix> newSet{};
+
+  for(const SKSeitzMatrix& seitzMatrix: _operations)
+  {
+    SKTransformationMatrix inverseTransformation = transformationMatrix.adjugate();
+    int3x3 rotation = (inverseTransformation.int3x3 * seitzMatrix.rotation().int3x3 * transformationMatrix.int3x3) / transformationMatrix.int3x3.determinant();
+    double3 translation = inverseTransformation.int3x3 * seitzMatrix.translation();
+    SKSeitzMatrix transformedSeitzMatrix = SKSeitzMatrix(SKRotationMatrix(rotation), translation / double(transformationMatrix.int3x3.determinant()));
+    newSet.push_back(transformedSeitzMatrix);
+  }
+  return SKSymmetryOperationSet(newSet);
+}
+
+const SKSymmetryOperationSet SKSymmetryOperationSet::addingCenteringOperations(Centring centering) const
+{
+  std::vector<double3> shifts{};
+
+    switch(centering)
+    {
+    case Centring::none:
+    case Centring::primitive:
+      shifts = {double3(0,0,0)};
+    case Centring::face:
+      shifts = {double3(0,0,0),double3(0,0.5,0.5),double3(0.5,0,0.5),double3(0.5,0.5,0)};
+    case Centring::r:
+      shifts = {double3(0,0,0),double3(8.0/12.0,4.0/12.0,4.0/12.0),double3(4.0/12.0,8.0/12.0,8.0/12.0)};
+    case Centring::h:
+      shifts = {double3(0,0,0),double3(8.0/12.0,4.0/12.0,0),double3(0,8.0/12.0,4.0/12.0)};
+    case Centring::d:
+      shifts = {double3(0,0,0),double3(4.0/12.0,4.0/12.0,4.0/12.0),double3(8.0/12.0,8.0/12.0,8.0/12.0)};
+    case Centring::body:
+      shifts = {double3(0,0,0),double3(0.5,0.5,0.5)};
+    case Centring::a_face:
+      shifts = {double3(0,0,0),double3(0,0.5,0.5)};
+    case Centring::b_face:
+      shifts = {double3(0,0,0),double3(0.5,0,0.5)};
+    case Centring::c_face:
+      shifts = {double3(0,0,0),double3(0.5,0.5,0)};
+    default:
+      shifts = {double3(0,0,0)};
+    }
+
+  std::vector<SKSeitzMatrix> symmetry{};
+
+  for(const SKSeitzMatrix& seitzMatrix: _operations)
+  {
+    for(const double3& shift: shifts)
+    {
+      symmetry.push_back(SKSeitzMatrix(seitzMatrix.rotation(), seitzMatrix.translation() + shift));
+    }
+  }
+  return SKSymmetryOperationSet(symmetry);
+}

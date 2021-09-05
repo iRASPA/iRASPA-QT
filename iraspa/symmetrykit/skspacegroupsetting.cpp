@@ -22,7 +22,7 @@
 #include "skspacegroupsetting.h"
 #include <iostream>
 #include <cassert>
-
+#include "skpointgroup.h"
 
 SKSpaceGroupSetting::SKSpaceGroupSetting(qint64 number, qint64 spaceGroupNumber, qint64 order, char ext, QString qualifier, QString HM, QString oldHMString, QString Hall,
                                          bool inversionAtOrigin, int3 inversionCenter, Symmorphicity symmorphicity, bool standard, Centring centring,

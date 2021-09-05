@@ -81,9 +81,9 @@ float4 float4::cross(const float4 &v1, const float4 &v2, const float4 &v3)
                  -v1.x*(v2.y*v3.z - v3.y*v2.z) + v1.y*(v2.x*v3.z - v3.x*v2.z) - v1.z*(v2.x*v3.y - v3.x*v2.y));
 }
 
-float4 operator*(const float4 &v1, const float4 &v2)
+float4 operator*(const float4 &lhs, const float4 &rhs)
 {
-   return float4(v1.x*v2.x, v1.y*v2.y, v1.z*v2.z, v1.w*v2.w);
+   return float4(lhs.x*rhs.x, lhs.y*rhs.y, lhs.z*rhs.z, lhs.w*rhs.w);
 }
 
 float4 operator*(const float4 &v, double value)

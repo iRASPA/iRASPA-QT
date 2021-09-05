@@ -22,6 +22,7 @@
 #pragma once
 
 #include <iostream>
+#include <QtGlobal>
 
 enum class Symmorphicity: qint64
 {
@@ -33,22 +34,7 @@ enum class Centring: qint64
   none = 0, primitive = 1, body = 2, a_face = 3, b_face = 4, c_face = 5, face = 6, base = 7, r = 8, h = 9, d = 10
 };
 
-enum class RotationType: qint64
-{
-  axis_6m = -6, axis_4m = -4, axis_3m = -3, axis_2m = -2, axis_1m = -1, none = 0, axis_1 = 1, axis_2 = 2, axis_3 = 3, axis_4 = 4, axis_6 = 6
-};
-
-enum class SymmetryType: qint64
-{
-  unknown = 0, identity = 1, translation = 2, inversion = 3, pure_rotation = 4, pure_reflection = 5, screw_rotation = 6, glide_reflection = 7
-};
-
 enum class Holohedry: qint64
 {
   none = 0, triclinic = 1, monoclinic = 2, orthorhombic = 3, tetragonal = 4, trigonal = 5, hexagonal = 6, cubic = 7
-};
-
-enum class Laue: qint64
-{
-  none = 0, laue_1 = 1, laue_2m = 2, laue_mmm = 3, laue_4m = 4, laue_4mmm = 5, laue_3 = 6, laue_3m = 7, laue_6m = 8, laue_6mmm = 9, laue_m3 = 10, laue_m3m = 11
 };

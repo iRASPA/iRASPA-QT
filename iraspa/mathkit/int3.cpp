@@ -45,6 +45,11 @@ int3 int3::operator - (const int3& right) const
   return a;
 }
 
+int3 int3::operator-() const
+{
+  return int3(-x, -y, -z);
+}
+
 double3 int3::operator * (const double3x3& right) const
 {
   return double3(this->x * right[0][0] + this->y * right[0][1] + this->z * right[0][2],
@@ -74,6 +79,11 @@ int greatestCommonDivisor(int arg1, int arg2)
 int3 greatestCommonDivisor(int3 a, int b)
 {
   return int3(greatestCommonDivisor(a.x,b), greatestCommonDivisor(a.y,b), greatestCommonDivisor(a.z,b));
+}
+
+bool operator==(const int3& lhs, const int3& rhs)
+{
+  return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z);
 }
 
 QDataStream &operator<<(QDataStream &stream, const int3 &v)

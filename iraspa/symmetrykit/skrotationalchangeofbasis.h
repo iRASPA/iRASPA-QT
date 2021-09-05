@@ -21,55 +21,25 @@
 
 #pragma once
 
-#include "int3.h"
-#include "double3x3.h"
-#include "hashcombine.h"
+#include "skrotationmatrix.h"
+#include "skseitzintegermatrix.h"
 
-union int3x3
+class SKRotationalChangeOfBasis
 {
-  int m[9];
-  int mm[3][3];
-  int3 v[3];
-  struct {int m11, m21, m31,     // 1st column
-              m12, m22, m32,     // 2nd column
-              m13, m23, m33;     // 3rd column
-  };
-  struct {int ax, ay, az,     // 1st column
-              bx, by, bz,     // 2nd column
-              cx, cy, cz;     // 3rd column
-  };
+public:
+  SKRotationalChangeOfBasis(SKRotationMatrix rotationMatrix);
+  SKRotationalChangeOfBasis(SKRotationMatrix rotationMatrix, SKRotationMatrix inverseRotationMatrix);
 
-  int3x3();
-  int3x3(int value);
-  int3x3(int3 v1, int3 v2, int3 v3);
-  int3x3(double3x3 m);
+  static SKRotationalChangeOfBasis identity;
+  static std::vector<SKRotationalChangeOfBasis> changeOfMonoclinicCentering;
+  static std::vector<SKRotationalChangeOfBasis> changeOfOrthorhombicCentering;
 
-  inline int3 & operator [] (int i) { return v[i]; }
-  inline const int3 & operator [] (int i) const { return v[i]; }
+  SKSeitzIntegerMatrix operator *(const SKSeitzIntegerMatrix& right) const;
+  double3 operator *(const double3& right) const;
+  int3 operator *(const int3& right) const;
 
-  int3x3 operator * (const int3x3& right) const;
-  int3 operator * (const int3& right) const;
-  double3 operator * (const double3& right) const;
-  int3x3 operator + (const int3x3& right) const;
-  int3x3 operator-() const;
-  int3x3 operator / (const int& right) const;
-
-  int greatestCommonDivisor();
-  int determinant(void) const;
-  int3x3 adjugate() const;
-  int trace(void) const;
+  SKRotationalChangeOfBasis inverse();
+private:
+  SKRotationMatrix _rotationMatrix;
+  SKRotationMatrix _inverseRotationMatrix;
 };
-
-
-namespace std
-{
-  template <> struct hash<int3x3>
-  {
-    size_t operator()(const int3x3& k) const
-    {
-      std::size_t h=0;
-      hash_combine(h, k.m11, k.m12, k.m13, k.m21, k.m22, k.m23, k.m31, k.m32, k.m33);
-      return h;
-    }
-  };
-}

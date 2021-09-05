@@ -111,6 +111,144 @@ QString SKPointGroup::LaueString() const
   return QString();
 }
 
+/// Table 3 of spglib lists the conditions to determine the centring types
+  /// "spacegroup.c" line 2075 of 2312
+Centring SKPointGroup::computeCentering(SKTransformationMatrix basis)
+{
+  // the absolute value of the determinant gives the scale factor by which volume is multiplied under the associated linear transformation,
+  // while its sign indicates whether the transformation preserves orientation
+
+  // Number of lattice points per cell (1.2.1 in Hahn 2005 fifth ed.)
+  // 1: primitive centred
+  // 2: C-face centred, B-face centred, A-face centred, body-centred
+  // 3: rhombohedrally centred, hexagonally centred
+  // 4: all-face centred
+
+  switch (abs(basis.int3x3.determinant()))
+  {
+  case 1:
+    return Centring::primitive;
+  case 2:
+  {
+    // detect a-center
+    for(int i=0;i<3;i++)
+    {
+      // if (1,0,0) is found, then 'a' is detected
+      if (abs(basis.int3x3[0][i]) == 1 && basis.int3x3[1][i] == 0 && basis.int3x3[2][i] == 0)
+      {
+        return Centring::a_face;
+      }
+    }
+
+    // detect b-center
+    for(int i=0;i<3;i++)
+    {
+      // if (0,1,0) is found, then 'b' is detected
+      if (basis.int3x3[0][i] == 0 && abs(basis.int3x3[1][i]) == 1 && basis.int3x3[2][i] == 0)
+      {
+        return Centring::b_face;
+      }
+    }
+
+    // detect c-center
+    for(int i=0;i<3;i++)
+    {
+      // if (0,0,1) is found, then 'b' is detected
+      if (basis.int3x3[0][i] == 0 && basis.int3x3[1][i] == 0 && abs(basis.int3x3[2][i]) == 1)
+      {
+        return Centring::c_face;
+      }
+    }
+
+    // detect body-center
+    int sum = abs(basis.int3x3[0][0]) + abs(basis.int3x3[1][0]) + abs(basis.int3x3[2][0]);
+    if(sum == 2)
+    {
+      return Centring::body;
+    }
+    return Centring::none;
+  }
+  case 3:
+    return Centring::r;
+  case 4:
+    return Centring::face;
+  default:
+    return Centring::none;
+  }
+}
+
+  /// For the convenience in the following steps, the basis vectors are further transformed to have a specific centring type by multiplying a correction matrix M with M′ for the Laue classes of 2/m and mmm and and the rhombohedral system.
+  /// For the Laue class 2/m, the basis vectors with the I, A, and B centring types are transformed to those with the C centring type.
+  /// For the Laue class mmm, those with the A, and B centring types are transformed to those with the C centring type.
+  /// For the rhombohedral system, a rhombohedrally-centred hexagonal cell is obtained by M' in either the obverse or reverse setting.
+  ///     This is transformed to the primitive rhombohedral cell by Mobv if it is the obverse setting or by Mrev if it is the reverse setting.
+  ///     Only one of M′Mobv or M′Mrev has to be an integer matrix, which is chosen as the transformation matrix.
+  ///     By this, it is known whether the rhombohedrally-centred hexagonal cell obtained by M′ is in the obverse or reverse setting.
+SKTransformationMatrix SKPointGroup::computeBasisCorrection(SKTransformationMatrix basis, Centring &centering)
+{
+  int det = abs(basis.int3x3.determinant());
+  Laue lau = _laue;
+
+  // the absolute value of the determinant gives the scale factor by which volume is multiplied under the associated linear transformation,
+  // while its sign indicates whether the transformation preserves orientation
+
+  // Number of lattice points per cell (1.2.1 in Hahn 2005 fifth ed.)
+  // 1: primitive centred (including R-centered description with ‘rhombohedral axes’)
+  // 2: C-face centred, B-face centred, A-face centred, body-centred
+  // 3: Rhombohedrally centred (description with ‘hexagonal axes’), Hexagonally centred
+  // 4: all-face centred
+
+  switch (det)
+  {
+  case 1:
+    return basis;
+  case 2:
+    switch (centering)
+    {
+    case Centring::a_face:
+      if(lau == Laue::laue_2m)
+      {
+        // Tranformation monoclinic A-centring to C-centring (preserving b-axis)
+        // Axes a and c are swapped, to keep the same handiness b (to keep Beta obtuse) is made negative
+        centering = Centring::c_face;
+        return basis.int3x3 * SKTransformationMatrix::monoclinicAtoC.int3x3;
+      }
+      else
+      {
+        centering = Centring::c_face;
+        return basis.int3x3 * SKTransformationMatrix::AtoC.int3x3;
+      }
+    case Centring::b_face:
+      centering = Centring::c_face;
+      return basis.int3x3 * SKTransformationMatrix::BtoC.int3x3;
+    case Centring::body:
+      if(lau == Laue::laue_2m)
+      {
+        centering = Centring::c_face;
+        return basis.int3x3 * SKTransformationMatrix::monoclinicItoC.int3x3;
+      }
+      return basis;
+    default:
+      return basis;
+    }
+  case 3:
+  {
+    SKTransformationMatrix m = SKTransformationMatrix::primitiveRhombohedralToTripleHexagonalCell_R2 * basis.adjugate();
+    if(m.int3x3.greatestCommonDivisor() == 3)
+    {
+      // all elements divisable by 3: reverse detected -> change to obverse
+      return basis.int3x3 * SKTransformationMatrix(int3(1, 1, 0), int3(-1, 0, 0), int3(0, 0, 1)).int3x3;
+    }
+    return basis;
+  }
+  case 4:
+    return basis;
+  default:
+    return basis;
+  }
+}
+
+
 std::optional<SKPointGroup> SKPointGroup::findPointGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
 {
   std::vector<std::tuple<double3, int, double> > reducedAtoms{};
@@ -151,6 +289,139 @@ std::optional<SKPointGroup> SKPointGroup::findPointGroup(double3x3 unitCell, std
   return std::nullopt;
 }
 
+const std::optional<SKTransformationMatrix> SKPointGroup::constructAxes(std::vector<SKRotationMatrix> properRotations) const
+{
+  switch(_laue)
+  {
+  case Laue::laue_1:
+    return SKTransformationMatrix::identity;
+  case Laue::laue_2m:
+  {
+    // Look for all proper rotation matrices of rotation type 2
+    std::vector<SKRotationMatrix> properRotationMatrices{};
+    std::copy_if (properRotations.begin(), properRotations.end(), std::back_inserter(properRotationMatrices), [](SKRotationMatrix m){return m.type() == SKRotationMatrix::RotationType::axis_2;} );
+
+    assert(!properRotationMatrices.empty());
+    if(properRotationMatrices.empty()) return std::nullopt;
+
+    SKRotationMatrix properRotationmatrix = properRotationMatrices.front();
+
+    SKTransformationMatrix axes = SKTransformationMatrix();
+
+    // set the rotation axis as the first axis
+    axes.int3x3[1] = properRotationmatrix.rotationAxis();
+
+    // possible candidates for the second axis are vectors that are orthogonal to the axes of rotation
+    std::vector<int3> orthogonalAxes = properRotationmatrix.orthogonalToAxisDirection(2);
+
+    // sort accoording to smallest length
+    std::sort(orthogonalAxes.begin(), orthogonalAxes.end(),
+        [](const int3 & a, const int3 & b) -> bool
+    {
+        return a.length_squared() <= b.length_squared();
+    });
+
+    assert(!orthogonalAxes.empty());
+    if(orthogonalAxes.empty()) return std::nullopt;
+
+    // the second and thirs axis are the shortest orthogonal axes
+    axes.int3x3[0] = orthogonalAxes[0];
+    axes.int3x3[2] = orthogonalAxes[1];
+
+    if(axes.int3x3.determinant() < 0)
+    {
+      return SKTransformationMatrix(axes.int3x3[2],axes.int3x3[1],axes.int3x3[0]);
+    }
+    return axes;
+  }
+  case Laue::laue_mmm:
+  case Laue::laue_m3:
+  case Laue::laue_m3m:
+  {
+    int rotationalTypeForBasis = rotationTypeForBasis[this->_laue];
+
+    // look for all proper rotation matrices of the wanted rotation type
+    std::vector<SKRotationMatrix> filteredProperRotations{};
+    std::copy_if (properRotations.begin(), properRotations.end(), std::back_inserter(filteredProperRotations),
+                  [rotationalTypeForBasis](SKRotationMatrix m){return int(m.type()) == rotationalTypeForBasis;} );
+
+    // take their rotation axes (use a set to avoid duplicates)
+    std::unordered_set<int3> allAxes;
+    std::transform(filteredProperRotations.begin(), filteredProperRotations.end(), std::inserter(allAxes, allAxes.begin()),
+                   [](SKRotationMatrix m){return m.rotationAxis();} );
+
+    std::vector<int3> sortedAxes{allAxes.begin(), allAxes.end()};
+    std::sort(sortedAxes.begin(), sortedAxes.end(), [](const int3 & a, const int3 & b) -> bool
+          { return a.length_squared() <= b.length_squared(); });
+
+    if(sortedAxes.size() >= 3)
+    {
+      SKTransformationMatrix axes = SKTransformationMatrix(sortedAxes[0], sortedAxes[1], sortedAxes[2]);
+
+      if(axes.int3x3.determinant() < 0)
+      {
+        return SKTransformationMatrix(axes.int3x3[0],axes.int3x3[2],axes.int3x3[1]);
+      }
+      return axes;
+    }
+    return std::nullopt;
+  }
+  case Laue::laue_4m:
+  case Laue::laue_4mmm:
+  case Laue::laue_3:
+  case Laue::laue_3m:
+  case Laue::laue_6m:
+  case Laue::laue_6mmm:
+  {
+
+    int rotationalTypeForBasis = rotationTypeForBasis[this->_laue];
+
+    // look for all proper rotation matrices of the wanted rotation type
+    std::vector<SKRotationMatrix> properRotationMatrices{};
+    std::copy_if (properRotations.begin(), properRotations.end(), std::back_inserter(properRotationMatrices),
+                  [rotationalTypeForBasis](SKRotationMatrix m){return int(m.type()) == rotationalTypeForBasis;} );
+
+    assert(!properRotationMatrices.empty());
+    if(properRotationMatrices.empty()) return std::nullopt;
+
+    SKRotationMatrix properRotationmatrix = properRotationMatrices.front();
+
+    SKTransformationMatrix axes{};
+
+    // set the rotation axis as the first axis
+    axes.int3x3[2] = properRotationmatrix.rotationAxis();
+
+    // possible candidates for the second axis are vectors that are orthogonal to the axes of rotation
+    std::vector<int3> orthogonalAxes = properRotationmatrix.orthogonalToAxisDirection(rotationalTypeForBasis);
+
+    for(const int3& orthogonalAxis: orthogonalAxes)
+    {
+      axes.int3x3[0] = orthogonalAxis;
+
+      int3 axisVector =  properRotationmatrix * orthogonalAxis;
+
+      if((std::find(SKRotationMatrix::allPossibleRotationAxes.begin(), SKRotationMatrix::allPossibleRotationAxes.end(), axisVector) != SKRotationMatrix::allPossibleRotationAxes.end()) ||
+         (std::find(SKRotationMatrix::allPossibleRotationAxes.begin(), SKRotationMatrix::allPossibleRotationAxes.end(), -axisVector) != SKRotationMatrix::allPossibleRotationAxes.end()))
+      {
+        axes.int3x3[1] = axisVector;
+
+        // to avoid F-center choice det=4
+        if(abs(int3x3(axes.int3x3[0],axes.int3x3[1],axes.int3x3[2]).determinant()) < 4)
+        {
+          if(axes.int3x3.determinant() < 0)
+          {
+            return SKTransformationMatrix(axes.int3x3[1],axes.int3x3[0],axes.int3x3[2]);
+          }
+          return axes;
+        }
+      }
+    }
+    return std::nullopt;
+  }
+  case Laue::none:
+    return std::nullopt;
+  }
+}
 
 QDataStream &operator<<(QDataStream &stream, const SKPointGroup &pointGroup)
 {
@@ -165,6 +436,35 @@ QDataStream &operator>>(QDataStream &stream, SKPointGroup &pointGroup)
   pointGroup = SKPointGroup::pointGroupData[pointGroupNumber];
   return stream;
 }
+
+/// The look-up table used for the construction of M'
+ ///    Laue group           n_e           |N|
+ ///    -1                          1                1
+ ///     2/m                     1                2
+ ///     mmm                  3                2, 2, 2
+ ///     4/m                     1                4
+ ///     4/mmm               2                4, 2
+ ///    -3                          1                3
+ ///    -3m                       2                3, 2
+ ///     6/m                     1                3
+ ///     6/mmm               2                3, 2
+ ///     m-3                     2                3, 2
+ ///     m-3m                  2                3, 4
+ /// Ref: R.W. Grosse-Kunstleve, "Algorithms for deriving crystallographic space-group information", Acta Cryst. A55, 383-395, 1999
+ std::map<Laue, int> SKPointGroup::rotationTypeForBasis =
+ {
+   std::pair(Laue::laue_1, 0),
+   std::pair(Laue::laue_2m, 2),
+   std::pair(Laue::laue_mmm, 2),
+   std::pair(Laue::laue_4m, 4),
+   std::pair(Laue::laue_4mmm, 4),
+   std::pair(Laue::laue_3, 3),
+   std::pair(Laue::laue_3m, 3),
+   std::pair(Laue::laue_6m, 3),
+   std::pair(Laue::laue_6mmm, 3),
+   std::pair(Laue::laue_m3, 2),
+   std::pair(Laue::laue_m3m, 4),
+ };
 
 
 std::vector<SKPointGroup> SKPointGroup::pointGroupData = std::vector<SKPointGroup>{

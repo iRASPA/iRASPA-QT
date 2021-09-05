@@ -340,12 +340,12 @@ float4x4 float4x4::Rotationfloat4x4FromQuaternion(simd_quatd q)
 
 
 
-std::ostream& operator<<(std::ostream& out, const float4x4& vec) // output
+std::ostream& operator<<(std::ostream& stream, const float4x4& v) // output
 {
-  out << vec.m11 <<  vec.m21 << vec.m31 << vec.m41;
-  out << vec.m12 <<  vec.m22 << vec.m32 << vec.m42;
-  out << vec.m13 <<  vec.m23 << vec.m33 << vec.m43;
-  out << vec.m14 <<  vec.m24 << vec.m34 << vec.m44;
-  return out;
+  stream << v.m11 <<  v.m21 << v.m31 << v.m41;
+  stream << v.m12 <<  v.m22 << v.m32 << v.m42;
+  stream << v.m13 <<  v.m23 << v.m33 << v.m43;
+  stream << v.m14 <<  v.m24 << v.m34 << v.m44;
+  return stream;
 }
 

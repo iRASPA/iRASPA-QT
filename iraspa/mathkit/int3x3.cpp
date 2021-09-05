@@ -20,6 +20,7 @@
  ********************************************************************************************************************/
 
 #include "int3x3.h"
+#include "ring.h"
 
 int3x3::int3x3()
 {
@@ -79,12 +80,43 @@ int3 int3x3::operator * (const int3& b) const
   return r;
 }
 
+double3 int3x3::operator * (const double3& b) const
+{
+  double3 r(0,0,0);
+
+  r.x = m11 * b.x + m12 * b.y + m13 * b.z;
+  r.y = m21 * b.x + m22 * b.y + m23 * b.z;
+  r.z = m31 * b.x + m32 * b.y + m33 * b.z;
+
+  return r;
+}
+
 int3x3 int3x3::operator-() const
 {
   int3x3 r;
   r.m11 = -m11; r.m21 = -m21; r.m31 = -m31;
   r.m12 = -m12; r.m22 = -m22; r.m32 = -m32;
   r.m13 = -m13; r.m23 = -m23; r.m33 = -m33;
+  return r;
+}
+
+int3x3 int3x3::operator + (const int3x3& b) const
+{
+  int3x3 r;
+
+  r.m11 = this->m11 + b.m11;  r.m21 = this->m21 + b.m21;  r.m31 = this->m31 + b.m31;
+  r.m12 = this->m12 + b.m12;  r.m22 = this->m22 + b.m22;  r.m32 = this->m32 + b.m32;
+  r.m13 = this->m13 + b.m13;  r.m23 = this->m23 + b.m23;  r.m33 = this->m33 + b.m33;
+
+  return r;
+}
+
+int3x3 int3x3::operator / (const int& b) const
+{
+  int3x3 r;
+  r.m11 = this->m11 / b; r.m21 = this->m21 / b; r.m31 = this->m31 / b;
+  r.m12 = this->m12 / b; r.m22 = this->m22 / b; r.m32 = this->m32 / b;
+  r.m13 = this->m13 / b; r.m23 = this->m23 / b; r.m33 = this->m33 / b;
   return r;
 }
 
@@ -98,8 +130,31 @@ int int3x3::determinant(void) const
    return determinant;
 }
 
+int3x3 int3x3::adjugate() const
+{
+  int3x3 result{};
+  result.mm[0][0] = this->mm[1][1] * this->mm[2][2] - this->mm[2][1] * this->mm[1][2];
+  result.mm[0][1] = this->mm[0][2] * this->mm[2][1] - this->mm[0][1] * this->mm[2][2];
+  result.mm[0][2] = this->mm[0][1] * this->mm[1][2] - this->mm[0][2] * this->mm[1][1];
+  result.mm[1][0] = this->mm[1][2] * this->mm[2][0] - this->mm[1][0] * this->mm[2][2];
+  result.mm[1][1] = this->mm[0][0] * this->mm[2][2] - this->mm[0][2] * this->mm[2][0];
+  result.mm[1][2] = this->mm[1][0] * this->mm[0][2] - this->mm[0][0] * this->mm[1][2];
+  result.mm[2][0] = this->mm[1][0] * this->mm[2][1] - this->mm[2][0] * this->mm[1][1];
+  result.mm[2][1] = this->mm[2][0] * this->mm[0][1] - this->mm[0][0] * this->mm[2][1];
+  result.mm[2][2] = this->mm[0][0] * this->mm[1][1] - this->mm[1][0] * this->mm[0][1];
+
+  return result;
+}
+
+int int3x3::greatestCommonDivisor()
+{
+  std::vector<int> v1{m11,m12,m13,m21,m22,m23,m31,m32,m33};
+  return std::accumulate(v1.begin(), v1.end(), 0, [&](double a, double b){return Ring::greatestCommonDivisor(a,b);});
+}
+
 int int3x3::trace() const
 {
   return m11+m22+m33;
 }
+
 

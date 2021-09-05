@@ -24,6 +24,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <QDataStream>
+#include "hashcombine.h"
 
 union double3x3;
 union double3;
@@ -38,9 +39,14 @@ union int3
   inline int & operator [] (int i) { return v[i]; }
   inline const int & operator [] (int i) const { return v[i]; }
 
+  int length_squared() const {return (x*x+y*y+z*z);}
+
   int3 operator + (const int3& right) const;
   int3 operator - (const int3& right) const;
   double3 operator *(const double3x3& right) const;
+  int3 operator-() const;
+
+  friend bool operator==(const int3& lhs, const int3& rhs);
 
   friend QDataStream &operator<<(QDataStream &, const int3 &);
   friend QDataStream &operator>>(QDataStream &, int3 &);
@@ -48,3 +54,15 @@ union int3
 
 int3 greatestCommonDivisor(int3 a, int b);
 
+namespace std
+{
+  template <> struct hash<int3>
+  {
+    size_t operator()(const int3& k) const
+    {
+      std::size_t h=0;
+      hash_combine(h, k.x, k.y, k.z);
+      return h;
+    }
+  };
+}

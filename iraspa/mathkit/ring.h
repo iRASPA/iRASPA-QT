@@ -21,55 +21,15 @@
 
 #pragma once
 
-#include "int3.h"
-#include "double3x3.h"
-#include "hashcombine.h"
+#include <tuple>
 
-union int3x3
+class Ring
 {
-  int m[9];
-  int mm[3][3];
-  int3 v[3];
-  struct {int m11, m21, m31,     // 1st column
-              m12, m22, m32,     // 2nd column
-              m13, m23, m33;     // 3rd column
-  };
-  struct {int ax, ay, az,     // 1st column
-              bx, by, bz,     // 2nd column
-              cx, cy, cz;     // 3rd column
-  };
-
-  int3x3();
-  int3x3(int value);
-  int3x3(int3 v1, int3 v2, int3 v3);
-  int3x3(double3x3 m);
-
-  inline int3 & operator [] (int i) { return v[i]; }
-  inline const int3 & operator [] (int i) const { return v[i]; }
-
-  int3x3 operator * (const int3x3& right) const;
-  int3 operator * (const int3& right) const;
-  double3 operator * (const double3& right) const;
-  int3x3 operator + (const int3x3& right) const;
-  int3x3 operator-() const;
-  int3x3 operator / (const int& right) const;
-
-  int greatestCommonDivisor();
-  int determinant(void) const;
-  int3x3 adjugate() const;
-  int trace(void) const;
+public:
+    Ring();
+    static int floorDivision(int a, int b);
+    static int modulo(int a, int b);
+    static int greatestCommonDivisor(int a, int b);
+    static std::tuple<int,int,int> extendedGreatestCommonDivisor(int a, int b);
+    static std::pair<int,int> divisionModulo(int a, int b);
 };
-
-
-namespace std
-{
-  template <> struct hash<int3x3>
-  {
-    size_t operator()(const int3x3& k) const
-    {
-      std::size_t h=0;
-      hash_combine(h, k.m11, k.m12, k.m13, k.m21, k.m22, k.m23, k.m31, k.m32, k.m33);
-      return h;
-    }
-  };
-}

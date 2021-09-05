@@ -41,3 +41,4 @@
 #include <double4x3.h>
 #include <simd_quatd.h>
 #include <hashcombine.h>
+#include <ringmatrix.h>

@@ -24,6 +24,7 @@
 #include "skseitzmatrix.h"
 #include <iostream>
 #include <QDebug>
+#include "skpointgroup.h"
 
 SKSpaceGroup::SKSpaceGroup(int HallNumber)
 {
@@ -187,6 +188,118 @@ SKSymmetryOperationSet SKSpaceGroup::findSpaceGroupSymmetry(double3x3 unitCell, 
   return SKSymmetryOperationSet(spaceGroupSymmetries);
 }
 
+std::optional<int> SKSpaceGroup::findSpaceGroupGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
+{
+  std::vector<std::tuple<double3, int, double> > reducedAtoms{};
+
+  if(allowPartialOccupancies)
+  {
+    reducedAtoms = atoms;
+  }
+  else
+  {
+    std::map<int, int> histogram{};
+    for(const std::tuple<double3, int, double> &atom: atoms)
+    {
+      histogram[std::get<1>(atom)] = histogram[std::get<1>(atom)] + 1;
+    }
+    std::map<int,int>::iterator index = std::min_element(histogram.begin(), histogram.end(),
+                                       [](const auto& l, const auto& r) { return l.second < r.second; });
+    int leastOccuringAtomType = index->first;
+
+    std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
+  }
+
+  double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+
+  std::optional<double3x3> primitiveDelaunayUnitCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
+
+  if(primitiveDelaunayUnitCell)
+  {
+    SKPointSymmetrySet latticeSymmetries = SKSymmetryCell::findLatticeSymmetry(*primitiveDelaunayUnitCell, symmetryPrecision);
+
+    std::vector<std::tuple<double3, int, double> >positionInPrimitiveCell = SKSymmetryCell::trim(atoms, unitCell, *primitiveDelaunayUnitCell, allowPartialOccupancies, symmetryPrecision);
+
+    SKSymmetryOperationSet spaceGroupSymmetries = SKSpaceGroup::findSpaceGroupSymmetry(unitCell, positionInPrimitiveCell, positionInPrimitiveCell, latticeSymmetries, allowPartialOccupancies, symmetryPrecision);
+
+    SKPointSymmetrySet pointSymmetry = SKPointSymmetrySet(spaceGroupSymmetries.rotations());
+
+    std::optional<SKPointGroup> pointGroup = SKPointGroup(pointSymmetry);
+
+    if(pointGroup)
+    {
+      // Use the axes directions of the Laue group-specific symmetry as a new basis
+      std::optional<SKTransformationMatrix> Mprime = pointGroup->constructAxes(spaceGroupSymmetries.rotations());
+
+      if(Mprime)
+      {
+        // adjustment of (M',0) to (M,0) for certain combination of Laue and centring types
+        switch(pointGroup->laue())
+        {
+        case Laue::laue_1:
+        {
+          SKSymmetryCell::createFromUnitCell(*primitiveDelaunayUnitCell * Mprime->int3x3);
+          std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> symmetryCell = SKSymmetryCell::createFromUnitCell(*primitiveDelaunayUnitCell * Mprime->int3x3).computeReducedNiggliCellAndChangeOfBasisMatrix();
+          if(!symmetryCell)
+          {
+            return std::nullopt;
+          }
+          Mprime = std::get<1>(*symmetryCell);
+        }
+        case Laue::laue_2m:
+        {
+          // Change the basis for this monoclinic centrosymmetric point group using Delaunay reduction in 2D (algorithm of Atsushi Togo used)
+          // The unique axis is chosen as b, choose shortest a, c lattice vectors (|a| < |c|)
+          std::optional<double3x3> computedDelaunayReducedCell2D = SKSymmetryCell::computeDelaunayReducedCell2D(*primitiveDelaunayUnitCell * Mprime->int3x3, symmetryPrecision);
+          if(!computedDelaunayReducedCell2D)
+          {
+            return std::nullopt;
+          }
+          Mprime = SKTransformationMatrix(primitiveDelaunayUnitCell->inverse() *  *computedDelaunayReducedCell2D);
+        }
+        default:
+          break;
+        }
+
+        Centring centering = pointGroup->computeCentering(*Mprime);
+
+        SKTransformationMatrix correctedBasis = pointGroup->computeBasisCorrection(*Mprime, centering);
+
+        double3x3 primitiveLattice = *primitiveDelaunayUnitCell * correctedBasis.int3x3;
+
+        // transform the symmetries (rotation and translation) from the primtive cell to the conventional cell
+        // the centering is used to add the additional translations
+        SKSymmetryOperationSet symmetryInConventionalCell = spaceGroupSymmetries.changedBasis(correctedBasis).addingCenteringOperations(centering);
+
+        for(int i=0;i<=230;i++)
+        {
+          int HallNumber = SKSpaceGroup::_spaceGroupHallData[i].front();
+          if(SKSpaceGroup::_spaceGroupData[HallNumber].pointGroupNumber() == pointGroup->number())
+          {
+            std::optional<std::pair<double3, SKRotationalChangeOfBasis>> foundSpaceGroup = SKSpaceGroup::matchSpaceGroup(HallNumber, primitiveLattice, centering, symmetryInConventionalCell.operations(), symmetryPrecision);
+            if(foundSpaceGroup)
+            {
+
+            }
+          }
+        }
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+
+std::optional<std::pair<double3, SKRotationalChangeOfBasis>> SKSpaceGroup::matchSpaceGroup(int HallNumber, double3x3 lattice, Centring entering, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision = 1e-2)
+{
+
+}
+
+std::optional<double3> SKSpaceGroup::getOriginShift(int HallNumber, Centring centering, SKRotationalChangeOfBasis changeOfBasis, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision = 1e-2)
+{
+
+}
+
 QDataStream &operator<<(QDataStream &stream, const SKSpaceGroup &spaceGroup)
 {
   stream << spaceGroup._spaceGroupSetting.HallNumber();
@@ -201,6 +314,240 @@ QDataStream &operator>>(QDataStream &stream, SKSpaceGroup &spaceGroup)
   return stream;
 }
 
+std::map<int, std::vector<int>> SKSpaceGroup::_spaceGroupHallData =
+{
+  {0, {0}},
+  {1, {1}},
+  {2, {2}},
+  {3, {3, 4, 5}},
+  {4, {6, 7, 8}},
+  {5, {9, 10, 11, 12, 13, 14, 15, 16, 17}},
+  {6, {18, 19, 20}},
+  {7, {21, 22, 23, 24, 25, 26, 27, 28, 29}},
+  {8, {30, 31, 32, 33, 34, 35, 36, 37, 38}},
+  {9, {39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56}},
+  {10, {57, 58, 59}},
+  {11, {60, 61, 62}},
+  {12, {63, 64, 65, 66, 67, 68, 69, 70, 71}},
+  {13, {72, 73, 74, 75, 76, 77, 78, 79, 80}},
+  {14, {81, 82, 83, 84, 85, 86, 87, 88, 89}},
+  {15, {90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107}},
+  {16, {108}},
+  {17, {109, 110, 111}},
+  {18, {112, 113, 114}},
+  {19, {115}},
+  {20, {116, 117, 118}},
+  {21, {119, 120, 121}},
+  {22, {122}},
+  {23, {123}},
+  {24, {124}},
+  {25, {125, 126, 127}},
+  {26, {128, 129, 130, 131, 132, 133}},
+  {27, {134, 135, 136}},
+  {28, {137, 138, 139, 140, 141, 142}},
+  {29, {143, 144, 145, 146, 147, 148}},
+  {30, {149, 150, 151, 152, 153, 154}},
+  {31, {155, 156, 157, 158, 159, 160}},
+  {32, {161, 162, 163}},
+  {33, {164, 165, 166, 167, 168, 169}},
+  {34, {170, 171, 172}},
+  {35, {173, 174, 175}},
+  {36, {176, 177, 178, 179, 180, 181}},
+  {37, {182, 183, 184}},
+  {38, {185, 186, 187, 188, 189, 190}},
+  {39, {191, 192, 193, 194, 195, 196}},
+  {40, {197, 198, 199, 200, 201, 202}},
+  {41, {203, 204, 205, 206, 207, 208}},
+  {42, {209, 210, 211}},
+  {43, {212, 213, 214}},
+  {44, {215, 216, 217}},
+  {45, {218, 219, 220}},
+  {46, {221, 222, 223, 224, 225, 226}},
+  {47, {227}},
+  {48, {229, 228}}, // second origin as default
+  {49, {230, 231, 232}},
+  {50, {234, 233, 236, 235, 238, 237}}, // second origin as default
+  {51, {239, 240, 241, 242, 243, 244}},
+  {52, {245, 246, 247, 248, 249, 250}},
+  {53, {251, 252, 253, 254, 255, 256}},
+  {54, {257, 258, 259, 260, 261, 262}},
+  {55, {263, 264, 265}},
+  {56, {266, 267, 268}},
+  {57, {269, 270, 271, 272, 273, 274}},
+  {58, {275, 276, 277}},
+  {59, {279, 278, 281, 280, 283, 282}}, // second origin as default
+  {60, {284, 285, 286, 287, 288, 289}},
+  {61, {290, 291}},
+  {62, {292, 293, 294, 295, 296, 297}},
+  {63, {298, 299, 300, 301, 302, 303}},
+  {64, {304, 305, 306, 307, 308, 309}},
+  {65, {310, 311, 312}},
+  {66, {313, 314, 315}},
+  {67, {316, 317, 318, 319, 320, 321}},
+  {68, {323, 322, 325, 324, 327, 326, 329, 328, 331, 330, 333, 332}}, // second origin as default
+  {69, {334}},
+  {70, {336, 335}}, // second origin as default
+  {71, {337}},
+  {72, {338, 339, 340}},
+  {73, {341, 342}},
+  {74, {343, 344, 345, 346, 347, 348}},
+  {75, {349}},
+  {76, {350}},
+  {77, {351}},
+  {78, {352}},
+  {79, {353}},
+  {80, {354}},
+  {81, {355}},
+  {82, {356}},
+  {83, {357}},
+  {84, {358}},
+  {85, {360, 359}}, // second origin as default
+  {86, {362, 361}}, // second origin as default
+  {87, {363}},
+  {88, {365, 364}}, // second origin as default
+  {89, {366}},
+  {90, {367}},
+  {91, {368}},
+  {92, {369}},
+  {93, {370}},
+  {94, {371}},
+  {95, {372}},
+  {96, {373}},
+  {97, {374}},
+  {98, {375}},
+  {99, {376}},
+  {100, {377}},
+  {101, {378}},
+  {102, {379}},
+  {103, {380}},
+  {104, {381}},
+  {105, {382}},
+  {106, {383}},
+  {107, {384}},
+  {108, {385}},
+  {109, {386}},
+  {110, {387}},
+  {111, {388}},
+  {112, {389}},
+  {113, {390}},
+  {114, {391}},
+  {115, {392}},
+  {116, {393}},
+  {117, {394}},
+  {118, {395}},
+  {119, {396}},
+  {120, {397}},
+  {121, {398}},
+  {122, {399}},
+  {123, {400}},
+  {124, {401}},
+  {125, {403, 402}}, // second origin as default
+  {126, {405, 404}}, // second origin as default
+  {127, {406}},
+  {128, {407}},
+  {129, {409, 408}}, // second origin as default
+  {130, {411, 410}}, // second origin as default
+  {131, {412}},
+  {132, {413}},
+  {133, {415, 414}}, // second origin as default
+  {134, {417, 416}}, // second origin as default
+  {135, {418}},
+  {136, {419}},
+  {137, {421, 420}}, // second origin as default
+  {138, {423, 422}}, // second origin as default
+  {139, {424}},
+  {140, {425}},
+  {141, {427, 426}}, // second origin as default
+  {142, {429, 428}}, // second origin as default
+  {143, {430}},
+  {144, {431}},
+  {145, {432}},
+  {146, {433, 434}},
+  {147, {435}},
+  {148, {436, 437}},
+  {149, {438}},
+  {150, {439}},
+  {151, {440}},
+  {152, {441}},
+  {153, {442}},
+  {154, {443}},
+  {155, {444, 445}},
+  {156, {446}},
+  {157, {447}},
+  {158, {448}},
+  {159, {449}},
+  {160, {450, 451}},
+  {161, {452, 453}},
+  {162, {454}},
+  {163, {455}},
+  {164, {456}},
+  {165, {457}},
+  {166, {458, 459}},
+  {167, {460, 461}},
+  {168, {462}},
+  {169, {463}},
+  {170, {464}},
+  {171, {465}},
+  {172, {466}},
+  {173, {467}},
+  {174, {468}},
+  {175, {469}},
+  {176, {470}},
+  {177, {471}},
+  {178, {472}},
+  {179, {473}},
+  {180, {474}},
+  {181, {475}},
+  {182, {476}},
+  {183, {477}},
+  {184, {478}},
+  {185, {479}},
+  {186, {480}},
+  {187, {481}},
+  {188, {482}},
+  {189, {483}},
+  {190, {484}},
+  {191, {485}},
+  {192, {486}},
+  {193, {487}},
+  {194, {488}},
+  {195, {489}},
+  {196, {490}},
+  {197, {491}},
+  {198, {492}},
+  {199, {493}},
+  {200, {494}},
+  {201, {496, 495}}, // second origin as default
+  {202, {497}},
+  {203, {499, 498}}, // second origin as default
+  {204, {500}},
+  {205, {501}},
+  {206, {502}},
+  {207, {503}},
+  {208, {504}},
+  {209, {505}},
+  {210, {506}},
+  {211, {507}},
+  {212, {508}},
+  {213, {509}},
+  {214, {510}},
+  {215, {511}},
+  {216, {512}},
+  {217, {513}},
+  {218, {514}},
+  {219, {515}},
+  {220, {516}},
+  {221, {517}},
+  {222, {519, 518}}, // second origin as default
+  {223, {520}},
+  {224, {522, 521}}, // second origin as default
+  {225, {523}},
+  {226, {524}},
+  {227, {526, 525}},  // second origin as default
+  {228, {527, 528}},
+  {229, {529}},
+  {230, {530}}
+};
 
 const std::array<SKSpaceGroupSetting,531> SKSpaceGroup::_spaceGroupData = std::array<SKSpaceGroupSetting,531>{
     SKSpaceGroupSetting(  0,  0, 0,0, "abc",            "", "", "unknown",false, int3(0,0,0), Symmorphicity::symmorphic, false, Centring::primitive,std::vector<int3>{int3(0,0,0)}, 0, "", "012", "", int3x3(1)),

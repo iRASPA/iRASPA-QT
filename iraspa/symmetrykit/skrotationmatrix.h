@@ -28,35 +28,35 @@
 
 struct SKRotationMatrix
 {
+  enum class RotationType: qint64
+  {
+    axis_6m = -6, axis_4m = -4, axis_3m = -3, axis_2m = -2, axis_1m = -1, none = 0, axis_1 = 1, axis_2 = 2, axis_3 = 3, axis_4 = 4, axis_6 = 6
+  };
+
+  enum class SymmetryType: qint64
+  {
+    unknown = 0, identity = 1, translation = 2, inversion = 3, pure_rotation = 4, pure_reflection = 5, screw_rotation = 6, glide_reflection = 7
+  };
+
+
   SKRotationMatrix();
   SKRotationMatrix(int3x3 m) {this->int3x3 = m;}
   SKRotationMatrix(int3 v1, int3 v2, int3 v3);
 
-  enum class RotationType: int
-  {
-    axis_6m = -6,
-    axis_4m = -4,
-    axis_3m = -3,
-    axis_2m = -2,
-    axis_1m = -1,
-    none = 0,
-    axis_1 = 1,
-    axis_2 = 2,
-    axis_3 = 3,
-    axis_4 = 4,
-    axis_6 = 6
-  };
-
-  SKRotationMatrix::RotationType type() const;
-
   int3x3 int3x3;
 
- // SKRotationMatrix proper();
- friend std::ostream& operator<<(std::ostream& os, const SKRotationMatrix& setting);
+  SKRotationMatrix inverse();
+  SKRotationMatrix proper();
+  SKRotationMatrix::RotationType type() const;
+  int3 rotationAxis() const;
+  std::vector<int3> orthogonalToAxisDirection(int rotationOrder);
+
+  friend std::ostream& operator<<(std::ostream& os, const SKRotationMatrix& setting);
 
   SKRotationMatrix operator * (const SKRotationMatrix& right) const;
   int3 operator * (const int3& right) const;
   double3 operator * (const double3& right) const;
+  SKRotationMatrix operator + (const SKRotationMatrix& right) const;
   SKRotationMatrix operator-() const;
 
   friend bool operator==(const SKRotationMatrix& lhs, const SKRotationMatrix& rhs);
@@ -112,6 +112,7 @@ struct SKRotationMatrix
   static SKRotationMatrix r_2idoubleprime_001;
 
   static std::vector<std::tuple<SKRotationMatrix, int3, int3>> twoFoldSymmetryOperations;
+  static std::vector<int3> allPossibleRotationAxes;
 };
 
 

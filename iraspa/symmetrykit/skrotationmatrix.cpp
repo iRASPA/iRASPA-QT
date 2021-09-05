@@ -33,6 +33,18 @@ SKRotationMatrix::SKRotationMatrix(int3 v1, int3 v2, int3 v3)
   int3x3.m13 = v3.x; int3x3.m23 = v3.y; int3x3.m33 = v3.z;
 }
 
+SKRotationMatrix SKRotationMatrix::proper()
+{
+  if(int3x3.determinant() == 1)
+  {
+    return *this;
+  }
+  else
+  {
+    return -(*this);
+  }
+}
+
 SKRotationMatrix::RotationType SKRotationMatrix::type() const
 {
   int determinant = int3x3.determinant();
@@ -76,6 +88,57 @@ SKRotationMatrix::RotationType SKRotationMatrix::type() const
   }
 }
 
+int3 SKRotationMatrix::rotationAxis() const
+{
+  // rotation axis is the eigenvector with eigenvalue lambda==1
+  for (size_t i=0;i<SKRotationMatrix::allPossibleRotationAxes.size();i++)
+  {
+    int3 axis = SKRotationMatrix::allPossibleRotationAxes[i];
+    if((this->int3x3 * axis) == axis)
+    {
+      return axis;
+    }
+  }
+
+  return int3(0,0,0);
+}
+
+  /// Computes a list of integer-vectors that are orthogonal to the rotation axis for a given rotation matrix
+  ///
+  /// - parameter rotationOrder: the rotation order
+  ///
+  /// - returns: a list of perpendicular eigenvectors
+  ///
+  /// Note : Theorem TA4.1 in Boisen en Gibbs (1990) states that a vector x is in the plane perpendicular to the axis direction 'e' of a proper rotation matrix 'W_p'
+  /// with rotational order 'n' if and only if S.x=0 where S = W_p + W_p^2 + ... + W_p^n
+  /// Ref: R.W. Grosse-Kunstleve, "Algorithms for deriving crystallographic space-group information", Acta Cryst. A55, 383-395, 1999
+  ///
+  /// The algorithm of Atsushi Togo is used: a search over all possible rotation axes.
+std::vector<int3> SKRotationMatrix::orthogonalToAxisDirection(int rotationOrder)
+{
+  std::vector<int3> orthoAxes{};
+
+  SKRotationMatrix properRotation = this->proper();
+  SKRotationMatrix sumRot = SKRotationMatrix::identity;
+  SKRotationMatrix rot = SKRotationMatrix::identity;
+
+  for(int i=0;i<rotationOrder-1;i++)
+  {
+    rot = rot * properRotation;
+    sumRot = sumRot + rot;
+  }
+
+  for(const int3& rotationAxes: SKRotationMatrix::allPossibleRotationAxes)
+  {
+    if(sumRot * rotationAxes == int3(0,0,0))
+    {
+      orthoAxes.push_back(rotationAxes);
+    }
+  }
+
+  return orthoAxes;
+}
+
 std::ostream& operator<<(std::ostream& os, const SKRotationMatrix& m)
 {
     os << "SKRotationMatrix: " << m.int3x3.m11 << '/' << m.int3x3.m12 << '/' << m.int3x3.m13 << '/' << m.int3x3.m21 << '/' << m.int3x3.m22 << '/' << m.int3x3.m23 << '/' << m.int3x3.m31 << '/' << m.int3x3.m32 << '/' << m.int3x3.m33 << '/';
@@ -95,6 +158,23 @@ SKRotationMatrix SKRotationMatrix::proper()
   }
 }*/
 
+/// Inverse of the matrix if the determinant = 1 or -1, otherwise the contents of the resulting matrix are undefined.
+SKRotationMatrix  SKRotationMatrix::inverse()
+{
+  int determinant = int3x3.determinant();
+
+  int3 c1 = int3(-int3x3[1][2] * int3x3[2][1] + int3x3[1][1] * int3x3[2][2], int3x3[0][2] * int3x3[2][1] - int3x3[0][1] * int3x3[2][2], -int3x3[0][2] * int3x3[1][1] + int3x3[0][1] * int3x3[1][2]);
+  int3 c2 = int3(int3x3[1][2] * int3x3[2][0] - int3x3[1][0] * int3x3[2][2], -int3x3[0][2] * int3x3[2][0] + int3x3[0][0] * int3x3[2][2], int3x3[0][2] * int3x3[1][0] - int3x3[0][0] * int3x3[1][2]);
+  int3 c3 = int3(-int3x3[1][1] * int3x3[2][0] + int3x3[1][0] * int3x3[2][1], int3x3[0][1] * int3x3[2][0] - int3x3[0][0] * int3x3[2][1], -int3x3[0][1] * int3x3[1][0] + int3x3[0][0] * int3x3[1][1]);
+
+  switch(determinant)
+  {
+    case -1: return -SKRotationMatrix(c1, c2, c3);
+    case 1: return SKRotationMatrix(c1,c2,c3);
+    default: return SKRotationMatrix();
+  }
+}
+
 SKRotationMatrix SKRotationMatrix::operator * (const SKRotationMatrix& b) const
 {
   return SKRotationMatrix(this->int3x3 * b.int3x3);
@@ -108,6 +188,11 @@ int3 SKRotationMatrix::operator * (const int3& b) const
 double3 SKRotationMatrix::operator * (const double3& b) const
 {
   return double3x3(this->int3x3) * b;
+}
+
+SKRotationMatrix SKRotationMatrix::operator + (const SKRotationMatrix& right) const
+{
+  return this->int3x3 + right.int3x3;
 }
 
 SKRotationMatrix SKRotationMatrix::operator-() const
@@ -261,4 +346,82 @@ std::vector<std::tuple<SKRotationMatrix, int3, int3>> SKRotationMatrix::twoFoldS
   std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(1, -1, 0), int3(-1, 0, -1)) , int3(1, 0, 0) , int3(-2, -1, 1)),
   std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(1, -1, 0), int3(0, 0, -1)) , int3(1, 0, 0) , int3(2, 1, 0)),
   std::make_tuple(SKRotationMatrix(int3(1, 0, 0), int3(1, -1, 0), int3(1, 0, -1)) , int3(1, 0, 0) , int3(2, 1, 1))
+};
+
+// all possible rotation axes written in terms of integers
+std::vector<int3> SKRotationMatrix::allPossibleRotationAxes =
+{
+  int3( 1, 0, 0),
+  int3( 0, 1, 0),
+  int3( 0, 0, 1),
+  int3( 0, 1, 1),
+  int3( 1, 0, 1),
+  int3( 1, 1, 0),
+  int3( 0, 1,-1),
+  int3(-1, 0, 1),
+  int3( 1,-1, 0),
+  int3( 1, 1, 1),
+  int3(-1, 1, 1),
+  int3( 1,-1, 1),
+  int3( 1, 1,-1),
+  int3( 0, 1, 2),
+  int3( 2, 0, 1),
+  int3( 1, 2, 0),
+  int3( 0, 2, 1),
+  int3( 1, 0, 2),
+  int3( 2, 1, 0),
+  int3( 0,-1, 2),
+  int3( 2, 0,-1),
+  int3(-1, 2, 0),
+  int3( 0,-2, 1),
+  int3( 1, 0,-2),
+  int3(-2, 1, 0),
+  int3( 2, 1, 1),
+  int3( 1, 2, 1),
+  int3( 1, 1, 2),
+  int3( 2,-1,-1),
+  int3(-1, 2,-1),
+  int3(-1,-1, 2),
+  int3( 2, 1,-1),
+  int3(-1, 2, 1),
+  int3( 1,-1, 2),
+  int3( 2,-1, 1),
+  int3( 1, 2,-1),
+  int3(-1, 1, 2),
+  int3( 3, 1, 2),
+  int3( 2, 3, 1),
+  int3( 1, 2, 3),
+  int3( 3, 2, 1),
+  int3( 1, 3, 2),
+  int3( 2, 1, 3),
+  int3( 3,-1, 2),
+  int3( 2, 3,-1),
+  int3(-1, 2, 3),
+  int3( 3,-2, 1),
+  int3( 1, 3,-2),
+  int3(-2, 1, 3),
+  int3( 3,-1,-2),
+  int3(-2, 3,-1),
+  int3(-1,-2, 3),
+  int3( 3,-2,-1),
+  int3(-1, 3,-2),
+  int3(-2,-1, 3),
+  int3( 3, 1,-2),
+  int3(-2, 3, 1),
+  int3( 1,-2, 3),
+  int3( 3, 2,-1),
+  int3(-1, 3, 2),
+  int3( 2,-1, 3),
+  int3( 1, 1, 3),
+  int3(-1, 1, 3),
+  int3( 1,-1, 3),
+  int3(-1,-1, 3),
+  int3( 1, 3, 1),
+  int3(-1, 3, 1),
+  int3( 1, 3,-1),
+  int3(-1, 3,-1),
+  int3( 3, 1, 1),
+  int3( 3, 1,-1),
+  int3( 3,-1, 1),
+  int3( 3,-1,-1)
 };

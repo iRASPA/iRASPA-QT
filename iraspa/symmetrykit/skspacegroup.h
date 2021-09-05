@@ -25,9 +25,11 @@
 #include <array>
 #include <QString>
 #include <optional>
-#include "skspacegroupsetting.h"
 #include "skpointsymmetryset.h"
 #include "sksymmetryoperationset.h"
+#include "skspacegroupsetting.h"
+#include "skrotationalchangeofbasis.h"
+
 
 class SKSpaceGroup
 {
@@ -45,11 +47,13 @@ public:
   static const std::vector<std::vector<int>>  spaceGroupHallData;
   static const std::array<SKSpaceGroupSetting, 531> _spaceGroupData;
   static SKSymmetryOperationSet findSpaceGroupSymmetry(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> reducedAtoms, std::vector<std::tuple<double3, int, double>> atoms, SKPointSymmetrySet latticeSymmetries, bool allowPartialOccupancies, double symmetryPrecision);
-
+  static std::optional<int> findSpaceGroupGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision);
+  static std::optional<std::pair<double3, SKRotationalChangeOfBasis>> matchSpaceGroup(int HallNumber, double3x3 lattice, Centring entering, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision);
+  static std::optional<double3> getOriginShift(int HallNumber, Centring centering, SKRotationalChangeOfBasis changeOfBasis, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision);
 private:
   SKSpaceGroupSetting _spaceGroupSetting = SKSpaceGroup::_spaceGroupData[1];
+  static std::map<int, std::vector<int>> _spaceGroupHallData;
   
-
   static bool matchSpacegroup(QString spaceSearchGroupString, QString storedSpaceGroupString);
 
   friend QDataStream &operator<<(QDataStream &, const SKSpaceGroup &);
