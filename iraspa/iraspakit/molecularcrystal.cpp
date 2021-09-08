@@ -707,10 +707,9 @@ void MolecularCrystal::expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetr
   asymmetricAtom->setCopies(atomCopies);
 }
 
-std::pair<std::vector<int>, std::vector<double3>> MolecularCrystal::atomSymmetryData() const
+std::vector<std::tuple<double3, int, double>> MolecularCrystal::atomSymmetryData() const
 {
-  std::vector<int> elementIdentifiers{};
-  std::vector<double3> fractionalPositions{};
+  std::vector<std::tuple<double3, int, double>> atomData{};
 
   double3x3 unitCellInverse = _cell->inverseUnitCell();
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
@@ -723,24 +722,24 @@ std::pair<std::vector<int>, std::vector<double3>> MolecularCrystal::atomSymmetry
       {
         if(copy->type() == SKAtomCopy::AtomCopyType::copy)
         {
-          elementIdentifiers.push_back(elementIdentifier);
-          fractionalPositions.push_back(double3::fract(unitCellInverse * copy->position()));
+          atomData.push_back(std::make_tuple(double3::fract(unitCellInverse * copy->position()), elementIdentifier, 1.0));
         }
       }
     }
   }
 
-  return std::make_pair(elementIdentifiers, fractionalPositions);
+  return atomData;
 }
 
-void MolecularCrystal::setAtomSymmetryData(double3x3 unitCell, std::vector<std::pair<int, double3>> atomData)
+void MolecularCrystal::setAtomSymmetryData(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> atomData)
 {
   _cell = std::make_shared<SKCell>(unitCell);
 
-  for(const std::pair<int, double3> &pair : atomData)
+  for(const std::tuple<double3, int, double> &tuple : atomData)
   {
-    int elementIdentifier = pair.first;
-    double3 position = pair.second;
+    double3 position = std::get<0>(tuple);
+    int elementIdentifier = std::get<1>(tuple);
+
     QString displayName = PredefinedElements::predefinedElements[elementIdentifier]._chemicalSymbol;
     std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = std::make_shared<SKAsymmetricAtom>(displayName, elementIdentifier);
     asymmetricAtom->setPosition(unitCell * position);

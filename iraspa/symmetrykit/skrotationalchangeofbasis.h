@@ -24,9 +24,11 @@
 #include "skrotationmatrix.h"
 #include "skseitzintegermatrix.h"
 
-class SKRotationalChangeOfBasis
+struct SKRotationalChangeOfBasis
 {
-public:
+  SKRotationMatrix rotationMatrix;
+  SKRotationMatrix inverseRotationMatrix;
+
   SKRotationalChangeOfBasis(SKRotationMatrix rotationMatrix);
   SKRotationalChangeOfBasis(SKRotationMatrix rotationMatrix, SKRotationMatrix inverseRotationMatrix);
 
@@ -34,12 +36,22 @@ public:
   static std::vector<SKRotationalChangeOfBasis> changeOfMonoclinicCentering;
   static std::vector<SKRotationalChangeOfBasis> changeOfOrthorhombicCentering;
 
-  SKSeitzIntegerMatrix operator *(const SKSeitzIntegerMatrix& right) const;
-  double3 operator *(const double3& right) const;
-  int3 operator *(const int3& right) const;
-
   SKRotationalChangeOfBasis inverse();
-private:
-  SKRotationMatrix _rotationMatrix;
-  SKRotationMatrix _inverseRotationMatrix;
 };
+
+inline SKSeitzIntegerMatrix operator *(const SKRotationalChangeOfBasis& a, const SKSeitzIntegerMatrix& b)
+{
+  SKRotationMatrix rotationMatrix  = SKRotationMatrix(a.inverseRotationMatrix * b.rotation * a.rotationMatrix);
+  int3 translationVector = a.inverseRotationMatrix * b.translation;
+  return SKSeitzIntegerMatrix(rotationMatrix, translationVector);
+}
+
+inline double3 operator *(const SKRotationalChangeOfBasis& a, const double3& b)
+{
+  return a.inverseRotationMatrix * b;
+}
+
+inline int3 operator *(const SKRotationalChangeOfBasis& a, const int3& b)
+{
+  return a.inverseRotationMatrix * b;
+}

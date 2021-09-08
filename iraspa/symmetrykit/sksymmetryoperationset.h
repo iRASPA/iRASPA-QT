@@ -28,19 +28,20 @@
 #include "skspacegroupsetting.h"
 #include "sktransformationmatrix.h"
 
-class SKSymmetryOperationSet
+struct SKSymmetryOperationSet
 {
-public:
+  std::vector<SKSeitzMatrix> operations;
+  Centring centring;
+
   SKSymmetryOperationSet();
   SKSymmetryOperationSet(std::vector<SKSeitzMatrix> operations);
 
-  size_t size() {return _operations.size();}
+  inline size_t size() {return this->operations.size();}
+
   SKSymmetryOperationSet fullSeitzMatrices();
-  std::vector<SKSeitzMatrix> operations() {return _operations;}
   const std::vector<SKRotationMatrix> rotations() const;
+  const std::vector<SKRotationMatrix> properRotations() const;
+
   const SKSymmetryOperationSet changedBasis(SKTransformationMatrix transformationMatrix) const;
-  const SKSymmetryOperationSet addingCenteringOperations(Centring centering) const;
-private:
-  std::vector<SKSeitzMatrix> _operations;
-  Centring _centring;
+  const SKSymmetryOperationSet addingCenteringOperations(Centring centering) const;  
 };

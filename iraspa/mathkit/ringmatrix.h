@@ -25,12 +25,17 @@
 #include <vector>
 #include <optional>
 #include <any>
+#include "int3x3.h"
 
 class RingMatrix
 {
 public:
   RingMatrix(int rows, int columns, int initialValue);
   RingMatrix(int rows, int columns, std::vector<std::vector<int>> data);
+  RingMatrix(int3x3 t1,int3x3 t2,int3x3 t3);
+
+  int rows() const {return _rows;}
+  int columns() const {return _columns;}
 
   static RingMatrix createRandomRingMatrix(int rows, int columns, int limit);
 
@@ -41,6 +46,21 @@ public:
   static RingMatrix identity(int size);
   static RingMatrix zeros(int rows, int columns);
   static RingMatrix ones(int rows, int columns);
+
+  inline bool operator==(const RingMatrix& b) const
+  {
+    if(this->_rows != b._rows) return false;
+    if(this->_columns != b._columns) return false;
+
+    for(int i=0;i<this->_rows;i++)
+    {
+      for(int j=0;j<b._columns;j++)
+      {
+        if((*this)(i,j) != b(i,j)) return false;
+      }
+    }
+    return true;
+  }
 
   std::tuple<RingMatrix,RingMatrix,std::vector<int>> HermiteNormalForm();
   std::tuple<RingMatrix, RingMatrix, RingMatrix> SmithNormalForm();
@@ -64,8 +84,23 @@ private:
   void Smith_Theorem8(RingMatrix &A, RingMatrix &U, RingMatrix &V, int row, int r);
   std::vector<int> Algorithm_6_15(int a, std::vector<int> bi, int N);
 
-  friend RingMatrix operator*(const RingMatrix &v1, const RingMatrix &v2);
-  friend bool operator==(const RingMatrix& lhs, const RingMatrix& rhs);
   friend QDebug operator<<(QDebug debug, const RingMatrix &m);
 };
 
+inline RingMatrix operator*(const RingMatrix &a, const RingMatrix &b)
+{
+  RingMatrix results = RingMatrix(a.rows(), b.columns(), 0);
+  for(int i=0;i<a.rows();i++)
+  {
+    for(int j=0;j<b.columns();j++)
+    {
+      int v = 0;
+      for(int k=0;k<a.columns();k++)
+      {
+        v += a(i,k) * b(k,j);
+      }
+      results(i,j) = v;
+    }
+  }
+  return results;
+}

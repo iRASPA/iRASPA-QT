@@ -136,32 +136,6 @@ simd_quatd simd_quatd::roll(double angle)
   return simd_quatd(cos(half_theta), double3(0.0, 0.0,sin(half_theta)));
 }
 
-simd_quatd simd_quatd::operator +(const simd_quatd& right) const
-{
-  return simd_quatd(ix + right.ix,
-                    iy + right.iy,
-                    iz + right.iz,
-                    r + right.r);
-}
-
-simd_quatd simd_quatd::operator /(const double& right) const
-{
-  return simd_quatd(ix / right,
-                    iy / right,
-                    iz / right,
-                    r / right);
-}
-
-
-simd_quatd simd_quatd::operator *(const simd_quatd& right) const
-{
-  return simd_quatd(r * right.r - ix * right.ix - iy * right.iy - iz * right.iz,
-            double3(r * right.ix + ix * right.r  + iy * right.iz - iz * right.iy,
-                    r * right.iy - ix * right.iz + iy * right.r  + iz * right.ix,
-                    r * right.iz + ix * right.iy - iy * right.ix + iz * right.r));
-}
-
-
 const simd_quatd simd_quatd::data120[120] =
   {
     simd_quatd(0.0, double3(1.0, 0.0, 0.0)),

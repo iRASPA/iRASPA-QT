@@ -22,6 +22,8 @@ void FindPointGroupNoPartialOccupancies::cleanupTestCase()
 
 void FindPointGroupNoPartialOccupancies::test_case_triclinic()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, qint64> testData =
   {
     std::make_pair("spglibtestdata/triclinic/POSCAR-001" , 1),
@@ -45,7 +47,12 @@ void FindPointGroupNoPartialOccupancies::test_case_triclinic()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, randomlyShiftedAtoms, allowPartialOccupancies, symmetryPrecision);
 
       if(pointGroup)
       {
@@ -62,6 +69,8 @@ void FindPointGroupNoPartialOccupancies::test_case_triclinic()
 
 void FindPointGroupNoPartialOccupancies::test_case_monoclinic()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, qint64> testData =
   {
     std::make_pair("spglibtestdata/monoclinic/POSCAR-003", 3),
@@ -110,7 +119,12 @@ void FindPointGroupNoPartialOccupancies::test_case_monoclinic()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, randomlyShiftedAtoms, allowPartialOccupancies, symmetryPrecision);
 
       if(pointGroup)
       {
@@ -126,6 +140,8 @@ void FindPointGroupNoPartialOccupancies::test_case_monoclinic()
 
 void FindPointGroupNoPartialOccupancies::test_case_orthorhombic()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, qint64> testData =
   {
     std::make_pair("SpglibTestData/orthorhombic/POSCAR-016",  6),
@@ -269,7 +285,12 @@ void FindPointGroupNoPartialOccupancies::test_case_orthorhombic()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, randomlyShiftedAtoms, allowPartialOccupancies, symmetryPrecision);
 
       if(pointGroup)
       {
@@ -285,6 +306,8 @@ void FindPointGroupNoPartialOccupancies::test_case_orthorhombic()
 
 void FindPointGroupNoPartialOccupancies::test_case_tetragonal()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, qint64> testData =
   {
     std::make_pair("SpglibTestData/tetragonal/POSCAR-075",  9),
@@ -451,7 +474,12 @@ void FindPointGroupNoPartialOccupancies::test_case_tetragonal()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, randomlyShiftedAtoms, allowPartialOccupancies, symmetryPrecision);
 
       if(pointGroup)
       {
@@ -468,6 +496,8 @@ void FindPointGroupNoPartialOccupancies::test_case_tetragonal()
 
 void FindPointGroupNoPartialOccupancies::test_case_trigonal()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, qint64> testData =
   {
     std::make_pair("SpglibTestData/trigonal/POSCAR-143",  16),
@@ -540,7 +570,12 @@ void FindPointGroupNoPartialOccupancies::test_case_trigonal()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, randomlyShiftedAtoms, allowPartialOccupancies, symmetryPrecision);
 
       if(pointGroup)
       {
@@ -557,6 +592,8 @@ void FindPointGroupNoPartialOccupancies::test_case_trigonal()
 
 void FindPointGroupNoPartialOccupancies::test_case_hexagonal()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, qint64> testData =
   {
     std::make_pair("SpglibTestData/hexagonal/POSCAR-168",  21),
@@ -627,7 +664,12 @@ void FindPointGroupNoPartialOccupancies::test_case_hexagonal()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, randomlyShiftedAtoms, allowPartialOccupancies, symmetryPrecision);
 
       if(pointGroup)
       {
@@ -644,6 +686,8 @@ void FindPointGroupNoPartialOccupancies::test_case_hexagonal()
 
 void FindPointGroupNoPartialOccupancies::test_case_cubic()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, qint64> testData =
   {
     std::make_pair("SpglibTestData/cubic/POSCAR-195",  28),
@@ -728,7 +772,12 @@ void FindPointGroupNoPartialOccupancies::test_case_cubic()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, randomlyShiftedAtoms, allowPartialOccupancies, symmetryPrecision);
 
       if(pointGroup)
       {
@@ -746,6 +795,8 @@ void FindPointGroupNoPartialOccupancies::test_case_cubic()
 
 void FindPointGroupNoPartialOccupancies::test_case_virtual()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, qint64> testData =
   {
     std::make_pair("SpglibTestData/virtual_structure/POSCAR-1-221-33",  1),
@@ -1082,7 +1133,12 @@ void FindPointGroupNoPartialOccupancies::test_case_virtual()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      std::optional<SKPointGroup> pointGroup = SKPointGroup::findPointGroup(unitCell, randomlyShiftedAtoms, allowPartialOccupancies, symmetryPrecision);
 
       if(pointGroup)
       {

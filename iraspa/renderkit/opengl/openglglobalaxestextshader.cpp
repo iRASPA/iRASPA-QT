@@ -117,80 +117,80 @@ void OpenGLGlobalAxesTextShader::initializeVertexArrayObject()
 {
   if(_dataSource)
   {
-  std::vector<float4> coords{float4(0.0, 0.0, 0.0, 1.0)};
+    std::vector<float4> coords{float4(0.0, 0.0, 0.0, 1.0)};
 
-  glBindVertexArray(_vertexArrayObject);
+    glBindVertexArray(_vertexArrayObject);
 
-  glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-  check_gl_error();
-  glBufferData(GL_ARRAY_BUFFER, coords.size()*sizeof(float4), coords.data(), GL_DYNAMIC_DRAW);
-  check_gl_error();
-
-  if(!OpenGLTextRenderingShader::_cachedFontAtlas.contains(fontString))
-  {
-    GLuint texture;
-    glGenTextures(1, &texture);
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+    check_gl_error();
+    glBufferData(GL_ARRAY_BUFFER, coords.size()*sizeof(float4), coords.data(), GL_DYNAMIC_DRAW);
     check_gl_error();
 
-    glBindTexture(GL_TEXTURE_2D, texture);
+    if(!OpenGLTextRenderingShader::_cachedFontAtlas.contains(fontString))
+    {
+      GLuint texture;
+      glGenTextures(1, &texture);
+      check_gl_error();
+
+      glBindTexture(GL_TEXTURE_2D, texture);
+      check_gl_error();
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      RKFontAtlas* fontAtlas = new RKFontAtlas(fontString, 256);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED, GL_UNSIGNED_BYTE, fontAtlas->textureData.data());
+      check_gl_error();
+      fontAtlas->texture = texture;
+
+      OpenGLTextRenderingShader::_cachedFontAtlas.insert(fontString, fontAtlas);
+    }
+    RKFontAtlas *atlas = OpenGLTextRenderingShader::_cachedFontAtlas.object(fontString);
+
+    std::vector<RKInPerInstanceAttributesText> atomTextDataX = atlas->buildMeshWithString(float4(1.0,0.0,0.0,1.0), float4(3,3,3,3), "X", RKTextAlignment::center);
+    std::vector<RKInPerInstanceAttributesText> atomTextDataY = atlas->buildMeshWithString(float4(0.0,1.0,0.0,1.0), float4(3,3,3,3), "Y", RKTextAlignment::center);
+    std::vector<RKInPerInstanceAttributesText> atomTextDataZ = atlas->buildMeshWithString(float4(0.0,0.0,1.0,1.0), float4(3,3,3,3), "Z", RKTextAlignment::center);
+
+    std::vector<RKInPerInstanceAttributesText> atomTextData;
+    std::copy(atomTextDataX.begin(), atomTextDataX.end(), std::back_inserter(atomTextData));
+    std::copy(atomTextDataY.begin(), atomTextDataY.end(), std::back_inserter(atomTextData));
+    std::copy(atomTextDataZ.begin(), atomTextDataZ.end(), std::back_inserter(atomTextData));
+
+    glBindBuffer(GL_ARRAY_BUFFER,_instanceBuffer);
     check_gl_error();
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    RKFontAtlas* fontAtlas = new RKFontAtlas(fontString, 256);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED, GL_UNSIGNED_BYTE, fontAtlas->textureData.data());
+    if(atomTextData.size()>0)
+    {
+      glBufferData(GL_ARRAY_BUFFER, atomTextData.size()*sizeof(RKInPerInstanceAttributesText), atomTextData.data(), GL_DYNAMIC_DRAW);
+    }
+
+    glVertexAttribPointer(_instancePositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,position));
     check_gl_error();
-    fontAtlas->texture = texture;
+    glVertexAttribDivisor(_instancePositionAttributeLocation, 1);
+    check_gl_error();
 
-    OpenGLTextRenderingShader::_cachedFontAtlas.insert(fontString, fontAtlas);
-  }
-  RKFontAtlas *atlas = OpenGLTextRenderingShader::_cachedFontAtlas.object(fontString);
+    glVertexAttribPointer(_instanceScaleAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,scale));
+    check_gl_error();
+    glVertexAttribDivisor(_instanceScaleAttributeLocation, 1);
+    check_gl_error();
 
-  std::vector<RKInPerInstanceAttributesText> atomTextDataX = atlas->buildMeshWithString(float4(1.0,0.0,0.0,1.0), float4(3,3,3,3), "X", RKTextAlignment::center);
-  std::vector<RKInPerInstanceAttributesText> atomTextDataY = atlas->buildMeshWithString(float4(0.0,1.0,0.0,1.0), float4(3,3,3,3), "Y", RKTextAlignment::center);
-  std::vector<RKInPerInstanceAttributesText> atomTextDataZ = atlas->buildMeshWithString(float4(0.0,0.0,1.0,1.0), float4(3,3,3,3), "Z", RKTextAlignment::center);
+    glVertexAttribPointer(_instanceVertexAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,vertexCoordinatesData));
+    check_gl_error();
+    glVertexAttribDivisor(_instanceVertexAttributeLocation, 1);
+    check_gl_error();
 
-  std::vector<RKInPerInstanceAttributesText> atomTextData;
-  std::copy(atomTextDataX.begin(), atomTextDataX.end(), std::back_inserter(atomTextData));
-  std::copy(atomTextDataY.begin(), atomTextDataY.end(), std::back_inserter(atomTextData));
-  std::copy(atomTextDataZ.begin(), atomTextDataZ.end(), std::back_inserter(atomTextData));
+    glVertexAttribPointer(_instanceTextureUVAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,textureCoordinatesData));
+    check_gl_error();
+    glVertexAttribDivisor(_instanceTextureUVAttributeLocation, 1);
+    check_gl_error();
 
-  glBindBuffer(GL_ARRAY_BUFFER,_instanceBuffer);
-  check_gl_error();
-  if(atomTextData.size()>0)
-  {
-    glBufferData(GL_ARRAY_BUFFER, atomTextData.size()*sizeof(RKInPerInstanceAttributesText), atomTextData.data(), GL_DYNAMIC_DRAW);
-  }
+    glEnableVertexAttribArray(_instancePositionAttributeLocation);
+    glEnableVertexAttribArray(_instanceScaleAttributeLocation);
+    glEnableVertexAttribArray(_instanceVertexAttributeLocation);
+    glEnableVertexAttribArray(_instanceTextureUVAttributeLocation);
 
-  glVertexAttribPointer(_instancePositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,position));
-  check_gl_error();
-  glVertexAttribDivisor(_instancePositionAttributeLocation, 1);
-  check_gl_error();
-
-  glVertexAttribPointer(_instanceScaleAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,scale));
-  check_gl_error();
-  glVertexAttribDivisor(_instanceScaleAttributeLocation, 1);
-  check_gl_error();
-
-  glVertexAttribPointer(_instanceVertexAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,vertexCoordinatesData));
-  check_gl_error();
-  glVertexAttribDivisor(_instanceVertexAttributeLocation, 1);
-  check_gl_error();
-
-  glVertexAttribPointer(_instanceTextureUVAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,textureCoordinatesData));
-  check_gl_error();
-  glVertexAttribDivisor(_instanceTextureUVAttributeLocation, 1);
-  check_gl_error();
-
-  glEnableVertexAttribArray(_instancePositionAttributeLocation);
-  glEnableVertexAttribArray(_instanceScaleAttributeLocation);
-  glEnableVertexAttribArray(_instanceVertexAttributeLocation);
-  glEnableVertexAttribArray(_instanceTextureUVAttributeLocation);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
   }
 }
 

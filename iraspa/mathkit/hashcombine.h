@@ -22,8 +22,12 @@
 #pragma once
 
 #include <functional>
+#include <limits>
+#include <cstdint>
 
-inline void hash_combine(std::size_t& seed) { }
+// https://stackoverflow.com/questions/35985960/c-why-is-boosthash-combine-the-best-way-to-combine-hash-values/50978188
+
+inline void hash_combine([[maybe_unused]] std::size_t&  seed) { }
 
 template <typename T, typename... Rest>
 inline void hash_combine(std::size_t& seed, const T& v, Rest... rest) {
@@ -31,3 +35,40 @@ inline void hash_combine(std::size_t& seed, const T& v, Rest... rest) {
     seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
     hash_combine(seed, rest...);
 }
+
+/*
+template<typename T>
+T xorshift(const T& n,int i){
+  return n^(n>>i);
+}
+
+static uint32_t distribute(const uint32_t& n){
+  uint32_t p = 0x55555555ul; // pattern of alternating 0 and 1
+  uint32_t c = 3423571495ul; // random uneven integer constant;
+  return c*xorshift(p*xorshift(n,16),16);
+}
+
+static uint64_t hash(const uint64_t& n){
+  uint64_t p = 0x5555555555555555;     // pattern of alternating 0 and 1
+  uint64_t c = 17316035218449499591ull;// random uneven integer constant;
+  return c*xorshift(p*xorshift(n,32),32);
+}
+
+// if c++20 rotl is not available:
+template <typename T,typename S>
+typename std::enable_if<std::is_unsigned<T>::value,T>::type
+constexpr rotl(const T n, const S i){
+  const T m = (std::numeric_limits<T>::digits-1);
+  const T c = i&m;
+  return (n<<c)|(n>>((T(0)-c)&m)); // this is usually recognized by the compiler to mean rotation, also c++20 now gives us rotl directly
+}
+
+template <class T>
+inline size_t hash_combine(std::size_t& seed, const T& v)
+{
+  return rotl(seed,std::numeric_limits<size_t>::digits/3) ^ distribute(std::hash<T>{}(v));
+}
+*/
+
+
+

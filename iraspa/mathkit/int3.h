@@ -24,6 +24,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <QDataStream>
+#include <functional>
 #include "hashcombine.h"
 
 union double3x3;
@@ -39,20 +40,30 @@ union int3
   inline int & operator [] (int i) { return v[i]; }
   inline const int & operator [] (int i) const { return v[i]; }
 
-  int length_squared() const {return (x*x+y*y+z*z);}
+  inline int length_squared() const {return (x*x+y*y+z*z);}
 
-  int3 operator + (const int3& right) const;
-  int3 operator - (const int3& right) const;
-  double3 operator *(const double3x3& right) const;
-  int3 operator-() const;
+  static int3 greatestCommonDivisor(int3 a, int b);
 
-  friend bool operator==(const int3& lhs, const int3& rhs);
+  inline int3& operator+= (const int3& v1) { this->x += v1.x; this->y += v1.y; this->z += v1.z; return *this; }
+  inline int3& operator-= (const int3& v1) { this->x -= v1.x; this->y -= v1.y; this->z -= v1.z; return *this; }
 
+  inline int3& operator*= (const int& v1) { this->x *= v1; this->y *= v1; this->z *= v1; return *this; }
+  inline int3& operator/= (const int& v1) { this->x /= v1; this->y /= v1; this->z /= v1; return *this; }
+
+
+  inline int3 operator-() const {return int3(-this->x, -this->y, -this->z);}
+
+  inline bool operator==(const int3& rhs) const {return (this->x == rhs.x) && (this->y == rhs.y) && (this->z == rhs.z);}
+
+  friend QDebug operator<<(QDebug debug, const int3 &m);
   friend QDataStream &operator<<(QDataStream &, const int3 &);
   friend QDataStream &operator>>(QDataStream &, int3 &);
 };
 
-int3 greatestCommonDivisor(int3 a, int b);
+inline int3 operator+(int3 lhs, const int3& rhs) { return int3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z); }
+inline int3 operator-(int3 lhs, const int3& rhs) { return int3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z); }
+inline int3 operator*(int3 lhs, const int& rhs) { return int3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs); }
+inline int3 operator/(int3 lhs, const int& rhs) { return int3(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs); }
 
 namespace std
 {
@@ -61,7 +72,9 @@ namespace std
     size_t operator()(const int3& k) const
     {
       std::size_t h=0;
-      hash_combine(h, k.x, k.y, k.z);
+      hash_combine(h, k.x);
+      hash_combine(h, k.y);
+      hash_combine(h, k.z);
       return h;
     }
   };

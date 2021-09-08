@@ -24,10 +24,10 @@
 #include <cassert>
 #include "skpointgroup.h"
 
-SKSpaceGroupSetting::SKSpaceGroupSetting(qint64 number, qint64 spaceGroupNumber, qint64 order, char ext, QString qualifier, QString HM, QString oldHMString, QString Hall,
+SKSpaceGroupSetting::SKSpaceGroupSetting(qint64 number, qint64 spaceGroupNumber, qint64 order, char ext, QString qualifier, QString HM, QString Hall,
                                          bool inversionAtOrigin, int3 inversionCenter, Symmorphicity symmorphicity, bool standard, Centring centring,
                                          std::vector<int3> latticeTranslations, qint64 pointGroupNumber, std::string schoenflies, std::string generators,
-                                         std::string encoding, int3x3 toPrimitiveTransformation)
+                                         std::string encoding, SKAsymmetricUnit asymmetricUnit, SKTransformationMatrix transformationMatrix)
 {
   _HallNumber = number;
   _spaceGroupNumber = spaceGroupNumber;
@@ -35,7 +35,6 @@ SKSpaceGroupSetting::SKSpaceGroupSetting(qint64 number, qint64 spaceGroupNumber,
   _ext = ext;
   _qualifier = qualifier;
   _HMString = HM;
-  _oldHMString = oldHMString;
   _HallString = Hall;
   _encodedGenerators = generators;
   _encodedSeitz =  encoding;
@@ -47,7 +46,8 @@ SKSpaceGroupSetting::SKSpaceGroupSetting(qint64 number, qint64 spaceGroupNumber,
   _latticeTranslations = latticeTranslations;
   _schoenflies = schoenflies;
   _pointGroupNumber = pointGroupNumber;
-  _toPrimitiveTransformation = toPrimitiveTransformation;
+  _asymmetricUnit = asymmetricUnit;
+  _transformationMatrix = transformationMatrix;
 }
 
 QString SKSpaceGroupSetting::symmorphicityString() const
@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& os, const SKSpaceGroupSetting& setting)
     return os;
 }
 
-SKIntegerSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
+SKIntegerSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices() const
 {
   assert(_encodedSeitz.size() % 3 == 0);
   assert(_encodedSeitz.size()>0);
@@ -133,8 +133,8 @@ SKIntegerSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
 
       SKSeitzIntegerMatrix seitz = SKSeitzIntegerMatrix(x,y,z);
 
-      int3 translation = seitz.translation() + seitz.rotation() * _inversionCenter;
-      matrices[m+i] = SKSeitzIntegerMatrix(-seitz.rotation(), translation);
+      int3 translation = seitz.translation + seitz.rotation * _inversionCenter;
+      matrices[m+i] = SKSeitzIntegerMatrix(-seitz.rotation, translation);
     }
   }
 
@@ -144,10 +144,49 @@ SKIntegerSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices()
     for(size_t i=0;i<size;i++)
     {
       matrices[size * k + i] = matrices[i];
-      matrices[size * k + i].setTranslation(matrices[size * k + i].translation() + translationVectors[k]);
+      matrices[size * k + i].translation = matrices[size * k + i].translation + translationVectors[k];
     }
   }
 
   return SKIntegerSymmetryOperationSet(matrices);
 }
 
+std::vector<SKSeitzIntegerMatrix> SKSpaceGroupSetting::SeitzMatricesWithoutTranslation() const
+{
+  assert(_encodedSeitz.size() % 3 == 0);
+  assert(_encodedSeitz.size()>0);
+
+  bool centrosymmetric = SKPointGroup::pointGroupData[_pointGroupNumber].centrosymmetric();
+  size_t m = _encodedSeitz.size()/3;
+
+  size_t size = centrosymmetric ? 2 * m : m;
+  std::vector<int3> translationVectors = _latticeTranslations;
+  std::vector<SKSeitzIntegerMatrix> matrices = std::vector<SKSeitzIntegerMatrix>();
+  matrices.resize(size);
+
+  for(size_t i=0;i<m;i++)
+  {
+    char x = _encodedSeitz[3 * i];
+    char y = _encodedSeitz[3 * i + 1];
+    char z = _encodedSeitz[3 * i + 2];
+
+    matrices[i] = SKSeitzIntegerMatrix(x,y,z);
+  }
+
+  if (centrosymmetric)
+  {
+    for(size_t i=0;i<m;i++)
+    {
+      char x = _encodedSeitz[3 * i];
+      char y = _encodedSeitz[3 * i + 1];
+      char z = _encodedSeitz[3 * i + 2];
+
+      SKSeitzIntegerMatrix seitz = SKSeitzIntegerMatrix(x,y,z);
+
+      int3 translation = seitz.translation + seitz.rotation * _inversionCenter;
+      matrices[m+i] = SKSeitzIntegerMatrix(-seitz.rotation, translation);
+    }
+  }
+
+  return matrices;
+}

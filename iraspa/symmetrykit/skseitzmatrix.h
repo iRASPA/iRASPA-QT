@@ -29,16 +29,22 @@
 #include "skdefinitions.h"
 
 
-class SKSeitzMatrix
+struct SKSeitzMatrix
 {
-public:
-  SKSeitzMatrix();
-  SKSeitzMatrix(SKRotationMatrix rotation, double3 translation);
-  const SKRotationMatrix &rotation() const {return _rotation;}
-  const double3 &translation() const {return _translation;}
-private:
-  SKRotationMatrix _rotation;
-  double3 _translation;
+  SKRotationMatrix rotation;
+  double3 translation;
 
-  friend bool operator==(const SKSeitzMatrix& lhs, const SKSeitzMatrix& rhs);
+  SKSeitzMatrix();
+  SKSeitzMatrix(SKRotationMatrix rotation, double3 translation);  
+
+  inline bool operator==(const SKSeitzMatrix& b)
+  {
+    double3 dr = (this->translation - b.translation);
+    dr.x -= rint(dr.x);
+    dr.y -= rint(dr.y);
+    dr.z -= rint(dr.z);
+
+    return (this->rotation == b.rotation) &&
+           (dr.length_squared() < 1e-5);
+  }
 };

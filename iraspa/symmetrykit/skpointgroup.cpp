@@ -27,6 +27,7 @@
 #include "skspacegroup.h"
 #include "skrotationaloccurancetable.h"
 #include "skrotationmatrix.h"
+#include <type_traits>
 
 SKPointGroup::SKPointGroup(SKRotationalOccuranceTable table, qint64 number, QString symbol, QString schoenflies, Holohedry holohedry, Laue laue, bool centrosymmetric, bool enantiomorphic):
     _table(table), _number(number), _symbol(symbol), _schoenflies(schoenflies), _holohedry(holohedry), _laue(laue), _centrosymmetric(centrosymmetric), _enantiomorphic(enantiomorphic)
@@ -124,7 +125,7 @@ Centring SKPointGroup::computeCentering(SKTransformationMatrix basis)
   // 3: rhombohedrally centred, hexagonally centred
   // 4: all-face centred
 
-  switch (abs(basis.int3x3.determinant()))
+  switch (abs(basis.determinant()))
   {
   case 1:
     return Centring::primitive;
@@ -134,7 +135,7 @@ Centring SKPointGroup::computeCentering(SKTransformationMatrix basis)
     for(int i=0;i<3;i++)
     {
       // if (1,0,0) is found, then 'a' is detected
-      if (abs(basis.int3x3[0][i]) == 1 && basis.int3x3[1][i] == 0 && basis.int3x3[2][i] == 0)
+      if (abs(basis[0][i]) == 1 && basis[1][i] == 0 && basis[2][i] == 0)
       {
         return Centring::a_face;
       }
@@ -144,7 +145,7 @@ Centring SKPointGroup::computeCentering(SKTransformationMatrix basis)
     for(int i=0;i<3;i++)
     {
       // if (0,1,0) is found, then 'b' is detected
-      if (basis.int3x3[0][i] == 0 && abs(basis.int3x3[1][i]) == 1 && basis.int3x3[2][i] == 0)
+      if (basis[0][i] == 0 && abs(basis[1][i]) == 1 && basis[2][i] == 0)
       {
         return Centring::b_face;
       }
@@ -154,14 +155,14 @@ Centring SKPointGroup::computeCentering(SKTransformationMatrix basis)
     for(int i=0;i<3;i++)
     {
       // if (0,0,1) is found, then 'b' is detected
-      if (basis.int3x3[0][i] == 0 && basis.int3x3[1][i] == 0 && abs(basis.int3x3[2][i]) == 1)
+      if (basis[0][i] == 0 && basis[1][i] == 0 && abs(basis[2][i]) == 1)
       {
         return Centring::c_face;
       }
     }
 
     // detect body-center
-    int sum = abs(basis.int3x3[0][0]) + abs(basis.int3x3[1][0]) + abs(basis.int3x3[2][0]);
+    int sum = abs(basis[0][0]) + abs(basis[1][0]) + abs(basis[2][0]);
     if(sum == 2)
     {
       return Centring::body;
@@ -186,7 +187,7 @@ Centring SKPointGroup::computeCentering(SKTransformationMatrix basis)
   ///     By this, it is known whether the rhombohedrally-centred hexagonal cell obtained by M′ is in the obverse or reverse setting.
 SKTransformationMatrix SKPointGroup::computeBasisCorrection(SKTransformationMatrix basis, Centring &centering)
 {
-  int det = abs(basis.int3x3.determinant());
+  int det = abs(basis.determinant());
   Laue lau = _laue;
 
   // the absolute value of the determinant gives the scale factor by which volume is multiplied under the associated linear transformation,
@@ -211,21 +212,21 @@ SKTransformationMatrix SKPointGroup::computeBasisCorrection(SKTransformationMatr
         // Tranformation monoclinic A-centring to C-centring (preserving b-axis)
         // Axes a and c are swapped, to keep the same handiness b (to keep Beta obtuse) is made negative
         centering = Centring::c_face;
-        return basis.int3x3 * SKTransformationMatrix::monoclinicAtoC.int3x3;
+        return basis * SKTransformationMatrix::monoclinicAtoC;
       }
       else
       {
         centering = Centring::c_face;
-        return basis.int3x3 * SKTransformationMatrix::AtoC.int3x3;
+        return basis * SKTransformationMatrix::AtoC;
       }
     case Centring::b_face:
       centering = Centring::c_face;
-      return basis.int3x3 * SKTransformationMatrix::BtoC.int3x3;
+      return basis * SKTransformationMatrix::BtoC;
     case Centring::body:
       if(lau == Laue::laue_2m)
       {
         centering = Centring::c_face;
-        return basis.int3x3 * SKTransformationMatrix::monoclinicItoC.int3x3;
+        return basis * SKTransformationMatrix::monoclinicItoC;
       }
       return basis;
     default:
@@ -234,10 +235,10 @@ SKTransformationMatrix SKPointGroup::computeBasisCorrection(SKTransformationMatr
   case 3:
   {
     SKTransformationMatrix m = SKTransformationMatrix::primitiveRhombohedralToTripleHexagonalCell_R2 * basis.adjugate();
-    if(m.int3x3.greatestCommonDivisor() == 3)
+    if(m.greatestCommonDivisor() == 3)
     {
       // all elements divisable by 3: reverse detected -> change to obverse
-      return basis.int3x3 * SKTransformationMatrix(int3(1, 1, 0), int3(-1, 0, 0), int3(0, 0, 1)).int3x3;
+      return basis * SKTransformationMatrix(int3(1, 1, 0), int3(-1, 0, 0), int3(0, 0, 1));
     }
     return basis;
   }
@@ -299,17 +300,20 @@ const std::optional<SKTransformationMatrix> SKPointGroup::constructAxes(std::vec
   {
     // Look for all proper rotation matrices of rotation type 2
     std::vector<SKRotationMatrix> properRotationMatrices{};
-    std::copy_if (properRotations.begin(), properRotations.end(), std::back_inserter(properRotationMatrices), [](SKRotationMatrix m){return m.type() == SKRotationMatrix::RotationType::axis_2;} );
+    std::copy_if (properRotations.begin(), properRotations.end(), std::back_inserter(properRotationMatrices),
+                  [](SKRotationMatrix m){return static_cast<typename std::underlying_type<Laue>::type>(m.type()) == 2;} );
 
-    assert(!properRotationMatrices.empty());
-    if(properRotationMatrices.empty()) return std::nullopt;
+    if(properRotationMatrices.empty())
+    {
+      return std::nullopt;
+    }
 
     SKRotationMatrix properRotationmatrix = properRotationMatrices.front();
 
     SKTransformationMatrix axes = SKTransformationMatrix();
 
     // set the rotation axis as the first axis
-    axes.int3x3[1] = properRotationmatrix.rotationAxis();
+    axes[1] = properRotationmatrix.rotationAxis();
 
     // possible candidates for the second axis are vectors that are orthogonal to the axes of rotation
     std::vector<int3> orthogonalAxes = properRotationmatrix.orthogonalToAxisDirection(2);
@@ -318,19 +322,19 @@ const std::optional<SKTransformationMatrix> SKPointGroup::constructAxes(std::vec
     std::sort(orthogonalAxes.begin(), orthogonalAxes.end(),
         [](const int3 & a, const int3 & b) -> bool
     {
-        return a.length_squared() <= b.length_squared();
+        return a.length_squared() < b.length_squared();
     });
 
     assert(!orthogonalAxes.empty());
     if(orthogonalAxes.empty()) return std::nullopt;
 
     // the second and thirs axis are the shortest orthogonal axes
-    axes.int3x3[0] = orthogonalAxes[0];
-    axes.int3x3[2] = orthogonalAxes[1];
+    axes[0] = orthogonalAxes[0];
+    axes[2] = orthogonalAxes[1];
 
-    if(axes.int3x3.determinant() < 0)
+    if(axes.determinant() < 0)
     {
-      return SKTransformationMatrix(axes.int3x3[2],axes.int3x3[1],axes.int3x3[0]);
+      return SKTransformationMatrix(axes[2],axes[1],axes[0]);
     }
     return axes;
   }
@@ -343,25 +347,29 @@ const std::optional<SKTransformationMatrix> SKPointGroup::constructAxes(std::vec
     // look for all proper rotation matrices of the wanted rotation type
     std::vector<SKRotationMatrix> filteredProperRotations{};
     std::copy_if (properRotations.begin(), properRotations.end(), std::back_inserter(filteredProperRotations),
-                  [rotationalTypeForBasis](SKRotationMatrix m){return int(m.type()) == rotationalTypeForBasis;} );
+                  [rotationalTypeForBasis](SKRotationMatrix m)
+                  {return static_cast<typename std::underlying_type<Laue>::type>(m.type()) == rotationalTypeForBasis;} );
 
     // take their rotation axes (use a set to avoid duplicates)
     std::unordered_set<int3> allAxes;
     std::transform(filteredProperRotations.begin(), filteredProperRotations.end(), std::inserter(allAxes, allAxes.begin()),
                    [](SKRotationMatrix m){return m.rotationAxis();} );
 
+
     std::vector<int3> sortedAxes{allAxes.begin(), allAxes.end()};
     std::sort(sortedAxes.begin(), sortedAxes.end(), [](const int3 & a, const int3 & b) -> bool
-          { return a.length_squared() <= b.length_squared(); });
+          { return a.length_squared() < b.length_squared(); });
 
     if(sortedAxes.size() >= 3)
     {
       SKTransformationMatrix axes = SKTransformationMatrix(sortedAxes[0], sortedAxes[1], sortedAxes[2]);
 
-      if(axes.int3x3.determinant() < 0)
+      if(axes.determinant() < 0)
       {
-        return SKTransformationMatrix(axes.int3x3[0],axes.int3x3[2],axes.int3x3[1]);
+
+        return SKTransformationMatrix(axes[0],axes[2],axes[1]);
       }
+
       return axes;
     }
     return std::nullopt;
@@ -373,48 +381,53 @@ const std::optional<SKTransformationMatrix> SKPointGroup::constructAxes(std::vec
   case Laue::laue_6m:
   case Laue::laue_6mmm:
   {
-
     int rotationalTypeForBasis = rotationTypeForBasis[this->_laue];
 
     // look for all proper rotation matrices of the wanted rotation type
     std::vector<SKRotationMatrix> properRotationMatrices{};
     std::copy_if (properRotations.begin(), properRotations.end(), std::back_inserter(properRotationMatrices),
-                  [rotationalTypeForBasis](SKRotationMatrix m){return int(m.type()) == rotationalTypeForBasis;} );
+                  [rotationalTypeForBasis](SKRotationMatrix m)
+                  {return static_cast<typename std::underlying_type<Laue>::type>(m.type()) == rotationalTypeForBasis;} );
 
-    assert(!properRotationMatrices.empty());
-    if(properRotationMatrices.empty()) return std::nullopt;
+    if(properRotationMatrices.empty())
+    {
+      return std::nullopt;
+    }
 
     SKRotationMatrix properRotationmatrix = properRotationMatrices.front();
 
     SKTransformationMatrix axes{};
 
     // set the rotation axis as the first axis
-    axes.int3x3[2] = properRotationmatrix.rotationAxis();
+    axes[2] = properRotationmatrix.rotationAxis();
 
     // possible candidates for the second axis are vectors that are orthogonal to the axes of rotation
     std::vector<int3> orthogonalAxes = properRotationmatrix.orthogonalToAxisDirection(rotationalTypeForBasis);
 
     for(const int3& orthogonalAxis: orthogonalAxes)
     {
-      axes.int3x3[0] = orthogonalAxis;
+      axes[0] = orthogonalAxis;
 
       int3 axisVector =  properRotationmatrix * orthogonalAxis;
 
       if((std::find(SKRotationMatrix::allPossibleRotationAxes.begin(), SKRotationMatrix::allPossibleRotationAxes.end(), axisVector) != SKRotationMatrix::allPossibleRotationAxes.end()) ||
          (std::find(SKRotationMatrix::allPossibleRotationAxes.begin(), SKRotationMatrix::allPossibleRotationAxes.end(), -axisVector) != SKRotationMatrix::allPossibleRotationAxes.end()))
       {
-        axes.int3x3[1] = axisVector;
+        axes[1] = axisVector;
 
         // to avoid F-center choice det=4
-        if(abs(int3x3(axes.int3x3[0],axes.int3x3[1],axes.int3x3[2]).determinant()) < 4)
+        if(abs(int3x3(axes[0],axes[1],axes[2]).determinant()) < 4)
         {
-          if(axes.int3x3.determinant() < 0)
+          if(axes.determinant() < 0)
           {
-            return SKTransformationMatrix(axes.int3x3[1],axes.int3x3[0],axes.int3x3[2]);
+
+            return SKTransformationMatrix(axes[1],axes[0],axes[2]);
           }
+
           return axes;
         }
       }
+
     }
     return std::nullopt;
   }

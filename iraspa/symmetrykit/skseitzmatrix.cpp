@@ -31,26 +31,6 @@ SKSeitzMatrix::SKSeitzMatrix()
 
 SKSeitzMatrix::SKSeitzMatrix(SKRotationMatrix rotation, double3 translation)
 {
-  _rotation = rotation;
-  _translation = translation;
-}
-
-bool operator==(const SKSeitzMatrix& lhs, const SKSeitzMatrix& rhs)
-{
-  double3 dr = (lhs._translation - rhs._translation);
-  dr.x -= rint(dr.x);
-  dr.y -= rint(dr.y);
-  dr.z -= rint(dr.z);
-
-  return (lhs._rotation.int3x3.m11 == rhs._rotation.int3x3.m11) &&
-         (lhs._rotation.int3x3.m12 == rhs._rotation.int3x3.m12) &&
-         (lhs._rotation.int3x3.m13 == rhs._rotation.int3x3.m13) &&
-         (lhs._rotation.int3x3.m21 == rhs._rotation.int3x3.m21) &&
-         (lhs._rotation.int3x3.m22 == rhs._rotation.int3x3.m22) &&
-         (lhs._rotation.int3x3.m23 == rhs._rotation.int3x3.m23) &&
-         (lhs._rotation.int3x3.m31 == rhs._rotation.int3x3.m31) &&
-         (lhs._rotation.int3x3.m32 == rhs._rotation.int3x3.m32) &&
-         (lhs._rotation.int3x3.m33 == rhs._rotation.int3x3.m33) &&
-         (dr.length_squared() < 1e-5);
-
+  this->rotation = rotation;
+  this->translation = translation;
 }

@@ -87,6 +87,7 @@ private:
   void invertSelection();
   void removeSymmetry();
   void wrapAtoms();
+  void findNiggli();
   void findPrimitive();
   void findSymmetry();
   void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override final;

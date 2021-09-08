@@ -22,14 +22,22 @@ HEADERS +=   \
   tst_symmetrykitsmallestprimitivecellnopartialoccupancies.h \
   tst_symmetrykitsmallestprimitivecell.h \
   tst_symmetrykitfindpointgroupnopartialoccupancies.h \
-  tst_symmetrykitfindpointgroup.h 
+  tst_symmetrykitfindpointgroup.h \
+  tst_symmetrykitfindspacegroupnopartialoccupancies.h \
+  tst_symmetrykitfindspacegroup.h \
+  tst_symmetrykitfindconventionalcell.h \
+  tst_symmetrykittransformationmatrix.h
 
 SOURCES +=  main.cpp \
   qfuzzycompare.cpp \
   tst_symmetrykitsmallestprimitivecellnopartialoccupancies.cpp \
   tst_symmetrykitsmallestprimitivecell.cpp \
   tst_symmetrykitfindpointgroupnopartialoccupancies.cpp \
-  tst_symmetrykitfindpointgroup.cpp 
+  tst_symmetrykitfindpointgroup.cpp \
+  tst_symmetrykitfindspacegroupnopartialoccupancies.cpp \
+  tst_symmetrykitfindspacegroup.cpp \
+  tst_symmetrykitfindconventionalcell.cpp \
+  tst_symmetrykittransformationmatrix.cpp
 
 install_test_files.path = $$OUT_PWD
 install_test_files.files = $$PWD/spglibtestdata

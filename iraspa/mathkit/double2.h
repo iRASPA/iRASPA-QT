@@ -33,37 +33,10 @@ union double2
   inline double & operator [] (int i) { return v[i]; }
   inline const double & operator [] (int i) const { return v[i]; }
 
+  inline double2& operator += (const double2& rhs) { x += rhs.x; y += rhs.y; return *this; }
+  inline double2& operator -= (const double2& rhs) { x -= rhs.x; y -= rhs.y; return *this; }
 
-  inline double2 operator + (const double2& rhs) const
-  {
-    return double2(x+rhs.x,y+rhs.y);
-  }
-
-  inline double2 operator - (const double2& rhs) const
-  {
-    return double2(x-rhs.x,y-rhs.y);
-  }
-
-  inline double2 operator * (const double2& rhs) const
-  {
-    return double2(x*rhs.x, y*rhs.y);
-  }
-
-  inline double2& operator += (const double2& rhs)
-  {
-    x += rhs.x;
-    y += rhs.y;
-    return *this;
-  }
-
-  inline double2& operator -= (const double2& rhs)
-  {
-    x -= rhs.x;
-    y -= rhs.y;
-    return *this;
-  }
-
-  inline double DotProduct(const double2 &v1, const double2 &v2)
+  inline static double dot(const double2 &v1, const double2 &v2)
   {
     return v1.x*v2.x+v1.y*v2.y;
   }
@@ -71,3 +44,13 @@ union double2
   friend QDataStream &operator<<(QDataStream &, const double2 &);
   friend QDataStream &operator>>(QDataStream &, double2 &);
 };
+
+inline double2 operator + (const double2& a, const double2& b)
+{
+  return double2(a.x+b.x,a.y+b.y);
+}
+
+inline double2 operator - (const double2& a, const double2& b)
+{
+  return double2(a.x-b.x,a.y-b.y);
+}

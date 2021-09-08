@@ -22,33 +22,6 @@
 #include "double3.h"
 #include <cmath>
 
-double3 double3::operator + (const double3& right) const
-{
-  double3 a;
-
-  a.x=x+right.x;
-  a.y=y+right.y;
-  a.z=z+right.z;
-
-  return a;
-}
-
-double3 double3::operator - (const double3&  right) const
-{
-  double3 a;
-
-  a.x=x-right.x;
-  a.y=y-right.y;
-  a.z=z-right.z;
-
-  return a;
-}
-
-double3 double3::fract(double3 const &v)
-{
-  return double3(v.x - floor(v.x), v.y - floor(v.y), v.z - floor(v.z));
-}
-
 double3 double3::normalise()
 {
   double magnitude = sqrt((x * x) + (y * y) + (z * z)) ;
@@ -65,9 +38,9 @@ double3 double3::normalise()
 double3 double3::fract()
 {
   double3 s = double3(x,y,z);
-  s.x -= rint(x);
-  s.y -= rint(y);
-  s.z -= rint(z);
+  s.x -= std::rint(x);
+  s.y -= std::rint(y);
+  s.z -= std::rint(z);
 
   if(s.x<0.0)
   {
@@ -98,39 +71,6 @@ double3 double3::fract()
   return s;
 }
 
-double3 double3::abs(double3 v1)
-{
-  return double3(std::abs(v1.x), std::abs(v1.y), std::abs(v1.z));
-}
-
-double double3::dot(const double3 &v1, const double3 &v2)
-{
-  return v1.x*v2.x+v1.y*v2.y+v1.z*v2.z;
-}
-
-double3 double3::max(const double3 &v1, const double3 &v2)
-{
-  return double3(std::max(v1.x,v2.x),std::max(v1.y,v2.y),std::max(v1.z,v2.z));
-}
-
-double3 double3::min(const double3 &v1, const double3 &v2)
-{
-  return double3(std::min(v1.x,v2.x),std::min(v1.y,v2.y),std::min(v1.z,v2.z));
-}
-
-double3 double3::cross(const double3 &v1, const double3 &v2)
-{
-  return double3(v1.y*v2.z - v2.y*v1.z,
-                 v1.z*v2.x - v2.z*v1.x,
-                 v1.x*v2.y - v2.x*v1.y);
-}
-
-double3 double3::normalize(const double3 &v)
-{
-  double inv_magnitude = 1.0 / sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z)) ;
-  return v * inv_magnitude;
-}
-
 double3 double3::randomVectorOnUnitSphere()
 {
   double ran1,ran2,ranh,ransq = 0.0;
@@ -145,41 +85,6 @@ double3 double3::randomVectorOnUnitSphere()
 
   ranh=2.0*sqrt(1.0-ransq);
   return double3(ran1*ranh,ran2*ranh,1.0-2.0*ransq);
-}
-
-double3 operator*(const double3 &v1, const double3 &v2)
-{
-   return double3(v1.x*v2.x, v1.y*v2.y, v1.z*v2.z);
-}
-
-double3 operator/(const double3 &v1, const double3 &v2)
-{
-   return double3(v1.x/v2.x, v1.y/v2.y, v1.z/v2.z);
-}
-
-double3 operator*(const double3 &v, double value)
-{
-  return double3(value*v.x, value*v.y, value*v.z);
-}
-
-double3 operator*(double value, const double3 &v)
-{
-  return double3(value*v.x, value*v.y, value*v.z);
-}
-
-double3 operator/(const double3 &v, double value)
-{
-  return double3(v.x/value, v.y/value, v.z/value);
-}
-
-double3 operator/(double value, const double3 &v)
-{
-  return double3(v.x/value, v.y/value, v.z/value);
-}
-
-double3 operator-(const double3 &v)
-{
-  return double3(-v.x, -v.y, -v.z);
 }
 
 std::ostream& operator<<(std::ostream& out, const double3& vec) // output

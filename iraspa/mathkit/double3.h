@@ -37,38 +37,34 @@ union double3
 
   double3(double x=0,double y=0, double z=0):x(x),y(y),z(z) {}
   double3(int3 a):x(double(a.x)),y(double(a.y)),z(double(a.z)) {}
+
   inline double & operator [] (int i) { return v[i]; }
   inline const double & operator [] (int i) const { return v[i]; }
-  double3 operator + (const double3& right) const;
-  double3 operator - (const double3& right) const;
-  double length() {return sqrt(x*x+y*y+z*z);}
-  double length_squared() const {return (x*x+y*y+z*z);}
-  double length() const {return sqrt(x*x+y*y+z*z);}
+
   double3 normalise();
   double3 fract();
-  static double3 abs(double3 v1);
-
   static double3 randomVectorOnUnitSphere();
 
-  static double3 fract(double3 const &v);
-  static double dot(const double3 &v1, const double3 &v2);
-  static double3 max(const double3 &v1, const double3 &v2);
-  static double3 min(const double3 &v1, const double3 &v2);
-  static double3 cross(const double3 &v1, const double3 &v2);
-  static double3 normalize(const double3 &v);
+  inline double length() {return sqrt(x*x+y*y+z*z);}
+  inline double length_squared() const {return (x*x+y*y+z*z);}
+  inline double length() const {return sqrt(x*x+y*y+z*z);}
+  inline static double3 abs(double3 v1) {return double3(std::abs(v1.x), std::abs(v1.y), std::abs(v1.z));}
+  inline static double3 rint(double3 const &v) {return double3(std::rint(v.x), std::rint(v.y), std::rint(v.z));}
+  inline static double3 fract(double3 const &v) {return double3(v.x - floor(v.x), v.y - floor(v.y), v.z - floor(v.z));}
+  inline static double dot(const double3 &v1, const double3 &v2) {return v1.x*v2.x+v1.y*v2.y+v1.z*v2.z;}
+  inline static double3 max(const double3 &v1, const double3 &v2) {return double3(std::max(v1.x,v2.x),std::max(v1.y,v2.y),std::max(v1.z,v2.z));}
+  inline static double3 min(const double3 &v1, const double3 &v2) {return double3(std::min(v1.x,v2.x),std::min(v1.y,v2.y),std::min(v1.z,v2.z));}
+  inline static double3 cross(const double3 &v1, const double3 &v2) {return double3(v1.y*v2.z - v2.y*v1.z, v1.z*v2.x - v2.z*v1.x, v1.x*v2.y - v2.x*v1.y);}
+  inline static double3 normalize(const double3 &v) {double f = 1.0 / sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z)); return double3(f*v.x,f*v.y,f*v.z) ;}
+  inline static  double3 flip(double3 v, bool3 flip, double3 boundary) {return double3(flip.x ? boundary.x - v.x : v.x,
+                                                                                       flip.y ? boundary.y - v.y : v.y,
+                                                                                       flip.z ? boundary.z - v.z : v.z);}
 
-  static inline double3 flip(double3 v, bool3 flip, double3 boundary) {return double3(flip.x ? boundary.x - v.x : v.x,
-                                                                                      flip.y ? boundary.y - v.y : v.y,
-                                                                                      flip.z ? boundary.z - v.z : v.z);}
 
-  friend double3 operator*(const double3 &v1, const double3 &v2);
-  friend double3 operator/(const double3 &v1, const double3 &v2);
-  friend double3 operator*(const double3 &v, double value);
-  friend double3 operator*(double value, const double3 &v);
-  friend double3 operator/(const double3 &v, double value);
-  friend double3 operator/(double value, const double3 &v);
-  friend double3 operator-(const double3 &v);
-  double3& operator+=(const double3 &v1) {this->x += v1.x, this->y += v1.y, this->z += v1.z; return *this;}
+  double3 operator-() const {return double3(-this->x, -this->y, -this->z);}
+  double3& operator+=(const double3 &b) {this->x += b.x, this->y += b.y, this->z += b.z; return *this;}
+  double3& operator-=(const double3 &b) {this->x -= b.x, this->y -= b.y, this->z -= b.z; return *this;}
+
   friend std::ostream& operator<<(std::ostream& out, const double3& vec) ;
 
   friend QDataStream &operator<<(QDataStream &, const double3 &);
@@ -92,4 +88,38 @@ union double3
   };
 };
 
+
+inline double3 operator+(const double3& a, const double3& b)
+{
+  return double3(a.x+b.x, a.y+b.y, a.z+b.z);
+}
+
+inline double3 operator-(const double3& a, const double3& b)
+{
+  return double3(a.x-b.x, a.y-b.y, a.z-b.z);
+}
+
+inline double3 operator*(const double3 &a, const double3 &b)
+{
+   return double3(a.x*b.x, a.y*b.y, a.z*b.z);
+}
+
+inline double3 operator/(const double3 &a, const double3 &b)
+{
+  return double3(a.x/b.x, a.y/b.y, a.z/b.z);
+}
+
+inline double3 operator*(const double3 &a, double b)
+{
+  return double3(a.x*b, a.y*b, a.z*b);
+}
+
+inline double3 operator*(const double &a, const double3 &b)
+{
+  return double3(a*b.x, a*b.y, a*b.z);
+}
+inline double3 operator/(const double3 &a, double b)
+{
+  return double3(a.x/b, a.y/b, a.z/b);
+}
 

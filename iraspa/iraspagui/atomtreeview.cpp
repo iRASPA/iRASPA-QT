@@ -50,6 +50,7 @@
 #include "mainwindow.h"
 #include "atomtreeviewfindsymmetrycommand.h"
 #include "atomtreeviewfindprimitivecommand.h"
+#include "atomtreeviewfindnigglicommand.h"
 #include "atomtreeviewwrapatomstocellcommand.h"
 #include "atomtreeviewremovesymmetrycommand.h"
 
@@ -825,11 +826,17 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
   symmetryGroup->addAction(&actionSymmetryWrapAtoms);
   subMenuSymmetry->addAction(&actionSymmetryWrapAtoms);
   connect(&actionSymmetryWrapAtoms, &QAction::triggered, this, &AtomTreeView::wrapAtoms);
+  QAction actionFindNiggli(tr("Find Niggli"), this);
+  actionFindNiggli.setEnabled(isEnabled && isSymmetryEnabled);
+  symmetryGroup->addAction(&actionFindNiggli);
+  subMenuSymmetry->addAction(&actionFindNiggli);
+  connect(&actionFindNiggli, &QAction::triggered, this, &AtomTreeView::findNiggli);
   QAction actionFindPrimitive(tr("Find Primitive"), this);
   actionFindPrimitive.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionFindPrimitive);
   subMenuSymmetry->addAction(&actionFindPrimitive);
   connect(&actionFindPrimitive, &QAction::triggered, this, &AtomTreeView::findPrimitive);
+
   QAction actionFindSymmetry(tr("Find and Impose Symmetry"), this);
   actionFindSymmetry.setEnabled(isEnabled && isSymmetryEnabled);
   symmetryGroup->addAction(&actionFindSymmetry);
@@ -967,6 +974,32 @@ void AtomTreeView::wrapAtoms()
     }
   }
 }
+
+void AtomTreeView::findNiggli()
+{
+  if(_projectTreeNode)
+  {
+    if(_projectTreeNode->isEditable())
+    {
+      if(std::shared_ptr<iRASPAProject> iRASPAProject = _projectTreeNode->representedObject())
+      {
+        if(std::shared_ptr<Project> project = iRASPAProject->project())
+        {
+          if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
+          {
+            AtomSelectionIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
+            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
+            AtomTreeViewFindNiggliCommand *findNiggliCommand = new AtomTreeViewFindNiggliCommand(_mainWindow,
+                                                                                    _iraspaStructure, atomSelection, bondSelection, nullptr);
+            iRASPAProject->undoManager().push(findNiggliCommand);
+
+          }
+        }
+      }
+    }
+  }
+}
+
 
 void AtomTreeView::findPrimitive()
 {

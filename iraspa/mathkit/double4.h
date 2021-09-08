@@ -29,19 +29,42 @@ union double4
   struct {double x, y, z, w;};
 
   double4(double x=0,double y=0, double z=0, double w=0):x(x),y(y),z(z),w(w) {}
-  //explicit double4(double v1=0.0, double v2=0.0, double v3=0.0, double v4=0.0);
+
   inline double & operator [] (int i) { return v[i]; }
   inline const double & operator [] (int i) const { return v[i]; }
 
   void normalise();
-  static double dot(const double4 &v1, const double4 &v2);
-  static double4 cross(const double4 &v1, const double4 &v2);
-  static double4 cross(const double4 &v1, const double4 &v2, const double4 &v3);
+  inline static double dot(const double4 &v1, const double4 &v2) { return v1.x*v2.x+v1.y*v2.y+v1.z*v2.z+v1.w*v2.w;}
 
-  friend double4 operator*(const double4 &v1, const double4 &v2);
-  friend double4 operator*(const double4 &v, double value);
-  friend double4 operator*(double value, const double4 &v);
+  // http://www.gamedev.net/topic/456301-cross-product-vector-4d/
+  inline static double4 cross(const double4 &v1, const double4 &v2) {return double4(v1.y*v2.z - v1.z* v2.y, -v1.x*v2.z + v1.z*v2.x, v1.x*v2.y - v1.y*v2.x, 0.0);}
+  inline static double4 cross(const double4 &v1, const double4 &v2, const double4 &v3)
+  {
+    return double4(v1.y*(v2.z*v3.w - v3.z*v2.w) - v1.z*(v2.y*v3.w - v3.y*v2.w) + v1.w*(v2.y*v3.z - v3.y*v2.z),
+                   -v1.x*(v2.z*v3.w - v3.z*v2.w) + v1.z*(v2.x*v3.w - v3.x*v2.w) - v1.w*(v2.x*v3.z - v3.x*v2.z),
+                   v1.x*(v2.y*v3.w - v3.y*v2.w) - v1.y*(v2.x*v3.w - v3.x*v2.w) + v1.w*(v2.x*v3.y - v3.x*v2.y),
+                   -v1.x*(v2.y*v3.z - v3.y*v2.z) + v1.y*(v2.x*v3.z - v3.x*v2.z) - v1.z*(v2.x*v3.y - v3.x*v2.y));
+  }
+
+  double4 operator-() const {return double4(-this->x, -this->y, -this->z, -this->w);}
+  double4& operator+=(const double4 &b) {this->x += b.x, this->y += b.y, this->z += b.z; this->w += b.w; return *this;}
+  double4& operator-=(const double4 &b) {this->x -= b.x, this->y -= b.y, this->z -= b.z; this->w += b.w; return *this;}
 
   friend QDataStream &operator<<(QDataStream &, const double4 &);
   friend QDataStream &operator>>(QDataStream &, double4 &);
 };
+
+inline double4 operator*(const double4 &a, const double4 &b)
+{
+   return double4(a.x*b.x, a.y*b.y, a.z*b.z, a.w*b.w);
+}
+
+inline double4 operator*(const double4 &a, const double &b)
+{
+  return double4(a.x * b, a.y * b, a.z * b, a.w * b);
+}
+
+inline double4 operator*(const double &a, const double4 &b)
+{
+  return double4(a*b.x, a*b.y, a*b.z, a*b.w);
+}

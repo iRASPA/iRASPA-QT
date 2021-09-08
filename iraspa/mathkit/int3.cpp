@@ -21,69 +21,18 @@
 
 #include "int3.h"
 #include "double3x3.h"
+#include "ring.h"
 
 
-int3 int3::operator + (const int3& right) const
+int3 int3::greatestCommonDivisor(int3 a, int b)
 {
-  int3 a(0,0,0);
-
-  a.x=x+right.x;
-  a.y=y+right.y;
-  a.z=z+right.z;
-
-  return a;
+  return int3(Ring::greatestCommonDivisor(a.x,b), Ring::greatestCommonDivisor(a.y,b), Ring::greatestCommonDivisor(a.z,b));
 }
 
-int3 int3::operator - (const int3& right) const
+QDebug operator<<(QDebug debug, const int3 &m)
 {
-  int3 a(0,0,0);
-
-  a.x=x-right.x;
-  a.y=y-right.y;
-  a.z=z-right.z;
-
-  return a;
-}
-
-int3 int3::operator-() const
-{
-  return int3(-x, -y, -z);
-}
-
-double3 int3::operator * (const double3x3& right) const
-{
-  return double3(this->x * right[0][0] + this->y * right[0][1] + this->z * right[0][2],
-                 this->x * right[1][0] + this->y * right[1][1] + this->z * right[1][2],
-                 this->x * right[2][0] + this->y * right[2][1] + this->z * right[2][2]);
-}
-
-int modulo(int a, int b)
-{
-  return a - b * int(floor(double(a) / double(b)));
-}
-
-int greatestCommonDivisor(int arg1, int arg2)
-{
-  int a = arg1;
-  int b = arg2;
-  while( b != 0 )
-  {
-    int tempa = b;
-    int tempb = modulo(a, b);
-    a = tempa;
-    b = tempb;
-  }
-  return abs(a);
-}
-
-int3 greatestCommonDivisor(int3 a, int b)
-{
-  return int3(greatestCommonDivisor(a.x,b), greatestCommonDivisor(a.y,b), greatestCommonDivisor(a.z,b));
-}
-
-bool operator==(const int3& lhs, const int3& rhs)
-{
-  return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z);
+  debug << "int3(" << m.x << "," << m.y << "," << m.z << ");";
+  return debug;
 }
 
 QDataStream &operator<<(QDataStream &stream, const int3 &v)

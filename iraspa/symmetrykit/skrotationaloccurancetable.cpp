@@ -37,8 +37,3 @@ SKRotationalOccuranceTable::SKRotationalOccuranceTable(int axis_6m, int axis_4m,
    occurance[static_cast<typename std::underlying_type<SKRotationMatrix::RotationType>::type>(SKRotationMatrix::RotationType::axis_4)] = axis_4;
    occurance[static_cast<typename std::underlying_type<SKRotationMatrix::RotationType>::type>(SKRotationMatrix::RotationType::axis_6)] = axis_6;
 }
-
-bool operator== (const SKRotationalOccuranceTable& c1, const SKRotationalOccuranceTable& c2)
-{
-  return (c1.occurance == c2.occurance);
-}

@@ -20,27 +20,32 @@
  ********************************************************************************************************************/
 
 #include "sktransformationmatrix.h"
+#include "mathkit.h"
 
-SKTransformationMatrix::SKTransformationMatrix()
+SKTransformationMatrix::SKTransformationMatrix(): transformation(), translation(int3(0,0,0))
 {
 
+}
+
+SKTransformationMatrix::SKTransformationMatrix(union int3x3 m): transformation(m), translation(int3(0,0,0))
+{
 }
 
 SKTransformationMatrix::SKTransformationMatrix(int3 v1, int3 v2, int3 v3)
 {
-  int3x3.m11 = v1.x; int3x3.m21 = v1.y; int3x3.m31 = v1.z;
-  int3x3.m12 = v2.x; int3x3.m22 = v2.y; int3x3.m32 = v2.z;
-  int3x3.m13 = v3.x; int3x3.m23 = v3.y; int3x3.m33 = v3.z;
+  this->transformation.m11 = v1.x; this->transformation.m21 = v1.y; this->transformation.m31 = v1.z;
+  this->transformation.m12 = v2.x; this->transformation.m22 = v2.y; this->transformation.m32 = v2.z;
+  this->transformation.m13 = v3.x; this->transformation.m23 = v3.y; this->transformation.m33 = v3.z;
 }
 
-SKTransformationMatrix SKTransformationMatrix::adjugate() const
+QDebug operator<<(QDebug debug, const SKTransformationMatrix &m)
 {
-  return SKTransformationMatrix(this->int3x3.adjugate());
-}
-
-SKTransformationMatrix SKTransformationMatrix::operator * (const SKTransformationMatrix& right) const
-{
-  return SKTransformationMatrix(this->int3x3 * right.int3x3);
+  debug << "\n{\n";
+  debug << m.transformation.m11 << ", " << m.transformation.m21 << ", " << m.transformation.m31;
+  debug << m.transformation.m12 << ", " << m.transformation.m22 << ", " << m.transformation.m32;
+  debug << m.transformation.m13 << ", " << m.transformation.m23 << ", " << m.transformation.m33;
+  debug << "}";
+  return debug;
 }
 
 SKTransformationMatrix SKTransformationMatrix::zero = SKTransformationMatrix(int3(0,0,0),int3(0,0,0),int3(0,0,0));
@@ -74,7 +79,7 @@ double3x3 SKTransformationMatrix::bodyCenteredToPrimitive = double3x3(double3(-0
 double3x3 SKTransformationMatrix::faceCenteredToPrimitive = double3x3(double3(0,0.5,0.5), double3(0.5,0,0.5), double3(0.5,0.5,0));           // F -> P
 double3x3 SKTransformationMatrix::ACenteredToPrimitive = double3x3(double3(-1.0,0,0), double3(0,-0.5,0.5), double3(0,0.5,0.5));              // A -> P
 double3x3 SKTransformationMatrix::BCenteredToPrimitive = double3x3(double3(-0.5,0,0.5), double3(0,-1.0,0), double3(0.5,0,0.5));              // B -> P
-double3x3 SKTransformationMatrix::CCenteredToPrimitive3 = double3x3(double3(0.5,0.5,0), double3(0.5,-0.5,0), double3(0,0,-1.0));             // C -> P
+double3x3 SKTransformationMatrix::CCenteredToPrimitive = double3x3(double3(0.5,0.5,0), double3(0.5,-0.5,0), double3(0,0,-1.0));              // C -> P
 double3x3 SKTransformationMatrix::rhombohedralToPrimitive = double3x3(double3(2.0/3.0,1.0/3.0,1.0/3.0), double3(-1.0/3.0, 1.0/3.0, 1.0/3.0), double3(-1.0/3.0,-2.0/3.0, 1.0/3.0));  // R -> P
 
 // CHECK
@@ -82,3 +87,18 @@ double3x3 SKTransformationMatrix::rhombohedralReverseToPrimitive = double3x3(dou
 
 double3x3 SKTransformationMatrix::hexagonalToPrimitive = double3x3(double3(2.0/3.0,1.0/3.0, 0), double3(-1.0/3.0, 1.0/3.0, 0), double3( 0, 0, 1.0/3.0));  // H -> P
 double3x3 SKTransformationMatrix::rhombohedralHexagonalToObverse = double3x3(double3(2.0/3.0,-1.0/3.0,-1.0/3.0),double3(1.0/3.0,1.0/3.0,-2.0/3.0),double3(1.0/3.0,1.0/3.0,1.0/3.0));   // Rh -> Robv
+
+SKTransformationMatrix SKTransformationMatrix::monoclinicB1toA1 = SKTransformationMatrix(int3( 0, 0, 1), int3( 1, 0, 0), int3( 0, 1, 0));
+SKTransformationMatrix SKTransformationMatrix::monoclinicB1toA2 = SKTransformationMatrix(int3( 0, 1, 0), int3( 1, 0, 0), int3( 0,-1,-1));
+SKTransformationMatrix SKTransformationMatrix::monoclinicB1toA3 = SKTransformationMatrix(int3( 0,-1,-1), int3( 1, 0, 0), int3( 0, 0, 1));
+SKTransformationMatrix SKTransformationMatrix::monoclinicB1toB2 = SKTransformationMatrix(int3( 0, 0, 1), int3( 0, 1, 0), int3(-1, 0,-1));
+SKTransformationMatrix SKTransformationMatrix::monoclinicB1toB3 = SKTransformationMatrix(int3(-1, 0,-1), int3( 0, 1, 0), int3( 1, 0, 0));
+SKTransformationMatrix SKTransformationMatrix::monoclinicB1toC1 = SKTransformationMatrix(int3( 0, 1, 0), int3( 0, 0, 1), int3( 1, 0, 0));
+SKTransformationMatrix SKTransformationMatrix::monoclinicB1toC2 = SKTransformationMatrix(int3( 1, 0, 0), int3( 0, 0, 1), int3(-1,-1, 0));
+SKTransformationMatrix SKTransformationMatrix::monoclinicB1toC3 = SKTransformationMatrix(int3(-1,-1, 0), int3( 0, 0, 1), int3( 0, 1, 0));
+
+SKTransformationMatrix SKTransformationMatrix::orthorhombicCABtoABC  = SKTransformationMatrix(int3( 0, 1, 0), int3( 0, 0, 1), int3( 1, 0, 0));
+SKTransformationMatrix SKTransformationMatrix::orthorhombicBCAtoABC  = SKTransformationMatrix(int3( 0, 0, 1), int3( 1, 0, 0), int3( 0, 1, 0));
+SKTransformationMatrix SKTransformationMatrix::orthorhombicBAmCtoABC = SKTransformationMatrix(int3( 0, 1, 0), int3( 1, 0, 0), int3( 0, 0,-1));
+SKTransformationMatrix SKTransformationMatrix::orthorhombicAmCBtoABC = SKTransformationMatrix(int3( 1, 0, 0), int3( 0, 0, 1), int3( 0,-1, 0));
+SKTransformationMatrix SKTransformationMatrix::orthorhombicmCBAtoABC = SKTransformationMatrix(int3( 0, 0, 1), int3( 0, 1, 0), int3(-1, 0, 0));

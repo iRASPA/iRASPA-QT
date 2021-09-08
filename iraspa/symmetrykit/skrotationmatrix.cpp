@@ -20,22 +20,30 @@
  ********************************************************************************************************************/
 
 #include "skrotationmatrix.h"
+#include "sktransformationmatrix.h"
+#include "mathkit.h"
 
 SKRotationMatrix::SKRotationMatrix()
 {
 
 }
 
-SKRotationMatrix::SKRotationMatrix(int3 v1, int3 v2, int3 v3)
+SKRotationMatrix::SKRotationMatrix(SKTransformationMatrix m)
 {
-  int3x3.m11 = v1.x; int3x3.m21 = v1.y; int3x3.m31 = v1.z;
-  int3x3.m12 = v2.x; int3x3.m22 = v2.y; int3x3.m32 = v2.z;
-  int3x3.m13 = v3.x; int3x3.m23 = v3.y; int3x3.m33 = v3.z;
+  assert(abs(m.determinant()) == 1);
+  this->int3x3 = m.transformation;
 }
 
-SKRotationMatrix SKRotationMatrix::proper()
+SKRotationMatrix::SKRotationMatrix(int3 v1, int3 v2, int3 v3)
 {
-  if(int3x3.determinant() == 1)
+  this->int3x3.m11 = v1.x; this->int3x3.m21 = v1.y; this->int3x3.m31 = v1.z;
+  this->int3x3.m12 = v2.x; this->int3x3.m22 = v2.y; this->int3x3.m32 = v2.z;
+  this->int3x3.m13 = v3.x; this->int3x3.m23 = v3.y; this->int3x3.m33 = v3.z;
+}
+
+const SKRotationMatrix SKRotationMatrix::proper() const
+{
+  if(this->int3x3.determinant() == 1)
   {
     return *this;
   }
@@ -47,11 +55,11 @@ SKRotationMatrix SKRotationMatrix::proper()
 
 SKRotationMatrix::RotationType SKRotationMatrix::type() const
 {
-  int determinant = int3x3.determinant();
+  int determinant = this->int3x3.determinant();
 
   if(determinant == -1)
   {
-    switch(int3x3.trace())
+    switch(this->int3x3.trace())
     {
     case -3:
       return RotationType::axis_1m;
@@ -70,7 +78,7 @@ SKRotationMatrix::RotationType SKRotationMatrix::type() const
   }
   else
   {
-    switch(int3x3.trace())
+    switch(this->int3x3.trace())
     {
     case -1:
       return RotationType::axis_2;
@@ -145,27 +153,20 @@ std::ostream& operator<<(std::ostream& os, const SKRotationMatrix& m)
     return os;
 }
 
-/*
-SKRotationMatrix SKRotationMatrix::proper()
-{
-  if(determinant() == 1)
-  {
-    return *this;
-  }
-  else
-  {
-    return -(*this);
-  }
-}*/
-
 /// Inverse of the matrix if the determinant = 1 or -1, otherwise the contents of the resulting matrix are undefined.
 SKRotationMatrix  SKRotationMatrix::inverse()
 {
   int determinant = int3x3.determinant();
 
-  int3 c1 = int3(-int3x3[1][2] * int3x3[2][1] + int3x3[1][1] * int3x3[2][2], int3x3[0][2] * int3x3[2][1] - int3x3[0][1] * int3x3[2][2], -int3x3[0][2] * int3x3[1][1] + int3x3[0][1] * int3x3[1][2]);
-  int3 c2 = int3(int3x3[1][2] * int3x3[2][0] - int3x3[1][0] * int3x3[2][2], -int3x3[0][2] * int3x3[2][0] + int3x3[0][0] * int3x3[2][2], int3x3[0][2] * int3x3[1][0] - int3x3[0][0] * int3x3[1][2]);
-  int3 c3 = int3(-int3x3[1][1] * int3x3[2][0] + int3x3[1][0] * int3x3[2][1], int3x3[0][1] * int3x3[2][0] - int3x3[0][0] * int3x3[2][1], -int3x3[0][1] * int3x3[1][0] + int3x3[0][0] * int3x3[1][1]);
+  int3 c1 = int3(-this->int3x3[1][2] * int3x3[2][1] + this->int3x3[1][1] * this->int3x3[2][2],
+                  this->int3x3[0][2] * this->int3x3[2][1] - this->int3x3[0][1] * this->int3x3[2][2],
+                 -this->int3x3[0][2] * this->int3x3[1][1] + this->int3x3[0][1] * this->int3x3[1][2]);
+  int3 c2 = int3(this->int3x3[1][2] * int3x3[2][0] - this->int3x3[1][0] * this->int3x3[2][2],
+                -this->int3x3[0][2] * this->int3x3[2][0] + this->int3x3[0][0] * this->int3x3[2][2],
+                 this->int3x3[0][2] * this->int3x3[1][0] - this->int3x3[0][0] * this->int3x3[1][2]);
+  int3 c3 = int3(-this->int3x3[1][1] * int3x3[2][0] + this->int3x3[1][0] * this->int3x3[2][1],
+                  this->int3x3[0][1] * this->int3x3[2][0] - this->int3x3[0][0] * this->int3x3[2][1],
+                 -this->int3x3[0][1] * this->int3x3[1][0] + this->int3x3[0][0] * this->int3x3[1][1]);
 
   switch(determinant)
   {
@@ -175,43 +176,6 @@ SKRotationMatrix  SKRotationMatrix::inverse()
   }
 }
 
-SKRotationMatrix SKRotationMatrix::operator * (const SKRotationMatrix& b) const
-{
-  return SKRotationMatrix(this->int3x3 * b.int3x3);
-}
-
-int3 SKRotationMatrix::operator * (const int3& b) const
-{
-  return this->int3x3 * b;
-}
-
-double3 SKRotationMatrix::operator * (const double3& b) const
-{
-  return double3x3(this->int3x3) * b;
-}
-
-SKRotationMatrix SKRotationMatrix::operator + (const SKRotationMatrix& right) const
-{
-  return this->int3x3 + right.int3x3;
-}
-
-SKRotationMatrix SKRotationMatrix::operator-() const
-{
-  return -this->int3x3;
-}
-
-bool operator==(const SKRotationMatrix& lhs, const SKRotationMatrix& rhs)
-{
-  return (lhs.int3x3.m11 == rhs.int3x3.m11) &&
-         (lhs.int3x3.m12 == rhs.int3x3.m12) &&
-         (lhs.int3x3.m13 == rhs.int3x3.m13) &&
-         (lhs.int3x3.m21 == rhs.int3x3.m21) &&
-         (lhs.int3x3.m22 == rhs.int3x3.m22) &&
-         (lhs.int3x3.m23 == rhs.int3x3.m23) &&
-         (lhs.int3x3.m31 == rhs.int3x3.m31) &&
-         (lhs.int3x3.m32 == rhs.int3x3.m32) &&
-         (lhs.int3x3.m33 == rhs.int3x3.m33);
-}
 
 SKRotationMatrix SKRotationMatrix::zero = SKRotationMatrix(int3(0,0,0),int3(0,0,0),int3(0,0,0));
 SKRotationMatrix SKRotationMatrix::identity = SKRotationMatrix(int3(1,0,0),int3(0,1,0),int3(0,0,1));
@@ -262,6 +226,21 @@ SKRotationMatrix SKRotationMatrix::r_2prime_001 = SKRotationMatrix(int3(0,-1,0),
 SKRotationMatrix SKRotationMatrix::r_2iprime_001 = r_2prime_001;
 SKRotationMatrix SKRotationMatrix::r_2doubleprime_001 = SKRotationMatrix(int3(0,1,0),int3(1,0,0),int3(0,0,-1)); // a+b
 SKRotationMatrix SKRotationMatrix::r_2idoubleprime_001 = r_2doubleprime_001;
+
+SKRotationMatrix SKRotationMatrix::monoclinicB1toA1 = SKRotationMatrix(int3( 0, 0, 1), int3( 1, 0, 0), int3( 0, 1, 0));
+SKRotationMatrix SKRotationMatrix::monoclinicB1toA2 = SKRotationMatrix(int3( 0, 1, 0), int3( 1, 0, 0), int3( 0,-1,-1));
+SKRotationMatrix SKRotationMatrix::monoclinicB1toA3 = SKRotationMatrix(int3( 0,-1,-1), int3( 1, 0, 0), int3( 0, 0, 1));
+SKRotationMatrix SKRotationMatrix::monoclinicB1toB2 = SKRotationMatrix(int3( 0, 0, 1), int3( 0, 1, 0), int3(-1, 0,-1));
+SKRotationMatrix SKRotationMatrix::monoclinicB1toB3 = SKRotationMatrix(int3(-1, 0,-1), int3( 0, 1, 0), int3( 1, 0, 0));
+SKRotationMatrix SKRotationMatrix::monoclinicB1toC1 = SKRotationMatrix(int3( 0, 1, 0), int3( 0, 0, 1), int3( 1, 0, 0));
+SKRotationMatrix SKRotationMatrix::monoclinicB1toC2 = SKRotationMatrix(int3( 1, 0, 0), int3( 0, 0, 1), int3(-1,-1, 0));
+SKRotationMatrix SKRotationMatrix::monoclinicB1toC3 = SKRotationMatrix(int3(-1,-1, 0), int3( 0, 0, 1), int3( 0, 1, 0));
+
+SKRotationMatrix SKRotationMatrix::orthorhombicCABtoABC  = SKRotationMatrix(int3( 0, 1, 0), int3( 0, 0, 1), int3( 1, 0, 0));
+SKRotationMatrix SKRotationMatrix::orthorhombicBCAtoABC  = SKRotationMatrix(int3( 0, 0, 1), int3( 1, 0, 0), int3( 0, 1, 0));
+SKRotationMatrix SKRotationMatrix::orthorhombicBAmCtoABC = SKRotationMatrix(int3( 0, 1, 0), int3( 1, 0, 0), int3( 0, 0,-1));
+SKRotationMatrix SKRotationMatrix::orthorhombicAmCBtoABC = SKRotationMatrix(int3( 1, 0, 0), int3( 0, 0, 1), int3( 0,-1, 0));
+SKRotationMatrix SKRotationMatrix::orthorhombicmCBAtoABC = SKRotationMatrix(int3( 0, 0, 1), int3( 0, 1, 0), int3(-1, 0, 0));
 
 std::vector<std::tuple<SKRotationMatrix, int3, int3>> SKRotationMatrix::twoFoldSymmetryOperations=
 {

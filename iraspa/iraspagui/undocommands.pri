@@ -5,6 +5,7 @@ SOURCES += \
     $$PWD/atomtreeviewchangeselectioncommand.cpp \
     $$PWD/atomtreeviewcopyselectiontonewmoviecommand.cpp \
     $$PWD/atomtreeviewfindprimitivecommand.cpp \
+    $$PWD/atomtreeviewfindnigglicommand.cpp \
     $$PWD/atomtreeviewfindsymmetrycommand.cpp \
     $$PWD/atomtreeviewflattenhierarchycommand.cpp \
     $$PWD/atomtreeviewinvertselectioncommand.cpp \
@@ -75,6 +76,7 @@ HEADERS += \
     $$PWD/atomtreeviewchangeselectioncommand.h \
     $$PWD/atomtreeviewcopyselectiontonewmoviecommand.h \
     $$PWD/atomtreeviewfindprimitivecommand.h \
+    $$PWD/atomtreeviewfindnigglicommand.h \
     $$PWD/atomtreeviewfindsymmetrycommand.h \
     $$PWD/atomtreeviewflattenhierarchycommand.h \
     $$PWD/atomtreeviewinvertselectioncommand.h \

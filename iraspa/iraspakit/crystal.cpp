@@ -915,10 +915,9 @@ void Crystal::expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom)
   asymmetricAtom->setCopies(atomCopies);
 }
 
-std::pair<std::vector<int>, std::vector<double3>> Crystal::atomSymmetryData() const
+std::vector<std::tuple<double3, int, double>> Crystal::atomSymmetryData() const
 {
-  std::vector<int> elementIdentifiers{};
-  std::vector<double3> fractionalPositions{};
+  std::vector<std::tuple<double3,int,double>> atomData{};
 
   const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
   for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
@@ -930,24 +929,24 @@ std::pair<std::vector<int>, std::vector<double3>> Crystal::atomSymmetryData() co
       {
         if(copy->type() == SKAtomCopy::AtomCopyType::copy)
         {
-          elementIdentifiers.push_back(elementIdentifier);
-          fractionalPositions.push_back(double3::fract(copy->position()));
+          atomData.push_back(std::make_tuple(double3::fract(copy->position()), elementIdentifier, 1.0));
         }
       }
     }
   }
 
-  return std::make_pair(elementIdentifiers, fractionalPositions);
+  return atomData;
 }
 
-void Crystal::setAtomSymmetryData(double3x3 unitCell, std::vector<std::pair<int, double3>> atomData)
+void Crystal::setAtomSymmetryData(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> atomData)
 {
   _cell = std::make_shared<SKCell>(unitCell);
 
-  for(const std::pair<int, double3> &pair : atomData)
+  for(const std::tuple<double3, int, double> &tuple : atomData)
   {
-    int elementIdentifier = pair.first;
-    double3 position = pair.second;
+    double3 position = std::get<0>(tuple);
+    int elementIdentifier = std::get<1>(tuple);
+
     QString displayName = PredefinedElements::predefinedElements[elementIdentifier]._chemicalSymbol;
     std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = std::make_shared<SKAsymmetricAtom>(displayName, elementIdentifier);
     asymmetricAtom->setPosition(position);

@@ -40,9 +40,7 @@ union simd_quatd
   static simd_quatd yaw(double angle);
   static simd_quatd pitch(double angle);
   static simd_quatd roll(double angle);
-  simd_quatd operator +(const simd_quatd& right) const;
-  simd_quatd operator /(const double& right) const;
-  simd_quatd operator *(const simd_quatd& right) const;
+
   static const simd_quatd data120[120];
   static const simd_quatd data60[60];
   static const simd_quatd data600[600];
@@ -56,3 +54,20 @@ union simd_quatd
   friend QDataStream &operator>>(QDataStream &, simd_quatd &);
 };
 
+inline simd_quatd operator+(const simd_quatd& a, const simd_quatd& b)
+{
+  return simd_quatd(a.ix + b.ix, a.iy + b.iy, a.iz + b.iz, a.r  + b.r);
+}
+
+inline simd_quatd operator/(const simd_quatd& a, const double& b)
+{
+  return simd_quatd(a.ix / b, a.iy / b, a.iz / b, a.r  / b);
+}
+
+inline simd_quatd operator*(const simd_quatd& a, const simd_quatd& b)
+{
+  return simd_quatd(a.r * b.r  - a.ix * b.ix - a.iy * b.iy - a.iz * b.iz,
+            double3(a.r * b.ix + a.ix * b.r  + a.iy * b.iz - a.iz * b.iy,
+                    a.r * b.iy - a.ix * b.iz + a.iy * b.r  + a.iz * b.ix,
+                    a.r * b.iz + a.ix * b.iy - a.iy * b.ix + a.iz * b.r));
+}

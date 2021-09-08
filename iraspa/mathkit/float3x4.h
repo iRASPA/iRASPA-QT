@@ -45,8 +45,8 @@ union float3x4
   inline const float4 & operator [] (int i) const { return v[i]; }
 
   float3x4(float m11=0.0, float m21=0.0, float m31=0.0, float m41=0.0,
-            float m12=0.0, float m22=0.0, float m32=0.0, float m42=0.0,
-            float m13=0.0, float m23=0.0, float m33=0.0, float m43=0.0)
+           float m12=0.0, float m22=0.0, float m32=0.0, float m42=0.0,
+           float m13=0.0, float m23=0.0, float m33=0.0, float m43=0.0)
         : m11(m11), m21(m21), m31(m31), m41(m41),
           m12(m12), m22(m22), m32(m32), m42(m42),
           m13(m13), m23(m23), m33(m33), m43(m43)

@@ -3,14 +3,14 @@
 
 SKRotationalChangeOfBasis::SKRotationalChangeOfBasis(SKRotationMatrix rotationMatrix)
 {
-  this->_rotationMatrix = rotationMatrix;
-  this->_inverseRotationMatrix = SKRotationMatrix(rotationMatrix.inverse());
+  this->rotationMatrix = rotationMatrix;
+  this->inverseRotationMatrix = SKRotationMatrix(rotationMatrix.inverse());
 }
 
 SKRotationalChangeOfBasis::SKRotationalChangeOfBasis(SKRotationMatrix rotationMatrix, SKRotationMatrix inverseRotationMatrix)
 {
-  _rotationMatrix = rotationMatrix;
-  _inverseRotationMatrix = inverseRotationMatrix;
+  this->rotationMatrix = rotationMatrix;
+  this->inverseRotationMatrix = inverseRotationMatrix;
 }
 
 SKRotationalChangeOfBasis SKRotationalChangeOfBasis::identity = SKRotationalChangeOfBasis(SKRotationMatrix(int3( 1, 0, 0),int3( 0, 1, 0), int3( 0, 0, 1)));
@@ -42,23 +42,7 @@ std::vector<SKRotationalChangeOfBasis> SKRotationalChangeOfBasis::changeOfOrthor
 
 SKRotationalChangeOfBasis SKRotationalChangeOfBasis::inverse()
 {
-  return SKRotationalChangeOfBasis(_inverseRotationMatrix, _rotationMatrix);
-}
-
-SKSeitzIntegerMatrix SKRotationalChangeOfBasis::operator *(const SKSeitzIntegerMatrix& right) const
-{
-  SKRotationMatrix rotation  = SKRotationMatrix(this->_inverseRotationMatrix.int3x3 * right.rotation().int3x3 * this->_rotationMatrix.int3x3);
-  int3 translation = this->_inverseRotationMatrix.int3x3 * right.translation();
-  return SKSeitzIntegerMatrix(rotation, translation);
-}
-
-double3 SKRotationalChangeOfBasis::operator *(const double3& right) const
-{
-  return this->_inverseRotationMatrix.int3x3 * right;
-}
-int3 SKRotationalChangeOfBasis::operator *(const int3& right) const
-{
-  return this->_inverseRotationMatrix.int3x3 * right;
+  return SKRotationalChangeOfBasis(inverseRotationMatrix, rotationMatrix);
 }
 
 

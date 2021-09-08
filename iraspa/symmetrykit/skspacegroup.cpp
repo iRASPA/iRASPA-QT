@@ -25,6 +25,7 @@
 #include <iostream>
 #include <QDebug>
 #include "skpointgroup.h"
+#include "skintegerchangeofbasis.h"
 
 SKSpaceGroup::SKSpaceGroup(int HallNumber)
 {
@@ -121,7 +122,7 @@ std::optional<int> SKSpaceGroup::HallNumberFromSpaceGroupNumber([[maybe_unused]]
 
 std::vector<double3> SKSpaceGroup::listOfSymmetricPositions(double3 pos)
 {
-  std::unordered_set<SKSeitzIntegerMatrix> seitzMatrices = _spaceGroupSetting.fullSeitzMatrices().operations();
+  std::unordered_set<SKSeitzIntegerMatrix> seitzMatrices = _spaceGroupSetting.fullSeitzMatrices().operations;
   size_t m = seitzMatrices.size();
 
   std::vector<double3> positions = std::vector<double3>{};
@@ -144,7 +145,7 @@ std::vector<QString> SKSpaceGroup::latticeTranslationStrings(int HallNumber)
   int index=0;
   for(int3 latticeVector: latticeVectors)
   {
-    int3 gcd = greatestCommonDivisor(latticeVector, 12);
+    int3 gcd = int3::greatestCommonDivisor(latticeVector, 12);
     QString latticeStringX = latticeVector.x == 0 ? "0" : QString::number(latticeVector.x/gcd.x) + "/" + QString::number(12/gcd.x);
     QString latticeStringY = latticeVector.y == 0 ? "0" : QString::number(latticeVector.y/gcd.y) + "/" + QString::number(12/gcd.y);
     QString latticeStringZ = latticeVector.z == 0 ? "0" : QString::number(latticeVector.z/gcd.z) + "/" + QString::number(12/gcd.z);
@@ -159,7 +160,7 @@ QString SKSpaceGroup::inversionCenterString(int HallNumber)
 {
   SKSpaceGroupSetting setting = SKSpaceGroupDataBase::spaceGroupData[HallNumber];
   int3 inversionCenter = setting.inversionCenter();
-  int3 gcd = greatestCommonDivisor(inversionCenter, 12);
+  int3 gcd = int3::greatestCommonDivisor(inversionCenter, 12);
   QString latticeStringX = inversionCenter.x == 0 ? "0" : QString::number(inversionCenter.x/gcd.x) + "/" + QString::number(12/gcd.x);
   QString latticeStringY = inversionCenter.y == 0 ? "0" : QString::number(inversionCenter.y/gcd.y) + "/" + QString::number(12/gcd.y);
   QString latticeStringZ = inversionCenter.z == 0 ? "0" : QString::number(inversionCenter.z/gcd.z) + "/" + QString::number(12/gcd.z);
@@ -188,9 +189,64 @@ SKSymmetryOperationSet SKSpaceGroup::findSpaceGroupSymmetry(double3x3 unitCell, 
   return SKSymmetryOperationSet(spaceGroupSymmetries);
 }
 
-std::optional<int> SKSpaceGroup::findSpaceGroupGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
+
+std::optional<SKSpaceGroup::FoundPrimitiveCellInfo> SKSpaceGroup::SKFindPrimitive(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> atoms, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
+{
+  std::optional<FoundSpaceGroupInfo> foundSpaceGroup = findSpaceGroup(unitCell, atoms, allowPartialOccupancies, symmetryPrecision);
+  if(foundSpaceGroup)
+  {
+    const auto &[HallNumber, origin, cell, changeOfBasis, transformationMatrix, rotationMatrix, atoms, asymemtricAtoms ] = *foundSpaceGroup;
+
+    SKSpaceGroup spaceGroup = SKSpaceGroup(HallNumber);
+    Centring centring = spaceGroup.spaceGroupSetting().centring();
+
+    double3x3 transformation = double3x3(1.0);
+    switch(centring)
+    {
+    case Centring::primitive:
+      transformation = double3x3(1.0);
+      break;
+    case Centring::body:
+      transformation = SKTransformationMatrix::bodyCenteredToPrimitive;
+      break;
+    case Centring::face:
+      transformation = SKTransformationMatrix::faceCenteredToPrimitive;
+      break;
+    case Centring::a_face:
+      transformation = SKTransformationMatrix::ACenteredToPrimitive;
+      break;
+    case Centring::b_face:
+      transformation = SKTransformationMatrix::BCenteredToPrimitive;
+      break;
+    case Centring::c_face:
+      transformation = SKTransformationMatrix::CCenteredToPrimitive;
+      break;
+    case Centring::r:
+      transformation = SKTransformationMatrix::rhombohedralToPrimitive;
+      break;
+    case Centring::h:
+      transformation = SKTransformationMatrix::hexagonalToPrimitive;
+      break;
+    default:
+      transformation = double3x3(1.0);
+      break;
+    }
+
+    double3x3 primitiveUnitCell = cell.unitCell() * transformation;
+    SKSymmetryCell primitiveCell = SKSymmetryCell::createFromUnitCell(primitiveUnitCell);
+
+    std::vector<std::tuple<double3, int, double>> positionInPrimitiveCell= SKSymmetryCell::trim(atoms, cell.unitCell(), primitiveUnitCell, allowPartialOccupancies, symmetryPrecision);
+
+    return SKSpaceGroup::FoundPrimitiveCellInfo{primitiveCell, positionInPrimitiveCell};
+  }
+
+  return std::nullopt;
+}
+
+std::optional<SKSpaceGroup::FoundSpaceGroupInfo> SKSpaceGroup::findSpaceGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> atoms, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
 {
   std::vector<std::tuple<double3, int, double> > reducedAtoms{};
+
 
   if(allowPartialOccupancies)
   {
@@ -229,7 +285,7 @@ std::optional<int> SKSpaceGroup::findSpaceGroupGroup(double3x3 unitCell, std::ve
     if(pointGroup)
     {
       // Use the axes directions of the Laue group-specific symmetry as a new basis
-      std::optional<SKTransformationMatrix> Mprime = pointGroup->constructAxes(spaceGroupSymmetries.rotations());
+      std::optional<SKTransformationMatrix> Mprime = pointGroup->constructAxes(spaceGroupSymmetries.properRotations());
 
       if(Mprime)
       {
@@ -238,24 +294,26 @@ std::optional<int> SKSpaceGroup::findSpaceGroupGroup(double3x3 unitCell, std::ve
         {
         case Laue::laue_1:
         {
-          SKSymmetryCell::createFromUnitCell(*primitiveDelaunayUnitCell * Mprime->int3x3);
-          std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> symmetryCell = SKSymmetryCell::createFromUnitCell(*primitiveDelaunayUnitCell * Mprime->int3x3).computeReducedNiggliCellAndChangeOfBasisMatrix();
+          SKSymmetryCell::createFromUnitCell((*primitiveDelaunayUnitCell) * (*Mprime));
+          std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> symmetryCell = SKSymmetryCell::createFromUnitCell((*primitiveDelaunayUnitCell) * (*Mprime)).computeReducedNiggliCellAndChangeOfBasisMatrix();
           if(!symmetryCell)
           {
             return std::nullopt;
           }
           Mprime = std::get<1>(*symmetryCell);
+          break;
         }
         case Laue::laue_2m:
         {
           // Change the basis for this monoclinic centrosymmetric point group using Delaunay reduction in 2D (algorithm of Atsushi Togo used)
           // The unique axis is chosen as b, choose shortest a, c lattice vectors (|a| < |c|)
-          std::optional<double3x3> computedDelaunayReducedCell2D = SKSymmetryCell::computeDelaunayReducedCell2D(*primitiveDelaunayUnitCell * Mprime->int3x3, symmetryPrecision);
+          std::optional<double3x3> computedDelaunayReducedCell2D = SKSymmetryCell::computeDelaunayReducedCell2D((*primitiveDelaunayUnitCell) * (*Mprime), symmetryPrecision);
           if(!computedDelaunayReducedCell2D)
           {
             return std::nullopt;
           }
           Mprime = SKTransformationMatrix(primitiveDelaunayUnitCell->inverse() *  *computedDelaunayReducedCell2D);
+          break;
         }
         default:
           break;
@@ -265,22 +323,93 @@ std::optional<int> SKSpaceGroup::findSpaceGroupGroup(double3x3 unitCell, std::ve
 
         SKTransformationMatrix correctedBasis = pointGroup->computeBasisCorrection(*Mprime, centering);
 
-        double3x3 primitiveLattice = *primitiveDelaunayUnitCell * correctedBasis.int3x3;
+        double3x3 primitiveLattice = (*primitiveDelaunayUnitCell) * correctedBasis;
 
         // transform the symmetries (rotation and translation) from the primtive cell to the conventional cell
         // the centering is used to add the additional translations
         SKSymmetryOperationSet symmetryInConventionalCell = spaceGroupSymmetries.changedBasis(correctedBasis).addingCenteringOperations(centering);
 
-        for(int i=0;i<=230;i++)
+        for(int i=1;i<=230;i++)
         {
           int HallNumber = SKSpaceGroupDataBase::spaceGroupHallData[i].front();
           if(SKSpaceGroupDataBase::spaceGroupData[HallNumber].pointGroupNumber() == pointGroup->number())
           {
-            std::optional<std::pair<double3, SKRotationalChangeOfBasis>> foundSpaceGroup = SKSpaceGroup::matchSpaceGroup(HallNumber, primitiveLattice, centering, symmetryInConventionalCell.operations(), symmetryPrecision);
+            std::optional<std::pair<double3, SKRotationalChangeOfBasis>> foundSpaceGroup = SKSpaceGroup::matchSpaceGroup(HallNumber, primitiveLattice, centering, symmetryInConventionalCell.operations, symmetryPrecision);
             if(foundSpaceGroup)
             {
-              return HallNumber;
+              double3 origin = std::get<0>(*foundSpaceGroup);
+              SKRotationalChangeOfBasis changeOfBasis = std::get<1>(*foundSpaceGroup);
+              double3x3 conventionalBravaisLattice = primitiveLattice * changeOfBasis.inverseRotationMatrix;
+
+              double3x3 transformationMatrix = conventionalBravaisLattice.inverse() * unitCell;
+
+              SKSpaceGroup spaceGroup = SKSpaceGroup(HallNumber);
+
+              SKIntegerSymmetryOperationSet dataBaseSpaceGroupSymmetries = spaceGroup.spaceGroupSetting().fullSeitzMatrices();
+
+              double3x3 transform = conventionalBravaisLattice.inverse() * *primitiveDelaunayUnitCell;
+
+              std::vector<std::tuple<double3, int, double>> atomsInConventionalCell{};
+              std::transform(positionInPrimitiveCell.begin(), positionInPrimitiveCell.end(), std::back_inserter(atomsInConventionalCell),
+                             [transform, origin](const std::tuple<double3, int, double>& tuple) { return std::make_tuple(double3::fract(transform * std::get<0>(tuple) + origin), std::get<1>(tuple), std::get<2>(tuple));});
+
+
+              std::vector<std::tuple<double3, int, double>> symmetrizedAtomsInConventionalCell = dataBaseSpaceGroupSymmetries.symmetrize(conventionalBravaisLattice, atomsInConventionalCell, symmetryPrecision);
+
+              std::vector<std::tuple<double3, int, double>> asymmetricAtoms = dataBaseSpaceGroupSymmetries.asymmetricAtoms(HallNumber, symmetrizedAtomsInConventionalCell, conventionalBravaisLattice, allowPartialOccupancies, symmetryPrecision);
+
+              SKSymmetryCell cell =  SKSymmetryCell::createFromUnitCell(conventionalBravaisLattice).idealized(spaceGroup);
+
+              double3x3 rotationMatrix = conventionalBravaisLattice * cell.unitCell().inverse();
+
+              // must be a rigid rotation
+              assert((rotationMatrix.determinant()-1.0)<1e-5);
+
+              return SKSpaceGroup::FoundSpaceGroupInfo{HallNumber, origin, cell, SKRotationalChangeOfBasis(SKRotationMatrix()), transformationMatrix, rotationMatrix,
+                                                       symmetrizedAtomsInConventionalCell, asymmetricAtoms};
             }
+          }
+
+        }
+
+        // special cases
+        // Gross-Kunstleve: special case Pa-3 (205) hallSymbol 501
+        int HallNumber = SKSpaceGroupDataBase::spaceGroupHallData[205].front();
+        if(SKSpaceGroupDataBase::spaceGroupData[HallNumber].pointGroupNumber() == pointGroup->number())
+        {
+          std::optional<double3> originShift = getOriginShift(HallNumber, centering, SKRotationalChangeOfBasis(SKRotationMatrix(int3(0,0, 1),int3(0,-1,0),int3(1,0,0))), symmetryInConventionalCell.operations, symmetryPrecision);
+          if(originShift)
+          {
+            double3 origin = *originShift;
+            SKRotationalChangeOfBasis changeOfBasis = SKRotationalChangeOfBasis(SKRotationMatrix(int3(0,0, 1),int3(0,-1,0),int3(1,0,0)));
+            double3x3 conventionalBravaisLattice = primitiveLattice * changeOfBasis.inverseRotationMatrix;
+
+            double3x3 transformationMatrix = conventionalBravaisLattice.inverse() * unitCell;
+
+            SKSpaceGroup spaceGroup = SKSpaceGroup(HallNumber);
+
+            SKIntegerSymmetryOperationSet dataBaseSpaceGroupSymmetries = spaceGroup.spaceGroupSetting().fullSeitzMatrices();
+
+            double3x3 transform = conventionalBravaisLattice.inverse() * *primitiveDelaunayUnitCell;
+
+            std::vector<std::tuple<double3, int, double>> atomsInConventionalCell{};
+            std::transform(positionInPrimitiveCell.begin(), positionInPrimitiveCell.end(), std::back_inserter(atomsInConventionalCell),
+                           [transform, origin](const std::tuple<double3, int, double>& tuple) { return std::make_tuple(transform * std::get<0>(tuple) + origin, std::get<1>(tuple), std::get<2>(tuple));});
+
+
+            std::vector<std::tuple<double3, int, double> > symmetrizedAtomsInConventionalCell = dataBaseSpaceGroupSymmetries.symmetrize(conventionalBravaisLattice, atomsInConventionalCell, symmetryPrecision);
+
+            std::vector<std::tuple<double3, int, double>> asymmetricAtoms = dataBaseSpaceGroupSymmetries.asymmetricAtoms(HallNumber, symmetrizedAtomsInConventionalCell, conventionalBravaisLattice, allowPartialOccupancies, symmetryPrecision);
+
+            SKSymmetryCell cell =  SKSymmetryCell::createFromUnitCell(conventionalBravaisLattice).idealized(spaceGroup);
+
+            double3x3 rotationMatrix = conventionalBravaisLattice * cell.unitCell().inverse();
+
+            // must be a rigid rotation
+            assert((rotationMatrix.determinant()-1.0)<1e-5);
+
+            return SKSpaceGroup::FoundSpaceGroupInfo{HallNumber, origin, cell, SKRotationalChangeOfBasis(SKRotationMatrix()), transformationMatrix, rotationMatrix,
+                                                     symmetrizedAtomsInConventionalCell, asymmetricAtoms};
           }
         }
       }
@@ -289,6 +418,103 @@ std::optional<int> SKSpaceGroup::findSpaceGroupGroup(double3x3 unitCell, std::ve
   return std::nullopt;
 }
 
+std::optional<SKSpaceGroup::FoundNiggliCellInfo> SKSpaceGroup::findNiggliCell(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> atoms, bool allowPartialOccupancies, double symmetryPrecision = 1e-2)
+{
+  std::vector<std::tuple<double3, int, double> > reducedAtoms{};
+
+  int leastOccuringAtomType;
+  if(allowPartialOccupancies)
+  {
+    reducedAtoms = atoms;
+  }
+  else
+  {
+    std::map<int, int> histogram{};
+    for(const std::tuple<double3, int, double> &atom: atoms)
+    {
+      histogram[std::get<1>(atom)] = histogram[std::get<1>(atom)] + 1;
+    }
+    std::map<int,int>::iterator index = std::min_element(histogram.begin(), histogram.end(),
+                                       [](const auto& l, const auto& r) { return l.second < r.second; });
+    leastOccuringAtomType = index->first;
+
+    std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
+  }
+
+  double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+
+  std::optional<double3x3> primitiveDelaunayUnitCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
+
+  if(primitiveDelaunayUnitCell)
+  {
+    std::vector<std::tuple<double3, int, double> >positionInPrimitiveDelaunayCell = SKSymmetryCell::trim(atoms, unitCell, *primitiveDelaunayUnitCell, allowPartialOccupancies, symmetryPrecision);
+
+    std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> NiggliSymmetryCell = SKSymmetryCell::createFromUnitCell(*primitiveDelaunayUnitCell).computeReducedNiggliCellAndChangeOfBasisMatrix();
+
+    if(NiggliSymmetryCell)
+    {
+      double3x3 NiggliUnitCell = std::get<0>(*NiggliSymmetryCell).unitCell();
+      SKTransformationMatrix changeOfBasis = std::get<1>(*NiggliSymmetryCell);
+
+      qDebug() << *primitiveDelaunayUnitCell;
+      qDebug() << changeOfBasis;
+      qDebug() << std::get<0>(*NiggliSymmetryCell);
+
+      std::vector<std::tuple<double3, int, double>> positionInNiggliCell{};
+      std::transform(positionInPrimitiveDelaunayCell.begin(), positionInPrimitiveDelaunayCell.end(), std::back_inserter(positionInNiggliCell),
+                             [changeOfBasis](const std::tuple<double3, int, double>& tuple) { return std::make_tuple(double3x3(changeOfBasis.transformation).inverse() * std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));});
+
+      std::vector<std::tuple<double3, int, double>> reducedPositionsInNiggliCell{};
+      if(allowPartialOccupancies)
+      {
+        std::copy(positionInNiggliCell.begin(), positionInNiggliCell.end(), std::back_inserter(reducedPositionsInNiggliCell));
+      }
+      else
+      {
+        std::copy_if(positionInNiggliCell.begin(), positionInNiggliCell.end(), std::back_inserter(reducedPositionsInNiggliCell),
+          [leastOccuringAtomType](const std::tuple<double3, int, double> &atom) { return std::get<1>(atom) == leastOccuringAtomType; });
+      }
+
+      SKPointSymmetrySet latticeSymmetries = SKSymmetryCell::findLatticeSymmetry(NiggliUnitCell, symmetryPrecision);
+
+      SKSymmetryOperationSet spaceGroupSymmetries = SKSpaceGroup::findSpaceGroupSymmetry(NiggliUnitCell, reducedPositionsInNiggliCell, positionInNiggliCell, latticeSymmetries, allowPartialOccupancies, symmetryPrecision);
+
+      for(int i=230;i>=1;i--)
+      {
+        int HallNumber = SKSpaceGroupDataBase::spaceGroupHallData[i].front();
+
+        std::optional<std::pair<double3, SKRotationalChangeOfBasis>> foundSpaceGroup = SKSpaceGroup::matchSpaceGroup(HallNumber, NiggliUnitCell, Centring::primitive, spaceGroupSymmetries.operations, symmetryPrecision);
+        if(foundSpaceGroup)
+        {
+          double3 origin = std::get<0>(*foundSpaceGroup);
+
+          double3x3 conventionalBravaisLattice = NiggliUnitCell * std::get<1>(*foundSpaceGroup).inverseRotationMatrix;
+
+          SKSpaceGroup spaceGroup = SKSpaceGroup(HallNumber);
+
+          SKIntegerSymmetryOperationSet dataBaseSpaceGroupSymmetries = spaceGroup.spaceGroupSetting().fullSeitzMatrices();
+
+          double3x3 transform = conventionalBravaisLattice.inverse() * NiggliUnitCell;
+
+          std::vector<std::tuple<double3, int, double>> atomsInConventionalCell{};
+          std::transform(positionInNiggliCell.begin(), positionInNiggliCell.end(), std::back_inserter(atomsInConventionalCell),
+                         [transform, origin](const std::tuple<double3, int, double>& tuple) { return std::make_tuple(double3::fract(transform * std::get<0>(tuple) + origin), std::get<1>(tuple), std::get<2>(tuple));});
+
+          std::vector<std::tuple<double3, int, double>> symmetrizedAtomsInConventionalCell = dataBaseSpaceGroupSymmetries.symmetrize(conventionalBravaisLattice, atomsInConventionalCell, symmetryPrecision);
+
+          std::vector<std::tuple<double3, int, double>> asymmetricAtoms = dataBaseSpaceGroupSymmetries.asymmetricAtoms(HallNumber, symmetrizedAtomsInConventionalCell, conventionalBravaisLattice, allowPartialOccupancies, symmetryPrecision);
+
+          SKSymmetryCell cell =  SKSymmetryCell::createFromUnitCell(conventionalBravaisLattice).idealized(spaceGroup);
+
+          return SKSpaceGroup::FoundNiggliCellInfo{HallNumber, cell, asymmetricAtoms};
+        }
+      }
+
+
+    }
+  }
+  return std::nullopt;
+}
 
 std::optional<std::pair<double3, SKRotationalChangeOfBasis>> SKSpaceGroup::matchSpaceGroup(int HallNumber, double3x3 lattice, Centring centering, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision = 1e-2)
 {
@@ -311,192 +537,244 @@ std::optional<std::pair<double3, SKRotationalChangeOfBasis>> SKSpaceGroup::match
     return std::nullopt;
   }
   case Holohedry::monoclinic:
+  {
+    std::vector<std::pair<double3,SKRotationalChangeOfBasis>> solutions{};
     for(const SKRotationalChangeOfBasis& changeOfMonoclinicCentering: SKRotationalChangeOfBasis::changeOfMonoclinicCentering)
     {
       std::optional<double3> originShift = getOriginShift(HallNumber, centering, changeOfMonoclinicCentering, seitzMatrices, symmetryPrecision);
       if(originShift)
       {
-        return std::make_pair(*originShift, SKRotationalChangeOfBasis(SKRotationMatrix::identity));
+        solutions.push_back( std::make_pair(*originShift, changeOfMonoclinicCentering) );
       }
     }
+    std::sort(solutions.begin(), solutions.end(),
+              [lattice](const std::pair<double3,SKRotationalChangeOfBasis> & a, const std::pair<double3,SKRotationalChangeOfBasis> & b) -> bool
+    {
+        double3x3 conventionalBravaisLatticeA = lattice * std::get<1>(a).inverseRotationMatrix;
+        SKSymmetryCell cellA = SKSymmetryCell::createFromUnitCell(conventionalBravaisLatticeA);
+        double3x3 conventionalBravaisLatticeB = lattice * std::get<1>(b).inverseRotationMatrix;
+        SKSymmetryCell cellB = SKSymmetryCell::createFromUnitCell(conventionalBravaisLatticeB);
+        return (cellA.a() + cellA.c()) < (cellB.a() + cellB.c());
+    });
+    if(!solutions.empty()) return solutions.front();
+
     return std::nullopt;
-    case Holohedry::orthorhombic:
-      for(const SKRotationalChangeOfBasis& changeOfOrthorhombicCentering: SKRotationalChangeOfBasis::changeOfOrthorhombicCentering)
+  }
+  case Holohedry::orthorhombic:
+  {
+    std::vector<std::pair<double3,SKRotationalChangeOfBasis>> solutions{};
+    for(const SKRotationalChangeOfBasis& changeOfOrthorhombicCentering: SKRotationalChangeOfBasis::changeOfOrthorhombicCentering)
+    {
+      std::optional<double3> originShift = getOriginShift(HallNumber, centering, changeOfOrthorhombicCentering, seitzMatrices, symmetryPrecision);
+      if(originShift)
       {
-        std::optional<double3> originShift = getOriginShift(HallNumber, centering, changeOfOrthorhombicCentering, seitzMatrices, symmetryPrecision);
-        if(originShift)
-        {
-          return std::make_pair(*originShift, SKRotationalChangeOfBasis(SKRotationMatrix::identity));
-        }
+        solutions.push_back( std::make_pair(*originShift, changeOfOrthorhombicCentering) );
       }
-      return std::nullopt;
+    }
+    std::sort(solutions.begin(), solutions.end(),
+              [lattice](const std::pair<double3,SKRotationalChangeOfBasis> & a, const std::pair<double3,SKRotationalChangeOfBasis> & b) -> bool
+    {
+        double3x3 conventionalBravaisLatticeA = lattice * std::get<1>(a).inverseRotationMatrix;
+        SKSymmetryCell cellA = SKSymmetryCell::createFromUnitCell(conventionalBravaisLatticeA);
+        double3x3 conventionalBravaisLatticeB = lattice * std::get<1>(b).inverseRotationMatrix;
+        SKSymmetryCell cellB = SKSymmetryCell::createFromUnitCell(conventionalBravaisLatticeB);
+        return std::pair(cellA.a(),cellA.b()) < std::pair(cellB.a(), cellB.b());
+    });
+    if(!solutions.empty()) return solutions.front();
+
+    return std::nullopt;
+  }
+  default:
+      break;
   }
 
+  qDebug() << "SHOULD NOT GET HERE";
+  assert(false);
   return std::nullopt;
 }
 
 std::optional<double3> SKSpaceGroup::getOriginShift(int HallNumber, Centring centering, SKRotationalChangeOfBasis changeOfBasis, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision = 1e-2)
 {
-  int3x3 translations = int3x3();
   double3x3 translationsnew = double3x3();
 
   SKSpaceGroup dataBaseSpaceGroup = SKSpaceGroup(HallNumber);
-  //dataBaseSpaceGroup.spaceGroupSetting().encodedGenerators();
-    /*
+  std::vector<SKSeitzIntegerMatrix> dataBaseSpaceGroupGenerators = SKSeitzIntegerMatrix::SeitzMatrices(dataBaseSpaceGroup.spaceGroupSetting().encodedGenerators());
 
+ // qDebug() << "HallNumber " << HallNumber;
+ // qDebug() << "seitzMatrices " << seitzMatrices.size();
+ // qDebug() << "dataBaseSpaceGroupGenerators: " << dataBaseSpaceGroupGenerators.size() << QString::fromStdString(dataBaseSpaceGroup.spaceGroupSetting().encodedGenerators());
+  assert(!dataBaseSpaceGroupGenerators.empty());
 
+  // apply change-of-basis to generators
+  for(size_t i=0;i<dataBaseSpaceGroupGenerators.size();i++)
+  {
+    dataBaseSpaceGroupGenerators[i] = changeOfBasis * dataBaseSpaceGroupGenerators[i];
+  }
 
-        var dataBaseSpaceGroupGenerators = SKSeitzIntegerMatrix.SeitzMatrices(generatorEncoding: dataBaseSpaceGroup.spaceGroupSetting.encodedGenerators)
+  // apply change-of-basis to lattice translations
+  std::vector<int3> spaceGroupLatticeTranslations = dataBaseSpaceGroup.spaceGroupSetting().latticeTranslations();
+  for(size_t i=0;i<spaceGroupLatticeTranslations.size();i++)
+  {
+    spaceGroupLatticeTranslations[i] = changeOfBasis * spaceGroupLatticeTranslations[i];
+  }
 
-        // apply change-of-basis to generators
-        for i in 0..<dataBaseSpaceGroupGenerators.count
-        {
-          dataBaseSpaceGroupGenerators[i] = changeOfBasis * dataBaseSpaceGroupGenerators[i]
-        }
+  // apply change-of-basis to centring
+  Centring dataBaseSpaceGroupCentering = dataBaseSpaceGroup.spaceGroupSetting().centring();
+  switch(dataBaseSpaceGroupCentering)
+  {
+  case Centring::a_face:
+  case Centring::b_face:
+  case Centring::c_face:
+    if(spaceGroupLatticeTranslations[1].x == 0)
+    {
+      dataBaseSpaceGroupCentering = Centring::a_face;
+    }
+    if(spaceGroupLatticeTranslations[1].y == 0)
+    {
+      dataBaseSpaceGroupCentering = Centring::b_face;
+    }
+    if(spaceGroupLatticeTranslations[1].z == 0)
+    {
+      dataBaseSpaceGroupCentering = Centring::c_face;
+    }
+    break;
+  default:
+    break;
+  }
 
-        // apply change-of-basis to lattice translations
-        var spaceGroupLatticeTranslations = dataBaseSpaceGroup.spaceGroupSetting.latticeTranslations
-        for i in 0..<spaceGroupLatticeTranslations.count
-        {
-          spaceGroupLatticeTranslations[i] = changeOfBasis * spaceGroupLatticeTranslations[i]
-        }
+  // return if the centring is not equal to the spacegroup one
+  if(centering != dataBaseSpaceGroupCentering)
+  {
+   // qDebug() << "FAIL: different centering";
+    return std::nullopt;
+  }
 
-        // apply change-of-basis to centring
-        var dataBaseSpaceGroupCentering = dataBaseSpaceGroup.spaceGroupSetting.centring
-        switch(dataBaseSpaceGroupCentering)
-        {
-        case .a_face, .b_face, .c_face:
-          if spaceGroupLatticeTranslations[1].x == 0
-          {
-            dataBaseSpaceGroupCentering = .a_face
-          }
-          if spaceGroupLatticeTranslations[1].y == 0
-          {
-            dataBaseSpaceGroupCentering = .b_face
-          }
-          if spaceGroupLatticeTranslations[1].z == 0
-          {
-            dataBaseSpaceGroupCentering = .c_face
-          }
-          break
-        default:
-          break
-        }
+  // apply change-of-basis to the Seitz-matrices
+  std::vector<SKSeitzIntegerMatrix> dataBaseSpaceGroupSeitzMatrices =  dataBaseSpaceGroup.spaceGroupSetting().SeitzMatricesWithoutTranslation();
+  for(size_t i=0;i<dataBaseSpaceGroupSeitzMatrices.size();i++)
+  {
+    dataBaseSpaceGroupSeitzMatrices[i] = changeOfBasis * dataBaseSpaceGroupSeitzMatrices[i];
+  }
 
-        // return if the centring is not equal to the spacegroup one
-        if centering != dataBaseSpaceGroupCentering
-        {
-          return nil
-        }
+  for(size_t i=0;i<dataBaseSpaceGroupGenerators.size();i++)
+  {
+    // math the rotional part of the generator with the Seitz-matrices
+    SKRotationMatrix toFind = dataBaseSpaceGroupGenerators[i].rotation;
+    auto index = std::find_if(seitzMatrices.begin(), seitzMatrices.end(),
+          [&toFind](const SKSeitzMatrix& m) { return m.rotation == toFind;});
+    if(index == seitzMatrices.end())
+    {
+      return std::nullopt;
+    }
 
-        // apply change-of-basis to the Seitz-matrices
-        var dataBaseSpaceGroupSeitzMatrices: [SKSeitzIntegerMatrix] =  dataBaseSpaceGroup.spaceGroupSetting.SeitzMatricesWithoutTranslation
-        for i in 0..<dataBaseSpaceGroupSeitzMatrices.count
-        {
-          dataBaseSpaceGroupSeitzMatrices[i] = changeOfBasis * dataBaseSpaceGroupSeitzMatrices[i]
-        }
+    // and then take the translation part
+    translationsnew[i] = index->translation;
+  }
 
-        for i in 0..<dataBaseSpaceGroupGenerators.count
-        {
-          guard let index: Int = seitzMatrices.firstIndex(where: {$0.rotation == dataBaseSpaceGroupGenerators[i].rotation}) else {return nil}
-          translations[i] = SKSeitzIntegerMatrix(SeitzMatrx: seitzMatrices[index]).translation
-          translationsnew[i] = seitzMatrices[index].translation
-        }
+  SKTransformationMatrix transformation = SKTransformationMatrix::identity;
+  switch(dataBaseSpaceGroupCentering)
+  {
+  case Centring::primitive:
+    transformation = SKTransformationMatrix::identity;
+    break;
+  case Centring::body:
+    transformation = SKTransformationMatrix::primitiveToBodyCentered;
+    break;
+  case Centring::face:
+    transformation = SKTransformationMatrix::primitiveToFaceCentered;
+    break;
+  case Centring::a_face:
+    transformation = SKTransformationMatrix::primitiveToACentered;
+    break;
+  case Centring::b_face:
+    transformation = SKTransformationMatrix::primitiveToBCentered;
+    break;
+  case Centring::c_face:
+    transformation = SKTransformationMatrix::primitiveToCCentered;
+    break;
+  case Centring::r:
+    transformation = SKTransformationMatrix::primitiveToRhombohedral;
+    break;
+  case Centring::h:
+    transformation = SKTransformationMatrix::primitiveToHexagonal;
+    break;
+  default:
+    break;
+  }
 
-        var transformation: SKTransformationMatrix = SKTransformationMatrix.identity
-        switch(dataBaseSpaceGroupCentering)
-        {
-        case .primitive:
-          transformation = SKTransformationMatrix.identity
-        case .body:
-          transformation = SKTransformationMatrix.primitiveToBodyCentered
-        case .face:
-          transformation = SKTransformationMatrix.primitiveToFaceCentered
-        case .a_face:
-          transformation = SKTransformationMatrix.primitiveToACentered
-        case .b_face:
-          transformation = SKTransformationMatrix.primitiveToBCentered
-        case .c_face:
-          transformation = SKTransformationMatrix.primitiveToCCentered
-        case .r:
-          transformation = SKTransformationMatrix.primitiveToRhombohedral
-        case .h:
-          transformation = SKTransformationMatrix.primitiveToHexagonal
-        default:
-          break
-        }
+  // SKIntegerChangeOfBasis changeToPrimitive = SKIntegerChangeOfBasis(inversionTransformation: transformation)
+  SKIntegerChangeOfBasis changeToPrimitive = SKIntegerChangeOfBasis(transformation);
 
-        let changeToPrimitive: SKIntegerChangeOfBasis = SKIntegerChangeOfBasis(inversionTransformation: transformation)
+  SKRotationMatrix r1 = dataBaseSpaceGroupGenerators[0].rotation;
+  SKRotationMatrix r2 = dataBaseSpaceGroupGenerators.size() > 1 ? dataBaseSpaceGroupGenerators[1].rotation : SKRotationMatrix::identity;
+  SKRotationMatrix r3 = dataBaseSpaceGroupGenerators.size() > 2 ? dataBaseSpaceGroupGenerators[2].rotation : SKRotationMatrix::identity;
 
-        let r1: SKRotationMatrix = dataBaseSpaceGroupGenerators[0].rotation
-        let r2: SKRotationMatrix = dataBaseSpaceGroupGenerators.count > 1 ? dataBaseSpaceGroupGenerators[1].rotation : SKRotationMatrix.identity
-        let r3: SKRotationMatrix = dataBaseSpaceGroupGenerators.count > 2 ? dataBaseSpaceGroupGenerators[2].rotation : SKRotationMatrix.identity
+  SKTransformationMatrix t1 = changeToPrimitive * SKTransformationMatrix((r1 - SKRotationMatrix::identity).int3x3);
+  SKTransformationMatrix t2 = changeToPrimitive * SKTransformationMatrix((r2 - SKRotationMatrix::identity).int3x3);
+  SKTransformationMatrix t3 = changeToPrimitive * SKTransformationMatrix((r3 - SKRotationMatrix::identity).int3x3);
 
-        let t1: SKTransformationMatrix = changeToPrimitive * SKTransformationMatrix(r1 - SKRotationMatrix.identity)
-        let t2: SKTransformationMatrix = changeToPrimitive * SKTransformationMatrix(r2 - SKRotationMatrix.identity)
-        let t3: SKTransformationMatrix = changeToPrimitive * SKTransformationMatrix(r3 - SKRotationMatrix.identity)
+  // m is a 9x3 matrix
+  RingMatrix m = RingMatrix(t1.transformation,t2.transformation,t3.transformation);
 
+  // The system M * cp = b (mod Z) can be solved by computing the Smith normal form D = PMQ.
+  // b is the translation difference, cp the origin shift
+  // D is a matrix in diagonal form with diagonal entries d1, . . . , dn.
+  // P is square, 9x9, invertible matrix
+  // Q is square, 3x3, invertible matrix
+  std::tuple<RingMatrix,RingMatrix,RingMatrix> sol = m.SmithNormalForm();
+  RingMatrix P = std::get<0>(sol);
+  RingMatrix Q = std::get<1>(sol);
+  RingMatrix D = std::get<2>(sol);
 
-        // m is a 9x3 matrix
-        let m: RingMatrix = RingMatrix(Int3x3: [t1.int3x3,t2.int3x3,t3.int3x3])
+  Matrix b = Matrix(9, 1, 0.0);
+  for(size_t i=0;i<dataBaseSpaceGroupGenerators.size();i++)
+  {
+    //let seitzMatrix: SKSeitzIntegerMatrix? = dataBaseSpaceGroupSeitzMatrices.filter{$0.rotation == dataBaseSpaceGroupGenerators[i].rotation}.first
+    //guard seitzMatrix != nil else {return nil}
 
-        // The system M * cp = b (mod Z) can be solved by computing the Smith normal form D = PMQ.
-        // b is the translation difference, cp the origin shift
-        // D is a matrix in diagonal form with diagonal entries d1, . . . , dn.
-        // P is square, 9x9, invertible matrix
-        // Q is square, 3x3, invertible matrix
-        let sol:  (P: RingMatrix, Q: RingMatrix, D: RingMatrix) = try m.SmithNormalForm()
+    double3 transPrimitive = changeToPrimitive * translationsnew[i];
 
-        var b: Matrix = Matrix(rows: 9, columns: 1, repeatedValue: 0.0)
-        for i in 0..<dataBaseSpaceGroupGenerators.count
-        {
-          let seitzMatrix: SKSeitzIntegerMatrix? = dataBaseSpaceGroupSeitzMatrices.filter{$0.rotation == dataBaseSpaceGroupGenerators[i].rotation}.first
-          guard seitzMatrix != nil else {return nil}
+    int3 dataBaseTranslation = changeToPrimitive * dataBaseSpaceGroupGenerators[i].translation;
 
-          let transPrimitive: SIMD3<Double> = changeToPrimitive * translationsnew[i]
+    double3 translationDifference = double3::fract(transPrimitive - double3(dataBaseTranslation) / 24.0);
+    b(3*i,0) = translationDifference.x;
+    b(3*i+1,0) = translationDifference.y;
+    b(3*i+2,0) = translationDifference.z;
+  }
 
-          let dataBaseTranslation: SIMD3<Int32>  = changeToPrimitive * dataBaseSpaceGroupGenerators[i].translation
+  // v (9x1) =  P (9x9) x b (9,1)
+  Matrix v = P * b;
 
-          let translationDifference: SIMD3<Double> = fract(transPrimitive - SIMD3<Double>(dataBaseTranslation) / 24.0)
-          b[3*i,0] = translationDifference.x
-          b[3*i+1,0] = translationDifference.y
-          b[3*i+2,0] = translationDifference.z
-        }
+  // The system P * b = v, v = [v1,...,vn] has solutions(mod Z) if and only if vi==0 whenever di=0
+  if((D(0,0) == 0 && abs(v(0,0) - rint(v(0,0))) > symmetryPrecision) ||
+     (D(1,1) == 0 && abs(v(1,0) - rint(v(1,0))) > symmetryPrecision) ||
+     (D(2,2) == 0 && abs(v(2,0) - rint(v(2,0))) > symmetryPrecision))
+  {
+    return std::nullopt;
+  }
+  for(int i=3;i<9;i++)
+  {
+    if(abs(v(i,0) - rint(v(i,0))) > symmetryPrecision)
+    {
+      return std::nullopt;
+    }
+  }
 
-        // v (9x1) =  P (9x9) x b (9,1)
-        let v: Matrix = sol.P <*> b
+  Matrix Dinv = Matrix(3, 9, 0.0);
+  for(int i=0;i<3;i++)
+  {
+    if (D(i,i) != 0)
+    {
+      Dinv(i,i) = 1.0 / double(D(i,i));
+    }
+  }
 
-        // The system P * b = v, v = [v1,...,vn] has solutions(mod Z) if and only if vi==0 whenever di=0
-        if (sol.D[0,0] == 0 && abs(v[0,0] - rint(v[0,0])) > symmetryPrecision) ||
-           (sol.D[1,1] == 0 && abs(v[1,0] - rint(v[1,0])) > symmetryPrecision) ||
-           (sol.D[2,2] == 0 && abs(v[2,0] - rint(v[2,0])) > symmetryPrecision)
-        {
-          return nil
-        }
-        for i in 3..<9
-        {
-          if abs(v[i,0] - rint(v[i,0])) > symmetryPrecision
-          {
-            return nil
-          }
-        }
+  // sol.Q (3x3), T (3x9), sol.P (9x9), bm (9x1) -> (3x1)
+  Matrix cp = (Q * Dinv * P) * b;
 
-        var Dinv: Matrix = Matrix(rows: 3, columns: 9, repeatedValue: 0.0)
-        for i in 0..<3
-        {
-          if (sol.D[i,i] != 0)
-          {
-            Dinv[i,i] = 1.0 / Double(sol.D[i,i])
-          }
-        }
-
-        // sol.Q (3x3), T (3x9), sol.P (9x9), bm (9x1) -> (3x1)
-        let cp: Matrix = (sol.Q <*> Dinv <*> sol.P) <*> b
-
-        let originShift: SIMD3<Double> = fract(SIMD3<Double>(cp[0], cp[1], cp[2]))
-        let basis: SKIntegerChangeOfBasis = SKIntegerChangeOfBasis(inverse: changeToPrimitive)
-        return fract(changeOfBasis.inverse * (basis * originShift))
-                    */
+  double3 originShift = double3::fract(double3(cp(0,0), cp(1,0), cp(2,0)));
+  SKIntegerChangeOfBasis basis = SKIntegerChangeOfBasis(changeToPrimitive).inverse();
+  return double3::fract(changeOfBasis.inverse() * (basis * originShift));
 }
 
 QDataStream &operator<<(QDataStream &stream, const SKSpaceGroup &spaceGroup)

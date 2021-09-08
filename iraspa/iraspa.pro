@@ -20,7 +20,6 @@ contains(DEFINES, USE_OPENGL){
 
 CONFIG += c++17
 
-include(spglib/spglib.pri)
 include(mathkit/mathkit.pri)
 include(foundationkit/foundationkit.pri)
 include(symmetrykit/symmetrykit.pri)
@@ -123,11 +122,11 @@ win32{
     }
   }
 
-  QMAKE_CXXFLAGS_DEBUG += /F 4194304 -fsanitize=address /Zi /Od /MDd
-  QMAKE_LFLAGS_DEBUG   += /STACK:4194304  /INCREMENTAL:NO /DEBUG /MDd
+  QMAKE_CXXFLAGS_DEBUG += /F 4194304 /Zi /Od /MDd
+  QMAKE_LFLAGS_DEBUG   += /STACK:4194304  /INCREMENTAL /DEBUG /MDd
 
-  QMAKE_CXXFLAGS_RELEASE += /F 4194304 /Zi /MD
-  QMAKE_LFLAGS_RELEASE   += /STACK:4194304  /INCREMENTAL:NO /DEBUG /MD
+  QMAKE_CXXFLAGS_RELEASE += /F 4194304 /Zi /MD /Zi /O2 /Ob1 /D NDEBUG
+  QMAKE_LFLAGS_RELEASE   += /STACK:4194304  /DEBUG /INCREMENTAL
 
   INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include"
   INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include/python2.7"

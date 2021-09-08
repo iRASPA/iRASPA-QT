@@ -23,8 +23,6 @@
 #include <QDebug>
 #include <algorithm>
 #include <set>
-#include <spglib.h>
-
 
 AtomTreeViewFindPrimitiveCommand::AtomTreeViewFindPrimitiveCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAStructure> iraspaStructure,
                                      AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection, QUndoCommand *parent):
@@ -43,44 +41,18 @@ AtomTreeViewFindPrimitiveCommand::AtomTreeViewFindPrimitiveCommand(MainWindow *m
 
 void AtomTreeViewFindPrimitiveCommand::redo()
 {
-  std::pair<std::vector<int>, std::vector<double3>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
-  const int num_atom = int(symmetryData.first.size());
-  const int to_primitive = 1;
-  const int no_idealize = 0;
-  const double symprec = 1e-5;
+  const std::vector<std::tuple<double3,int,double>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
 
-  // transpose unitCell: spglib use [ [ a_x, b_x, c_x ], [ a_y, b_y, c_y ], [ a_z, b_z, c_z ] ]
-  double3x3 unitCell = _iraspaStructure->structure()->cell()->unitCell().transpose();
-
-  int n_std_atoms = spg_standardize_cell((double (*)[3])(unitCell.data()),
-                             (double (*)[3])(symmetryData.second.data()),
-                             symmetryData.first.data(),
-                             num_atom, to_primitive, no_idealize, symprec);
-
-  // tranpose result back
-  double3x3 newUnitCell = unitCell.transpose();
-
-  if(n_std_atoms>0)
+  double3x3 unitCell = _iraspaStructure->structure()->cell()->unitCell();
+  std::optional<SKSpaceGroup::FoundPrimitiveCellInfo> foundSpaceGroup = SKSpaceGroup::SKFindPrimitive(unitCell,symmetryData,true,1e-2);
+  if(foundSpaceGroup)
   {
     std::shared_ptr<Structure> structure = _iraspaStructure->structure()->clone();
 
-    struct compareTupleWithFirstElement
-    {
-      bool operator() (const std::tuple<int, int, double3>& lhs, const std::tuple<int, int, double3>& rhs) const
-      {
-        return std::get<0>(lhs) < std::get<0>(rhs);
-      }
-    };
+    double3x3 newUnitCell = foundSpaceGroup->cell.unitCell();
+    std::vector<std::tuple<double3, int, double>> primitiveAtoms = foundSpaceGroup->atoms;
 
-    std::vector<std::pair<int, double3>> asymmetricAtoms{};
-    for(int i=0; i < n_std_atoms; i++)
-    {
-      std::pair<int, double3> element = std::pair(symmetryData.first[i],
-                                                 symmetryData.second[i] );
-      asymmetricAtoms.push_back(element);
-    }
-
-    structure->setAtomSymmetryData(newUnitCell, asymmetricAtoms);
+    structure->setAtomSymmetryData(newUnitCell, primitiveAtoms);
 
     structure->reComputeBoundingBox();
 
@@ -88,7 +60,6 @@ void AtomTreeViewFindPrimitiveCommand::redo()
     structure->setRepresentationColorSchemeIdentifier(structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
     structure->setRepresentationStyle(structure->atomRepresentationStyle(), _mainWindow->colorSets());
     structure->updateForceField(_mainWindow->forceFieldSets());
-
 
     structure->setSpaceGroupHallNumber(1);
     _iraspaStructure->setStructure(structure);

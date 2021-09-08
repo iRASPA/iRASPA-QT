@@ -59,8 +59,8 @@ public:
 
   void expandSymmetry() final override;
   void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);
-  std::pair<std::vector<int>, std::vector<double3>> atomSymmetryData() const override final;
-  void setAtomSymmetryData(double3x3 unitCell, std::vector<std::pair<int, double3>> atomData) override final;
+  std::vector<std::tuple<double3, int, double>> atomSymmetryData() const override final;
+  void setAtomSymmetryData(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> atomData) override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToCartesianPositions() override final;

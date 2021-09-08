@@ -22,13 +22,20 @@
 #pragma once
 
 #include <mathkit.h>
-
 #include <QColor>
-//#include "rkrenderkitprotocols.h"
+
+// Uniform                                  binding point
+// RKTransformationUniforms                 0
+// RKStructureUniforms                      1
+// RKIsosurfaceUniforms                     2
+// RKLightsUniforms                         3
+//
+// RKGlobalAxesUniforms                     5
+// RKStructureUniforms (ambient occlusion)  6
+// ShadowUniformBlock  (ambient occlusion)  7
 
 class RKRenderStructure;
 class RKRenderDataSource;
-//#include <QtOpenGL>
 
 enum class RKBackgroundType: qint64
 {

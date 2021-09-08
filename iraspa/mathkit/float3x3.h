@@ -40,15 +40,13 @@ union float3x3
                  cx, cy, cz;     // 3rd column
   };
 
-  float3x3 operator * (const float3x3& right) const;
+
   inline float3  operator [] (int i) { return v[i]; }
   inline const float3  operator [] (int i) const { return v[i]; }
 
- float3 operator * (const float3& right) const;
-
-   float3x3(float m11=0.0, float m21=0.0, float m31=0.0,
-             float m12=0.0, float m22=0.0, float m32=0.0,
-             float m13=0.0, float m23=0.0, float m33=0.0)
+  float3x3(float m11=0.0, float m21=0.0, float m31=0.0,
+           float m12=0.0, float m22=0.0, float m32=0.0,
+           float m13=0.0, float m23=0.0, float m33=0.0)
         : m11(m11), m21(m21), m31(m31),
           m12(m12), m22(m22), m32(m32),
           m13(m13), m23(m23), m33(m33)
@@ -80,3 +78,33 @@ union float3x3
 
   friend std::ostream& operator<<(std::ostream& out, const float3x3& vec) ;
 };
+
+inline float3x3 operator*(const float3x3& a, const float3x3& b)
+{
+  float3x3 r;
+
+  r.m11 = a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31;
+  r.m21 = a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31;
+  r.m31 = a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31;
+
+  r.m12 = a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32;
+  r.m22 = a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32;
+  r.m32 = a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32;
+
+  r.m13 = a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33;
+  r.m23 = a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33;
+  r.m33 = a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33;
+
+  return r;
+}
+
+inline float3 operator*(const float3x3& a, const float3& b)
+{
+  float3 r;
+
+  r.x = a.m11 * b.x + a.m12 * b.y + a.m13 * b.z;
+  r.y = a.m21 * b.x + a.m22 * b.y + a.m23 * b.z;
+  r.z = a.m31 * b.x + a.m32 * b.y + a.m33 * b.z;
+
+  return r;
+}

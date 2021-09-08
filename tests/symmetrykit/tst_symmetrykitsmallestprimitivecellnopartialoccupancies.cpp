@@ -22,6 +22,8 @@ void SmallestPrimitiveCellNoPartialOccupancies::cleanupTestCase()
 
 void SmallestPrimitiveCellNoPartialOccupancies::test_case_triclinic()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, double3x3> testData =
   {
     std::make_pair("spglibtestdata/triclinic/POSCAR-001", double3x3(double3(4.9159976868, 0.0000000000, 0.0000000000),double3(2.4574988436, 4.2582449067, 0.0000000000), double3(0.0000000000, 0.0000000000, 5.4069974558))),
@@ -52,12 +54,16 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_triclinic()
 
       std::vector<std::tuple<double3, int, double> > reducedAtoms{};
       std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
-
       double3x3 unitCell = parser.movies().front().front()->cell->unitCell();
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, randomlyShiftedAtoms, unitCell, allowPartialOccupancies, symmetryPrecision);
 
       std::optional<double3x3> DelaunayCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
       if(DelaunayCell)
@@ -76,6 +82,8 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_triclinic()
 
 void SmallestPrimitiveCellNoPartialOccupancies::test_case_monoclinic()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, double3x3> testData =
   {
     std::make_pair("SpglibTestData/monoclinic/POSCAR-003", double3x3(double3(-0.0000000000, -4.1293980569, -0.0000000000), double3(-4.1604980423, -0.0000000000, -0.0000000000), double3(1.4636598779, -0.0000000000, -7.2753263256))),
@@ -132,12 +140,16 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_monoclinic()
 
       std::vector<std::tuple<double3, int, double> > reducedAtoms{};
       std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
-
       double3x3 unitCell = parser.movies().front().front()->cell->unitCell();
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, randomlyShiftedAtoms, unitCell, allowPartialOccupancies, symmetryPrecision);
 
       std::optional<double3x3> DelaunayCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
       if(DelaunayCell)
@@ -157,6 +169,8 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_monoclinic()
 
 void SmallestPrimitiveCellNoPartialOccupancies::test_case_orthorhombic()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, double3x3> testData =
   {
     std::make_pair("SpglibTestData/orthorhombic/POSCAR-016", double3x3(double3(10.7049949629, 0.0000000000, 0.0000000000), double3(0.0000000000, 10.7339949492, 0.0000000000), double3(0.0000000000, 0.0000000000, 31.6299851168))),
@@ -307,12 +321,16 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_orthorhombic()
 
       std::vector<std::tuple<double3, int, double> > reducedAtoms{};
       std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
-
       double3x3 unitCell = parser.movies().front().front()->cell->unitCell();
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, randomlyShiftedAtoms, unitCell, allowPartialOccupancies, symmetryPrecision);
 
       std::optional<double3x3> DelaunayCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
       if(DelaunayCell)
@@ -330,6 +348,8 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_orthorhombic()
 
 void SmallestPrimitiveCellNoPartialOccupancies::test_case_tetragonal()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, double3x3> testData =
   {
     std::make_pair("SpglibTestData/tetragonal/POSCAR-075", double3x3(double3(0.0000000000, 0.0000000000, 3.9439981442), double3(17.4899917702, 0.0000000000, 0.0000000000), double3(0.0000000000, 17.4899917702, 0.0000000000))),
@@ -503,12 +523,16 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_tetragonal()
 
       std::vector<std::tuple<double3, int, double> > reducedAtoms{};
       std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
-
       double3x3 unitCell = parser.movies().front().front()->cell->unitCell();
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, randomlyShiftedAtoms, unitCell, allowPartialOccupancies, symmetryPrecision);
 
       std::optional<double3x3> DelaunayCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
       if(DelaunayCell)
@@ -526,6 +550,8 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_tetragonal()
 
 void SmallestPrimitiveCellNoPartialOccupancies::test_case_trigonal()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, double3x3> testData =
   {
      std::make_pair("SpglibTestData/trigonal/POSCAR-143", double3x3(double3(0.0000000000, 0.0000000000, 6.7835968080), double3(7.2487965891, 0.0000000000, 0.0000000000), double3(-3.6243982946, 6.2776419931, 0.0000000000))),
@@ -605,12 +631,16 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_trigonal()
 
       std::vector<std::tuple<double3, int, double> > reducedAtoms{};
       std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
-
       double3x3 unitCell = parser.movies().front().front()->cell->unitCell();
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, randomlyShiftedAtoms, unitCell, allowPartialOccupancies, symmetryPrecision);
 
       std::optional<double3x3> DelaunayCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
       if(DelaunayCell)
@@ -628,6 +658,8 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_trigonal()
 
 void SmallestPrimitiveCellNoPartialOccupancies::test_case_hexagonal()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, double3x3> testData =
   {
     std::make_pair("SpglibTestData/hexagonal/POSCAR-168", double3x3(double3(0.0000000000, 0.0000000000, 3.8919981687), double3(15.9359925014, 0.0000000000, 0.0000000000), double3(-7.9679962507, 13.8009743408, 0.0000000000))),
@@ -709,7 +741,12 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_hexagonal()
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, randomlyShiftedAtoms, unitCell, allowPartialOccupancies, symmetryPrecision);
 
       std::optional<double3x3> DelaunayCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
       if(DelaunayCell)
@@ -727,6 +764,8 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_hexagonal()
 
 void SmallestPrimitiveCellNoPartialOccupancies::test_case_cubic()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, double3x3> testData =
   {
     std::make_pair("SpglibTestData/cubic/POSCAR-195", double3x3(double3(10.3499951299, 0.0000000000, 0.0000000000), double3(0.0000000000, 10.3499951299, 0.0000000000), double3(0.0000000000, 0.0000000000, 10.3499951299))),
@@ -818,12 +857,16 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_cubic()
 
       std::vector<std::tuple<double3, int, double> > reducedAtoms{};
       std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
-
       double3x3 unitCell = parser.movies().front().front()->cell->unitCell();
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, randomlyShiftedAtoms, unitCell, allowPartialOccupancies, symmetryPrecision);
 
       std::optional<double3x3> DelaunayCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
       if(DelaunayCell)
@@ -841,6 +884,8 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_cubic()
 
 void SmallestPrimitiveCellNoPartialOccupancies::test_case_virtual()
 {
+  srand((unsigned) time(nullptr));
+
   const std::map<QString, double3x3> testData =
   {
     std::make_pair("SpglibTestData/virtual_structure/POSCAR-1-221-33", double3x3(double3(10.0000000000, 0.0000000000, 0.0000000000), double3(0.0000000000, 10.0000000000, 0.0000000000), double3(0.0000000000, 0.0000000000, 10.0000000000))),
@@ -1047,12 +1092,16 @@ void SmallestPrimitiveCellNoPartialOccupancies::test_case_virtual()
 
       std::vector<std::tuple<double3, int, double> > reducedAtoms{};
       std::copy_if (atoms.begin(), atoms.end(), std::back_inserter(reducedAtoms), [leastOccuringAtomType](std::tuple<double3, int, double> a){return std::get<1>(a) == leastOccuringAtomType;} );
-
       double3x3 unitCell = parser.movies().front().front()->cell->unitCell();
       bool allowPartialOccupancies = false;
       double symmetryPrecision=1e-5;
 
-      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, atoms, unitCell, allowPartialOccupancies, symmetryPrecision);
+      double3 randomShift = double3(0.5*(((double) rand() / RAND_MAX)-0.5), 0.5*(((double) rand() / RAND_MAX)-0.5),0.5*(((double) rand() / RAND_MAX)-0.5));
+      std::vector<std::tuple<double3,int,double>> randomlyShiftedAtoms{};
+      std::transform(atoms.begin(), atoms.end(),std::back_inserter(randomlyShiftedAtoms),
+              [randomShift](const std::tuple<double3,int,double> &atom) { return std::make_tuple(std::get<0>(atom) + randomShift, std::get<1>(atom), std::get<2>(atom)); });
+
+      double3x3 smallestUnitCell = SKSymmetryCell::findSmallestPrimitiveCell(reducedAtoms, randomlyShiftedAtoms, unitCell, allowPartialOccupancies, symmetryPrecision);
 
       std::optional<double3x3> DelaunayCell = SKSymmetryCell::computeDelaunayReducedCell(smallestUnitCell, symmetryPrecision);
       if(DelaunayCell)

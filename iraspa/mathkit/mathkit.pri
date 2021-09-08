@@ -3,6 +3,7 @@ INCLUDEPATH += $$PWD
 SOURCES += \
     $$PWD/double4x3.cpp \
     $$PWD/float3x4.cpp \
+    $$PWD/matrix.cpp \
     $$PWD/ring.cpp \
     $$PWD/ringmatrix.cpp \
     $$PWD/simd_quatd.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     $$PWD/float3x4.h \
     $$PWD/hashcombine.h \
     $$PWD/mathkit.h \
+    $$PWD/matrix.h \
     $$PWD/ring.h \
     $$PWD/ringmatrix.h \
     $$PWD/simd_quatd.h \

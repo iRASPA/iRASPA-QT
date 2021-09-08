@@ -30,6 +30,7 @@ class ForceFieldType
 public:
   ForceFieldType();
   ForceFieldType(const ForceFieldType& forceFieldType);
+  ForceFieldType& operator=(const ForceFieldType& rhs) = default;
   ForceFieldType(QString forceFieldStringIdentifier, qint64 atomicNumber, double2 potentialParameters, double mass, double userDefinedRadius, bool editable);
   QString forceFieldStringIdentifier() const {return _forceFieldStringIdentifier;}
   void setForceFieldStringIdentifier(QString forceFieldStringIdentifier) {_forceFieldStringIdentifier = forceFieldStringIdentifier;}

@@ -21,29 +21,6 @@
 
 #include "float3.h"
 
-float3 float3::operator + (const float3& right) const
-{
-  float3 a;
-
-  a.x=x+right.x;
-  a.y=y+right.y;
-  a.z=z+right.z;
-
-  return a;
-}
-
-float3 float3::operator - (const float3& right) const
-{
-  float3 a;
-
-  a.x=x-right.x;
-  a.y=y-right.y;
-  a.z=z-right.z;
-
-  return a;
-}
-
-
 float3 float3::normalise()
 {
   float magnitude = sqrt((x * x) + (y * y) + (z * z)) ;
@@ -92,44 +69,6 @@ float3 float3::fract()
   }
   return s;
 }
-
-float float3::dot(const float3 &v1, const float3 &v2)
-{
-  return v1.x*v2.x+v1.y*v2.y+v1.z*v2.z;
-}
-
-float3 float3::max(const float3 &v1, const float3 &v2)
-{
-  return float3(std::max(v1.x,v2.x),std::max(v1.y,v2.y),std::max(v1.z,v2.z));
-}
-
-float3 float3::min(const float3 &v1, const float3 &v2)
-{
-  return float3(std::min(v1.x,v2.x),std::min(v1.y,v2.y),std::min(v1.z,v2.z));
-}
-
-float3 float3::cross(const float3 &v1, const float3 &v2)
-{
-  return float3(v1.y*v2.z - v1.z*v2.y,
-                -v1.x*v2.z + v1.z*v2.x,
-                 v1.x*v2.y - v1.y*v2.x);
-}
-
-float3 operator*(const float3 &v1, const float3 &v2)
-{
-   return float3(v1.x*v2.x, v1.y*v2.y, v1.z*v2.z);
-}
-
-float3 operator*(const float3 &v, float value)
-{
-  return float3(value*v.x, value*v.y, value*v.z);
-}
-
-float3 operator*(float value, const float3 &v)
-{
-  return float3(value*v.x, value*v.y, value*v.z);
-}
-
 
 std::ostream& operator<<(std::ostream& out, const float3& vec) // output
 {

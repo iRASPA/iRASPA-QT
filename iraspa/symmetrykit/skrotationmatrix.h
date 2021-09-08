@@ -23,11 +23,13 @@
 
 #include <ostream>
 #include <mathkit.h>
-#include "skdefinitions.h"
 
+struct SKTransformationMatrix;
 
 struct SKRotationMatrix
 {
+  union int3x3 int3x3;
+
   enum class RotationType: qint64
   {
     axis_6m = -6, axis_4m = -4, axis_3m = -3, axis_2m = -2, axis_1m = -1, none = 0, axis_1 = 1, axis_2 = 2, axis_3 = 3, axis_4 = 4, axis_6 = 6
@@ -40,26 +42,22 @@ struct SKRotationMatrix
 
 
   SKRotationMatrix();
-  SKRotationMatrix(int3x3 m) {this->int3x3 = m;}
+  SKRotationMatrix(SKTransformationMatrix m);
+  SKRotationMatrix(union int3x3 m) {this->int3x3 = m;}
   SKRotationMatrix(int3 v1, int3 v2, int3 v3);
 
-  int3x3 int3x3;
 
   SKRotationMatrix inverse();
-  SKRotationMatrix proper();
+  const SKRotationMatrix proper() const;
   SKRotationMatrix::RotationType type() const;
   int3 rotationAxis() const;
   std::vector<int3> orthogonalToAxisDirection(int rotationOrder);
 
+  inline int determinant() const {return this->int3x3.determinant();}
+  inline SKRotationMatrix operator-() const {return -this->int3x3;}
+  inline bool operator==(const SKRotationMatrix& b) const {return this->int3x3 == b.int3x3;}
+
   friend std::ostream& operator<<(std::ostream& os, const SKRotationMatrix& setting);
-
-  SKRotationMatrix operator * (const SKRotationMatrix& right) const;
-  int3 operator * (const int3& right) const;
-  double3 operator * (const double3& right) const;
-  SKRotationMatrix operator + (const SKRotationMatrix& right) const;
-  SKRotationMatrix operator-() const;
-
-  friend bool operator==(const SKRotationMatrix& lhs, const SKRotationMatrix& rhs);
 
   static SKRotationMatrix zero;
   static SKRotationMatrix identity;
@@ -111,10 +109,54 @@ struct SKRotationMatrix
   static SKRotationMatrix r_2doubleprime_001;
   static SKRotationMatrix r_2idoubleprime_001;
 
+  static SKRotationMatrix monoclinicB1toA1;
+  static SKRotationMatrix monoclinicB1toA2;
+  static SKRotationMatrix monoclinicB1toA3;
+  static SKRotationMatrix monoclinicB1toB2;
+  static SKRotationMatrix monoclinicB1toB3;
+  static SKRotationMatrix monoclinicB1toC1;
+  static SKRotationMatrix monoclinicB1toC2;
+  static SKRotationMatrix monoclinicB1toC3;
+
+  static SKRotationMatrix orthorhombicCABtoABC;
+  static SKRotationMatrix orthorhombicBCAtoABC;
+  static SKRotationMatrix orthorhombicBAmCtoABC;
+  static SKRotationMatrix orthorhombicAmCBtoABC;
+  static SKRotationMatrix orthorhombicmCBAtoABC;
+
   static std::vector<std::tuple<SKRotationMatrix, int3, int3>> twoFoldSymmetryOperations;
   static std::vector<int3> allPossibleRotationAxes;
 };
 
+inline SKRotationMatrix operator * (const SKRotationMatrix& a, const SKRotationMatrix& b)
+{
+  return SKRotationMatrix(a.int3x3 * b.int3x3);
+}
+
+inline int3 operator * (const SKRotationMatrix& a, const int3& b)
+{
+  return a.int3x3 * b;
+}
+
+inline double3 operator * (const SKRotationMatrix& a, const double3& b)
+{
+  return a.int3x3 * b;
+}
+
+inline SKRotationMatrix operator + (const SKRotationMatrix& a, const SKRotationMatrix& b)
+{
+  return a.int3x3 + b.int3x3;
+}
+
+inline double3x3 operator*(const double3x3 &v1, const SKRotationMatrix &v2)
+{
+  return v1 * double3x3(v2.int3x3);
+}
+
+inline SKRotationMatrix operator-(const SKRotationMatrix &v1, const SKRotationMatrix &v2)
+{
+  return SKRotationMatrix(v1.int3x3-v2.int3x3);
+}
 
 namespace std
 {

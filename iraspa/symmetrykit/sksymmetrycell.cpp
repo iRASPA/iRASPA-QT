@@ -25,6 +25,8 @@
 #include <cfloat>
 #include <algorithm>
 #include <utility>
+#include "skpointgroup.h"
+#include "skspacegroup.h"
 
 SKSymmetryCell::SKSymmetryCell()
 {
@@ -75,7 +77,53 @@ SKSymmetryCell SKSymmetryCell::createFromUnitCell(double3x3 unitCell)
   return cell;
 }
 
-double3x3 SKSymmetryCell::cell()
+SKSymmetryCell SKSymmetryCell::idealized(const SKSpaceGroup &spaceGroup)
+{
+  int pointGroupNumber = spaceGroup.spaceGroupSetting().pointGroupNumber();
+  Holohedry holohedry = SKPointGroup::pointGroupData[pointGroupNumber].holohedry();
+  switch(holohedry)
+  {
+  case Holohedry::none:
+    return *this;
+  case Holohedry::triclinic:
+  {
+    double cg = cos(_gamma);
+    double cb = cos(_beta);
+    double ca = cos(_alpha);
+    double sg = sin(_gamma);
+    double temp = _c * sqrt(1.0 - ca * ca - cb * cb - cg * cg + 2.0 * ca * cb * cg) / sg;
+    return SKSymmetryCell::createFromUnitCell(double3x3(double3(_a,0.0,0.0),double3(_b * cg, _b * sg,0.0),double3(_c * cb, _c * (ca - cb * cg) / sg, temp)));
+  }
+  case Holohedry::monoclinic:
+    return SKSymmetryCell::createFromUnitCell(double3x3(double3(_a,0.0,0.0),double3(0.0,_b,0.0),double3(_c * cos(_beta),0.0, _c * sin(_beta))));
+  case Holohedry::orthorhombic:
+    return SKSymmetryCell::createFromUnitCell(double3x3(double3(_a,0.0,0.0),double3(0.0,_b,0.0),double3(0.0,0.0,_c)));
+  case Holohedry::tetragonal:
+    return SKSymmetryCell::createFromUnitCell(double3x3(double3(0.5*(_a+_b),0.0,0.0),double3(0.0,0.5*(_a+_b),0.0),double3(0.0,0.0,_c)));
+  case Holohedry::trigonal:
+    if(spaceGroup.spaceGroupSetting().qualifier() == "R")
+    {
+      double avg = (_a+_b+_c)/3.0;
+      double angle = acos((cos(_gamma) + cos(_beta) + cos(_alpha)) / 3.0);
+      // Reference, https://homepage.univie.ac.at/michael.leitner/lattice/struk/rgr.html
+      double ahex = 2.0 * avg * sin(0.5 * angle);
+      double chex = (_a+_b+_c)/3.0 * sqrt(3.0 * (1.0 + 2.0 * cos(angle)));
+      return  SKSymmetryCell::createFromUnitCell(double3x3(double3(ahex / 2.0,-ahex / (2.0 * sqrt(3.0)),chex / 3.0),double3(0.0,ahex / sqrt(3.0),chex / 3.0),double3(-ahex / 2.0,-ahex / (2.0 * sqrt(3.0)),chex / 3.0)));
+    }
+    return SKSymmetryCell::createFromUnitCell(double3x3(double3(0.5*(_a+_b),0.0,0.0),double3(-(_a+_b)/4.0,(_a+_b)/4.0*sqrt(3.0),0.0),double3(0.0,0.0,_c)));
+    case Holohedry::hexagonal:
+    return SKSymmetryCell::createFromUnitCell(double3x3(double3(0.5*(_a+_b),0.0,0.0),double3(-(_a+_b)/4.0,(_a+_b)/4.0*sqrt(3.0),0.0),double3(0.0,0.0,_c)));
+  case Holohedry::cubic:
+  {
+    double edge = (_a + _b + _c)/3.0;
+    return SKSymmetryCell::createFromUnitCell(double3x3(double3(edge,0.0,0.0),double3(0.0,edge,0.0),double3(0.0,0.0,edge)));
+  }
+  default:
+    return SKSymmetryCell::createFromUnitCell(double3x3());
+  }
+}
+
+double3x3 SKSymmetryCell::unitCell() const
 {
   double temp = (cos(_alpha) - cos(_gamma) * cos(_beta)) / sin(_gamma);
 
@@ -104,6 +152,19 @@ double SKSymmetryCell::volume()
   double cosGamma = cos(_gamma);
   double temp = 1.0 - cosAlpha*cosAlpha - cosBeta*cosBeta - cosGamma*cosGamma + 2.0 * cosAlpha * cosBeta * cosGamma;
   return  _a * _b * _c * sqrt(temp);
+}
+
+bool SKSymmetryCell::isOverlap(double3 a, double3 b, double3x3 lattice, double symmetryPrecision = 1e-2)
+{
+  double3 dr = double3::abs(a - b);
+  dr.x -= std::rint(dr.x);
+  dr.y -= std::rint(dr.y);
+  dr.z -= std::rint(dr.z);
+  if((lattice * dr).length_squared() < symmetryPrecision * symmetryPrecision)
+  {
+    return true;
+  }
+  return false;
 }
 
 double3x3 SKSymmetryCell::findSmallestPrimitiveCell(std::vector<std::tuple<double3, int, double>> reducedAtoms, std::vector<std::tuple<double3, int, double>> atoms,
@@ -454,7 +515,7 @@ SKPointSymmetrySet SKSymmetryCell::findLatticeSymmetry(double3x3 reducedLattice,
         for(const int3 &thirdAxis: latticeAxes)
         {
           SKRotationMatrix axes = SKRotationMatrix(firstAxis, secondAxis, thirdAxis);
-          int determinant = axes.int3x3.determinant();
+          int determinant = axes.determinant();
 
           // if the determinant is 1 or -1 we have a (proper) rotation  (6960 proper rotations)
           if (determinant == 1 || determinant == -1)
@@ -639,8 +700,8 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
     if(SKSymmetryCell::isLargerThen(A, B)||(SKSymmetryCell::isEqualTo(A, B)&&(SKSymmetryCell::isLargerThen(abs(xi), abs(eta)))))
     {
       SKTransformationMatrix matrixC = SKTransformationMatrix(int3(0,-1,0),int3(-1,0,0),int3(0,0,-1));
-      assert(matrixC.int3x3.determinant() == 1);
-      changeOfBasisMatrix.int3x3 = changeOfBasisMatrix.int3x3 * matrixC.int3x3;
+      assert(matrixC.determinant() == 1);
+      changeOfBasisMatrix = changeOfBasisMatrix * matrixC;
 
       // Swap x, y and ensures proper sign of determinant
       std::swap(A,B);
@@ -651,8 +712,8 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
     if(SKSymmetryCell::isLargerThen(B,C)||(SKSymmetryCell::isEqualTo(B, C)&&(SKSymmetryCell::isLargerThen(abs(eta), abs(zeta)))))
     {
       SKTransformationMatrix matrixC = SKTransformationMatrix(int3(-1,0,0),int3(0,0,-1),int3(0,-1,0));
-      assert(matrixC.int3x3.determinant() == 1);
-      changeOfBasisMatrix.int3x3 = changeOfBasisMatrix.int3x3 * matrixC.int3x3;
+      assert(matrixC.determinant() == 1);
+      changeOfBasisMatrix = changeOfBasisMatrix * matrixC;
 
       // Swap y, z and ensures proper sign of determinant
       std::swap(B,C);
@@ -669,8 +730,8 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
       if (SKSymmetryCell::isSmallerThen(eta, 0.0)) {f[1] = -1;}
       if (SKSymmetryCell::isSmallerThen(zeta, 0.0)) {f[2] = -1;}
       SKTransformationMatrix matrixC = SKTransformationMatrix(int3(f[0],0,0),int3(0,f[1],0),int3(0,0,f[2]));
-      assert(matrixC.int3x3.determinant() == 1);
-      changeOfBasisMatrix.int3x3 = changeOfBasisMatrix.int3x3 * matrixC.int3x3;
+      assert(matrixC.determinant() == 1);
+      changeOfBasisMatrix = changeOfBasisMatrix * matrixC;
 
       xi = abs(xi);
       eta = abs(eta);
@@ -691,8 +752,8 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
         f[p] = -1;
       }
       SKTransformationMatrix matrixC = SKTransformationMatrix(int3(f[0],0,0),int3(0,f[1],0),int3(0,0,f[2]));
-      assert(matrixC.int3x3.determinant() == 1);
-      changeOfBasisMatrix.int3x3 = changeOfBasisMatrix.int3x3 * matrixC.int3x3;
+      assert(matrixC.determinant() == 1);
+      changeOfBasisMatrix = changeOfBasisMatrix * matrixC;
 
       xi = -abs(xi);
       eta = -abs(eta);
@@ -704,8 +765,8 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
        (SKSymmetryCell::isEqualTo(xi, -B)&&SKSymmetryCell::isSmallerThen(zeta, 0.0)))
     {
       SKTransformationMatrix matrixC = SKTransformationMatrix(int3(1,0,0),int3(0,1,0),int3(0,-int(sign(xi)),1));
-      assert(matrixC.int3x3.determinant() == 1);
-      changeOfBasisMatrix.int3x3 = changeOfBasisMatrix.int3x3 * matrixC.int3x3;
+      assert(matrixC.determinant() == 1);
+      changeOfBasisMatrix = changeOfBasisMatrix * matrixC;
 
       C = B + C - xi * sign(xi);
       eta = eta - zeta * sign(xi);
@@ -719,8 +780,8 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
             (SKSymmetryCell::isEqualTo(eta, -A)&&SKSymmetryCell::isSmallerThen(zeta, 0.0)))
     {
       SKTransformationMatrix matrixC = SKTransformationMatrix(int3(1,0,0),int3(0,1,0),int3(-int(sign(eta)),0,1));
-      assert(matrixC.int3x3.determinant() == 1);
-      changeOfBasisMatrix.int3x3 = changeOfBasisMatrix.int3x3 * matrixC.int3x3;
+      assert(matrixC.determinant() == 1);
+      changeOfBasisMatrix = changeOfBasisMatrix * matrixC;
 
       C = A + C - eta * sign(eta);
       xi = xi - zeta * sign(eta);
@@ -734,8 +795,8 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
             (SKSymmetryCell::isEqualTo(zeta, -A)&&SKSymmetryCell::isSmallerThen(eta, 0.0)))
     {
       SKTransformationMatrix matrixC = SKTransformationMatrix(int3(1,0,0),int3(-int(sign(zeta)),1,0),int3(0,0,1));
-      assert(matrixC.int3x3.determinant() == 1);
-      changeOfBasisMatrix.int3x3 = changeOfBasisMatrix.int3x3 * matrixC.int3x3;
+      assert(matrixC.determinant() == 1);
+      changeOfBasisMatrix = changeOfBasisMatrix * matrixC;
 
       B = A + B - zeta * sign(zeta);
       xi = xi - eta * sign(zeta);
@@ -748,8 +809,8 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
     if(SKSymmetryCell::isSmallerThen(xi+eta+zeta+A+B, 0.0)||(SKSymmetryCell::isEqualTo(xi+eta+zeta+A+B, 0.0)&&SKSymmetryCell::isLargerThen(2.0*(A+eta)+zeta, 0.0)))
     {
       SKTransformationMatrix matrixC = SKTransformationMatrix(int3(1,0,0),int3(0,1,0),int3(1,1,1));
-      assert(matrixC.int3x3.determinant() == 1);
-      changeOfBasisMatrix.int3x3 = changeOfBasisMatrix.int3x3 * matrixC.int3x3;
+      assert(matrixC.determinant() == 1);
+      changeOfBasisMatrix = changeOfBasisMatrix * matrixC;
 
       C = A + B + C + xi + eta + zeta;
       xi = 2.0*B + xi + zeta;
@@ -761,7 +822,11 @@ std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> SKSymmetryCell
 
   SKSymmetryCell cell = SKSymmetryCell(sqrt(A), sqrt(B), sqrt(C), acos(xi/(2.0*sqrt(B)*sqrt(C))) * 180.0/M_PI, acos(eta/(2.0*sqrt(A)*sqrt(C))) * 180.0/M_PI, acos(zeta/(2.0*sqrt(A)*sqrt(B))) * 180.0/M_PI);
 
-
   return std::make_pair(cell, changeOfBasisMatrix);
 }
 
+QDebug operator<<(QDebug debug, const SKSymmetryCell &m)
+{
+  debug << "(" << m._a << ", " << m._b << ", " << m._c << m._alpha * 180.0/M_PI << ", " << m._beta *180.0/M_PI << ", " << m._gamma * 180.0/M_PI <<")";
+  return debug;
+}

@@ -60,8 +60,6 @@ private:
   GLint _instanceTextureUVAttributeLocation;
   GLint _fontAtlasTextureUniformLocation;
 
-  GLuint _fontAtlasTexture;
-
   GLuint _vertexBuffer;
   GLuint _vertexArrayObject;
   GLuint _instanceBuffer;

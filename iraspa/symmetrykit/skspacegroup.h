@@ -30,10 +30,36 @@
 #include "skspacegroupsetting.h"
 #include "skrotationalchangeofbasis.h"
 #include "skspacegroupdatabase.h"
+#include "sksymmetrycell.h"
 
 class SKSpaceGroup
 {
 public:
+  struct FoundSpaceGroupInfo
+  {
+     int HallNumber;
+     double3 origin;
+     SKSymmetryCell cell;
+     SKRotationalChangeOfBasis changeOfBasis;
+     double3x3 transformationMatrix;
+     double3x3 rotationMatrix;
+     std::vector<std::tuple<double3, int, double>> atoms;
+     std::vector<std::tuple<double3, int, double>> asymmetricAtoms;
+  };
+
+  struct FoundNiggliCellInfo
+  {
+     int HallNumber;
+     SKSymmetryCell cell;
+     std::vector<std::tuple<double3, int, double>> atoms;
+  };
+
+  struct FoundPrimitiveCellInfo
+  {
+     SKSymmetryCell cell;
+     std::vector<std::tuple<double3, int, double>> atoms;
+  };
+
   SKSpaceGroup(int HallNumber);
   std::vector<double3> listOfSymmetricPositions(double3 pos);
   const SKSpaceGroupSetting &spaceGroupSetting() const {return _spaceGroupSetting;}
@@ -43,8 +69,11 @@ public:
   static std::optional<int> HallNumberFromHMString(QString inputString);
   static std::optional<int> HallNumberFromSpaceGroupNumber(int);
   static std::optional<int> HallNumber(QString inputString);
+  static std::optional<FoundPrimitiveCellInfo> SKFindPrimitive(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> atoms, bool allowPartialOccupancies, double symmetryPrecision);
+  static std::optional<FoundNiggliCellInfo> findNiggliCell(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision);
+  static std::optional<FoundSpaceGroupInfo> findSpaceGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision);
+
   static SKSymmetryOperationSet findSpaceGroupSymmetry(double3x3 unitCell, std::vector<std::tuple<double3, int, double>> reducedAtoms, std::vector<std::tuple<double3, int, double>> atoms, SKPointSymmetrySet latticeSymmetries, bool allowPartialOccupancies, double symmetryPrecision);
-  static std::optional<int> findSpaceGroupGroup(double3x3 unitCell, std::vector<std::tuple<double3, int, double> > atoms, bool allowPartialOccupancies, double symmetryPrecision);
   static std::optional<std::pair<double3, SKRotationalChangeOfBasis>> matchSpaceGroup(int HallNumber, double3x3 lattice, Centring entering, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision);
   static std::optional<double3> getOriginShift(int HallNumber, Centring centering, SKRotationalChangeOfBasis changeOfBasis, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision);
 private:

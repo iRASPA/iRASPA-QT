@@ -26,17 +26,18 @@
 #include "skseitzintegermatrix.h"
 #include "skdefinitions.h"
 
-class SKIntegerSymmetryOperationSet
+struct SKIntegerSymmetryOperationSet
 {
-public:
+  std::unordered_set<SKSeitzIntegerMatrix> operations;
+  Centring centring;
+
   SKIntegerSymmetryOperationSet();
   SKIntegerSymmetryOperationSet(std::unordered_set<SKSeitzIntegerMatrix> operations);
   SKIntegerSymmetryOperationSet(std::vector<SKSeitzIntegerMatrix> operations);
 
-  size_t size() {return _operations.size();}
+  inline size_t size() {return operations.size();}
   SKIntegerSymmetryOperationSet fullSeitzMatrices();
-  std::unordered_set<SKSeitzIntegerMatrix> operations() {return _operations;}
-private:
-  std::unordered_set<SKSeitzIntegerMatrix> _operations;
-  Centring _centring;
+
+  std::vector<std::tuple<double3, int, double>> symmetrize(double3x3 lattice, std::vector<std::tuple<double3, int, double>> atoms, double symmetryPrecision);
+  std::vector<std::tuple<double3, int, double>> asymmetricAtoms(int HallNumber, std::vector<std::tuple<double3, int, double>> &atoms, double3x3 lattice, bool allowPartialOccupancies, double symmetryPrecision);
 };

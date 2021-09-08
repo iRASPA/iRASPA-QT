@@ -187,40 +187,6 @@ double3x3 double3x3::inversetranpose()
 }
 
 
-double3x3 double3x3::operator * (const double3x3& b) const
-{
-  double3x3 r;
-
-
-  r.m11 = m11 * b.m11 + m12 * b.m21 + m13 * b.m31;
-  r.m21 = m21 * b.m11 + m22 * b.m21 + m23 * b.m31;
-  r.m31 = m31 * b.m11 + m32 * b.m21 + m33 * b.m31;
-
-  r.m12 = m11 * b.m12 + m12 * b.m22 + m13 * b.m32;
-  r.m22 = m21 * b.m12 + m22 * b.m22 + m23 * b.m32;
-  r.m32 = m31 * b.m12 + m32 * b.m22 + m33 * b.m32;
-
-  r.m13 = m11 * b.m13 + m12 * b.m23 + m13 * b.m33;
-  r.m23 = m21 * b.m13 + m22 * b.m23 + m23 * b.m33;
-  r.m33 = m31 * b.m13 + m32 * b.m23 + m33 * b.m33;
-
-
-  return r;
-}
-
-double3 double3x3::operator * (const double3& b) const
- {
-   double3 r;
-
-   r.x = m11 * b.x + m12 * b.y + m13 * b.z;
-   r.y = m21 * b.x + m22 * b.y + m23 * b.z;
-   r.z = m31 * b.x + m32 * b.y + m33 * b.z;
-
-   return r;
- }
-
-
-
 double trunc_sqrt( double x )
 { return( x <= 0.0 ? 0.0 : sqrt( x ) );
 }

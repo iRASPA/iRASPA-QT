@@ -34,63 +34,6 @@ double4x4::double4x4(double3x3 a)
    m14=0.0;   m24=0.0;   m34=0.0;   m44=1.0;
 }
 
-double4x4 double4x4::operator * (const double4x4& b) const
-{
-  double4x4 r;
-
-  r.m11 = m11 * b.m11 + m12 * b.m21 + m13 * b.m31 + m14 * b.m41;
-  r.m21 = m21 * b.m11 + m22 * b.m21 + m23 * b.m31 + m24 * b.m41;
-  r.m31 = m31 * b.m11 + m32 * b.m21 + m33 * b.m31 + m34 * b.m41;
-  r.m41 = m41 * b.m11 + m42 * b.m21 + m43 * b.m31 + m44 * b.m41;
-
-  r.m12 = m11 * b.m12 + m12 * b.m22 + m13 * b.m32 + m14 * b.m42;
-  r.m22 = m21 * b.m12 + m22 * b.m22 + m23 * b.m32 + m24 * b.m42;
-  r.m32 = m31 * b.m12 + m32 * b.m22 + m33 * b.m32 + m34 * b.m42;
-  r.m42 = m41 * b.m12 + m42 * b.m22 + m43 * b.m32 + m44 * b.m42;
-
-  r.m13 = m11 * b.m13 + m12 * b.m23 + m13 * b.m33 + m14 * b.m43;
-  r.m23 = m21 * b.m13 + m22 * b.m23 + m23 * b.m33 + m24 * b.m43;
-  r.m33 = m31 * b.m13 + m32 * b.m23 + m33 * b.m33 + m34 * b.m43;
-  r.m43 = m41 * b.m13 + m42 * b.m23 + m43 * b.m33 + m44 * b.m43;
-
-  r.m14 = m11 * b.m14 + m12 * b.m24 + m13 * b.m34 + m14 * b.m44;
-  r.m24 = m21 * b.m14 + m22 * b.m24 + m23 * b.m34 + m24 * b.m44;
-  r.m34 = m31 * b.m14 + m32 * b.m24 + m33 * b.m34 + m34 * b.m44;
-  r.m44 = m41 * b.m14 + m42 * b.m24 + m43 * b.m34 + m44 * b.m44;
-
-  return r;
-}
-
- double4 double4x4::operator * (const double4& b) const
- {
-   double4 r;
-
-   r[0] = m11 * b[0] + m12 * b[1] + m13 * b[2] + m14 * b[3];
-   r[1] = m21 * b[0] + m22 * b[1] + m23 * b[2] + m24 * b[3];
-   r[2] = m31 * b[0] + m32 * b[1] + m33 * b[2] + m34 * b[3];
-   r[3] = m41 * b[0] + m42 * b[1] + m43 * b[2] + m44 * b[3];
-
-   return r;
- }
-
-
-bool double4x4::operator==(const double4x4& b) const
-{
-  bool equal = true;
-  const double epsilon = 1e-8;
-
-  for (int i = 0; i < 16 && equal; i++)
-    equal = fabs(m[i] - b.m[i]) <= epsilon;
-
-  return equal;
-}
-
-bool double4x4::operator!=(const double4x4& b) const
-{
-  return !operator==(b);
-}
-
-
 double4x4 const double4x4::transpose(void)
 {
   double4x4 res;

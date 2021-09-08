@@ -29,28 +29,42 @@
 #include "skdefinitions.h"
 
 
-class SKSeitzIntegerMatrix
+struct SKSeitzIntegerMatrix
 {
-public:
+  SKRotationMatrix rotation;
+  int3 translation;   // denominator = 24
+
   SKSeitzIntegerMatrix();
   SKSeitzIntegerMatrix(SKRotationMatrix rotation, int3 translation);
   SKSeitzIntegerMatrix(char xvalue, char yvalue, char zvalue);
   static std::vector<SKSeitzIntegerMatrix> SeitzMatrices(std::string encoding);
 
-  SKRotationMatrix rotation() const {return _rotation;}
-  int3 translation() const {return _translation;}
-  void setTranslation(int3 t) {_translation = t;}
-  int3 normalizedTranslation() const {return int3(_translation.x%12, _translation.y%12, _translation.z%12);}
+  int3 normalizedTranslation() const {return int3(translation.x%24, translation.y%24, translation.z%24);}
 
-  double3 operator * (const double3& right) const;
-  SKSeitzIntegerMatrix operator * (const SKSeitzIntegerMatrix &right) const;
-  bool operator==(SKSeitzIntegerMatrix const& rhs) const;
-private:
-  SKRotationMatrix _rotation;
-  int3 _translation;   // denominator = 12
+  bool operator==(SKSeitzIntegerMatrix const& rhs) const
+  {
+      return (this->rotation == rhs.rotation) &&
+             ((this->translation.x%24) == (rhs.translation.x%24)) &&
+             ((this->translation.y%24) == (rhs.translation.y%24)) &&
+             ((this->translation.z%24) == (rhs.translation.z%24));
+  }
 
-  static std::vector<SKOneThirdSeitzMatrix> _SeitzData;
+  static std::vector<SKOneThirdSeitzMatrix> SeitzData;
 };
+
+inline double3 operator*(const SKSeitzIntegerMatrix &a, const double3& b)
+{
+  double3 v = a.rotation * b;
+  return v + double3(a.translation.x/24.0, a.translation.y/24.0, a.translation.z/24.0);
+}
+
+inline SKSeitzIntegerMatrix operator*(const SKSeitzIntegerMatrix &a,const SKSeitzIntegerMatrix &b)
+{
+  SKRotationMatrix rotationMatrix = a.rotation * b.rotation;
+  int3 translationVector = a.translation + a.rotation * b.translation;
+  return SKSeitzIntegerMatrix(rotationMatrix, translationVector);
+}
+
 
 namespace std
 {
@@ -58,21 +72,10 @@ namespace std
   {
     size_t operator()(const SKSeitzIntegerMatrix& k) const
     {
-      // Compute individual hash values for two data members and combine them using XOR and bit shifting
-      int3 normalizedTranslation = k.normalizedTranslation();
-      int r1 = (k.rotation().int3x3.m11+1);
-      int r2 = (3 * (k.rotation().int3x3.m12+1));
-      int r3 = ((3*3) * (k.rotation().int3x3.m13+1));
-      int r4 = ((3*3*3) * (k.rotation().int3x3.m12+1));
-      int r5 = ((3*3*3*3) * (k.rotation().int3x3.m22+1));
-      int r6 = ((3*3*3*3*3) * (k.rotation().int3x3.m32+1));
-      int r7 = ((3*3*3*3*3*3) * (k.rotation().int3x3.m31+1));
-      int r8 = ((3*3*3*3*3*3*3) * (k.rotation().int3x3.m23+1));
-      int r9 = ((3*3*3*3*3*3*3*3) * (k.rotation().int3x3.m33+1));
-      int v1 = ((3*3*3*3*3*3*3*3*12) * normalizedTranslation.x);
-      int v2 = ((3*3*3*3*3*3*3*3*12*12) * normalizedTranslation.y);
-      int v3 = ((3*3*3*3*3*3*3*3*12*12*12) * normalizedTranslation.z);
-      return r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9 + v1 + v2 + v3;
+      std::size_t h=0;
+      hash_combine(h, k.rotation);
+      hash_combine(h, k.translation);
+      return h;
     }
   };
 }

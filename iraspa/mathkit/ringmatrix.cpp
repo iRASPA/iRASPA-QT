@@ -1,3 +1,24 @@
+/********************************************************************************************************************
+    iRASPA: GPU-accelated visualisation software for materials scientists
+    Copyright (c) 2016-2021 David Dubbeldam, Sofia Calero, Thijs J.H. Vlugt.
+    D.Dubbeldam@uva.nl            https://www.uva.nl/en/profile/d/u/d.dubbeldam/d.dubbeldam.html
+    S.Calero@tue.nl               https://www.tue.nl/en/research/researchers/sofia-calero/
+    t.j.h.vlugt@tudelft.nl        http://homepage.tudelft.nl/v9k6y
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ********************************************************************************************************************/
+
 #include "ringmatrix.h"
 #include "ring.h"
 #include <algorithm>
@@ -37,6 +58,35 @@ RingMatrix::RingMatrix(int rows, int columns, std::vector<std::vector<int>> data
     for(size_t j=0;j<data[i].size();j++)
     {
       (*this)(i,j) = data[i][j];
+    }
+  }
+}
+
+RingMatrix::RingMatrix(int3x3 t1,int3x3 t2,int3x3 t3)
+{
+  _columns = 3;
+  _rows = 9;
+  _grid = std::vector<int>(_rows * _columns);
+
+  for(int row=0;row<3;row++)
+  {
+    for(int column=0;column<3;column++)
+    {
+      (*this)(row + 0 * 3,column) = t1.mm[column][row];
+    }
+  }
+  for(int row=0;row<3;row++)
+  {
+    for(int column=0;column<3;column++)
+    {
+      (*this)(row + 1 * 3,column) = t2.mm[column][row];
+    }
+  }
+  for(int row=0;row<3;row++)
+  {
+    for(int column=0;column<3;column++)
+    {
+      (*this)(row + 2 * 3,column) = t3.mm[column][row];
     }
   }
 }
@@ -109,21 +159,6 @@ RingMatrix RingMatrix::identity(int size)
   RingMatrix m = RingMatrix::zeros(size, size);
   for(int i=0;i<size;i++) { m(i, i) = 1; }
   return m;
-}
-
-bool operator==(const RingMatrix& lhs, const RingMatrix& rhs)
-{
-  if(lhs._rows != rhs._rows) return false;
-  if(lhs._columns != rhs._columns) return false;
-
-  for(int i=0;i<lhs._rows;i++)
-  {
-    for(int j=0;j<rhs._columns;j++)
-    {
-      if(lhs(i,j) != rhs(i,j)) return false;
-    }
-  }
-  return true;
 }
 
 QDebug operator<<(QDebug debug, const RingMatrix &m)
@@ -456,7 +491,7 @@ std::pair<std::vector<int>,std::vector<int>> RingMatrix::Conditioning(RingMatrix
     }
   }
 
-  return std::make_tuple(std::vector<int>{d21,d22},ci);
+  return std::make_pair(std::vector<int>{d21,d22},ci);
 }
 
 const int RingMatrix::HNF_C_Iwaniec = 3;
@@ -586,23 +621,6 @@ std::vector<int> RingMatrix::RemovedDuplicates( std::vector<int> array)
   return res;
 }
 
-RingMatrix operator*(const RingMatrix &lhs, const RingMatrix &rhs)
-{
-  RingMatrix results = RingMatrix(lhs._rows, rhs._columns, 0);
-  for(int i=0;i<lhs._rows;i++)
-  {
-    for(int j=0;j<rhs._columns;j++)
-    {
-      int v = 0;
-      for(int k=0;k<lhs._columns;k++)
-      {
-        v += lhs(i,k) * rhs(k,j);
-      }
-      results(i,j) = v;
-    }
-  }
-  return results;
-}
 
 
 

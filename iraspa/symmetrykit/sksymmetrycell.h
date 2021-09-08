@@ -26,6 +26,9 @@
 #include "skpointsymmetryset.h"
 #include "sktransformationmatrix.h"
 
+
+class SKSpaceGroup;
+
 class SKSymmetryCell
 {
 public:
@@ -33,7 +36,8 @@ public:
     SKSymmetryCell(double a, double b, double c, double alpha, double beta, double gamma);
     static SKSymmetryCell createFromMetricTensor(double3x3 metricTensor);
     static SKSymmetryCell createFromUnitCell(double3x3 unitCell);
-    double3x3 cell();
+    SKSymmetryCell idealized(const SKSpaceGroup &spaceGroup);
+    double3x3 unitCell() const;
     double3x3 metricTensor();
     double volume();
     static double3x3 findSmallestPrimitiveCell(std::vector<std::tuple<double3, int, double> > reducedAtoms, std::vector<std::tuple<double3, int, double> > atoms, double3x3 unitCell, bool allowPartialOccupancies, double symmetryPrecision);
@@ -46,6 +50,16 @@ public:
     static bool checkMetricSimilarity(double3x3 transformedMetricTensor, double3x3 metricTensor, double symmetryPrecision);
     static std::vector<std::tuple<double3, int, double>> trim(std::vector<std::tuple<double3, int, double>> atoms, double3x3 from, double3x3 to, bool allowPartialOccupancies, double symmetryPrecision);
     std::optional<std::pair<SKSymmetryCell, SKTransformationMatrix >> computeReducedNiggliCellAndChangeOfBasisMatrix();
+    static bool isOverlap(double3 a, double3 b, double3x3 lattice, double symmetryPrecision);
+
+    double a() const {return _a;}
+    double b() const {return _b;}
+    double c() const {return _c;}
+    double alpha() const {return _alpha;}
+    double beta() const {return _beta;}
+    double gamma() const {return _gamma;}
+
+    friend QDebug operator<<(QDebug debug, const SKSymmetryCell &m);
 private:
     double _a;
     double _b;

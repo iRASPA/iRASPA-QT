@@ -26,7 +26,7 @@
 class bool3
 {
   public:
-  double b[3];
+  bool b[3];
   struct {bool x, y, z;};
 
   bool3();

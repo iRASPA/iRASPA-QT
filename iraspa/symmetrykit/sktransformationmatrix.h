@@ -23,20 +23,36 @@
 
 #include <ostream>
 #include <mathkit.h>
-#include "skdefinitions.h"
+#include "skrotationmatrix.h"
 
 
 struct SKTransformationMatrix
 {
-  SKTransformationMatrix();
-  SKTransformationMatrix(int3x3 m) {this->int3x3 = m;}
-  SKTransformationMatrix(int3 v1, int3 v2, int3 v3);
-
-  int3x3 int3x3;
+  union int3x3 transformation;
   int3 translation;
 
-  SKTransformationMatrix adjugate() const;
-  SKTransformationMatrix operator * (const SKTransformationMatrix& right) const;
+  SKTransformationMatrix();
+  SKTransformationMatrix(int3x3 m);
+  SKTransformationMatrix(int3 v1, int3 v2, int3 v3);
+  SKTransformationMatrix(SKRotationMatrix m, int3 t): transformation(m.int3x3), translation(t) {};
+
+  inline int3 & operator [] (int i) { return this->transformation.v[i]; }
+  inline const int3 & operator [] (int i) const { return this->transformation.v[i]; }
+
+  inline SKTransformationMatrix adjugate() const
+  {
+    return SKTransformationMatrix(this->transformation.adjugate());
+  }
+
+  inline int greatestCommonDivisor() {return this->transformation.greatestCommonDivisor();}
+  inline int determinant() const {return this->transformation.determinant();}
+
+  inline bool operator==(const SKTransformationMatrix& b)
+  {
+    return (this->transformation == b.transformation) && (this->translation == b.translation);
+  }
+
+  friend QDebug operator<<(QDebug debug, const SKTransformationMatrix &m);
 
   static SKTransformationMatrix zero;
   static SKTransformationMatrix identity;
@@ -69,7 +85,7 @@ struct SKTransformationMatrix
   static double3x3 faceCenteredToPrimitive;  // F -> P
   static double3x3 ACenteredToPrimitive;     // A -> P
   static double3x3 BCenteredToPrimitive;     // B -> P
-  static double3x3 CCenteredToPrimitive3;    // C -> P
+  static double3x3 CCenteredToPrimitive;     // C -> P
   static double3x3 rhombohedralToPrimitive;  // R -> P
 
   // CHECK
@@ -78,8 +94,62 @@ struct SKTransformationMatrix
   static double3x3 hexagonalToPrimitive;            // H -> P
   static double3x3 rhombohedralHexagonalToObverse;  // Rh -> Robv
 
+  static SKTransformationMatrix monoclinicB1toA1;
+  static SKTransformationMatrix monoclinicB1toA2;
+  static SKTransformationMatrix monoclinicB1toA3;
+  static SKTransformationMatrix monoclinicB1toB2;
+  static SKTransformationMatrix monoclinicB1toB3;
+  static SKTransformationMatrix monoclinicB1toC1;
+  static SKTransformationMatrix monoclinicB1toC2;
+  static SKTransformationMatrix monoclinicB1toC3;
+
+  static SKTransformationMatrix orthorhombicCABtoABC;
+  static SKTransformationMatrix orthorhombicBCAtoABC;
+  static SKTransformationMatrix orthorhombicBAmCtoABC;
+  static SKTransformationMatrix orthorhombicAmCBtoABC;
+  static SKTransformationMatrix orthorhombicmCBAtoABC;
+
 };
 
+inline SKTransformationMatrix operator * (const SKTransformationMatrix& a, const SKTransformationMatrix& b)
+{
+  return SKTransformationMatrix(a.transformation * b.transformation);
+}
+
+inline SKTransformationMatrix operator * (const SKTransformationMatrix& a, const SKRotationMatrix& b)
+{
+  return SKTransformationMatrix(a.transformation * b.int3x3);
+}
+
+inline SKTransformationMatrix operator + (const SKTransformationMatrix& a, const SKTransformationMatrix& b)
+{
+  return a.transformation + b.transformation;
+}
+
+inline SKTransformationMatrix operator - (const SKTransformationMatrix& a, const SKTransformationMatrix& b)
+{
+  return a.transformation - b.transformation;
+}
+
+inline SKTransformationMatrix operator / (const SKTransformationMatrix& a, const int& b)
+{
+  return SKTransformationMatrix(a.transformation / b);
+}
+
+inline int3 operator * (const SKTransformationMatrix& a, const int3& b)
+{
+  return a.transformation * b;
+}
+
+inline double3 operator * (const SKTransformationMatrix& a, const double3& b)
+{
+  return a.transformation * b;
+}
+
+inline double3x3 operator*(const double3x3 &a, const SKTransformationMatrix &b)
+{
+  return a * double3x3(b.transformation);
+}
 
 namespace std
 {
@@ -87,8 +157,10 @@ namespace std
   {
     size_t operator()(const SKTransformationMatrix& k) const
     {
-      std::hash<int3x3> hash_fn;
-      return hash_fn(k.int3x3);
+      std::size_t h=0;
+      hash_combine(h, k.transformation);
+      hash_combine(h, k.translation);
+      return h;
     }
   };
 }
