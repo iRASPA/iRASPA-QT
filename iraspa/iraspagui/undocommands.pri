@@ -1,6 +1,7 @@
 INCLUDEPATH += $$PWD
 
 SOURCES += \
+    $$PWD/atomtreeviewchangeoccupancycommand.cpp \
     $$PWD/atomtreeviewchangeuniqueforcefieldnamecommand.cpp \
     $$PWD/atomtreeviewchangeselectioncommand.cpp \
     $$PWD/atomtreeviewcopyselectiontonewmoviecommand.cpp \
@@ -72,6 +73,7 @@ SOURCES += \
     $$PWD/scenetreeviewpasteprojectscommand.cpp
 
 HEADERS += \
+    $$PWD/atomtreeviewchangeoccupancycommand.h \
     $$PWD/atomtreeviewchangeuniqueforcefieldnamecommand.h \
     $$PWD/atomtreeviewchangeselectioncommand.h \
     $$PWD/atomtreeviewcopyselectiontonewmoviecommand.h \

@@ -38,7 +38,10 @@ TRANSLATIONS = i18n/iraspa_en.ts \
                i18n/iraspa_ja.ts \
                i18n/iraspa_hi.ts \
                i18n/iraspa_zh_Hans.ts \
-               i18n/iraspa_es.ts
+               i18n/iraspa_es.ts \
+               i18n/iraspa_pt.ts \
+               i18n/iraspa_ko.ts \
+               i18n/iraspa_ru.ts
 
 CONFIG += lrelease embed_translations
 
@@ -94,8 +97,8 @@ macx{
     QMAKE_LFLAGS +=  -framework OpenCL -framework Python -framework Accelerate
 
     CONFIG(debug, debug|release){
-      QMAKE_CXXFLAGS += -g -O0 -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct  #-fsanitize=address
-      LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz #-fsanitize=address
+      QMAKE_CXXFLAGS += -g -O0 -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct  -fsanitize=address
+      LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz -fsanitize=address
       }
       else
       {

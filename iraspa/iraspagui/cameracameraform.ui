@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>397</width>
     <height>601</height>
    </rect>
   </property>
@@ -44,6 +44,16 @@
            </widget>
           </item>
           <item>
+           <widget class="QDoubleSpinBox" name="resetPercentageSpinBox">
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::NoButtons</enum>
+            </property>
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_24">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -55,9 +65,6 @@
              </size>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="TextField" name="resetPercentageLineEdit"/>
           </item>
           <item>
            <spacer name="horizontalSpacer_6">
@@ -161,6 +168,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="resetCameraToDirectionPushButton">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>Reset Camera</string>
             </property>
@@ -272,6 +282,12 @@
           </property>
           <item>
            <widget class="QLineEdit" name="centerOfSceneXLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="acceptDrops">
+             <bool>false</bool>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -292,6 +308,12 @@
           </item>
           <item>
            <widget class="QLineEdit" name="centerOfSceneYLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="acceptDrops">
+             <bool>false</bool>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -312,6 +334,12 @@
           </item>
           <item>
            <widget class="QLineEdit" name="centerOfSceneZLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="acceptDrops">
+             <bool>false</bool>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -377,6 +405,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QDoubleSpinBox" name="rotateAngleSpinBox">
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="horizontalSpacer_26">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -388,9 +426,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item>
-            <widget class="TextField" name="rotateAngleLineEdit"/>
            </item>
            <item>
             <spacer name="horizontalSpacer_11">
@@ -410,7 +445,11 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_23">
            <item>
-            <widget class="QPushButton" name="rotatePlusXPushButton"/>
+            <widget class="QPushButton" name="rotatePlusXPushButton">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <spacer name="horizontalSpacer">
@@ -429,14 +468,22 @@
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="rotateMinusXPushButton"/>
+            <widget class="QPushButton" name="rotateMinusXPushButton">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_20">
            <item>
-            <widget class="QPushButton" name="rotatePlusYPushButton"/>
+            <widget class="QPushButton" name="rotatePlusYPushButton">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <spacer name="horizontalSpacer_2">
@@ -455,14 +502,22 @@
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="rotateMinusYPushButton"/>
+            <widget class="QPushButton" name="rotateMinusYPushButton">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_22">
            <item>
-            <widget class="QPushButton" name="rotatePlusZPushButton"/>
+            <widget class="QPushButton" name="rotatePlusZPushButton">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <spacer name="horizontalSpacer_3">
@@ -481,7 +536,11 @@
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="rotateMinusZPushButton"/>
+            <widget class="QPushButton" name="rotateMinusZPushButton">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -520,128 +579,95 @@
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_31">
+          <layout class="QHBoxLayout" name="horizontalLayout_31" stretch="2,1">
            <item>
-            <widget class="TextField" name="EulerAngleXLineEdit"/>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_30">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+            <widget class="QDoubleSpinBox" name="EulerAngleXSpinBox">
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
+             <property name="keyboardTracking">
+              <bool>false</bool>
              </property>
-            </spacer>
+            </widget>
            </item>
            <item>
             <widget class="QDial" name="EulerAngleXDial">
+             <property name="minimumSize">
+              <size>
+               <width>60</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
-               <width>32</width>
+               <width>60</width>
                <height>32</height>
               </size>
              </property>
             </widget>
            </item>
-           <item>
-            <spacer name="horizontalSpacer_28">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_29">
+          <layout class="QHBoxLayout" name="horizontalLayout_29" stretch="2,1">
            <item>
-            <widget class="TextField" name="EulerAngleZLineEdit"/>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_31">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+            <widget class="QDoubleSpinBox" name="EulerAngleZSpinBox">
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
+             <property name="keyboardTracking">
+              <bool>false</bool>
              </property>
-            </spacer>
+            </widget>
            </item>
            <item>
             <widget class="QDial" name="EulerAngleZDial">
+             <property name="minimumSize">
+              <size>
+               <width>60</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
-               <width>32</width>
+               <width>60</width>
                <height>32</height>
               </size>
              </property>
             </widget>
            </item>
-           <item>
-            <spacer name="horizontalSpacer_29">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_26">
+          <layout class="QHBoxLayout" name="horizontalLayout_26" stretch="2,1">
            <item>
-            <widget class="TextField" name="EulerAngleYLineEdit"/>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_22">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+            <widget class="QDoubleSpinBox" name="EulerAngleYSpinBox">
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QSlider" name="EulerAngleYSlider">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+             <property name="keyboardTracking">
+              <bool>false</bool>
              </property>
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer_14">
+            <widget class="QSlider" name="EulerAngleYSlider">
+             <property name="minimumSize">
+              <size>
+               <width>60</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>60</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
+            </widget>
            </item>
           </layout>
          </item>
@@ -673,6 +699,12 @@
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="1">
          <widget class="QLineEdit" name="viewMatrixM12">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -680,6 +712,12 @@
         </item>
         <item row="0" column="2">
          <widget class="QLineEdit" name="viewMatrixM13">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -687,6 +725,12 @@
         </item>
         <item row="0" column="3">
          <widget class="QLineEdit" name="viewMatrixM14">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -694,6 +738,12 @@
         </item>
         <item row="1" column="0">
          <widget class="QLineEdit" name="viewMatrixM21">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -701,6 +751,12 @@
         </item>
         <item row="1" column="1">
          <widget class="QLineEdit" name="viewMatrixM22">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -708,6 +764,12 @@
         </item>
         <item row="1" column="2">
          <widget class="QLineEdit" name="viewMatrixM23">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -715,6 +777,12 @@
         </item>
         <item row="1" column="3">
          <widget class="QLineEdit" name="viewMatrixM24">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -722,6 +790,12 @@
         </item>
         <item row="2" column="0">
          <widget class="QLineEdit" name="viewMatrixM31">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -729,6 +803,12 @@
         </item>
         <item row="2" column="1">
          <widget class="QLineEdit" name="viewMatrixM32">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -736,6 +816,12 @@
         </item>
         <item row="2" column="2">
          <widget class="QLineEdit" name="viewMatrixM33">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -743,6 +829,12 @@
         </item>
         <item row="2" column="3">
          <widget class="QLineEdit" name="viewMatrixM34">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -750,6 +842,12 @@
         </item>
         <item row="3" column="0">
          <widget class="QLineEdit" name="viewMatrixM41">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -757,6 +855,12 @@
         </item>
         <item row="3" column="1">
          <widget class="QLineEdit" name="viewMatrixM42">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -764,6 +868,12 @@
         </item>
         <item row="3" column="2">
          <widget class="QLineEdit" name="viewMatrixM43">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -771,6 +881,12 @@
         </item>
         <item row="3" column="3">
          <widget class="QLineEdit" name="viewMatrixM44">
+          <property name="focusPolicy">
+           <enum>Qt::TabFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -778,6 +894,12 @@
         </item>
         <item row="0" column="0">
          <widget class="QLineEdit" name="viewMatrixM11">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -840,6 +962,12 @@
      </item>
      <item>
       <widget class="QLineEdit" name="cameraPositionXLineEdit">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -873,6 +1001,12 @@
      </item>
      <item>
       <widget class="QLineEdit" name="cameraPositionYLineEdit">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -906,6 +1040,12 @@
      </item>
      <item>
       <widget class="QLineEdit" name="cameraPositionZLineEdit">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -945,19 +1085,19 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="cameraDistanceLineEdit"/>
+      <widget class="QLineEdit" name="cameraDistanceLineEdit">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>TextField</class>
-   <extends>QLineEdit</extends>
-   <header>textfield.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

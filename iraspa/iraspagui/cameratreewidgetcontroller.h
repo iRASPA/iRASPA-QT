@@ -81,7 +81,7 @@ private slots:
   void expandPicturesItem();
   void expandBackgroundItem();
 
-  void setResetPercentage(const QString &resetPercentageString);
+  void setResetPercentage(double resetPercentage);
   void resetCameraToDefaultDirection();
   void setResetDirectionToMinusX(bool checked = false);
   void setResetDirectionToPlusX(bool checked = false);
@@ -92,7 +92,7 @@ private slots:
   void setCameraToOrthographic(bool checked = false);
   void setCameraToPerspective(bool checked = false);
   void setAngleOfView(double d);
-  void setRotationAngle(const QString &angleString);
+  void setRotationAngle(double angle);
   void rotateYawPlus();
   void rotateYawMinus();
   void rotatePitchPlus();
@@ -100,11 +100,11 @@ private slots:
   void rotateRollPlus();
   void rotateRollMinus();
   void setEulerAngleX(int angle);
-  void setEulerAngleX(const QString &angleString);
+  void setEulerAngleX(double angle);
   void setEulerAngleZ(int angle);
-  void setEulerAngleZ(const QString &angleString);
+  void setEulerAngleZ(double angle);
   void setEulerAngleY(int angle);
-  void setEulerAngleY(const QString &angleString);
+  void setEulerAngleY(double angle);
 
   void setAxesPosition(int value);
   void setAxesStyle(int value);

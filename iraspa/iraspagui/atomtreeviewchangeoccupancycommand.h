@@ -19,41 +19,32 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "detailtabviewcontroller.h"
-#include "atomtreeview.h"
+#pragma once
 
-DetailTabViewController::DetailTabViewController(QWidget* parent ): QTabWidget(parent )
+#include <QUndoCommand>
+#include <set>
+#include <vector>
+#include "iraspakit.h"
+#include "indexpath.h"
+#include "symmetrykit.h"
+#include "mathkit.h"
+#include "atomtreeviewmodel.h"
+
+class AtomTreeViewChangeOccupancyCommand : public QUndoCommand
 {
-  QObject::connect(this, &QTabWidget::currentChanged, this, &DetailTabViewController::reloadTab);
-}
-
-QSize DetailTabViewController::sizeHint() const
-{
-  return QSize(520, 800);
-}
-
-void DetailTabViewController::rendererWidgetResized()
-{
-  foreach(QObject *child, currentWidget()->children())
-  {
-    if(CameraTreeWidgetController* widget = dynamic_cast<CameraTreeWidgetController*>(child))
-    {
-      widget->reloadPictureProperties();
-    }
-  }
-}
-
-void DetailTabViewController::reloadTab(int tab)
-{
-  setCurrentIndex(tab);
-
-  foreach(QObject *child, widget(tab)->children())
-  {
-    if(Reloadable* reloadable = dynamic_cast<Reloadable*>(child))
-    {
-      reloadable->reloadData();
-      reloadable->reloadSelection();
-    }
-  }
-}
-
+public:
+  AtomTreeViewChangeOccupancyCommand(MainWindow *mainWindow, AtomTreeViewModel *model,
+                                     std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                     std::shared_ptr<SKAtomTreeNode> atom, double newValue, QUndoCommand *undoParent = nullptr);
+  void redo() override final;
+  void undo() override final;
+private:
+  MainWindow *_mainWindow;
+  AtomTreeViewModel *_model;
+  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<SKAtomTreeNode> _atomTreeNode;
+  double _newValue;
+  double _oldValue;
+  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _structures;
+};

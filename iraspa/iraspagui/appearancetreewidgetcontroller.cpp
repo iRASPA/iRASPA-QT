@@ -4618,6 +4618,7 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSpinBox(double size
   reloadAtomRepresentationStyle();
 
   emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+  emit rendererReloadData();
   emit redrawWithQuality(RKRenderQuality::high);
 
   _mainWindow->documentWasModified();

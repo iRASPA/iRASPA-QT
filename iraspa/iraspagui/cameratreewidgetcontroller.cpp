@@ -69,7 +69,13 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QFontMetrics fm(font());
   pushButtonCamera->resize(size().width(), fm.height());
 
-  QObject::connect(_cameraCameraForm->resetPercentageLineEdit,&TextField::textEditedOnEnter,this,&CameraTreeWidgetController::setResetPercentage);
+  _cameraCameraForm->resetPercentageSpinBox->setMinimum(0.0);
+  _cameraCameraForm->resetPercentageSpinBox->setMaximum(100.0);
+  _cameraCameraForm->resetPercentageSpinBox->setDecimals(1);
+  _cameraCameraForm->resetPercentageSpinBox->setKeyboardTracking(false);
+  _cameraCameraForm->resetPercentageSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  QObject::connect(_cameraCameraForm->resetPercentageSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setResetPercentage);
   QObject::connect(_cameraCameraForm->resetCameraToDirectionPushButton, &QPushButton::clicked,this,&CameraTreeWidgetController::resetCameraToDefaultDirection);
   QObject::connect(_cameraCameraForm->resetCameraToMinusXRadioButton, &QRadioButton::clicked,this,&CameraTreeWidgetController::setResetDirectionToMinusX);
   QObject::connect(_cameraCameraForm->resetCameraToPlusXRadioButton, &QRadioButton::clicked,this,&CameraTreeWidgetController::setResetDirectionToPlusX);
@@ -82,9 +88,21 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QObject::connect(_cameraCameraForm->orthographicCameraRadioButton, &QRadioButton::clicked,this,&CameraTreeWidgetController::setCameraToOrthographic);
   QObject::connect(_cameraCameraForm->perspectiveCameraRadioButton, &QRadioButton::clicked,this,&CameraTreeWidgetController::setCameraToPerspective);
 
+  _cameraCameraForm->angleOfViewSpinBox->setMinimum(-180.0);
+  _cameraCameraForm->angleOfViewSpinBox->setMaximum(180.0);
+  _cameraCameraForm->angleOfViewSpinBox->setDecimals(1);
+  _cameraCameraForm->angleOfViewSpinBox->setKeyboardTracking(false);
+  _cameraCameraForm->angleOfViewSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   QObject::connect(_cameraCameraForm->angleOfViewSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAngleOfView);
 
-  QObject::connect(_cameraCameraForm->rotateAngleLineEdit, &TextField::textEditedOnEnter,this,&CameraTreeWidgetController::setRotationAngle);
+  _cameraCameraForm->rotateAngleSpinBox->setMinimum(0.0);
+  _cameraCameraForm->rotateAngleSpinBox->setMaximum(100.0);
+  _cameraCameraForm->rotateAngleSpinBox->setDecimals(1);
+  _cameraCameraForm->rotateAngleSpinBox->setKeyboardTracking(false);
+  _cameraCameraForm->rotateAngleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  QObject::connect(_cameraCameraForm->rotateAngleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setRotationAngle);
   QObject::connect(_cameraCameraForm->rotateMinusXPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::rotateYawPlus);
   QObject::connect(_cameraCameraForm->rotatePlusXPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::rotateYawMinus);
   QObject::connect(_cameraCameraForm->rotateMinusYPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::rotatePitchPlus);
@@ -92,12 +110,38 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QObject::connect(_cameraCameraForm->rotateMinusZPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::rotateRollPlus);
   QObject::connect(_cameraCameraForm->rotatePlusZPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::rotateRollMinus);
 
+
+  _cameraCameraForm->EulerAngleXSpinBox->setMinimum(-180.0);
+  _cameraCameraForm->EulerAngleXSpinBox->setMaximum(180.0);
+  _cameraCameraForm->EulerAngleXSpinBox->setDecimals(5);
+  _cameraCameraForm->EulerAngleXSpinBox->setKeyboardTracking(false);
+  _cameraCameraForm->EulerAngleXSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraCameraForm->EulerAngleZSpinBox->setMinimum(-180.0);
+  _cameraCameraForm->EulerAngleZSpinBox->setMaximum(180.0);
+  _cameraCameraForm->EulerAngleZSpinBox->setDecimals(5);
+  _cameraCameraForm->EulerAngleZSpinBox->setKeyboardTracking(false);
+  _cameraCameraForm->EulerAngleZSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cameraCameraForm->EulerAngleYSpinBox->setMinimum(-90.0);
+  _cameraCameraForm->EulerAngleYSpinBox->setMaximum(90.0);
+  _cameraCameraForm->EulerAngleYSpinBox->setDecimals(5);
+  _cameraCameraForm->EulerAngleYSpinBox->setKeyboardTracking(false);
+  _cameraCameraForm->EulerAngleYSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  whileBlocking(_cameraCameraForm->EulerAngleXDial)->setMinimum(-180);
+  whileBlocking(_cameraCameraForm->EulerAngleXDial)->setMaximum(180);
+  whileBlocking(_cameraCameraForm->EulerAngleZDial)->setMinimum(-180);
+  whileBlocking(_cameraCameraForm->EulerAngleZDial)->setMaximum(180);
+  whileBlocking(_cameraCameraForm->EulerAngleYSlider)->setMinimum(-90);
+  whileBlocking(_cameraCameraForm->EulerAngleYSlider)->setMaximum(90);
+
   QObject::connect(_cameraCameraForm->EulerAngleXDial, &QDial::valueChanged,this,static_cast<void (CameraTreeWidgetController::*)(int)>(&CameraTreeWidgetController::setEulerAngleX));
-  QObject::connect(_cameraCameraForm->EulerAngleXLineEdit, &TextField::textEditedOnEnter,this,static_cast<void (CameraTreeWidgetController::*)(const QString &)>(&CameraTreeWidgetController::setEulerAngleX));
+  QObject::connect(_cameraCameraForm->EulerAngleXSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,static_cast<void (CameraTreeWidgetController::*)(double)>(&CameraTreeWidgetController::setEulerAngleX));
   QObject::connect(_cameraCameraForm->EulerAngleZDial, &QDial::valueChanged,this,static_cast<void (CameraTreeWidgetController::*)(int)>(&CameraTreeWidgetController::setEulerAngleZ));
-  QObject::connect(_cameraCameraForm->EulerAngleZLineEdit, &TextField::textEditedOnEnter,this,static_cast<void (CameraTreeWidgetController::*)(const QString &)>(&CameraTreeWidgetController::setEulerAngleZ));
+  QObject::connect(_cameraCameraForm->EulerAngleZSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,static_cast<void (CameraTreeWidgetController::*)(double)>(&CameraTreeWidgetController::setEulerAngleZ));
   QObject::connect(_cameraCameraForm->EulerAngleYSlider, &QDial::valueChanged,this,static_cast<void (CameraTreeWidgetController::*)(int)>(&CameraTreeWidgetController::setEulerAngleY));
-  QObject::connect(_cameraCameraForm->EulerAngleYLineEdit, &TextField::textEditedOnEnter,this,static_cast<void (CameraTreeWidgetController::*)(const QString &)>(&CameraTreeWidgetController::setEulerAngleY));
+  QObject::connect(_cameraCameraForm->EulerAngleYSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,static_cast<void (CameraTreeWidgetController::*)(double)>(&CameraTreeWidgetController::setEulerAngleY));
 
   // Selection
   //==========================================================================================================
@@ -632,17 +676,17 @@ void CameraTreeWidgetController::reloadCameraResetDirection()
 
 void CameraTreeWidgetController::reloadCameraProjection()
 {
-  _cameraCameraForm->resetPercentageLineEdit->setDisabled(true);
+  _cameraCameraForm->resetPercentageSpinBox->setDisabled(true);
   _cameraCameraForm->orthographicCameraRadioButton->setDisabled(true);
   _cameraCameraForm->perspectiveCameraRadioButton->setDisabled(true);
 
   if(std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    _cameraCameraForm->resetPercentageLineEdit->setEnabled(true);
+    _cameraCameraForm->resetPercentageSpinBox->setEnabled(true);
     _cameraCameraForm->orthographicCameraRadioButton->setEnabled(true);
     _cameraCameraForm->perspectiveCameraRadioButton->setEnabled(true);
 
-    whileBlocking(_cameraCameraForm->resetPercentageLineEdit)->setText(QString::number(100.0*camera->resetFraction()));
+    whileBlocking(_cameraCameraForm->resetPercentageSpinBox)->setValue(100.0*camera->resetFraction());
     if(camera->isOrthographic()) whileBlocking(_cameraCameraForm->orthographicCameraRadioButton)->setChecked(true);
     if(camera->isPerspective()) whileBlocking(_cameraCameraForm->perspectiveCameraRadioButton)->setChecked(true);
   }
@@ -661,7 +705,7 @@ void CameraTreeWidgetController::reloadCameraProperties()
   _cameraCameraForm->centerOfSceneYLineEdit->setDisabled(true);
   _cameraCameraForm->centerOfSceneZLineEdit->setDisabled(true);
 
-  _cameraCameraForm->rotateAngleLineEdit->setDisabled(true);
+  _cameraCameraForm->rotateAngleSpinBox->setDisabled(true);
   _cameraCameraForm->rotatePlusXPushButton->setDisabled(true);
   _cameraCameraForm->rotatePlusYPushButton->setDisabled(true);
   _cameraCameraForm->rotatePlusZPushButton->setDisabled(true);
@@ -682,7 +726,7 @@ void CameraTreeWidgetController::reloadCameraProperties()
     _cameraCameraForm->centerOfSceneYLineEdit->setEnabled(true);
     _cameraCameraForm->centerOfSceneZLineEdit->setEnabled(true);
 
-    _cameraCameraForm->rotateAngleLineEdit->setEnabled(true);
+    _cameraCameraForm->rotateAngleSpinBox->setEnabled(true);
     _cameraCameraForm->rotatePlusXPushButton->setEnabled(true);
     _cameraCameraForm->rotatePlusYPushButton->setEnabled(true);
     _cameraCameraForm->rotatePlusZPushButton->setEnabled(true);
@@ -720,7 +764,7 @@ void CameraTreeWidgetController::reloadCameraProperties()
     whileBlocking(_cameraCameraForm->centerOfSceneZLineEdit)->setText(QString::number(centerOfScene.z, 'f', 5));
 
     double rotationAngle = camera->rotationAngle();
-    whileBlocking(_cameraCameraForm->rotateAngleLineEdit)->setText(QString::number(rotationAngle, 'f', 2));
+    whileBlocking(_cameraCameraForm->rotateAngleSpinBox)->setValue(rotationAngle);
     whileBlocking(_cameraCameraForm->rotatePlusXPushButton)->setText(tr("Rotate +%1").arg(QString::number(rotationAngle, 'f', 2)));
     whileBlocking(_cameraCameraForm->rotatePlusYPushButton)->setText(tr("Rotate +%1").arg(QString::number(rotationAngle, 'f', 2)));
     whileBlocking(_cameraCameraForm->rotatePlusZPushButton)->setText(tr("Rotate +%1").arg(QString::number(rotationAngle, 'f', 2)));
@@ -742,9 +786,9 @@ void CameraTreeWidgetController::reloadCameraEulerAngles()
   _cameraCameraForm->EulerAngleYSlider->setDisabled(true);
   _cameraCameraForm->EulerAngleYSlider->setDisabled(true);
 
-  _cameraCameraForm->EulerAngleXLineEdit->setDisabled(true);
-  _cameraCameraForm->EulerAngleZLineEdit->setDisabled(true);
-  _cameraCameraForm->EulerAngleYLineEdit->setDisabled(true);
+  _cameraCameraForm->EulerAngleXSpinBox->setDisabled(true);
+  _cameraCameraForm->EulerAngleZSpinBox->setDisabled(true);
+  _cameraCameraForm->EulerAngleYSpinBox->setDisabled(true);
 
   if(std::shared_ptr<RKCamera> camera = _camera.lock())
   {
@@ -758,24 +802,18 @@ void CameraTreeWidgetController::reloadCameraEulerAngles()
     _cameraCameraForm->EulerAngleYSlider->setEnabled(true);
     _cameraCameraForm->EulerAngleYSlider->setEnabled(true);
 
-    _cameraCameraForm->EulerAngleXLineEdit->setEnabled(true);
-    _cameraCameraForm->EulerAngleZLineEdit->setEnabled(true);
-    _cameraCameraForm->EulerAngleYLineEdit->setEnabled(true);
+    _cameraCameraForm->EulerAngleXSpinBox->setEnabled(true);
+    _cameraCameraForm->EulerAngleZSpinBox->setEnabled(true);
+    _cameraCameraForm->EulerAngleYSpinBox->setEnabled(true);
 
     double3 EulerAngles = camera->EulerAngles();
-    whileBlocking(_cameraCameraForm->EulerAngleXDial)->setMinimum(-180);
-    whileBlocking(_cameraCameraForm->EulerAngleXDial)->setMaximum(180);
-    whileBlocking(_cameraCameraForm->EulerAngleXDial)->setValue(int(EulerAngles.x*180.0/M_PI));
-    whileBlocking(_cameraCameraForm->EulerAngleZDial)->setMinimum(-180);
-    whileBlocking(_cameraCameraForm->EulerAngleZDial)->setMaximum(180);
-    whileBlocking(_cameraCameraForm->EulerAngleZDial)->setValue(int(EulerAngles.z*180.0/M_PI));
-    whileBlocking(_cameraCameraForm->EulerAngleYSlider)->setMinimum(-90);
-    whileBlocking(_cameraCameraForm->EulerAngleYSlider)->setMaximum(90);
-    whileBlocking(_cameraCameraForm->EulerAngleYSlider)->setValue(int(EulerAngles.y*180.0/M_PI));
+    whileBlocking(_cameraCameraForm->EulerAngleXDial)->setValue(EulerAngles.x*180.0/M_PI);
+    whileBlocking(_cameraCameraForm->EulerAngleZDial)->setValue(EulerAngles.z*180.0/M_PI);
+    whileBlocking(_cameraCameraForm->EulerAngleYSlider)->setValue(EulerAngles.y*180.0/M_PI);
 
-    whileBlocking(_cameraCameraForm->EulerAngleXLineEdit)->setText(QString::number(EulerAngles.x*180.0/M_PI, 'f', 5));
-    whileBlocking(_cameraCameraForm->EulerAngleZLineEdit)->setText(QString::number(EulerAngles.z*180.0/M_PI, 'f', 5));
-    whileBlocking(_cameraCameraForm->EulerAngleYLineEdit)->setText(QString::number(EulerAngles.y*180.0/M_PI, 'f', 5));
+    whileBlocking(_cameraCameraForm->EulerAngleXSpinBox)->setValue(EulerAngles.x*180.0/M_PI);
+    whileBlocking(_cameraCameraForm->EulerAngleZSpinBox)->setValue(EulerAngles.z*180.0/M_PI);
+    whileBlocking(_cameraCameraForm->EulerAngleYSpinBox)->setValue(EulerAngles.y*180.0/M_PI);
   }
 }
 
@@ -884,22 +922,16 @@ void CameraTreeWidgetController::reloadCameraData()
 
 
 
-void CameraTreeWidgetController::setResetPercentage(const QString &resetPercentageString)
+void CameraTreeWidgetController::setResetPercentage(double resetPercentage)
 {
   if(std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    bool succes = false;
-    double newValue = resetPercentageString.toDouble(&succes);
+    camera->setResetFraction(resetPercentage/100.0);
 
-    if(succes)
-    {
-      camera->setResetFraction(newValue/100.0);
+    reloadCameraProjection();
+    emit updateRenderer();
 
-      reloadCameraProjection();
-      emit updateRenderer();
-
-      _mainWindow->documentWasModified();
-    }
+    _mainWindow->documentWasModified();
   }
 }
 
@@ -1046,25 +1078,20 @@ void CameraTreeWidgetController::setAngleOfView(double d)
   }
 }
 
-void CameraTreeWidgetController::setRotationAngle(const QString &angleString)
+void CameraTreeWidgetController::setRotationAngle(double angle)
 {
   if(std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    bool succes = false;
-    double newValue = angleString.toDouble(&succes);
+    camera->setRotationAngle(angle);
+    QString angleString = QString::number(angle);
+    whileBlocking(_cameraCameraForm->rotatePlusXPushButton)->setText(tr("Rotate +%1").arg(angleString));
+    whileBlocking(_cameraCameraForm->rotatePlusYPushButton)->setText(tr("Rotate +%1").arg(angleString));
+    whileBlocking(_cameraCameraForm->rotatePlusZPushButton)->setText(tr("Rotate +%1").arg(angleString));
+    whileBlocking(_cameraCameraForm->rotateMinusXPushButton)->setText(tr("Rotate -%1").arg(angleString));
+    whileBlocking(_cameraCameraForm->rotateMinusYPushButton)->setText(tr("Rotate -%1").arg(angleString));
+    whileBlocking(_cameraCameraForm->rotateMinusZPushButton)->setText(tr("Rotate -%1").arg(angleString));
 
-    if(succes)
-    {
-      camera->setRotationAngle(newValue);
-      whileBlocking(_cameraCameraForm->rotatePlusXPushButton)->setText(tr("Rotate +%1").arg(angleString));
-      whileBlocking(_cameraCameraForm->rotatePlusYPushButton)->setText(tr("Rotate +%1").arg(angleString));
-      whileBlocking(_cameraCameraForm->rotatePlusZPushButton)->setText(tr("Rotate +%1").arg(angleString));
-      whileBlocking(_cameraCameraForm->rotateMinusXPushButton)->setText(tr("Rotate -%1").arg(angleString));
-      whileBlocking(_cameraCameraForm->rotateMinusYPushButton)->setText(tr("Rotate -%1").arg(angleString));
-      whileBlocking(_cameraCameraForm->rotateMinusZPushButton)->setText(tr("Rotate -%1").arg(angleString));
-
-      _mainWindow->documentWasModified();
-    }
+    _mainWindow->documentWasModified();
   }
 }
 
@@ -1164,7 +1191,6 @@ void CameraTreeWidgetController::rotateRollMinus()
   }
 }
 
-
 void CameraTreeWidgetController::setEulerAngleX(int angle)
 {
   if(std::shared_ptr<RKCamera> camera = _camera.lock())
@@ -1182,25 +1208,20 @@ void CameraTreeWidgetController::setEulerAngleX(int angle)
   }
 }
 
-void CameraTreeWidgetController::setEulerAngleX(const QString &angleString)
+void CameraTreeWidgetController::setEulerAngleX(double angle)
 {
   if(std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    bool succes = false;
-    double newValue = angleString.toDouble(&succes)*M_PI/180.0;
+    double3 EulerAngles  = camera->EulerAngles();
+    double newValue = double(angle*M_PI/180.0);
 
-    if(succes)
-    {
-      double3 EulerAngles  = camera->EulerAngles();
+    simd_quatd worldRotation = simd_quatd(double3(newValue, EulerAngles.y, EulerAngles.z));
+    camera->setWorldRotation(worldRotation);
+    emit updateRenderer();
+    reloadCameraEulerAngles();
+    reloadCameraModelViewMatrix();
 
-      simd_quatd worldRotation = simd_quatd(double3(newValue, EulerAngles.y, EulerAngles.z));
-      camera->setWorldRotation(worldRotation);
-      emit updateRenderer();
-      reloadCameraEulerAngles();
-      reloadCameraModelViewMatrix();
-
-      _mainWindow->documentWasModified();
-    }
+    _mainWindow->documentWasModified();
   }
 }
 
@@ -1221,25 +1242,20 @@ void CameraTreeWidgetController::setEulerAngleZ(int angle)
   }
 }
 
-void CameraTreeWidgetController::setEulerAngleZ(const QString &angleString)
+void CameraTreeWidgetController::setEulerAngleZ(double angle)
 {
   if(std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    bool succes = false;
-    double newValue = angleString.toDouble(&succes)*M_PI/180.0;
+    double3 EulerAngles  = camera->EulerAngles();
+    double newValue = double(angle*M_PI/180.0);
 
-    if(succes)
-    {
-      double3 EulerAngles  = camera->EulerAngles();
+    simd_quatd worldRotation = simd_quatd(double3(EulerAngles.x, EulerAngles.y, newValue));
+    camera->setWorldRotation(worldRotation);
+    emit updateRenderer();
+    reloadCameraEulerAngles();
+    reloadCameraModelViewMatrix();
 
-      simd_quatd worldRotation = simd_quatd(double3(EulerAngles.x, EulerAngles.y, newValue));
-      camera->setWorldRotation(worldRotation);
-      emit updateRenderer();
-      reloadCameraEulerAngles();
-      reloadCameraModelViewMatrix();
-
-      _mainWindow->documentWasModified();
-    }
+    _mainWindow->documentWasModified();
   }
 }
 
@@ -1260,27 +1276,23 @@ void CameraTreeWidgetController::setEulerAngleY(int angle)
   }
 }
 
-void CameraTreeWidgetController::setEulerAngleY(const QString &angleString)
+void CameraTreeWidgetController::setEulerAngleY(double angle)
 {
   if(std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    bool succes = false;
-    double newValue = angleString.toDouble(&succes)*M_PI/180.0;
+    double3 EulerAngles  = camera->EulerAngles();
+    double newValue = double(angle*M_PI/180.0);
 
-    if(succes)
-    {
-      double3 EulerAngles  = camera->EulerAngles();
+    simd_quatd worldRotation = simd_quatd(double3(EulerAngles.x, newValue, EulerAngles.z));
+    camera->setWorldRotation(worldRotation);
+    emit updateRenderer();
+    reloadCameraEulerAngles();
+    reloadCameraModelViewMatrix();
 
-      simd_quatd worldRotation = simd_quatd(double3(EulerAngles.x, newValue, EulerAngles.z));
-      camera->setWorldRotation(worldRotation);
-      emit updateRenderer();
-      reloadCameraEulerAngles();
-      reloadCameraModelViewMatrix();
-
-      _mainWindow->documentWasModified();
-    }
+    _mainWindow->documentWasModified();
   }
 }
+
 
 // Selection properties
 //========================================================================================================================================

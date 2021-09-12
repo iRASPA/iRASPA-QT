@@ -23,6 +23,7 @@
 #include "atomtreeviewdropmovecommand.h"
 #include "atomtreeviewchangedisplaynamecommand.h"
 #include "atomtreeviewchangeelementcommand.h"
+#include "atomtreeviewchangeoccupancycommand.h"
 #include "atomtreeviewchangepositionxcommand.h"
 #include "atomtreeviewchangepositionycommand.h"
 #include "atomtreeviewchangepositionzcommand.h"
@@ -135,7 +136,7 @@ QModelIndex AtomTreeViewModel::parent(const QModelIndex &child) const
 int AtomTreeViewModel::columnCount(const QModelIndex &parent) const
 {
   Q_UNUSED(parent);
-  return 8;
+  return 9;
 }
 
 int AtomTreeViewModel::rowCount(const QModelIndex &parent) const
@@ -207,13 +208,15 @@ QVariant AtomTreeViewModel::data(const QModelIndex &index, int role) const
     case 3:
       return atom->uniqueForceFieldName();
     case 4:
-      return QString::number(item->representedObject()->position().x, 'f', 5);
+      return QString::number(item->representedObject()->occupancy(), 'f', 2);
     case 5:
-      return QString::number(item->representedObject()->position().y, 'f', 5);
+      return QString::number(item->representedObject()->position().x, 'f', 5);
     case 6:
-      return QString::number(item->representedObject()->position().z, 'f', 5);
+      return QString::number(item->representedObject()->position().y, 'f', 5);
     case 7:
-      return QString::number(item->representedObject()->charge(), 'f', 5);
+      return QString::number(item->representedObject()->position().z, 'f', 5);
+    case 8:
+      return QString::number(item->representedObject()->charge(), 'f', 3);
     }
   }
 
@@ -273,12 +276,14 @@ QVariant AtomTreeViewModel::headerData(int section, Qt::Orientation orientation,
     case 3:
       return QString("ff id.");
     case 4:
-      return QString("x");
+      return QString("occ");
     case 5:
-      return QString("y");
+      return QString("x");
     case 6:
-      return QString("z");
+      return QString("y");
     case 7:
+      return QString("z");
+    case 8:
       return QString("q");
   }
 
@@ -296,14 +301,12 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     SKAtomTreeNode *item = static_cast<SKAtomTreeNode*>(index.internalPointer());
     if ((Qt::CheckState)value.toInt() == Qt::Checked)
     {
-      qDebug() << "Checked";
       item->representedObject()->setVisibility(true);
       emit rendererReloadData();
       return true;
     }
     else
     {
-      qDebug() << "UNChecked";
       item->representedObject()->setVisibility(false);
       emit rendererReloadData();
       return true;
@@ -350,13 +353,25 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     double newValue = value.toDouble(&success);
     if(success)
     {
+      AtomTreeViewChangeOccupancyCommand* changeOccupancyCommand = new AtomTreeViewChangeOccupancyCommand(_mainWindow, this, _projectStructure, _iraspaStructure, item->shared_from_this(), newValue, nullptr);
+      _projectTreeNode->representedObject()->undoManager().push(changeOccupancyCommand);
+      return true;
+    }
+    break;
+  }
+  case 5:
+  {
+    bool success;
+    double newValue = value.toDouble(&success);
+    if(success)
+    {
       AtomTreeViewChangePositionXCommand*changePositionXCommand = new AtomTreeViewChangePositionXCommand(_mainWindow, this, _projectStructure, _iraspaStructure, item->shared_from_this(), newValue, nullptr);
       _projectTreeNode->representedObject()->undoManager().push(changePositionXCommand);
       return true;
     }
     break;
   }
-  case 5:
+  case 6:
   {
     bool success;
     double newValue = value.toDouble(&success);
@@ -368,7 +383,7 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     }
     break;
   }
-  case 6:
+  case 7:
   {
     bool success;
     double newValue = value.toDouble(&success);
@@ -380,7 +395,7 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
     }
     break;
   }
-  case 7:
+  case 8:
   {
     bool success;
     double newValue = value.toDouble(&success);
