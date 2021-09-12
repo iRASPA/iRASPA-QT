@@ -864,135 +864,217 @@
 <context>
     <name>AtomTreeView</name>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="790"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="793"/>
         <source>Add Atom</source>
         <translation>Voeg atoom toe</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="797"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="800"/>
         <source>Add Atom Group</source>
         <translation>Voeg atoom groep toe</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="804"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="807"/>
         <source>Flatten Hierarchy</source>
         <translation>Hiërarchie platslaan</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="809"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="812"/>
         <source>Make Super-Cell</source>
         <translation>Maak super-cel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="814"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="817"/>
         <source>Symmetry</source>
         <translation>Symmetrie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="816"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="819"/>
         <source>Remove Symmetry</source>
         <translation>Verwijder symmetrie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="821"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="824"/>
         <source>Wrap Atoms to Cell</source>
         <translation>Wikkel Atomen Terug in Cel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="826"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="829"/>
+        <source>Find Niggli</source>
+        <translation>Zoek Niggli</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/atomtreeview.cpp" line="834"/>
         <source>Find Primitive</source>
         <translation>Zoek primitieve</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="831"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="840"/>
         <source>Find and Impose Symmetry</source>
         <translation>Zoek en leg symmetrie op</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="837"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="846"/>
         <source>Selection</source>
         <translation>Selectie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="839"/>
-        <location filename="../iraspagui/atomtreeview.cpp" line="862"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="848"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="871"/>
         <source>Invert</source>
         <translation>Inverteer</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="844"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="853"/>
         <source>CopyToNewMovie</source>
         <translation>Kopiëer naar nieuwe movie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="849"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="858"/>
         <source>MoveToNewMovie</source>
         <translation>Verplaats naar nieuwe movie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="855"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="864"/>
         <source>Visibility</source>
         <translation>Zichtbaarheid</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="857"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="866"/>
         <source>Match Selection</source>
         <translation>Match selectie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="868"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="877"/>
         <source>Scroll To</source>
         <translation>Scroll naar</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="870"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="879"/>
         <source>Top</source>
         <translation>Bovenste</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="875"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="884"/>
         <source>Bottom</source>
         <translation>Onderste</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="880"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="889"/>
         <source>First Selected</source>
         <translation>Eerste geselecteerde</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="885"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="894"/>
         <source>Last Selected</source>
         <translation>Laatste geselecteerde</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="892"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="901"/>
         <source>Export To</source>
         <translation>Exporteer naar</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="894"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="903"/>
         <source>PDB</source>
         <translation>PDB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="899"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="908"/>
         <source>mmCIF</source>
         <translation>mmCIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="904"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="913"/>
         <source>CIF</source>
         <translation>CIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="909"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="918"/>
         <source>XYZ</source>
         <translation>XYZ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="914"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="923"/>
         <source>VASP POSCAR</source>
         <translation>VASP POSCAR</translation>
+    </message>
+</context>
+<context>
+    <name>CameraAxesMainWidget</name>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="22"/>
+        <source>Style</source>
+        <translation>Stijl</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="29"/>
+        <source>Position</source>
+        <translation>Positie</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="42"/>
+        <source>Size</source>
+        <translation>Grootte</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="49"/>
+        <source>Border Offset</source>
+        <translation>Rand verschuiving</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="68"/>
+        <location filename="../iraspagui/cameraaxesform.ui" line="86"/>
+        <source>%</source>
+        <translation>%</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="102"/>
+        <source>Background Additional Size</source>
+        <translation>Achtergrond extra grootte</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="109"/>
+        <source>Background Shape</source>
+        <translation>Achtergrond vorm</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="119"/>
+        <location filename="../iraspagui/cameraaxesform.ui" line="200"/>
+        <location filename="../iraspagui/cameraaxesform.ui" line="207"/>
+        <location filename="../iraspagui/cameraaxesform.ui" line="214"/>
+        <source>Color</source>
+        <translation>Kleur</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="128"/>
+        <source>Text Properties</source>
+        <translation>Tekst eigenschappen</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="136"/>
+        <source>Scaling</source>
+        <translation>Schaling</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="143"/>
+        <source>Z-Text Δ</source>
+        <translation>Z-Tekst Δ</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="150"/>
+        <source>X-Text Δ</source>
+        <translation>X-Tekst Δ</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameraaxesform.ui" line="157"/>
+        <source>Y-Text Δ</source>
+        <translation>Y-Tekst Δ</translation>
     </message>
 </context>
 <context>
@@ -1303,69 +1385,210 @@
 <context>
     <name>CameraTreeWidgetController</name>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="59"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="60"/>
         <source>Camera</source>
         <translation>Camera</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="106"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="107"/>
         <source>Selection</source>
         <translation>Selectie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="129"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="130"/>
+        <source>Axes</source>
+        <translation>Assen</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="138"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="161"/>
+        <source>None</source>
+        <translation>Geen</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="139"/>
+        <source>Bottom-Left</source>
+        <translation>Links-onder</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="140"/>
+        <source>Mid-Left</source>
+        <translation>Midden-links</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="141"/>
+        <source>Top-Left</source>
+        <translation>Links-boven</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="142"/>
+        <source>Mid-Top</source>
+        <translation>Midden-boven</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="143"/>
+        <source>Top-Right</source>
+        <translation>Rechts-boven</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="144"/>
+        <source>Mid-Right</source>
+        <translation>Midden-rechts</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="145"/>
+        <source>Bottom-Right</source>
+        <translation>Rechts-onder</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="146"/>
+        <source>Mid-Bottom</source>
+        <translation>Midden-onder</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="147"/>
+        <source>Center</source>
+        <translation>Midden</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="149"/>
+        <source>Default</source>
+        <translation>Standaard</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="150"/>
+        <source>Thick RGB</source>
+        <translation>Dik RGB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="151"/>
+        <source>Thick</source>
+        <translation>Dik</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="152"/>
+        <source>Thin RGB</source>
+        <translation>Dun RGB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="153"/>
+        <source>Thin</source>
+        <translation>Dun</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="154"/>
+        <source>Beam-Arrow RGB</source>
+        <translation>Balk-pijl RGB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="155"/>
+        <source>Beam-Arrow</source>
+        <translation>Balk-pijl</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="156"/>
+        <source>Beam RGB</source>
+        <translation>Balk RGB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="157"/>
+        <source>Beam</source>
+        <translation>Balk</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="158"/>
+        <source>Squashed RGB</source>
+        <translation>Platgeslagen RGB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="159"/>
+        <source>Squashed</source>
+        <translation>Platgeslagen</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="162"/>
+        <source>Filled Circle</source>
+        <translation>Gevulde cirkel</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="163"/>
+        <source>Filled Square</source>
+        <translation>Gevuld vierkant</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="164"/>
+        <source>Filled Rounded Square</source>
+        <translation>Gevuld afgerond vierkant</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="165"/>
+        <source>Circle</source>
+        <translation>Cirkel</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="166"/>
+        <source>Square</source>
+        <translation>Vierkant</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="167"/>
+        <source>Rounded Square</source>
+        <translation>Afgerond vierkant</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="321"/>
         <source>Lights</source>
         <translation>Lichten</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="158"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="350"/>
         <source>Pictures/Movies</source>
         <translation>Plaatjes/filmpjes</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="207"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="399"/>
         <source>Background</source>
         <translation>Achtergrond</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="512"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="513"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="514"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="839"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="840"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="841"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="724"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="725"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="726"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1059"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1060"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1061"/>
         <source>Rotate +%1</source>
         <translation>Roteer +%1</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="515"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="516"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="517"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="842"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="843"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="844"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="727"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="728"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="729"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1062"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1063"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1064"/>
         <source>Rotate -%1</source>
         <translation>Roteer -%1</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1742"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2366"/>
         <source>Open Background Picture</source>
         <translation>Open achtergrond plaatje</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1743"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2367"/>
         <source>png or jpg files (*.png *.jpg)</source>
         <translation>png or jpg files (*.png *.jpg)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1600"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1748"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2224"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2372"/>
         <source>Select Picture</source>
         <translation>Selecteer plaatje</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1601"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1749"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2225"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2373"/>
         <source>Image Placeholder</source>
         <translation>Tijdelijke aanduiding plaatje</translation>
     </message>
@@ -1777,211 +2000,211 @@
 <context>
     <name>CellTreeWidgetController</name>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="58"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="59"/>
         <source>Cell/Boundingbox Properties</source>
         <translation>Cel/begrenzing eigenschappen</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="70"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="71"/>
         <source>Empty</source>
         <translation>Leeg</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="71"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="72"/>
         <source>Structure</source>
         <translation>Structuur</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="72"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="73"/>
         <source>Crystal</source>
         <translation>Krystal</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="73"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="74"/>
         <source>Molecular Crystal</source>
         <translation>Moleculair kristal</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="74"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="75"/>
         <source>Molecule</source>
         <translation>Molecuul</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="75"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="76"/>
         <source>Protein</source>
         <translation>Eiwit</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="76"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="77"/>
         <source>Protein Crystal</source>
         <translation>Eiwit-kristal</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="77"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="78"/>
         <source>Protein Crystal Solvent</source>
         <translation>Eiwit-kristal oplosmiddel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="78"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="79"/>
         <source>Crystal Solvent</source>
         <translation>Kristal oplosmiddel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="79"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="80"/>
         <source>Molecular Crystal Solvent</source>
         <translation>Moleculair kristal oplosmiddel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="80"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="81"/>
         <source>Crystal Ellipsoid</source>
         <translation>Kristal ellipsoïde</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="81"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="82"/>
         <source>Crystal Cylinder</source>
         <translation>Kristal Cilinder</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="82"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="83"/>
         <source>Crystal Polygonal Prism</source>
         <translation>Kristal veelhoekig prism</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="83"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="84"/>
         <source>Ellipsoid</source>
         <translation>Ellipsoïde</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="84"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="85"/>
         <source>Cylinder</source>
         <translation>Cilinder</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="85"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="86"/>
         <source>Polygonal Prism</source>
         <translation>Veelhoekig prism</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="139"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="141"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="143"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="146"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="148"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="150"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="140"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="142"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="144"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="147"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="149"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="151"/>
         <source>Mult.Val.</source>
         <translation>Mult.Val.</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="221"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="222"/>
         <source>Tranform Content</source>
         <translation>Transformeer inhoud</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="271"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="272"/>
         <source>Structural Properties</source>
         <translation>Structuur eigenschappen</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="286"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="287"/>
         <source>Helium</source>
         <translation>Helium</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="287"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="288"/>
         <source>Methane</source>
         <translation>Methaan</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="288"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="289"/>
         <source>Nitrogen</source>
         <translation>Stikstof</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="289"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="290"/>
         <source>Hydrogen</source>
         <translation>Waterstof</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="290"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="291"/>
         <source>Water</source>
         <translation>Water</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="291"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="292"/>
         <source>CO₂</source>
         <translation>CO₂</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="292"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="293"/>
         <source>Xenon</source>
         <translation>Xenon</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="293"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="294"/>
         <source>Krypton</source>
         <translation>Krypton</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="294"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="295"/>
         <source>Argon</source>
         <translation>Argon</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="336"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="337"/>
         <source>Unspecified</source>
         <translation>Unspecified</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="337"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="338"/>
         <source>Silica</source>
         <translation>Silica</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="338"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="339"/>
         <source>Aluminosilicate</source>
         <translation>Aluminosilicate</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="339"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="340"/>
         <source>Metallophosphate</source>
         <translation>Metallophosphate</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="340"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="341"/>
         <source>Silicialinophosphate</source>
         <translation>Silicialinophosphate</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="341"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="342"/>
         <source>Zeolite</source>
         <translation>Zeolite</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="342"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="343"/>
         <source>MOF</source>
         <translation>MOF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="343"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="344"/>
         <source>ZIF</source>
         <translation>ZIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="351"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="352"/>
         <source>Symmetry Properties</source>
         <translation>Symmetrie-eigenschappen</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1073"/>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1074"/>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1075"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1076"/>
         <source>Rotate +%1</source>
         <translation>Roteer +%1</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1076"/>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1077"/>
         <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1078"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1079"/>
         <source>Rotate -%1</source>
         <translation>Roteer -%1</translation>
     </message>
@@ -2019,7 +2242,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://dx.doi.org/10.1080/08927022.2018.1426855&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;Link to article&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Other contributors:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Tim Becker, Noura Dawass,  Weina Du,  Masafumi Miyaji, Sebastian Caro Ortiz,  Ahmadreza Rahbari, Shrinjay Sharma.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;Tim Becker, Youngchul G. Chung, Noura Dawass,  Weina Du,  Masafumi Miyaji, Sebastian Caro Ortiz,  Ana Pavlova, Ahmadreza Rahbari, Shrinjay Sharma, and Ana Celia Araujo Vila Verde.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
@@ -2781,229 +3004,229 @@ p, li { white-space: pre-wrap; }
         <location filename="../iraspagui/mainwindow.ui" line="288"/>
         <location filename="../iraspagui/mainwindow.ui" line="356"/>
         <location filename="../iraspagui/mainwindow.ui" line="379"/>
-        <location filename="../iraspagui/mainwindow.ui" line="784"/>
-        <location filename="../iraspagui/mainwindow.ui" line="795"/>
+        <location filename="../iraspagui/mainwindow.ui" line="782"/>
+        <location filename="../iraspagui/mainwindow.ui" line="793"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="497"/>
+        <location filename="../iraspagui/mainwindow.ui" line="495"/>
         <source>Camera</source>
         <translation>Camera</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="531"/>
+        <location filename="../iraspagui/mainwindow.ui" line="529"/>
         <source>Elements</source>
         <translation>Elementen</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="612"/>
+        <location filename="../iraspagui/mainwindow.ui" line="610"/>
         <source>Force Field</source>
         <translation>Krachtveld</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="632"/>
+        <location filename="../iraspagui/mainwindow.ui" line="630"/>
         <source>Color</source>
         <translation>Kleur</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="649"/>
+        <location filename="../iraspagui/mainwindow.ui" line="647"/>
         <source>Info</source>
         <translation>Info</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="683"/>
+        <location filename="../iraspagui/mainwindow.ui" line="681"/>
         <source>Appearance</source>
         <translation>Uiterlijk</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="717"/>
+        <location filename="../iraspagui/mainwindow.ui" line="715"/>
         <source>Cell</source>
         <translation>Cel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="751"/>
+        <location filename="../iraspagui/mainwindow.ui" line="749"/>
         <source>Atoms</source>
         <translation>Atomen</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="809"/>
+        <location filename="../iraspagui/mainwindow.ui" line="807"/>
         <source>Net Charge</source>
         <translation>Netto lading</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.ui" line="828"/>
+        <location filename="../iraspagui/mainwindow.ui" line="826"/>
         <source>Bonds</source>
         <translation>Bindingen</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="482"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="454"/>
         <source>&amp;File</source>
         <translation>&amp;Bestand</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="483"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="455"/>
         <source>&amp;About iRASPA</source>
         <translation>&amp;Over iRASPA</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="487"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="459"/>
         <source>&amp;New</source>
         <translation>&amp;Nieuw</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="488"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="460"/>
         <source>&amp;Structure Project</source>
         <translation>&amp;Structuurproject</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="491"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="463"/>
         <source>&amp;Project Group</source>
         <translation>&amp;Projectgroep</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="496"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="468"/>
         <source>&amp;Crystal</source>
         <translation>&amp;Krystal</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="499"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="471"/>
         <source>&amp;Molecular Crystal</source>
         <translation>&amp;Moleculair kristal</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="502"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="474"/>
         <source>&amp;Protein Crystal</source>
         <translation>&amp;Eiwitkristal</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="505"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="477"/>
         <source>&amp;Molecule</source>
         <translation>&amp;Molecuul</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="508"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="480"/>
         <source>&amp;Protein</source>
         <translation>&amp;Eiwit</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="512"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="484"/>
         <source>&amp;Objects</source>
         <translation>&amp;Objecten</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="513"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="485"/>
         <source>&amp;Crystal Ellipsoid</source>
         <translation>&amp;Kristal ellipsoïde</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="516"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="488"/>
         <source>&amp;Crystal Cylinder</source>
         <translation>&amp;Kristal Cilinder</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="519"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="491"/>
         <source>&amp;Crystal Polygonal Prism</source>
         <translation>&amp;Kristal Veelhoekig Prism</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="522"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="494"/>
         <source>&amp;Ellipsoid</source>
         <translation>&amp;Ellipsoïde</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="525"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="497"/>
         <source>&amp;Cylinder</source>
         <translation>&amp;Cilinder</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="528"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="500"/>
         <source>&amp;Polygonal Prism</source>
         <translation>&amp;Veelhoekig Prisma</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="533"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="505"/>
         <source>&amp;Workspace</source>
         <translation>&amp;Werkblad</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="537"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="509"/>
         <source>&amp;Import</source>
         <translation>&amp;Importeer</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="540"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="512"/>
         <source>&amp;Open</source>
         <translation>&amp;Open</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="542"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="514"/>
         <source>Open an Existing Document</source>
         <translation>Open een bestaand document</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="545"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="517"/>
         <source>&amp;Save</source>
         <translation>&amp;Bewaar</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="547"/>
-        <location filename="../iraspagui/mainwindow.cpp" line="552"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="519"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="524"/>
         <source>Save the Document to Disk</source>
         <translation>Bewaar het document op disk</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="550"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="522"/>
         <source>Save &amp;As</source>
         <translation>Bewaar &amp;als</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="556"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="528"/>
         <source>&amp;Undo</source>
         <translation>&amp;Herstel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="559"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="531"/>
         <source>&amp;Redo</source>
         <translation>&amp;Opnieuw</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="562"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="534"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopiëer</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="565"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="537"/>
         <source>&amp;Paste</source>
         <translation>&amp;Plak</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="568"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="540"/>
         <source>&amp;Cut</source>
         <translation>&amp;Knip</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="576"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="548"/>
         <source>&amp;Edit</source>
         <translation>&amp;Bewerk</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="587"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="559"/>
         <source>&amp;Contents</source>
         <translation>&amp;Inhoud</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="588"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="560"/>
         <source>&amp;Help</source>
         <translation>&amp;Help</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="1103"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="1098"/>
         <source>Application</source>
         <translation>Applicatie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="1104"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="1099"/>
         <source>The Document Has Been Modified.
 Do You Want to Save Your Changes?</source>
         <translation>Het document is bewerkt.
@@ -3046,24 +3269,24 @@ Wilt u het document bewaren?</translation>
 <context>
     <name>ProjectTreeView</name>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="130"/>
-        <location filename="../iraspagui/projecttreeview.cpp" line="148"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="131"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="149"/>
         <source>&amp;Undo</source>
         <translation>&amp;Herstel</translation>
     </message>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="133"/>
-        <location filename="../iraspagui/projecttreeview.cpp" line="151"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="134"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="152"/>
         <source>&amp;Redo</source>
         <translation>&amp;Opnieuw</translation>
     </message>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="422"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="423"/>
         <source>Add Structure Project</source>
         <translation>Voeg Structuurproject toe</translation>
     </message>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="430"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="431"/>
         <source>Add Group Project</source>
         <translation>Voeg Groepsproject toe</translation>
     </message>
@@ -3071,82 +3294,82 @@ Wilt u het document bewaren?</translation>
 <context>
     <name>RenderStackedWidget</name>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="521"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="635"/>
         <source>Reset Camera Distance</source>
         <translation>Camera-afstand resetten</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="525"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="639"/>
         <source>Reset Camera To</source>
         <translation>Camera resetten naar</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="527"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="641"/>
         <source>Z-Direction</source>
         <translation>Z-Richting</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="531"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="645"/>
         <source>Y-Direction</source>
         <translation>Y-Richting</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="535"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="649"/>
         <source>X-Direction</source>
         <translation>X-Richting</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="541"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="655"/>
         <source>Camera Projection</source>
         <translation>Cameraprojectie</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="543"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="657"/>
         <source>Orthographic</source>
         <translation>Orthografisch</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="549"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="663"/>
         <source>Perspective</source>
         <translation>Perspectief</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="556"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="670"/>
         <source>Show Bounding Box</source>
         <translation>Toon begrenzingsvak</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="562"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="676"/>
         <source>Compute AO High Quality</source>
         <translation>Bereken AO van hoge-kwaliteit</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="566"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="680"/>
         <source>Export To</source>
         <translation>Exporteer naar</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="568"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="682"/>
         <source>PDB</source>
         <translation>PDB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="572"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="686"/>
         <source>mmCIF</source>
         <translation>mmCIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="576"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="690"/>
         <source>CIF</source>
         <translation>CIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="580"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="694"/>
         <source>XYZ</source>
         <translation>XYZ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="584"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="698"/>
         <source>VASP POSCAR</source>
         <translation>VASP POSCAR</translation>
     </message>
