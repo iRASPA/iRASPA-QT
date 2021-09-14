@@ -89,6 +89,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     QObject::connect(ui->masterToolBar->mapper(), static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt),ui->masterStackedWidget, &MasterStackedWidget::reloadTab);
   #endif
 
+  // connect the projectTreeView
+  QObject::connect(ui->projectTreeView, &ProjectTreeView::setFlattenedSelectedFrames, ui->infoTreeWidget, &InfoTreeWidgetController::setFlattenedSelectedFrames);
+  QObject::connect(ui->projectTreeView, &ProjectTreeView::setFlattenedSelectedFrames, ui->appearanceTreeWidget, &AppearanceTreeWidgetController::setFlattenedSelectedFrames);
+  QObject::connect(ui->projectTreeView, &ProjectTreeView::setFlattenedSelectedFrames, ui->cellTreeWidget, &CellTreeWidgetController::setFlattenedSelectedFrames);
+
   // connect the sceneTreeView
   QObject::connect(ui->sceneTreeView, &SceneTreeView::updateRenderer,ui->stackedRenderers, &RenderStackedWidget::reloadData);
   QObject::connect(ui->sceneTreeView, &SceneTreeView::setFlattenedSelectedFrames, ui->infoTreeWidget, &InfoTreeWidgetController::setFlattenedSelectedFrames);
@@ -115,7 +120,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   // connect the camera tab
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::updateRenderer,ui->stackedRenderers, &RenderStackedWidget::redraw);
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererReloadBackgroundImage,ui->stackedRenderers, &RenderStackedWidget::reloadBackgroundImage);
-  //QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererReloadData,ui->stackedRenderers, &RenderStackedWidget::reloadData);
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererReloadData,ui->stackedRenderers, &RenderStackedWidget::reloadData);
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererReloadSelectionData,ui->stackedRenderers, &RenderStackedWidget::reloadSelectionData);
   QObject::connect(ui->cameraTreeWidget, &CameraTreeWidgetController::rendererCreatePicture,ui->stackedRenderers, &RenderStackedWidget::createPicture);

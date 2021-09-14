@@ -83,6 +83,9 @@ public slots:
   void addProjectStructure();
   void ShowToolButtonContextMenu(const QPoint &pos);
 signals:
+  void setSelectedFrame(std::shared_ptr<iRASPAStructure> structure);
+  void setSelectedMovie(std::shared_ptr<Movie> movie);
+  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAStructure>> structures);
   void setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
 };
 

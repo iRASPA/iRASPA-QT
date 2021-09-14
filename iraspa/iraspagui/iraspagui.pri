@@ -4,6 +4,7 @@ DEPENDPATH += $$PWD
 include(undocommands.pri)
 
 SOURCES += \
+    $$PWD/appearancelocalaxesform.cpp \
     $$PWD/appearanceprimitiveform.cpp \
     $$PWD/atomtreeviewpushbuttonstyleditemdelegate.cpp \
     $$PWD/bondlistpushbuttonstyleditemdelegate.cpp \
@@ -89,6 +90,7 @@ SOURCES += \
     $$PWD/toolbarwidget.cpp
 
 HEADERS += \
+    $$PWD/appearancelocalaxesform.h \
     $$PWD/appearanceprimitiveform.h \
     $$PWD/atomtreeviewpushbuttonstyleditemdelegate.h \
     $$PWD/bondlistpushbuttonstyleditemdelegate.h \
@@ -174,6 +176,7 @@ HEADERS += \
     $$PWD/toolbarwidget.h
 
 FORMS += \
+    $$PWD/appearancelocalaxesform.ui \
     $$PWD/appearanceprimitiveform.ui \
     $$PWD/cameraaxesform.ui \
     $$PWD/celltransformcontentform.ui \

@@ -61,6 +61,7 @@ OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGL
     _bondShader(),
     _objectShader(),
     _unitCellShader(),
+    _localAxesShader(),
     _selectionShader(_atomShader, _bondShader, _objectShader),
     _pickingShader(_atomShader, _bondShader, _objectShader),
     _textShader(),
@@ -148,6 +149,7 @@ void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<R
   _bondShader.setRenderStructures(structures);
    _objectShader.setRenderStructures(structures);
   _unitCellShader.setRenderStructures(structures);
+  _localAxesShader.setRenderStructures(structures);
 
   _selectionShader.setRenderStructures(structures);
   _pickingShader.setRenderStructures(structures);
@@ -219,6 +221,7 @@ void OpenGLWindow::initializeGL()
   _bondShader.initializeOpenGLFunctions();
   _objectShader.initializeOpenGLFunctions();
   _unitCellShader.initializeOpenGLFunctions();
+  _localAxesShader.initializeOpenGLFunctions();
 
   _selectionShader.initializeOpenGLFunctions();
   _pickingShader.initializeEmbeddedOpenGLFunctions();
@@ -471,6 +474,7 @@ void OpenGLWindow::initializeGL()
   _bondShader.loadShader();
   _objectShader.loadShader();
   _unitCellShader.loadShader();
+  _localAxesShader.loadShader();
   _selectionShader.loadShader();
   _pickingShader.loadShader();
   _textShader.loadShader();
@@ -479,6 +483,7 @@ void OpenGLWindow::initializeGL()
   _boundingBoxShader.generateBuffers();
   _globalAxesShader.generateBuffers();
   _unitCellShader.generateBuffers();
+  _localAxesShader.generateBuffers();
   _bondShader.generatePermanentBuffers();
   _textShader.generateTextures();
 
@@ -492,6 +497,7 @@ void OpenGLWindow::initializeGL()
   _bondShader.initializeVertexArrayObject();
   _objectShader.initializeVertexArrayObject();
   _unitCellShader.initializeVertexArrayObject();
+  _localAxesShader.initializeVertexArrayObject();
   _selectionShader.initializeVertexArrayObject();
   _pickingShader.initializeVertexArrayObject();
   _textShader.initializeVertexArrayObject();
@@ -1524,6 +1530,7 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer)
 
     _objectShader.paintGL(_structureUniformBuffer);
     _unitCellShader.paintGL(_structureUniformBuffer);
+    _localAxesShader.paintGL(_structureUniformBuffer);
 
     _boundingBoxShader.paintGL();
     _energySurfaceShader.paintGLOpaque(_structureUniformBuffer,_isosurfaceUniformBuffer);
@@ -1753,6 +1760,8 @@ void OpenGLWindow::initializeTransformUniforms()
   check_gl_error();
   _unitCellShader.initializeTransformUniforms();
   check_gl_error();
+  _localAxesShader.initializeTransformUniforms();
+  check_gl_error();
   _selectionShader.initializeTransformUniforms();
   check_gl_error();
   _pickingShader.initializeTransformUniforms();
@@ -1814,6 +1823,7 @@ void OpenGLWindow::initializeStructureUniforms()
   _bondShader.initializeStructureUniforms();
   _objectShader.initializeStructureUniforms();
   _unitCellShader.initializeStructureUniforms();
+  _localAxesShader.initializeStructureUniforms();
   _selectionShader.initializeStructureUniforms();
   _pickingShader.initializeStructureUniforms();
   _textShader.initializeStructureUniforms();
@@ -1909,6 +1919,7 @@ void OpenGLWindow::initializeLightUniforms()
   _bondShader.initializeLightUniforms();
   _objectShader.initializeLightUniforms();
   _unitCellShader.initializeLightUniforms();
+  _localAxesShader.initializeLightUniforms();
   _selectionShader.initializeLightUniforms();
 
   std::vector<RKLightsUniforms> lightUniforms{RKLightsUniforms()};
@@ -1978,6 +1989,7 @@ void OpenGLWindow::reloadData()
   _bondShader.reloadData();
   _objectShader.reloadData();
   _unitCellShader.reloadData();
+  _localAxesShader.reloadData();
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();
@@ -2000,6 +2012,7 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
   _bondShader.reloadData();
   _objectShader.reloadData();
   _unitCellShader.reloadData();
+  _localAxesShader.reloadData();
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();
@@ -2027,6 +2040,7 @@ void OpenGLWindow::reloadRenderData()
   _bondShader.reloadData();
   _objectShader.reloadData();
   _unitCellShader.reloadData();
+  _localAxesShader.reloadData();
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();

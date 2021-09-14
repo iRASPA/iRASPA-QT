@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AppearanceLocalAxesForm</class>
+ <widget class="QWidget" name="AppearanceLocalAxesForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>420</width>
+    <height>222</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QGridLayout" name="gridLayout" columnstretch="1,2">
+       <item row="5" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="CustomDoubleSpinBox" name="offsetXSpinBox"/>
+         </item>
+         <item>
+          <widget class="CustomDoubleSpinBox" name="offsetYSpinBox"/>
+         </item>
+         <item>
+          <widget class="CustomDoubleSpinBox" name="offsetZSpinBox"/>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="scalingTypeComboBox"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Style</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="CustomDoubleSpinBox" name="lengthSpinBox"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="positionComboBox"/>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Offset</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Length</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="styleComboBox"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Width</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Position</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Scaling Type</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="CustomDoubleSpinBox" name="widthSpinBox"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>customdoublespinbox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -70,7 +70,7 @@ void OpenGLGlobalAxesSystemShader::reloadData()
 
 void OpenGLGlobalAxesSystemShader::initializeVertexArrayObject()
 {
-  AxesSystemDefaultGeometry sphere{};
+  AxesSystemDefaultGeometry axes{};
   if(_dataSource)
   {
     RKGlobalAxes::CenterType centerType = _dataSource->axes()->centerType();
@@ -111,7 +111,7 @@ void OpenGLGlobalAxesSystemShader::initializeVertexArrayObject()
     float aspectRatio = _dataSource->axes()->aspectRatio();
     int sectorCount = _dataSource->axes()->NumberOfSectors();
 
-    sphere = AxesSystemDefaultGeometry(centerType, centerRadius, centerColor,
+    axes = AxesSystemDefaultGeometry(centerType, centerRadius, centerColor,
                                        arrowHeight, arrowRadius, arrowColorX, arrowColorY, arrowColorZ,
                                        tipHeight, tipRadius, tipColorX, tipColorY, tipColorZ,
                                        tipVisibility, aspectRatio, sectorCount);
@@ -122,12 +122,12 @@ void OpenGLGlobalAxesSystemShader::initializeVertexArrayObject()
       glBindVertexArray(_vertexArrayObject);
       check_gl_error();
       glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-      if(sphere.vertices().size()>0)
+      if(axes.vertices().size()>0)
       {
-        glBufferData(GL_ARRAY_BUFFER, sphere.vertices().size() * sizeof(RKPrimitiveVertex), sphere.vertices().data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, axes.vertices().size() * sizeof(RKPrimitiveVertex), axes.vertices().data(), GL_DYNAMIC_DRAW);
         check_gl_error();
       }
-      _numberOfIndices = sphere.indices().size();
+      _numberOfIndices = axes.indices().size();
 
       glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKPrimitiveVertex), (GLvoid *)offsetof(RKPrimitiveVertex,position));
       glVertexAttribPointer(_vertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKPrimitiveVertex), (GLvoid *)offsetof(RKPrimitiveVertex,normal));
@@ -135,9 +135,9 @@ void OpenGLGlobalAxesSystemShader::initializeVertexArrayObject()
 
       check_gl_error();
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
-      if(sphere.indices().size()>0)
+      if(axes.indices().size()>0)
       {
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices().size() * sizeof(GLshort), sphere.indices().data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, axes.indices().size() * sizeof(GLshort), axes.indices().data(), GL_DYNAMIC_DRAW);
         check_gl_error();
       }
 

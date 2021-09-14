@@ -355,9 +355,12 @@ struct RKStructureUniforms
   float primitiveValue = 1.0f;
   float pad9;
 
-  float4x4 pad10 = 0.0f;
-  float4x4 pad11 = 0.0f;
-  float4x4 pad12 = 0.0f;
+  float4 localAxisPosition = float4(0.0f,0.0f,0.0f,0.0f);
+  float4 pad11 = float4(0.0f,0.0f,0.0f,0.0f);
+  float4 pad12 = float4(0.0f,0.0f,0.0f,0.0f);
+  float4 pad13 = float4(0.0f,0.0f,0.0f,0.0f);
+  float4x4 pad14 = 0.0f;
+  float4x4 pad15 = 0.0f;
 
   RKStructureUniforms() {}
   RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure);
@@ -483,9 +486,12 @@ layout (std140) uniform StructureUniformBlock
     float primitiveValue;
     float pad9;
 
-    mat4 pad10;
-    mat4 pad11;
-    mat4 pad12;
+    vec4 localAxisPosition;
+    vec4 pad10;
+    vec4 pad11;
+    vec4 pad12;
+    mat4 pad13;
+    mat4 pad14;
 } structureUniforms;
 )foo";
 

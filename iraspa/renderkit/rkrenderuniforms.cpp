@@ -187,6 +187,32 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     this->primitiveSpecularBackSide = float(source->primitiveBackSideSpecularIntensity()) * float4(source->primitiveBackSideSpecularColor(), source->primitiveOpacity());
     this->primitiveShininessBackSide = float(source->primitiveBackSideShininess());
   }
+
+  if(RKRenderLocalAxesStructure *source = dynamic_cast<RKRenderLocalAxesStructure*>(structure.get()))
+  {
+    double3 offset = source->renderLocalAxes().offset();
+
+    switch(source->renderLocalAxes().position())
+    {
+    case RKLocalAxes::Position::none:
+      this->localAxisPosition = float4(0.0,0.0,0.0,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+      break;
+    case RKLocalAxes::Position::origin:
+      this->localAxisPosition = float4(0.0,0.0,0.0,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+      break;
+    case RKLocalAxes::Position::center:
+        this->localAxisPosition =  box * float4(0.5,0.5,0.5,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+      break;
+    case RKLocalAxes::Position::originBoundingBox:
+      this->localAxisPosition = float4(boundingbox.minimum().x,boundingbox.minimum().y,boundingbox.minimum().z,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+      break;
+    case RKLocalAxes::Position::centerBoundingBox:
+      this->localAxisPosition = float4(centerOfRotation.x, centerOfRotation.y, centerOfRotation.z, 1.0) + float4(offset.x,offset.y,offset.z,0.0);
+      break;
+    default:
+      break;
+    }
+  }
 }
 
 RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure, double4x4 inverseModelMatrix)

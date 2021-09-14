@@ -61,6 +61,11 @@ RKRenderPrimitivePolygonalPrimsObjectsSource::~RKRenderPrimitivePolygonalPrimsOb
   // Compulsory virtual destructor definition
 }
 
+RKRenderLocalAxesStructure::~RKRenderLocalAxesStructure()
+{
+  // Compulsory virtual destructor definition
+}
+
 RKRenderDataSource::~RKRenderDataSource()
 {
   // Compulsory virtual destructor definition

@@ -1946,6 +1946,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << structure->_unitCellDiffuseColor;
   stream << structure->_unitCellDiffuseIntensity;
 
+  stream << structure->_localAxes;
+
   stream << structure->_drawAdsorptionSurface;
   stream << structure->_adsorptionSurfaceOpacity;
   stream << structure->_adsorptionSurfaceIsoValue;
@@ -2298,6 +2300,11 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
   stream >> structure->_unitCellDiffuseColor;
   stream >> structure->_unitCellDiffuseIntensity;
 
+  if(versionNumber >= 8) // introduced in version 8
+  {
+    stream >> structure->_localAxes;
+  }
+
   stream >> structure->_drawAdsorptionSurface;
   stream >> structure->_adsorptionSurfaceOpacity;
   stream >> structure->_adsorptionSurfaceIsoValue;
@@ -2310,7 +2317,7 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
   stream >> adsorptionSurfaceProbeMolecule;
   structure->_adsorptionSurfaceProbeMolecule = Structure::ProbeMolecule(adsorptionSurfaceProbeMolecule);
 
-  if(versionNumber >= 6)
+  if(versionNumber >= 6) // introduced in version 6
   {
     stream >> structure->_adsorptionSurfaceHue;
     stream >> structure->_adsorptionSurfaceSaturation;

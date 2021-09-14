@@ -40,7 +40,6 @@ SceneTreeView::SceneTreeView(QWidget* parent): QTreeView(parent ), _model(std::m
 
   this->setSelectionBehavior (QAbstractItemView::SelectRows);
   this->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  //this->viewport()->setMouseTracking(true);
 
   this->setRootIsDecorated(false);
   this->setItemsExpandable(false);
@@ -123,7 +122,6 @@ void SceneTreeView::TabItemWasSelected()
 // i.e. just sets the selection of the treeview to the selection of the model
 void SceneTreeView::reloadSelection()
 {
-  qDebug() << "SceneTreeView::reloadSelection()";
   expandAll();
   if(_sceneList)
   {
@@ -148,14 +146,12 @@ void SceneTreeView::reloadSelection()
         }
       }
     }
-    qDebug() << "emmiting " << _sceneList->selectediRASPARenderStructures().size();
     emit setSelectedRenderFrames(_sceneList->selectediRASPARenderStructures());
     emit setFlattenedSelectedFrames(_sceneList->selectedMoviesIRASPAStructures());
 
     std::optional<int> sceneIndex = _sceneList->selectedSceneIndex();
     if(sceneIndex)
     {
-      qDebug() << "sceneIndex" << *sceneIndex;
       QModelIndex parentItem = model()->index(*sceneIndex,0,QModelIndex());
 
       if(std::shared_ptr<Scene> selectedScene = _sceneList->selectedScene())

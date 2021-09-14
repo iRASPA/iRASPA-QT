@@ -385,6 +385,44 @@
     </message>
 </context>
 <context>
+    <name>AppearanceLocalAxesForm</name>
+    <message>
+        <location filename="../iraspagui/appearancelocalaxesform.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancelocalaxesform.ui" line="40"/>
+        <source>Style</source>
+        <translation>پارامترهای سبک</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancelocalaxesform.ui" line="53"/>
+        <source>Offset</source>
+        <translation>انحراف</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancelocalaxesform.ui" line="60"/>
+        <source>Length</source>
+        <translation>طول</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancelocalaxesform.ui" line="70"/>
+        <source>Width</source>
+        <translation>عرض</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancelocalaxesform.ui" line="77"/>
+        <source>Position</source>
+        <translation>موقعیت</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancelocalaxesform.ui" line="84"/>
+        <source>Scaling Type</source>
+        <translation>نوع مقیاس بندی</translation>
+    </message>
+</context>
+<context>
     <name>AppearancePrimitiveForm</name>
     <message>
         <location filename="../iraspagui/appearanceprimitiveform.ui" line="14"/>
@@ -540,295 +578,343 @@
 <context>
     <name>AppearanceTreeWidgetController</name>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="55"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="57"/>
         <source>Primitive Properties</source>
         <translation>خصوصیات بدوی</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="315"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="317"/>
         <source>Atoms</source>
         <translation>اتم ها</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="323"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="325"/>
         <source>Ball and Stick</source>
         <translation>توپ و چوب</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="324"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="326"/>
         <source>Van der Waals</source>
         <translation>واندروالس</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="325"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="327"/>
         <source>Unity</source>
         <translation>یگانگی</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="327"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="341"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="329"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="343"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="548"/>
         <source>Default</source>
         <translation>پیش فرض</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="328"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="330"/>
         <source>Fancy</source>
         <translation>تفننی</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="329"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="331"/>
         <source>Licorice</source>
         <translation>شیرین بیان</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="330"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="332"/>
         <source>Objects</source>
         <translation>اشیاء</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="332"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="334"/>
         <source>Jmol</source>
         <translation>Jmol</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="333"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="335"/>
         <source>Rasmol Modern</source>
         <translation>Rasmol Modern</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="334"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="336"/>
         <source>Rasmol</source>
         <translation>Rasmol</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="335"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="337"/>
         <source>Vesta</source>
         <translation>Vesta</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="337"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="343"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="339"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="345"/>
         <source>Element</source>
         <translation>عنصر</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="338"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="344"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="340"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="346"/>
         <source>Force Field First</source>
         <translation>ابتدا میدان را تحمیل کنید</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="339"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="345"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="341"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="347"/>
         <source>Force Field Only</source>
         <translation>فقط میدان نیرو</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="347"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="446"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="640"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="349"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="448"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="542"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="715"/>
         <source>None</source>
         <translation>هیچکدام</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="348"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="447"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="350"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="449"/>
         <source>Worley Noise 3D</source>
         <translation>Worley Noise 3D</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="349"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="448"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="351"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="450"/>
         <source>Striped</source>
         <translation>راه راه</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="350"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="449"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="352"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="451"/>
         <source>Glow</source>
         <translation>درخشش</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="434"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="436"/>
         <source>Bonds</source>
         <translation>پیوندها</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="442"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="444"/>
         <source>Uniform</source>
         <translation>لباس فرم</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="443"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="445"/>
         <source>Split</source>
         <translation>شکاف</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="444"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="446"/>
         <source>Gradient</source>
         <translation>گرادیان</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="512"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="514"/>
         <source>Unit Cell</source>
         <translation>سلول واحد</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="533"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="534"/>
+        <source>Local Axes</source>
+        <translation>محورهای محلی</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="543"/>
+        <source>Origin</source>
+        <translation>مبدا</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="544"/>
+        <source>Origin Bounding-Box</source>
+        <translation>جعبه محدوده مبدا</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="546"/>
+        <source>Center Bounding-Box</source>
+        <translation>جعبه محدود مرکزی</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="549"/>
+        <source>Default RGB</source>
+        <translation>به طور پیش فرض ، RGB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="550"/>
+        <source>Cylinder</source>
+        <translation>سیلندر</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="551"/>
+        <source>Cylinder RGB</source>
+        <translation>سیلندر ، RGB</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="553"/>
+        <source>Absolute</source>
+        <translation>مطلق</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="554"/>
+        <source>Relative</source>
+        <translation>نسبت فامیلی</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="610"/>
         <source>Adsorption Surface</source>
         <translation>سطح جذب</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="541"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="618"/>
         <source>Helium</source>
         <translation>هلیم</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="542"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="619"/>
         <source>Methane</source>
         <translation>متان</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="543"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="620"/>
         <source>Nitrogen</source>
         <translation>نیتروژن</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="544"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="621"/>
         <source>Hydrogen</source>
         <translation>هیدروژن</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="545"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="622"/>
         <source>Water</source>
         <translation>اب</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="546"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="623"/>
         <source>CO₂</source>
         <translation>CO₂</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="547"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="624"/>
         <source>Xenon</source>
         <translation>زنون</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="548"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="625"/>
         <source>Krypton</source>
         <translation>کریپتون</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="549"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="626"/>
         <source>Argon</source>
         <translation>آرگون</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="631"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="706"/>
         <source>Annotation</source>
         <translation>حاشیه نویسی</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="641"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="716"/>
         <source>Display Name</source>
         <translation>نمایش نام</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="642"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="717"/>
         <source>Identifier</source>
         <translation>مشخص کننده</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="643"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="718"/>
         <source>Chemical Element</source>
         <translation>عنصر شیمیایی</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="644"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="719"/>
         <source>Force Field Type</source>
         <translation>نوع میدان نیرو</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="645"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="720"/>
         <source>Position</source>
         <translation>موقعیت</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="646"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="721"/>
         <source>Charge</source>
         <translation>شارژ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="649"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="545"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="724"/>
         <source>Center</source>
         <translation>مرکز</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="650"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="725"/>
         <source>Left</source>
         <translation>چپ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="651"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="726"/>
         <source>Right</source>
         <translation>درست</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="652"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="727"/>
         <source>Top</source>
         <translation>بالا</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="653"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="728"/>
         <source>Bottom</source>
         <translation>پایین</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="654"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="729"/>
         <source>Top-Left</source>
         <translation>بالا سمت چپ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="655"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="730"/>
         <source>Top-Right</source>
         <translation>بالا سمت راست</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="656"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="731"/>
         <source>Bottom-Left</source>
         <translation>پایین سمت چپ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="657"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="732"/>
         <source>Bottom-Right</source>
         <translation>سمت راست پایین</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="659"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="734"/>
         <source>Flat Billboard</source>
         <translation>بیلبورد تخت</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1429"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1466"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1503"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1618"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1655"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1692"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4068"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4105"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4142"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5524"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5561"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5598"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6448"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6918"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6955"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6992"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7105"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7142"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7179"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="8197"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1507"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1544"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1581"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1696"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1733"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1770"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4146"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4183"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4220"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5603"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5640"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5677"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6527"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7501"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7538"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7575"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7688"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7725"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7762"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="8780"/>
         <source>Color</source>
         <translation>رنگ</translation>
     </message>
@@ -1191,92 +1277,92 @@
         <translation>تنظیم مجدد به</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="80"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="87"/>
         <source>Reset Direction</source>
         <translation>تنظیم مجدد جهت</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="103"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="110"/>
         <source>-X</source>
         <translation>-X</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="110"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="117"/>
         <source>+X</source>
         <translation>+X</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="117"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="124"/>
         <source>-Y</source>
         <translation>-Y</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="124"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="131"/>
         <source>+Y</source>
         <translation>+Y</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="131"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="138"/>
         <source>-Z</source>
         <translation>-Z</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="138"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="145"/>
         <source>+Z</source>
         <translation>+Z</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="165"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="175"/>
         <source>Reset Camera</source>
         <translation>تنظیم مجدد دوربین</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="191"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="201"/>
         <source>Projection</source>
         <translation>پروجکشن</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="197"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="207"/>
         <source>Perspective</source>
         <translation>ژرفانمایی</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="204"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="214"/>
         <source>Orthographic</source>
         <translation>املایی</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="232"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="242"/>
         <source>Angle of View</source>
         <translation>زاویه دید</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="264"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="274"/>
         <source>Center of Scene</source>
         <translation>مرکز صحنه</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="375"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="403"/>
         <source>Rotation Angle</source>
         <translation>زاویه چرخش</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="513"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="572"/>
         <source>Euler Angles</source>
         <translation>زاویه های اولر</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="671"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="697"/>
         <source>View Matrix</source>
         <translation>مشاهده ماتریس</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="811"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="933"/>
         <source>Virtual Position</source>
         <translation>موقعیت دوربین مجازی</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameracameraform.ui" line="930"/>
+        <location filename="../iraspagui/cameracameraform.ui" line="1070"/>
         <source>Distance</source>
         <translation>مسافت</translation>
     </message>
@@ -1390,205 +1476,205 @@
         <translation>دوربین</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="107"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="151"/>
         <source>Selection</source>
         <translation>انتخاب</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="130"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="174"/>
         <source>Axes</source>
         <translation>محورها</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="138"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="161"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="182"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="205"/>
         <source>None</source>
         <translation>هیچکدام</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="139"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="183"/>
         <source>Bottom-Left</source>
         <translation>پایین سمت چپ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="140"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="184"/>
         <source>Mid-Left</source>
         <translation>وسط چپ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="141"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="185"/>
         <source>Top-Left</source>
         <translation>بالا سمت چپ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="142"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="186"/>
         <source>Mid-Top</source>
         <translation>وسط بالا</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="143"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="187"/>
         <source>Top-Right</source>
         <translation>بالا سمت راست</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="144"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="188"/>
         <source>Mid-Right</source>
         <translation>وسط راست</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="145"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="189"/>
         <source>Bottom-Right</source>
         <translation>سمت راست پایین</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="146"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="190"/>
         <source>Mid-Bottom</source>
         <translation>وسط پایین</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="147"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="191"/>
         <source>Center</source>
         <translation>مرکز</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="149"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="193"/>
         <source>Default</source>
         <translation>پیش فرض</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="150"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="194"/>
         <source>Thick RGB</source>
         <translation>ضخیم RGB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="151"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="195"/>
         <source>Thick</source>
         <translation>ضخیم</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="152"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="196"/>
         <source>Thin RGB</source>
         <translation>لاغر RGB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="153"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="197"/>
         <source>Thin</source>
         <translation>لاغر</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="154"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="198"/>
         <source>Beam-Arrow RGB</source>
         <translation>پیکان میله ای RGB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="155"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="199"/>
         <source>Beam-Arrow</source>
         <translation>پیکان میله ای</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="156"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="200"/>
         <source>Beam RGB</source>
         <translation>پرتو RGB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="157"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="201"/>
         <source>Beam</source>
         <translation>پرتو</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="158"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="202"/>
         <source>Squashed RGB</source>
         <translation>له شد RGB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="159"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="203"/>
         <source>Squashed</source>
         <translation>له شد</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="162"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="206"/>
         <source>Filled Circle</source>
         <translation>دایره پر شده</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="163"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="207"/>
         <source>Filled Square</source>
         <translation>مربع پر شده</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="164"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="208"/>
         <source>Filled Rounded Square</source>
         <translation>مربع گرد پر شده</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="165"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="209"/>
         <source>Circle</source>
         <translation>دایره</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="166"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="210"/>
         <source>Square</source>
         <translation>مربع</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="167"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="211"/>
         <source>Rounded Square</source>
         <translation>مربع گرد</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="321"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="365"/>
         <source>Lights</source>
         <translation>چراغ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="350"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="394"/>
         <source>Pictures/Movies</source>
         <translation>عکس / فیلم</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="399"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="443"/>
         <source>Background</source>
         <translation>زمینه</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="724"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="725"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="726"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1059"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1060"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1061"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="768"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="769"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="770"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1087"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1088"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1089"/>
         <source>Rotate +%1</source>
         <translation>چرخش +%1</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="727"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="728"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="729"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1062"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1063"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1064"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="771"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="772"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="773"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1090"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1091"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1092"/>
         <source>Rotate -%1</source>
         <translation>چرخش -%1</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2366"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2378"/>
         <source>Open Background Picture</source>
         <translation>تصویر پس زمینه باز</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2367"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2379"/>
         <source>png or jpg files (*.png *.jpg)</source>
         <translation>png or jpg files (*.png *.jpg)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2224"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2372"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2236"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2384"/>
         <source>Select Picture</source>
         <translation>تصویر را انتخاب کنید</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2225"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2373"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2237"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2385"/>
         <source>Image Placeholder</source>
         <translation>محل نگهدارنده تصویر</translation>
     </message>

@@ -54,7 +54,7 @@ struct enum_hash
 
 
 
-class Structure: public RKRenderStructure, public DisplayableProtocol
+class Structure: public RKRenderStructure, public RKRenderLocalAxesStructure, public DisplayableProtocol
 {
 public:
   Structure();
@@ -454,6 +454,8 @@ public:
   double unitCellDiffuseIntensity() const override {return _unitCellDiffuseIntensity;}
   void setUnitCellDiffuseIntensity(double value) {_unitCellDiffuseIntensity = value;}
 
+  // local axes
+  RKLocalAxes &renderLocalAxes() override {return _localAxes;}
 
   // adsorption surface
   std::vector<double3> atomUnitCellPositions() const override {return std::vector<double3>();}
@@ -681,7 +683,7 @@ public:
 
   void computeBonds() override {;}
 protected:
-  qint64 _versionNumber{7};
+  qint64 _versionNumber{8};
   QString _displayName = QString("test123");
 
   std::shared_ptr<SKAtomTreeController> _atomsTreeController;
@@ -830,6 +832,8 @@ protected:
   double _unitCellScaleFactor = 1.0;
   QColor _unitCellDiffuseColor = QColor(255, 255, 255, 255);
   double _unitCellDiffuseIntensity = 1.0;
+
+  RKLocalAxes _localAxes;
 
   bool _drawAdsorptionSurface = false;
   double _adsorptionSurfaceOpacity = 1.0;

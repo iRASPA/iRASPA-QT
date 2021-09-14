@@ -35,6 +35,8 @@ public:
   std::array<double3,8> const corners() const;
   std::array<std::pair<double3, double3>, 12> const sides() const;
   double3 center();
+  double volume();
+  double shortestEdge();
   double boundingSphereRadius();
   double3 maximum() const {return _maximum;}
   double3 minimum() const {return _minimum;}

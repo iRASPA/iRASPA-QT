@@ -39,6 +39,7 @@
 #include "appearanceatomsform.h"
 #include "appearancebondsform.h"
 #include "appearanceunitcellform.h"
+#include "appearancelocalaxesform.h"
 #include "appearanceadsorptionsurfaceform.h"
 #include "appearanceannotationform.h"
 
@@ -57,6 +58,7 @@ private:
   AppearanceAtomsForm* _appearanceAtomsForm;
   AppearanceBondsForm* _appearanceBondsForm;
   AppearanceUnitCellForm* _appearanceUnitCellForm;
+  AppearanceLocalAxesForm* _appearanceLocalAxesForm;
   AppearanceAdsorptionSurfaceForm* _appearanceAdsorptionSurfaceForm;
   AppearanceAnnotationForm* _appearanceAnnotationForm;
 
@@ -64,6 +66,7 @@ private:
   QPushButton* pushButtonAtoms;
   QPushButton* pushButtonBonds;
   QPushButton* pushButtonUnitCell;
+  QPushButton* pushButtonLocalAxes;
   QPushButton* pushButtonAdsorptionSurface;
   QPushButton* pushButtonAnnotation;
 
@@ -367,6 +370,35 @@ private:
   void setUnitCellDiffuseLightColor();
   std::optional<QColor> unitCellDiffuseLightColor();
 
+
+  // local axes properties
+  void reloadLocalAxes();
+  void reloadLocalAxesPosition();
+  void reloadLocalAxesStyle();
+  void reloadLocalAxesScalingStyle();
+  void reloadLocalAxesLength();
+  void reloadLocalAxesWidth();
+  void reloadLocalAxesOffset();
+
+  std::optional<RKLocalAxes::Position> localAxesPosition();
+  void setLocalAxesPosition(int value);
+  std::optional<RKLocalAxes::Style> localAxesStyle();
+  void setLocalAxesStyle(int value);
+  std::optional<RKLocalAxes::ScalingType> localAxesScalingType();
+  void setLocalAxesScalingType(int value);
+
+  std::optional<double> localAxesLength();
+  void setLocalAxesLength(double value);
+  std::optional<double> localAxesWidth();
+  void setLocalAxesWidth(double value);
+  std::optional<double> localAxesOffsetX();
+  void setLocalAxesOffsetX(double value);
+  std::optional<double> localAxesOffsetY();
+  void setLocalAxesOffsetY(double value);
+  std::optional<double> localAxesOffsetZ();
+  void setLocalAxesOffsetZ(double value);
+
+
   // adsorption surface properties
 
   void reloadDrawAdsorptionSurfaceCheckBox();
@@ -477,6 +509,7 @@ private slots:
   void expandAtomsItem();
   void expandBondsItem();
   void expandUnitCellItem();
+  void expandLocalAxesItem();
   void expandAdsorptionSurfaceItem();
   void expandAnnotationItem();
 signals:

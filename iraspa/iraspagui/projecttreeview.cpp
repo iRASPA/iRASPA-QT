@@ -123,6 +123,29 @@ void ProjectTreeView::TabItemWasSelected()
 {
   this->reloadData();
   this->reloadSelection();
+
+  // set the iraspa-structures when switching to the project tab to all structures under the project
+  std::shared_ptr<ProjectTreeNode> selectedProjectNode = this->projectTreeController()->selectedTreeNode();
+  if(std::shared_ptr<iRASPAProject> iraspaProject =  selectedProjectNode->representedObject())
+  {
+    if(std::shared_ptr<ProjectStructure> structureProject = std::dynamic_pointer_cast<ProjectStructure>(iraspaProject->project()))
+    {
+      emit setSelectedRenderFrames(structureProject->sceneList()->selectediRASPARenderStructures());
+      emit setFlattenedSelectedFrames(structureProject->sceneList()->flattenedAllIRASPAStructures());
+
+      if(std::shared_ptr<Scene> selectedScene = structureProject->sceneList()->selectedScene())
+      {
+        std::shared_ptr<Movie> movie =  selectedScene->selectedMovie();
+        std::optional<int> movieIndex = selectedScene->selectMovieIndex();
+
+        if(movieIndex)
+        {
+          emit setSelectedMovie(movie);
+          emit setSelectedFrame(movie->frameAtIndex(structureProject->sceneList()->selectedFrameIndex()));
+        }
+      }
+    }
+  }
 }
 
 // Use the general undoManager for changes to the project-treeView.
@@ -354,7 +377,6 @@ void ProjectTreeView::selectionChanged(const QItemSelection &selected, const QIt
       QModelIndex current = selectedIndexes().front();
       if(ProjectTreeNode *selectedTreeNode = static_cast<ProjectTreeNode*>(current.internalPointer()))
       {
-        qDebug() << "SELECTED PROJECT: " << selectedTreeNode;
         IndexPath selectedTreeNodeIndexPath = IndexPath::indexPath(current);
         _projectTreeController->setSelectionIndexPaths(ProjectSelectionIndexPaths(selectedTreeNodeIndexPath,{selectedTreeNodeIndexPath}));
         selectedTreeNode->representedObject()->unwrapIfNeeded(_logReporting);

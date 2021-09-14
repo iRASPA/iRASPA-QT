@@ -29,12 +29,14 @@
 #include "qcolorhash.h"
 #include "qdoubleslider.h"
 #include <foundationkit.h>
+#include <limits>
 
 AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent): QTreeWidget(parent),
     _appearancePrimitiveForm(new AppearancePrimitiveForm),
     _appearanceAtomsForm(new AppearanceAtomsForm),
     _appearanceBondsForm(new AppearanceBondsForm),
     _appearanceUnitCellForm(new AppearanceUnitCellForm),
+    _appearanceLocalAxesForm(new AppearanceLocalAxesForm),
     _appearanceAdsorptionSurfaceForm(new AppearanceAdsorptionSurfaceForm),
     _appearanceAnnotationForm(new AppearanceAnnotationForm)
 {
@@ -524,6 +526,81 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QObject::connect(_appearanceUnitCellForm->diffuseIntensityDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&AppearanceTreeWidgetController::setUnitCellDiffuseLightIntensity);
   QObject::connect(_appearanceUnitCellForm->diffuseColorPushButton,&QPushButton::clicked,this,&AppearanceTreeWidgetController::setUnitCellDiffuseLightColor);
 
+  // Local axes cell
+  //=========================================================================
+  QTreeWidgetItem* LocalAxesItem = new QTreeWidgetItem(this);
+  this->addTopLevelItem(LocalAxesItem);
+
+  pushButtonLocalAxes = new QPushButton(tr("Local Axes"),this);
+  pushButtonLocalAxes->setIcon(QIcon(":/iraspa/collapsed.png"));
+  pushButtonLocalAxes->setStyleSheet("text-align:left;");
+  setItemWidget(LocalAxesItem,0,pushButtonLocalAxes);
+
+  QTreeWidgetItem *childLocalAxesItem = new QTreeWidgetItem(LocalAxesItem);
+  this->setItemWidget(childLocalAxesItem,0, _appearanceLocalAxesForm);
+
+  _appearanceLocalAxesForm->positionComboBox->insertItem(0, tr("None"));
+  _appearanceLocalAxesForm->positionComboBox->insertItem(1, tr("Origin"));
+  _appearanceLocalAxesForm->positionComboBox->insertItem(2, tr("Origin Bounding-Box"));
+  _appearanceLocalAxesForm->positionComboBox->insertItem(3, tr("Center"));
+  _appearanceLocalAxesForm->positionComboBox->insertItem(4, tr("Center Bounding-Box"));
+
+  _appearanceLocalAxesForm->styleComboBox->insertItem(0, tr("Default"));
+  _appearanceLocalAxesForm->styleComboBox->insertItem(1, tr("Default RGB"));
+  _appearanceLocalAxesForm->styleComboBox->insertItem(2, tr("Cylinder"));
+  _appearanceLocalAxesForm->styleComboBox->insertItem(3, tr("Cylinder RGB"));
+
+  _appearanceLocalAxesForm->scalingTypeComboBox->insertItem(0, tr("Absolute"));
+  _appearanceLocalAxesForm->scalingTypeComboBox->insertItem(1, tr("Relative"));
+
+  _appearanceLocalAxesForm->lengthSpinBox->setMinimum(0.0);
+  _appearanceLocalAxesForm->lengthSpinBox->setMaximum(std::numeric_limits<double>::max());
+  _appearanceLocalAxesForm->lengthSpinBox->setDecimals(5);
+  _appearanceLocalAxesForm->lengthSpinBox->setKeyboardTracking(false);
+  _appearanceLocalAxesForm->lengthSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceLocalAxesForm->lengthSpinBox->setSingleStep(1.0);
+
+
+  _appearanceLocalAxesForm->widthSpinBox->setMinimum(0.0);
+  _appearanceLocalAxesForm->widthSpinBox->setMaximum(std::numeric_limits<double>::max());
+  _appearanceLocalAxesForm->widthSpinBox->setDecimals(5);
+  _appearanceLocalAxesForm->widthSpinBox->setKeyboardTracking(false);
+  _appearanceLocalAxesForm->widthSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceLocalAxesForm->widthSpinBox->setSingleStep(0.1);
+
+
+  _appearanceLocalAxesForm->offsetXSpinBox->setMinimum(-std::numeric_limits<double>::max());
+  _appearanceLocalAxesForm->offsetXSpinBox->setMaximum(std::numeric_limits<double>::max());
+  _appearanceLocalAxesForm->offsetXSpinBox->setDecimals(5);
+  _appearanceLocalAxesForm->offsetXSpinBox->setKeyboardTracking(false);
+  _appearanceLocalAxesForm->offsetXSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceLocalAxesForm->offsetXSpinBox->setSingleStep(0.5);
+
+  _appearanceLocalAxesForm->offsetYSpinBox->setMinimum(-std::numeric_limits<double>::max());
+  _appearanceLocalAxesForm->offsetYSpinBox->setMaximum(std::numeric_limits<double>::max());
+  _appearanceLocalAxesForm->offsetYSpinBox->setDecimals(5);
+  _appearanceLocalAxesForm->offsetYSpinBox->setKeyboardTracking(false);
+  _appearanceLocalAxesForm->offsetYSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceLocalAxesForm->offsetYSpinBox->setSingleStep(0.5);
+
+  _appearanceLocalAxesForm->offsetZSpinBox->setMinimum(-std::numeric_limits<double>::max());
+  _appearanceLocalAxesForm->offsetZSpinBox->setMaximum(std::numeric_limits<double>::max());
+  _appearanceLocalAxesForm->offsetZSpinBox->setDecimals(5);
+  _appearanceLocalAxesForm->offsetZSpinBox->setKeyboardTracking(false);
+  _appearanceLocalAxesForm->offsetZSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceLocalAxesForm->offsetZSpinBox->setSingleStep(0.5);
+
+
+  QObject::connect(_appearanceLocalAxesForm->positionComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setLocalAxesPosition);
+  QObject::connect(_appearanceLocalAxesForm->styleComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setLocalAxesStyle);
+  QObject::connect(_appearanceLocalAxesForm->scalingTypeComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setLocalAxesScalingType);
+
+  QObject::connect(_appearanceLocalAxesForm->lengthSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setLocalAxesLength);
+  QObject::connect(_appearanceLocalAxesForm->widthSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setLocalAxesWidth);
+  QObject::connect(_appearanceLocalAxesForm->offsetXSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setLocalAxesOffsetX);
+  QObject::connect(_appearanceLocalAxesForm->offsetYSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setLocalAxesOffsetY);
+  QObject::connect(_appearanceLocalAxesForm->offsetZSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setLocalAxesOffsetZ);
+
 
   // Adsorption surface
   //=========================================================================
@@ -620,8 +697,6 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QObject::connect(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton,&QPushButton::clicked,this,&AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightColor);
   QObject::connect(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton,&QPushButton::clicked,this,&AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightColor);
   QObject::connect(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton,&QPushButton::clicked,this,&AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightColor);
-
-
 
   // Annotation
   //=========================================================================
@@ -734,6 +809,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   pushButtonAtoms->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonBonds->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonUnitCell->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  pushButtonLocalAxes->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonAdsorptionSurface->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonAnnotation->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
@@ -741,6 +817,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QObject::connect(pushButtonAtoms, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandAtomsItem);
   QObject::connect(pushButtonBonds, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandBondsItem);
   QObject::connect(pushButtonUnitCell, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandUnitCellItem);
+  QObject::connect(pushButtonLocalAxes, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandLocalAxesItem);
   QObject::connect(pushButtonAdsorptionSurface, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandAdsorptionSurfaceItem);
   QObject::connect(pushButtonAnnotation, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandAnnotationItem);
 }
@@ -809,6 +886,7 @@ void AppearanceTreeWidgetController::reloadData()
   reloadAtomProperties();
   reloadBondProperties();
   reloadUnitCellProperties();
+  reloadLocalAxes();
   reloadAdsorptionSurfaceProperties();
   reloadAnnotationProperties();
 }
@@ -6596,6 +6674,510 @@ std::optional<QColor> AppearanceTreeWidgetController::unitCellDiffuseLightColor(
 }
 
 
+// reload Local Axes properties
+//========================================================================================================================================
+
+void AppearanceTreeWidgetController::reloadLocalAxes()
+{
+  reloadLocalAxesPosition();
+  reloadLocalAxesStyle();
+  reloadLocalAxesScalingStyle();
+  reloadLocalAxesLength();
+  reloadLocalAxesWidth();
+  reloadLocalAxesOffset();
+}
+
+void AppearanceTreeWidgetController::reloadLocalAxesPosition()
+{
+  _appearanceLocalAxesForm->positionComboBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _appearanceLocalAxesForm->positionComboBox->setEnabled(_projectTreeNode->isEditable());
+
+      if (std::optional<RKLocalAxes::Position> type = localAxesPosition())
+      {
+        if(int index = _appearanceLocalAxesForm->positionComboBox->findText("Mult. Val."); index>=0)
+        {
+          whileBlocking(_appearanceLocalAxesForm->positionComboBox)->removeItem(index);
+        }
+        if(int(*type)<0)
+        {
+         whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentIndex(int(RKLocalAxes::Position::multiple_values));
+        }
+        else
+        {
+          whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentIndex(int(*type));
+        }
+      }
+      else
+      {
+        if(int index = _appearanceLocalAxesForm->positionComboBox->findText("Mult. Val."); index<0)
+        {
+          whileBlocking(_appearanceLocalAxesForm->positionComboBox)->addItem("Mult. Val.");
+        }
+        whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadLocalAxesStyle()
+{
+  _appearanceLocalAxesForm->styleComboBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _appearanceLocalAxesForm->styleComboBox->setEnabled(_projectTreeNode->isEditable());
+
+      if (std::optional<RKLocalAxes::Style> type = localAxesStyle())
+      {
+        if(int index = _appearanceLocalAxesForm->styleComboBox->findText("Mult. Val."); index>=0)
+        {
+          whileBlocking(_appearanceLocalAxesForm->styleComboBox)->removeItem(index);
+        }
+        if(int(*type)<0)
+        {
+         whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentIndex(int(RKLocalAxes::Style::multiple_values));
+        }
+        else
+        {
+          whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentIndex(int(*type));
+        }
+      }
+      else
+      {
+        if(int index = _appearanceLocalAxesForm->styleComboBox->findText("Mult. Val."); index<0)
+        {
+          whileBlocking(_appearanceLocalAxesForm->styleComboBox)->addItem("Mult. Val.");
+        }
+        whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadLocalAxesScalingStyle()
+{
+  _appearanceLocalAxesForm->scalingTypeComboBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _appearanceLocalAxesForm->scalingTypeComboBox->setEnabled(_projectTreeNode->isEditable());
+
+      if (std::optional<RKLocalAxes::ScalingType> type = localAxesScalingType())
+      {
+        if(int index = _appearanceLocalAxesForm->scalingTypeComboBox->findText("Mult. Val."); index>=0)
+        {
+          whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->removeItem(index);
+        }
+        if(int(*type)<0)
+        {
+         whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentIndex(int(RKLocalAxes::ScalingType::multiple_values));
+        }
+        else
+        {
+          whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentIndex(int(*type));
+        }
+      }
+      else
+      {
+        if(int index = _appearanceLocalAxesForm->scalingTypeComboBox->findText("Mult. Val."); index<0)
+        {
+          whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->addItem("Mult. Val.");
+        }
+        whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadLocalAxesLength()
+{
+  _appearanceLocalAxesForm->lengthSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _appearanceLocalAxesForm->lengthSpinBox->setEnabled(true);
+      _appearanceLocalAxesForm->lengthSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if (std::optional<double> value = localAxesLength())
+      {
+        whileBlocking(_appearanceLocalAxesForm->lengthSpinBox)->setValue(*value);
+      }
+      else
+      {
+        whileBlocking(_appearanceLocalAxesForm->lengthSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadLocalAxesWidth()
+{
+  _appearanceLocalAxesForm->widthSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _appearanceLocalAxesForm->widthSpinBox->setEnabled(true);
+      _appearanceLocalAxesForm->widthSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if (std::optional<double> value = localAxesWidth())
+      {
+        whileBlocking(_appearanceLocalAxesForm->widthSpinBox)->setValue(*value);
+      }
+      else
+      {
+        whileBlocking(_appearanceLocalAxesForm->widthSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadLocalAxesOffset()
+{
+  _appearanceLocalAxesForm->offsetXSpinBox->setDisabled(true);
+  _appearanceLocalAxesForm->offsetYSpinBox->setDisabled(true);
+  _appearanceLocalAxesForm->offsetZSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _appearanceLocalAxesForm->offsetXSpinBox->setEnabled(true);
+      _appearanceLocalAxesForm->offsetYSpinBox->setEnabled(true);
+      _appearanceLocalAxesForm->offsetZSpinBox->setEnabled(true);
+      _appearanceLocalAxesForm->offsetXSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      _appearanceLocalAxesForm->offsetYSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      _appearanceLocalAxesForm->offsetZSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if (std::optional<double> value = localAxesOffsetX())
+      {
+        whileBlocking(_appearanceLocalAxesForm->offsetXSpinBox)->setValue(*value);
+      }
+      else
+      {
+        whileBlocking(_appearanceLocalAxesForm->offsetXSpinBox)->setText("Mult. Val.");
+      }
+
+      if (std::optional<double> value = localAxesOffsetY())
+      {
+        whileBlocking(_appearanceLocalAxesForm->offsetYSpinBox)->setValue(*value);
+      }
+      else
+      {
+        whileBlocking(_appearanceLocalAxesForm->offsetYSpinBox)->setText("Mult. Val.");
+      }
+
+      if (std::optional<double> value = localAxesOffsetZ())
+      {
+        whileBlocking(_appearanceLocalAxesForm->offsetZSpinBox)->setValue(*value);
+      }
+      else
+      {
+        whileBlocking(_appearanceLocalAxesForm->offsetZSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+std::optional<RKLocalAxes::Position> AppearanceTreeWidgetController::localAxesPosition()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<RKLocalAxes::Position, enum_hash> set = std::unordered_set<RKLocalAxes::Position, enum_hash>{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    RKLocalAxes::Position value = iraspa_structure->structure()->renderLocalAxes().position();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+
+void AppearanceTreeWidgetController::setLocalAxesPosition(int value)
+{
+  if(value>=0 && value<int(RKLocalAxes::Position::multiple_values))
+  {
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    {
+      iraspa_structure->structure()->renderLocalAxes().setPosition(RKLocalAxes::Position(value));
+      iraspa_structure->structure()->recheckRepresentationStyle();
+    }
+
+    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
+    emit _mainWindow->rendererReloadData();
+
+    reloadLocalAxes();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<RKLocalAxes::Style> AppearanceTreeWidgetController::localAxesStyle()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<RKLocalAxes::Style, enum_hash> set = std::unordered_set<RKLocalAxes::Style, enum_hash>{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    RKLocalAxes::Style value = iraspa_structure->structure()->renderLocalAxes().style();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    qDebug() << "STYLE = " << int(*set.begin());
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setLocalAxesStyle(int value)
+{
+  if(value>=0 && value<int(RKLocalAxes::Style::multiple_values))
+  {
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    {
+        qDebug() << "SET STYLE!!!";
+      iraspa_structure->structure()->renderLocalAxes().setStyle(RKLocalAxes::Style(value));
+      iraspa_structure->structure()->recheckRepresentationStyle();
+    }
+
+    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
+    emit _mainWindow->rendererReloadData();
+
+    reloadLocalAxes();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<RKLocalAxes::ScalingType> AppearanceTreeWidgetController::localAxesScalingType()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<RKLocalAxes::ScalingType, enum_hash> set = std::unordered_set<RKLocalAxes::ScalingType, enum_hash>{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    RKLocalAxes::ScalingType value = iraspa_structure->structure()->renderLocalAxes().scalingType();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setLocalAxesScalingType(int value)
+{
+  if(value>=0 && value<int(RKLocalAxes::ScalingType::multiple_values))
+  {
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    {
+      iraspa_structure->structure()->renderLocalAxes().setScalingType(RKLocalAxes::ScalingType(value));
+      iraspa_structure->structure()->recheckRepresentationStyle();
+    }
+
+    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
+    emit _mainWindow->rendererReloadData();
+
+    reloadLocalAxes();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+
+std::optional<double> AppearanceTreeWidgetController::localAxesLength()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    double value = iraspa_structure->structure()->renderLocalAxes().length();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setLocalAxesLength(double value)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->renderLocalAxes().setLength(value);
+    iraspa_structure->structure()->recheckRepresentationStyle();
+  }
+  reloadLocalAxes();
+  emit rendererReloadData();
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<double> AppearanceTreeWidgetController::localAxesWidth()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    double value = iraspa_structure->structure()->renderLocalAxes().width();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setLocalAxesWidth(double value)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->renderLocalAxes().setWidth(value);
+    iraspa_structure->structure()->recheckRepresentationStyle();
+  }
+  reloadLocalAxes();
+  emit rendererReloadData();
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<double> AppearanceTreeWidgetController::localAxesOffsetX()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    double value = iraspa_structure->structure()->renderLocalAxes().offsetX();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setLocalAxesOffsetX(double value)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->renderLocalAxes().setOffsetX(value);
+    iraspa_structure->structure()->recheckRepresentationStyle();
+  }
+  reloadLocalAxes();
+  emit rendererReloadData();
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<double> AppearanceTreeWidgetController::localAxesOffsetY()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    double value = iraspa_structure->structure()->renderLocalAxes().offsetY();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setLocalAxesOffsetY(double value)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->renderLocalAxes().setOffsetY(value);
+    iraspa_structure->structure()->recheckRepresentationStyle();
+  }
+  reloadLocalAxes();
+  emit rendererReloadData();
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<double> AppearanceTreeWidgetController::localAxesOffsetZ()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    double value = iraspa_structure->structure()->renderLocalAxes().offsetZ();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setLocalAxesOffsetZ(double value)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->renderLocalAxes().setOffsetZ(value);
+    iraspa_structure->structure()->recheckRepresentationStyle();
+  }
+  reloadLocalAxes();
+  emit rendererReloadData();
+
+  _mainWindow->documentWasModified();
+}
+
+
 // reload Adsorption surface properties
 //========================================================================================================================================
 
@@ -8746,9 +9328,24 @@ void AppearanceTreeWidgetController::expandUnitCellItem()
   }
 }
 
-void AppearanceTreeWidgetController::expandAdsorptionSurfaceItem()
+void AppearanceTreeWidgetController::expandLocalAxesItem()
 {
   QModelIndex index = indexFromItem(topLevelItem(4),0);
+  if(this->isExpanded(index))
+  {
+    this->collapse(index);
+    pushButtonLocalAxes->setIcon(QIcon(":/iraspa/collapsed.png"));
+  }
+  else
+  {
+    this->expand(index);
+    pushButtonLocalAxes->setIcon(QIcon(":/iraspa/expanded.png"));
+  }
+}
+
+void AppearanceTreeWidgetController::expandAdsorptionSurfaceItem()
+{
+  QModelIndex index = indexFromItem(topLevelItem(5),0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -8763,7 +9360,7 @@ void AppearanceTreeWidgetController::expandAdsorptionSurfaceItem()
 
 void AppearanceTreeWidgetController::expandAnnotationItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(5),0);
+  QModelIndex index = indexFromItem(topLevelItem(6),0);
   if(this->isExpanded(index))
   {
     this->collapse(index);

@@ -33,15 +33,12 @@
 #include "rklight.h"
 #include "rkcamera.h"
 #include "rkglobalaxes.h"
+#include "rklocalaxes.h"
 
 // forward declaration
 struct RKInPerInstanceAttributesAtoms;
 struct RKInPerInstanceAttributesBonds;
 struct RKInPerInstanceAttributesText;
-
-
-
-
 
 
 class RKRenderStructure
@@ -311,6 +308,13 @@ public:
   virtual ~RKRenderPrimitivePolygonalPrimsObjectsSource() = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderPrimitivePolygonalPrismObjects() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitivePolygonalPrismObjects() const = 0;
+};
+
+class RKRenderLocalAxesStructure
+{
+public:
+  virtual ~RKRenderLocalAxesStructure() = 0;
+  virtual RKLocalAxes &renderLocalAxes() = 0;
 };
 
 class RKRenderDataSource

@@ -21,7 +21,8 @@
 
 #include "skboundingbox.h"
 #include <mathkit.h>
-
+#include <cmath>
+#include <algorithm>
 
 SKBoundingBox::SKBoundingBox(): _minimum(double3(0,0,0)),_maximum(double3(20,20,20))
 {
@@ -86,6 +87,18 @@ double3 SKBoundingBox::center()
   return _minimum + (_maximum - _minimum) * 0.5;
 }
 
+double SKBoundingBox::volume()
+{
+  double3x3 axes = double3x3(double3(_maximum.x - _minimum.x,0.0,0.0),double3(0.0,_maximum.y - _minimum.y,0.0),double3(0.0,0.0,_maximum.z - _minimum.z));
+
+  return abs(axes.determinant());
+}
+
+double SKBoundingBox::shortestEdge()
+{
+  double3 edgeLengths = _maximum - _minimum;
+  return std::min({edgeLengths.x, edgeLengths.y, edgeLengths.z});
+}
 
 double SKBoundingBox::boundingSphereRadius()
 {

@@ -67,6 +67,7 @@
 #include "openglselectionshader.h"
 #include "opengltextrenderingshader.h"
 #include "openglglobalaxesshader.h"
+#include "opengllocalaxesshader.h"
 
 #ifdef Q_OS_MACOS
   #include <OpenCL/opencl.h>
@@ -183,6 +184,7 @@ private:
   OpenGLBondShader _bondShader;
   OpenGLObjectShader _objectShader;
   OpenGLUnitCellShader _unitCellShader;
+  OpenGLLocalAxesShader _localAxesShader;
 
   OpenGLSelectionShader _selectionShader;
 
