@@ -21,6 +21,8 @@
 
 #include "rkfontatlas.h"
 #include "foundationkit.h"
+#include <QPainter>
+#include <QPainterPath>
 const int scaler = 16;
 
 RKFontAtlas::RKFontAtlas(QString fontName, int texture_size): width(texture_size), height(texture_size), textureData(texture_size * texture_size), _pdata( 4 * texture_size * texture_size, 0 ), characters()
@@ -83,8 +85,12 @@ bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
   int packed_glyph_index = 0;
   int tin = clock();
   for( unsigned int char_index = 0; char_index < render_list.size(); ++char_index )
-  {
+  {    
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
     QVector<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(QChar(render_list[char_index])));
+#else
+    QList<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(QChar(render_list[char_index])));
+#endif
     int glyph_index = glyph_index2[0];
     if( glyph_index )
     {
@@ -191,7 +197,11 @@ bool RKFontAtlas::gen_pack_list(QRawFont &rawFont, int pixel_size, int pack_tex_
   std::vector< std::vector<int> > packed_glyph_info;
   for( unsigned int char_index = 0; char_index < render_list.size(); ++char_index )
   {
-    QVector<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(QChar(render_list[char_index])));
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+  QVector<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(QChar(render_list[char_index])));
+#else
+  QList<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(QChar(render_list[char_index])));
+#endif
     int glyph_index = glyph_index2[0];
     if( glyph_index )
     {
@@ -220,8 +230,11 @@ bool RKFontAtlas::gen_pack_list(QRawFont &rawFont, int pixel_size, int pack_tex_
       add_me.xoff = rint(rect.x());
       add_me.yoff = -rint(rect.y());
 
-
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+      const QVector<QPointF> pointList = rawFont.advancesForGlyphIndexes(glyph_index2);
+#else
       const QList<QPointF> pointList = rawFont.advancesForGlyphIndexes(glyph_index2);
+#endif
       add_me.xadv = rint(pointList[0].x());
       add_me.yadv = rint(pointList[0].y());
       //	so scale them (the 1.5's have to do with the padding
@@ -512,6 +525,5 @@ std::vector<RKInPerInstanceAttributesText> RKFontAtlas::buildMeshWithString(floa
       subdataText.vertexCoordinatesData.w /= 50.0;
     }
 
-    //std::copy(subdata.begin(), subdata.end(), std::inserter(atomData, atomData.end()));
     return subdata;
 }

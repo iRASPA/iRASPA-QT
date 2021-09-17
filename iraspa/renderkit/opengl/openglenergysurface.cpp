@@ -146,7 +146,7 @@ void OpenGLEnergySurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint is
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (_renderStructures[i][j]->drawAdsorptionSurface() && _renderStructures[i][j]->adsorptionSurfaceOpacity()>0.99999 && _surfaceNumberOfIndices[i][j] > 0 && _surfaceNumberOfInstances[i][j]>0)
+      if (_renderStructures[i][j]->isVisible() && _renderStructures[i][j]->drawAdsorptionSurface() && _renderStructures[i][j]->adsorptionSurfaceOpacity()>0.99999 && _surfaceNumberOfIndices[i][j] > 0 && _surfaceNumberOfInstances[i][j]>0)
       {
         glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, static_cast<GLintptr>(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
         glBindBufferRange(GL_UNIFORM_BUFFER, 2, isosurfaceUniformBuffer, static_cast<GLintptr>(index * sizeof(RKIsosurfaceUniforms)), sizeof(RKIsosurfaceUniforms));
@@ -182,7 +182,7 @@ void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLui
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (_renderStructures[i][j]->drawAdsorptionSurface() && _renderStructures[i][j]->adsorptionSurfaceOpacity()<=0.99999 && _surfaceNumberOfIndices[i][j] > 0 )
+      if (_renderStructures[i][j]->isVisible() && _renderStructures[i][j]->drawAdsorptionSurface() && _renderStructures[i][j]->adsorptionSurfaceOpacity()<=0.99999 && _surfaceNumberOfIndices[i][j] > 0 )
       {
         glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, static_cast<GLintptr>(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
         glBindBufferRange(GL_UNIFORM_BUFFER, 2, isosurfaceUniformBuffer, static_cast<GLintptr>(index * sizeof(RKIsosurfaceUniforms)), sizeof(RKIsosurfaceUniforms));

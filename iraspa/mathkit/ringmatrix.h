@@ -26,6 +26,7 @@
 #include <optional>
 #include <any>
 #include "int3x3.h"
+#include <variant>
 
 class RingMatrix
 {

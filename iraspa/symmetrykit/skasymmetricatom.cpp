@@ -20,6 +20,7 @@
  ********************************************************************************************************************/
 
 #include "skasymmetricatom.h"
+#include "skelement.h"
 
 SKAsymmetricAtom::SKAsymmetricAtom(): _displayName("C"), _elementIdentifier(6)
 {
@@ -28,7 +29,12 @@ SKAsymmetricAtom::SKAsymmetricAtom(): _displayName("C"), _elementIdentifier(6)
 
 SKAsymmetricAtom::SKAsymmetricAtom(QString displayName, int elementIdentifier): _displayName(displayName), _elementIdentifier(elementIdentifier)
 {
+  _uniqueForceFieldName = PredefinedElements::predefinedElements[elementIdentifier]._chemicalSymbol;
+}
 
+SKAsymmetricAtom::SKAsymmetricAtom(QString displayName, int elementIdentifier, double occupancy): _displayName(displayName), _elementIdentifier(elementIdentifier), _occupancy(occupancy)
+{
+  _uniqueForceFieldName = PredefinedElements::predefinedElements[elementIdentifier]._chemicalSymbol;
 }
 
 SKAsymmetricAtom::SKAsymmetricAtom(const SKAsymmetricAtom &asymmetricAtom)

@@ -323,6 +323,19 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   _infoCreatorForm->countryComboBox->insertItem(254,"Zimbabwe");
   _infoCreatorForm->countryComboBox->insertItem(255,"Åland Islands");
 
+  QObject::connect(_infoCreatorForm->firstNameLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorFirstName);
+  QObject::connect(_infoCreatorForm->middleNameLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorMiddleName);
+  QObject::connect(_infoCreatorForm->lastNameLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorLastName);
+  QObject::connect(_infoCreatorForm->orchidLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorOrchidID);
+  QObject::connect(_infoCreatorForm->researcherIDLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorResearcherID);
+  QObject::connect(_infoCreatorForm->universityNameLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorAffiliationUniversityName);
+  QObject::connect(_infoCreatorForm->facultyNameLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorAffiliationFacultyName);
+  QObject::connect(_infoCreatorForm->instituteNameLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorAffiliationInstituteName);
+  QObject::connect(_infoCreatorForm->cityNameLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setAuthorAffiliationCityName);
+  QObject::connect(_infoCreatorForm->countryComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),this,&InfoTreeWidgetController::setAuthorAffiliationCountryName);
+
+
+
   // Creation
   //==========================================================================================================
   QTreeWidgetItem* creationItem = new QTreeWidgetItem(this);
@@ -445,6 +458,46 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
 
   _infoCreationForm->chargeForceFieldDetailsComboBox->insertItem(0,tr("Unknown"));
 
+  QObject::connect(_infoCreationForm->creationDateEdit, &QDateEdit::dateChanged,this,&InfoTreeWidgetController::setCreationDate);
+  QObject::connect(_infoCreationForm->temperatureLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setCreationTemperature);
+  QObject::connect(_infoCreationForm->temperatureComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&InfoTreeWidgetController::setCreationTemperatureScale);
+  QObject::connect(_infoCreationForm->pressureLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setCreationPressure);
+  QObject::connect(_infoCreationForm->pressureComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&InfoTreeWidgetController::setCreationPressureScale);
+  QObject::connect(_infoCreationForm->methodComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&InfoTreeWidgetController::setCreationMethod);
+
+
+  QObject::connect(_infoCreationForm->relaxUnitCellComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&InfoTreeWidgetController::setCreationRelaxUnitCell);
+  QObject::connect(_infoCreationForm->positionsSoftwarePackageComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),this,&InfoTreeWidgetController::setCreationAtomicPositionsSoftwarePackage);
+  QObject::connect(_infoCreationForm->positionsAlgorithmComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&InfoTreeWidgetController::setCreationAtomicPositionsAlgorithm);
+  QObject::connect(_infoCreationForm->positionsEigenvaluesComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&InfoTreeWidgetController::setCreationAtomicPositionsEigenvalues);
+  QObject::connect(_infoCreationForm->positionsForceFieldComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),this,&InfoTreeWidgetController::setCreationAtomicPositionsForceField);
+  QObject::connect(_infoCreationForm->positionsForceFieldDetailsComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),this,&InfoTreeWidgetController::setCreationAtomicPositionsForceFieldDetails);
+
+  QObject::connect(_infoCreationForm->chargeSoftwarePackageComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),this,&InfoTreeWidgetController::setCreationAtomicChargesSoftwarePackage);
+  QObject::connect(_infoCreationForm->chargeAlgorithmComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),this,&InfoTreeWidgetController::setCreationAtomicChargesAlgorithm);
+  QObject::connect(_infoCreationForm->chargeForceFieldComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),this,&InfoTreeWidgetController::setCreationAtomicChargesForceField);
+  QObject::connect(_infoCreationForm->chargeForceFieldDetailsComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),this,&InfoTreeWidgetController::setCreationAtomicChargesForceFieldDetails);
+
+
+  QObject::connect(_infoCreationForm->experimentalRadiationTypeLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setCreationExperimentalRadiationType);
+  QObject::connect(_infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalWaveLength);
+  QObject::connect(_infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalMeasuermentThetaMin);
+  QObject::connect(_infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalMeasuermentThetaMax);
+  QObject::connect(_infoCreationForm->experimentalhminDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalMeasuermentHMin);
+  QObject::connect(_infoCreationForm->experimentalhmaxDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalMeasuermentHMax);
+  QObject::connect(_infoCreationForm->experimentalkminDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalMeasuermentKMin);
+  QObject::connect(_infoCreationForm->experimentalkmaxDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalMeasuermentKMax);
+  QObject::connect(_infoCreationForm->experimentallminDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalMeasuermentLMin);
+  QObject::connect(_infoCreationForm->experimentallmaxDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalMeasuermentLMax);
+  QObject::connect(_infoCreationForm->experimentalNumberOfReflectionsSpinBox,static_cast<void (CustomIntSpinBox::*)(const QString&)>(&CustomIntSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalNumberOfReflections);
+  QObject::connect(_infoCreationForm->experimentalSoftwareLineEdit, &CustomLineEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setCreationExperimentalSoftware);
+  QObject::connect(_infoCreationForm->experimentalDetailsTextEdit, &CustomPlainTextEdit::textOnEditingFinished,this,&InfoTreeWidgetController::setCreationExperimentalDetails);
+  QObject::connect(_infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalGoodnessOfFit);
+  QObject::connect(_infoCreationForm->experimentalFinalIndicesDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalFinalIndices);
+  QObject::connect(_infoCreationForm->experimentalRIndicesDoubleSpinBox,static_cast<void (CustomDoubleSpinBox::*)(const QString&)>(&CustomDoubleSpinBox::textOnEditingFinished),this,&InfoTreeWidgetController::setCreationExperimentalRIndicest);
+
+
+
   // Chemical
   //==========================================================================================================
   QTreeWidgetItem* chemicalItem = new QTreeWidgetItem(this);
@@ -460,6 +513,11 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
 
   pushButtonChemical->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   pushButtonChemical->resize(size().width(), fm.height());
+
+  QObject::connect(_infoChemicalForm->moietyLineEdit,static_cast<void (CustomLineEdit::*)(const QString&)>(&CustomLineEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setChemicalFormulaMoiety);
+  QObject::connect(_infoChemicalForm->sytematicLineEdit,static_cast<void (CustomLineEdit::*)(const QString&)>(&CustomLineEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setChemicalFormulaSum);
+  QObject::connect(_infoChemicalForm->sumLineEdit,static_cast<void (CustomLineEdit::*)(const QString&)>(&CustomLineEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setChemicalNameSystematic);
+
 
   // Citation
   //==========================================================================================================
@@ -477,6 +535,17 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   pushButtonCitation->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   pushButtonCitation->resize(size().width(), fm.height());
 
+
+  QObject::connect(_infoCitationForm->articleTitleTextEdit,static_cast<void (CustomPlainTextEdit::*)(const QString&)>(&CustomPlainTextEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setCitationArticleTitle);
+  QObject::connect(_infoCitationForm->journalTitleLineEdit,static_cast<void (CustomLineEdit::*)(const QString&)>(&CustomLineEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setCitationJournalTitle);
+  QObject::connect(_infoCitationForm->articleAuthorsTextEdit,static_cast<void (CustomPlainTextEdit::*)(const QString&)>(&CustomPlainTextEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setCitationArticleAuthors);
+  QObject::connect(_infoCitationForm->journalVolumeLineEdit,static_cast<void (CustomLineEdit::*)(const QString&)>(&CustomLineEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setCitationJournalVolume);
+  QObject::connect(_infoCitationForm->journalNumberLineEdit,static_cast<void (CustomLineEdit::*)(const QString&)>(&CustomLineEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setCitationJournalNumber);
+  QObject::connect(_infoCitationForm->publicationDateEdit, &QDateEdit::dateChanged,this,&InfoTreeWidgetController::setCitationPublicationDate);
+  QObject::connect(_infoCitationForm->publicationDOILineEdit,static_cast<void (CustomLineEdit::*)(const QString&)>(&CustomLineEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setCitationDOI);
+  QObject::connect(_infoCitationForm->publicationDatabaseCodeLineEdit,static_cast<void (CustomLineEdit::*)(const QString&)>(&CustomLineEdit::textOnEditingFinished),this,&InfoTreeWidgetController::setCitationDatabaseCodes);
+
+
   // Expanding
   //=========================================================================
   pushButtonCreator->setFocusPolicy(Qt::FocusPolicy::NoFocus);
@@ -485,7 +554,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   pushButtonCitation->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,3,0))
-  _infoCreationForm->plainTextEdit->setPlaceholderText(QApplication::translate("InfoCreationMainWidget", "Details", 0));
+  _infoCreationForm->experimentalDetailsTextEdit->setPlaceholderText(QApplication::translate("InfoCreationMainWidget", "Details", 0));
 #endif
 
   QObject::connect(pushButtonCreator, &QPushButton::clicked, this, &InfoTreeWidgetController::expandCreatorItem);
@@ -1145,7 +1214,7 @@ std::optional<QString> InfoTreeWidgetController::authorAffiliationCountryName()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setAuthorAffiliationCountryName(QString name)
+void InfoTreeWidgetController::setAuthorAffiliationCountryName(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -1178,6 +1247,23 @@ void InfoTreeWidgetController::reloadCreationData()
   reloadCreationAtomicChargesAlgorithm();
   reloadCreationAtomicChargesForceField();
   reloadCreationAtomicChargesForceFieldDetails();
+
+  reloadExperimentalRadiationType();
+  reloadExperimentalWaveLength();
+  reloadExperimentalMeasuermentThetaMin();
+  reloadExperimentalMeasuermentThetaMax();
+  reloadExperimentalMeasuermentHMin();
+  reloadExperimentalMeasuermentHMax();
+  reloadExperimentalMeasuermentKMin();
+  reloadExperimentalMeasuermentKMax();
+  reloadExperimentalMeasuermentLMin();
+  reloadExperimentalMeasuermentLMax();
+  reloadExperimentalNumberOfReflections();
+  reloadExperimentalSoftware();
+  reloadExperimentalDetails();
+  reloadExperimentalGoodnessOfFit();
+  reloadExperimentalFinalIndices();
+  reloadExperimentalRIndicest();
 }
 
 void InfoTreeWidgetController::reloadCreationDate()
@@ -1660,7 +1746,7 @@ std::optional<QDate> InfoTreeWidgetController::creationDate()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setCreationDate(QDate date)
+void InfoTreeWidgetController::setCreationDate(const QDate &date)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2139,6 +2225,857 @@ void InfoTreeWidgetController::setCreationAtomicChargesForceFieldDetails(QString
   _mainWindow->documentWasModified();
 }
 
+
+void InfoTreeWidgetController::reloadExperimentalRadiationType()
+{
+  _infoCreationForm->experimentalRadiationTypeLineEdit->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalRadiationTypeLineEdit->setEnabled(true);
+      _infoCreationForm->experimentalRadiationTypeLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalRadiationType())
+      {
+        whileBlocking(_infoCreationForm->experimentalRadiationTypeLineEdit)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalRadiationTypeLineEdit)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalWaveLength()
+{
+  _infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalWaveLength())
+      {
+        whileBlocking(_infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalMeasuermentThetaMin()
+{
+  _infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalMeasuermentThetaMin())
+      {
+        whileBlocking(_infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalMeasuermentThetaMax()
+{
+  _infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalMeasuermentThetaMax())
+      {
+        whileBlocking(_infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalMeasuermentHMin()
+{
+  _infoCreationForm->experimentalhminDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalhminDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalhminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalMeasuermentHMin())
+      {
+        whileBlocking(_infoCreationForm->experimentalhminDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalhminDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalMeasuermentHMax()
+{
+  _infoCreationForm->experimentalhmaxDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalhmaxDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalhmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalMeasuermentHMax())
+      {
+        whileBlocking(_infoCreationForm->experimentalhmaxDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalhmaxDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalMeasuermentKMin()
+{
+  _infoCreationForm->experimentalkminDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalkminDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalkminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalMeasuermentKMin())
+      {
+        whileBlocking(_infoCreationForm->experimentalkminDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalkminDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalMeasuermentKMax()
+{
+  _infoCreationForm->experimentalkmaxDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalkmaxDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalkmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalMeasuermentKMax())
+      {
+        whileBlocking(_infoCreationForm->experimentalkmaxDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalkmaxDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalMeasuermentLMin()
+{
+  _infoCreationForm->experimentallminDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentallminDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentallminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalMeasuermentLMin())
+      {
+        whileBlocking(_infoCreationForm->experimentallminDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentallminDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalMeasuermentLMax()
+{
+  _infoCreationForm->experimentallmaxDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentallmaxDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentallmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalMeasuermentLMax())
+      {
+        whileBlocking(_infoCreationForm->experimentallmaxDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentallmaxDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalNumberOfReflections()
+{
+  _infoCreationForm->experimentalNumberOfReflectionsSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalNumberOfReflectionsSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalNumberOfReflectionsSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalNumberOfReflections())
+      {
+        whileBlocking(_infoCreationForm->experimentalNumberOfReflectionsSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalNumberOfReflectionsSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalSoftware()
+{
+  _infoCreationForm->experimentalSoftwareLineEdit->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalSoftwareLineEdit->setEnabled(true);
+      _infoCreationForm->experimentalSoftwareLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalSoftware())
+      {
+        whileBlocking(_infoCreationForm->experimentalSoftwareLineEdit)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalSoftwareLineEdit)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalDetails()
+{
+  _infoCreationForm->experimentalDetailsTextEdit->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalDetailsTextEdit->setEnabled(true);
+      _infoCreationForm->experimentalDetailsTextEdit->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalDetails())
+      {
+        whileBlocking(_infoCreationForm->experimentalDetailsTextEdit)->setPlainText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalDetailsTextEdit)->setPlainText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalGoodnessOfFit()
+{
+  _infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalGoodnessOfFit())
+      {
+        whileBlocking(_infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalFinalIndices()
+{
+  _infoCreationForm->experimentalFinalIndicesDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalFinalIndicesDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalFinalIndicesDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalFinalIndices())
+      {
+        whileBlocking(_infoCreationForm->experimentalFinalIndicesDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalFinalIndicesDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+void InfoTreeWidgetController::reloadExperimentalRIndicest()
+{
+  _infoCreationForm->experimentalRIndicesDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      _infoCreationForm->experimentalRIndicesDoubleSpinBox->setEnabled(true);
+      _infoCreationForm->experimentalRIndicesDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+      if ( std::optional<QString> value = creationExperimentalRIndicest())
+      {
+        whileBlocking(_infoCreationForm->experimentalRIndicesDoubleSpinBox)->setText(*value);
+      }
+      else
+      {
+        whileBlocking(_infoCreationForm->experimentalRIndicesDoubleSpinBox)->setText("Mult. Val.");
+      }
+    }
+  }
+}
+
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalRadiationType()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementRadiation();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalRadiationType(const QString& type)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementRadiation(type);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalWaveLength()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementWaveLength();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalWaveLength(const QString& wavelength)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementWaveLength(wavelength);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentThetaMin()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementThetaMin();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+
+void InfoTreeWidgetController::setCreationExperimentalMeasuermentThetaMin(const QString& thetamin)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementThetaMin(thetamin);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentThetaMax()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementThetaMax();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalMeasuermentThetaMax(const QString& thetamax)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementThetaMax(thetamax);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentHMin()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsHmin();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalMeasuermentHMin(const QString& hmin)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsHmin(hmin);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentHMax()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsHmax();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalMeasuermentHMax(const QString& hmax)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsHmax(hmax);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentKMin()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsKmin();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalMeasuermentKMin(const QString& kmin)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsKmin(kmin);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentKMax()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsKmax();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalMeasuermentKMax(const QString& kmax)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsKmax(kmax);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentLMin()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsLmin();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalMeasuermentLMin(const QString& lmin)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsLmin(lmin);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentLMax()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsLmax();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalMeasuermentLMax(const QString& lmax)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsLmax(lmax);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalNumberOfReflections()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementNumberOfSymmetryIndependentReflections();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalNumberOfReflections(const QString& reflections)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementNumberOfSymmetryIndependentReflections(reflections);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalSoftware()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementSoftware();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalSoftware(const QString& software)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementSoftware(software);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalDetails()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementRefinementDetails();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalDetails(const QString& details)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementRefinementDetails(details);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalGoodnessOfFit()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementGoodnessOfFit();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalGoodnessOfFit(const QString& goodness)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementGoodnessOfFit(goodness);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalFinalIndices()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementRFactorGt();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalFinalIndices(const QString& indices)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementRFactorGt(indices);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<QString> InfoTreeWidgetController::creationExperimentalRIndicest()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set{};
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    QString value = iraspa_structure->structure()->experimentalMeasurementRFactorAll();
+    set.insert(value);
+  }
+
+  if(set.size() == 1)
+  {
+    return *set.begin();
+  }
+  return std::nullopt;
+}
+
+void InfoTreeWidgetController::setCreationExperimentalRIndicest(const QString& indices)
+{
+  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  {
+    iraspa_structure->structure()->setExperimentalMeasurementRFactorAll(indices);
+  }
+
+  _mainWindow->documentWasModified();
+}
+
 // reload Chemical properties
 //========================================================================================================================================
 
@@ -2238,7 +3175,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalFormulaMoiety()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setChemicalFormulaMoiety(QString name)
+void InfoTreeWidgetController::setChemicalFormulaMoiety(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2268,7 +3205,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalFormulaSum()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setChemicalFormulaSum(QString name)
+void InfoTreeWidgetController::setChemicalFormulaSum(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2298,7 +3235,7 @@ std::optional<QString> InfoTreeWidgetController::chemicalNameSystematic()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setChemicalNameSystematic(QString name)
+void InfoTreeWidgetController::setChemicalNameSystematic(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2334,11 +3271,11 @@ void InfoTreeWidgetController::reloadCitationArticleTitle()
   {
     if ( std::optional<QString> value = citationArticleTitle())
     {
-      whileBlocking(_infoCitationForm->articleTitleTextEdit)->setText(*value);
+      whileBlocking(_infoCitationForm->articleTitleTextEdit)->setPlainText(*value);
     }
     else
     {
-      whileBlocking(_infoCitationForm->articleTitleTextEdit)->setText("Mult. Val.");
+      whileBlocking(_infoCitationForm->articleTitleTextEdit)->setPlainText("Mult. Val.");
     }
   }
 }
@@ -2355,11 +3292,11 @@ void InfoTreeWidgetController::reloadCitationArticleAuthors()
   {
     if ( std::optional<QString> value = citationArticleAuthors())
     {
-      whileBlocking(_infoCitationForm->articleAuthorsTextEdit)->setText(*value);
+      whileBlocking(_infoCitationForm->articleAuthorsTextEdit)->setPlainText(*value);
     }
     else
     {
-      whileBlocking(_infoCitationForm->articleAuthorsTextEdit)->setText("Mult. Val.");
+      whileBlocking(_infoCitationForm->articleAuthorsTextEdit)->setPlainText("Mult. Val.");
     }
   }
 }
@@ -2489,7 +3426,7 @@ std::optional<QString> InfoTreeWidgetController::citationArticleTitle()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setCitationArticleTitle(QString name)
+void InfoTreeWidgetController::setCitationArticleTitle(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2519,7 +3456,7 @@ std::optional<QString> InfoTreeWidgetController::citationJournalTitle()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setCitationJournalTitle(QString name)
+void InfoTreeWidgetController::setCitationJournalTitle(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2549,7 +3486,7 @@ std::optional<QString> InfoTreeWidgetController::citationArticleAuthors()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setCitationArticleAuthors(QString name)
+void InfoTreeWidgetController::setCitationArticleAuthors(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2579,7 +3516,7 @@ std::optional<QString> InfoTreeWidgetController::InfoTreeWidgetController::citat
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setCitationJournalVolume(QString name)
+void InfoTreeWidgetController::setCitationJournalVolume(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2609,7 +3546,7 @@ std::optional<QString> InfoTreeWidgetController::citationJournalNumber()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setCitationJournalNumber(QString name)
+void InfoTreeWidgetController::setCitationJournalNumber(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2669,7 +3606,7 @@ std::optional<QString> InfoTreeWidgetController::citationDOI()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setCitationDOI(QString name)
+void InfoTreeWidgetController::setCitationDOI(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {
@@ -2699,7 +3636,7 @@ std::optional<QString> InfoTreeWidgetController::citationDatabaseCodes()
   return std::nullopt;
 }
 
-void InfoTreeWidgetController::setCitationDatabaseCodes(QString name)
+void InfoTreeWidgetController::setCitationDatabaseCodes(const QString name)
 {
   for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
   {

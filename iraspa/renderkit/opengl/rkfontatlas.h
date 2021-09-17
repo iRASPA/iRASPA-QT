@@ -22,8 +22,8 @@
 #pragma once
 
 #include <iostream>
-#include <QtOpenGL>
-#include <QOpenGLFunctions_3_3_Core>
+#include <QRawFont>
+#include <QImage>
 #include <array>
 #include <mathkit.h>
 #include "rkrenderuniforms.h"
@@ -46,7 +46,7 @@ struct RKFontAtlas
   RKFontAtlas(QString fontName, int texture_size);
   ~RKFontAtlas();
 
-  GLuint texture;
+  uint32_t texture;
 
   float width;
   float height;

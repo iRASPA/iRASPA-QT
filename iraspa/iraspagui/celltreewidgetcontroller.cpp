@@ -171,7 +171,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   _cellCellForm->EulerAngleXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
   _cellCellForm->EulerAngleYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
   _cellCellForm->EulerAngleZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->EulerAngleXDial->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+ // _cellCellForm->EulerAngleXDial->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
   _cellCellForm->EulerAngleYSlider->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
   _cellCellForm->EulerAngleZDial->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
@@ -206,9 +206,13 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QObject::connect(_cellCellForm->EulerAngleXDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &CellTreeWidgetController::setEulerAngleX);
   QObject::connect(_cellCellForm->EulerAngleYDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &CellTreeWidgetController::setEulerAngleY);
   QObject::connect(_cellCellForm->EulerAngleZDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &CellTreeWidgetController::setEulerAngleZ);
-  QObject::connect(_cellCellForm->EulerAngleXDial,static_cast<void (QDoubleDial::*)(double)>(&QDoubleDial::sliderMoved),this,&CellTreeWidgetController::setEulerAngleX);
-  QObject::connect(_cellCellForm->EulerAngleYSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&CellTreeWidgetController::setEulerAngleY);
-  QObject::connect(_cellCellForm->EulerAngleZDial,static_cast<void (QDoubleDial::*)(double)>(&QDoubleDial::sliderMoved),this,&CellTreeWidgetController::setEulerAngleZ);
+  QObject::connect(_cellCellForm->EulerAngleXDial,static_cast<void (QDoubleDial::*)(double)>(&QDoubleDial::sliderMoved),this,&CellTreeWidgetController::setEulerAngleXIntermediate);
+  QObject::connect(_cellCellForm->EulerAngleYSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&CellTreeWidgetController::setEulerAngleYIntermediate);
+  QObject::connect(_cellCellForm->EulerAngleZDial,static_cast<void (QDoubleDial::*)(double)>(&QDoubleDial::sliderMoved),this,&CellTreeWidgetController::setEulerAngleZIntermediate);
+  QObject::connect(_cellCellForm->EulerAngleXDial,static_cast<void (QDoubleDial::*)(double)>(&QDoubleDial::sliderReleaseValue),this,&CellTreeWidgetController::setEulerAngleX);
+  QObject::connect(_cellCellForm->EulerAngleYSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderReleaseValue),this,&CellTreeWidgetController::setEulerAngleY);
+  QObject::connect(_cellCellForm->EulerAngleZDial,static_cast<void (QDoubleDial::*)(double)>(&QDoubleDial::sliderReleaseValue),this,&CellTreeWidgetController::setEulerAngleZ);
+
 
   QObject::connect(_cellCellForm->originXDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &CellTreeWidgetController::setOriginX);
   QObject::connect(_cellCellForm->originYDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &CellTreeWidgetController::setOriginY);
@@ -1811,7 +1815,13 @@ void CellTreeWidgetController::setMaximumReplicasX(int value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadCellMaximumReplicasX();
@@ -1857,7 +1867,13 @@ void CellTreeWidgetController::setMaximumReplicasY(int value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadCellMaximumReplicasY();
@@ -1903,7 +1919,13 @@ void CellTreeWidgetController::setMaximumReplicasZ(int value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadCellMaximumReplicasZ();
@@ -1949,7 +1971,13 @@ void CellTreeWidgetController::setMinimumReplicasX(int value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadCellMinimumReplicasX();
@@ -1995,7 +2023,13 @@ void CellTreeWidgetController::setMinimumReplicasY(int value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadCellMinimumReplicasY();
@@ -2041,7 +2075,13 @@ void CellTreeWidgetController::setMinimumReplicasZ(int value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadCellMinimumReplicasZ();
@@ -2103,6 +2143,13 @@ void CellTreeWidgetController::rotateYawPlus()
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2129,6 +2176,13 @@ void CellTreeWidgetController::rotateYawMinus()
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2155,6 +2209,13 @@ void CellTreeWidgetController::rotatePitchPlus()
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2181,6 +2242,13 @@ void CellTreeWidgetController::rotatePitchMinus()
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2207,6 +2275,13 @@ void CellTreeWidgetController::rotateRollPlus()
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2233,6 +2308,13 @@ void CellTreeWidgetController::rotateRollMinus()
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2264,6 +2346,36 @@ std::optional<double> CellTreeWidgetController::EulerAngleX()
   return std::nullopt;
 }
 
+void CellTreeWidgetController::setEulerAngleXIntermediate(double angle)
+{
+  if(!_iraspa_structures.empty())
+  {
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    {
+      simd_quatd orientation = iraspa_structure->structure()->orientation();
+      double3 EulerAngles = orientation.EulerAngles();
+      EulerAngles.x = angle * M_PI / 180.0;
+      simd_quatd newOrientation = simd_quatd(EulerAngles);
+      iraspa_structure->structure()->setOrientation(newOrientation);
+      iraspa_structure->structure()->reComputeBoundingBox();
+    }
+
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
+    }
+
+    emit rendererReloadBoundingBoxData();
+    emit rendererReloadData();
+
+    reloadBoundingBox();
+    reloadEulerAngles();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
 void CellTreeWidgetController::setEulerAngleX(double angle)
 {
   if(!_iraspa_structures.empty())
@@ -2278,10 +2390,16 @@ void CellTreeWidgetController::setEulerAngleX(double angle)
       iraspa_structure->structure()->reComputeBoundingBox();
     }
 
-    SKBoundingBox box = _projectStructure->renderBoundingBox();
-    _projectStructure->camera()->resetForNewBoundingBox(box);
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2290,6 +2408,7 @@ void CellTreeWidgetController::setEulerAngleX(double angle)
     _mainWindow->documentWasModified();
   }
 }
+
 
 std::optional<double> CellTreeWidgetController::EulerAngleY()
 {
@@ -2313,7 +2432,7 @@ std::optional<double> CellTreeWidgetController::EulerAngleY()
   return std::nullopt;
 }
 
-void CellTreeWidgetController::setEulerAngleY(double angle)
+void CellTreeWidgetController::setEulerAngleYIntermediate(double angle)
 {
   if(!_iraspa_structures.empty())
   {
@@ -2327,10 +2446,13 @@ void CellTreeWidgetController::setEulerAngleY(double angle)
       iraspa_structure->structure()->reComputeBoundingBox();
     }
 
-    SKBoundingBox box = _projectStructure->renderBoundingBox();
-    _projectStructure->camera()->resetForNewBoundingBox(box);
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
+    }
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2339,6 +2461,40 @@ void CellTreeWidgetController::setEulerAngleY(double angle)
     _mainWindow->documentWasModified();
   }
 }
+
+void CellTreeWidgetController::setEulerAngleY(double angle)
+{
+  if(!_iraspa_structures.empty())
+  {
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    {
+      simd_quatd orientation = iraspa_structure->structure()->orientation();
+      double3 EulerAngles = orientation.EulerAngles();
+      EulerAngles.y = angle * M_PI / 180.0;
+      simd_quatd newOrientation = simd_quatd(EulerAngles);
+      iraspa_structure->structure()->setOrientation(newOrientation);
+      iraspa_structure->structure()->reComputeBoundingBox();
+    }  
+
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
+
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
+    emit rendererReloadData();
+
+    reloadBoundingBox();
+    reloadEulerAngles();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
 
 std::optional<double> CellTreeWidgetController::EulerAngleZ()
 {
@@ -2362,6 +2518,37 @@ std::optional<double> CellTreeWidgetController::EulerAngleZ()
   return std::nullopt;
 }
 
+void CellTreeWidgetController::setEulerAngleZIntermediate(double angle)
+{
+  if(!_iraspa_structures.empty())
+  {
+    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    {
+      simd_quatd orientation = iraspa_structure->structure()->orientation();
+      double3 EulerAngles = orientation.EulerAngles();
+      EulerAngles.z = angle * M_PI / 180.0;
+      simd_quatd newOrientation = simd_quatd(EulerAngles);
+      iraspa_structure->structure()->setOrientation(newOrientation);
+      iraspa_structure->structure()->reComputeBoundingBox();
+    }
+
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
+    }
+
+    emit rendererReloadBoundingBoxData();
+    emit rendererReloadData();
+
+    reloadBoundingBox();
+    reloadEulerAngles();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+
 void CellTreeWidgetController::setEulerAngleZ(double angle)
 {
   if(!_iraspa_structures.empty())
@@ -2376,10 +2563,16 @@ void CellTreeWidgetController::setEulerAngleZ(double angle)
       iraspa_structure->structure()->reComputeBoundingBox();
     }
 
-    SKBoundingBox box = _projectStructure->renderBoundingBox();
-    _projectStructure->camera()->resetForNewBoundingBox(box);
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2419,10 +2612,16 @@ void CellTreeWidgetController::setOriginX(double value)
       iraspa_structure->structure()->setOriginX(value);
     }
 
-    SKBoundingBox box = _projectStructure->renderBoundingBox();
-    _projectStructure->camera()->resetForNewBoundingBox(box);
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2461,10 +2660,16 @@ void CellTreeWidgetController::setOriginY(double value)
       iraspa_structure->structure()->setOriginY(value);
     }
 
-    SKBoundingBox box = _projectStructure->renderBoundingBox();
-    _projectStructure->camera()->resetForNewBoundingBox(box);
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
+
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();
@@ -2503,11 +2708,16 @@ void CellTreeWidgetController::setOriginZ(double value)
       iraspa_structure->structure()->setOriginZ(value);
     }
 
-    SKBoundingBox box = _projectStructure->renderBoundingBox();
-    _projectStructure->camera()->resetForNewBoundingBox(box);
+    if(_projectStructure)
+    {
+      SKBoundingBox box = _projectStructure->renderBoundingBox();
+      _projectStructure->camera()->resetForNewBoundingBox(box);
 
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
     reloadBoundingBox();

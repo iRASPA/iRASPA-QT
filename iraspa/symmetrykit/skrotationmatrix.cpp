@@ -22,6 +22,7 @@
 #include "skrotationmatrix.h"
 #include "sktransformationmatrix.h"
 #include "mathkit.h"
+#include <assert.h>
 
 SKRotationMatrix::SKRotationMatrix()
 {

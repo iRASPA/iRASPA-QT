@@ -2007,7 +2007,11 @@ void AppearanceTreeWidgetController::setEulerAngleX(double angle)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadEulerAngles();
@@ -2059,7 +2063,11 @@ void AppearanceTreeWidgetController::setEulerAngleY(double angle)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadEulerAngles();
@@ -2112,7 +2120,11 @@ void AppearanceTreeWidgetController::setEulerAngleZ(double angle)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadEulerAngles();
@@ -2181,7 +2193,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixAX(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -2228,7 +2244,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixAY(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -2275,7 +2295,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixAZ(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -2322,7 +2346,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixBX(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -2369,7 +2397,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixBY(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -2416,7 +2448,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixBZ(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -2463,7 +2499,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixCX(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -2510,7 +2550,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixCY(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -2557,7 +2601,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixCZ(double value)
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
 
-    //emit invalidateCachedAmbientOcclusionTexture(render_structures);
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     reloadTransformationMatrix();
@@ -4269,6 +4317,7 @@ void AppearanceTreeWidgetController::setRepresentationType(int value)
   }
   reloadAtomProperties();
   reloadBondProperties();
+
   emit rendererReloadData();
 
   _mainWindow->documentWasModified();
@@ -4305,6 +4354,12 @@ void AppearanceTreeWidgetController::setRepresentationStyle(int value)
 
     reloadAtomProperties();
     reloadBondProperties();
+
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+    }
     emit rendererReloadData();
 
     _mainWindow->documentWasModified();
@@ -4695,7 +4750,11 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSpinBox(double size
   reloadAtomSizeScalingDoubleSlider();
   reloadAtomRepresentationStyle();
 
-  emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+  if(_projectStructure)
+  {
+    std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+    emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+  }
   emit rendererReloadData();
   emit redrawWithQuality(RKRenderQuality::high);
 
@@ -4727,7 +4786,11 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderFinal()
   reloadAtomRepresentationStyle();
   reloadAtomSizeScalingDoubleSpinBox();
 
-  emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+  if(_projectStructure)
+  {
+    std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+    emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
+  }
   emit rendererReloadData();
   emit redrawWithQuality(RKRenderQuality::high);
 
@@ -6922,7 +6985,6 @@ void AppearanceTreeWidgetController::setLocalAxesPosition(int value)
       iraspa_structure->structure()->recheckRepresentationStyle();
     }
 
-    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
     emit _mainWindow->rendererReloadData();
 
     reloadLocalAxes();
@@ -6958,12 +7020,10 @@ void AppearanceTreeWidgetController::setLocalAxesStyle(int value)
   {
     for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
     {
-        qDebug() << "SET STYLE!!!";
       iraspa_structure->structure()->renderLocalAxes().setStyle(RKLocalAxes::Style(value));
       iraspa_structure->structure()->recheckRepresentationStyle();
     }
 
-    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
     emit _mainWindow->rendererReloadData();
 
     reloadLocalAxes();
@@ -7002,7 +7062,6 @@ void AppearanceTreeWidgetController::setLocalAxesScalingType(int value)
       iraspa_structure->structure()->recheckRepresentationStyle();
     }
 
-    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
     emit _mainWindow->rendererReloadData();
 
     reloadLocalAxes();

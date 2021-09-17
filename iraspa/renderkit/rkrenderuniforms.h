@@ -23,6 +23,7 @@
 
 #include <mathkit.h>
 #include <QColor>
+#include <memory>
 
 // Uniform                                  binding point
 // RKTransformationUniforms                 0

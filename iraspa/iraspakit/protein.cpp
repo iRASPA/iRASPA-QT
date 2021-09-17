@@ -375,6 +375,14 @@ SKBoundingBox Protein::boundingBox() const
   return SKBoundingBox(minimum, maximum);
 }
 
+void Protein::reComputeBoundingBox()
+{
+  SKBoundingBox boundingBox = this->boundingBox();
+
+  // store in the cell datastructure
+  _cell->setBoundingBox(boundingBox);
+}
+
 
 // MARK: Symmetry
 // =====================================================================

@@ -126,22 +126,25 @@ void ProjectTreeView::TabItemWasSelected()
 
   // set the iraspa-structures when switching to the project tab to all structures under the project
   std::shared_ptr<ProjectTreeNode> selectedProjectNode = this->projectTreeController()->selectedTreeNode();
-  if(std::shared_ptr<iRASPAProject> iraspaProject =  selectedProjectNode->representedObject())
+  if(selectedProjectNode)
   {
-    if(std::shared_ptr<ProjectStructure> structureProject = std::dynamic_pointer_cast<ProjectStructure>(iraspaProject->project()))
+    if(std::shared_ptr<iRASPAProject> iraspaProject =  selectedProjectNode->representedObject())
     {
-      emit setSelectedRenderFrames(structureProject->sceneList()->selectediRASPARenderStructures());
-      emit setFlattenedSelectedFrames(structureProject->sceneList()->flattenedAllIRASPAStructures());
-
-      if(std::shared_ptr<Scene> selectedScene = structureProject->sceneList()->selectedScene())
+      if(std::shared_ptr<ProjectStructure> structureProject = std::dynamic_pointer_cast<ProjectStructure>(iraspaProject->project()))
       {
-        std::shared_ptr<Movie> movie =  selectedScene->selectedMovie();
-        std::optional<int> movieIndex = selectedScene->selectMovieIndex();
+        emit setSelectedRenderFrames(structureProject->sceneList()->selectediRASPARenderStructures());
+        emit setFlattenedSelectedFrames(structureProject->sceneList()->flattenedAllIRASPAStructures());
 
-        if(movieIndex)
+        if(std::shared_ptr<Scene> selectedScene = structureProject->sceneList()->selectedScene())
         {
-          emit setSelectedMovie(movie);
-          emit setSelectedFrame(movie->frameAtIndex(structureProject->sceneList()->selectedFrameIndex()));
+          std::shared_ptr<Movie> movie =  selectedScene->selectedMovie();
+          std::optional<int> movieIndex = selectedScene->selectMovieIndex();
+
+          if(movieIndex)
+          {
+            emit setSelectedMovie(movie);
+            emit setSelectedFrame(movie->frameAtIndex(structureProject->sceneList()->selectedFrameIndex()));
+          }
         }
       }
     }

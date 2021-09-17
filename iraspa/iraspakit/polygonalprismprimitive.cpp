@@ -240,6 +240,14 @@ SKBoundingBox PolygonalPrismPrimitive::boundingBox() const
   return SKBoundingBox(minimum, maximum);
 }
 
+void PolygonalPrismPrimitive::reComputeBoundingBox()
+{
+  SKBoundingBox boundingBox = this->boundingBox();
+
+  // store in the cell datastructure
+  _cell->setBoundingBox(boundingBox);
+}
+
 // MARK: Symmetry
 // =====================================================================
 

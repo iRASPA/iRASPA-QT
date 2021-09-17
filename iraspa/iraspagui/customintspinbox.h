@@ -48,11 +48,12 @@ public:
   QValidator::State validate(QString& input, int& pos) const override final;
 
   void stepBy(int steps) override final;
-  //void timerEvent(QTimerEvent *event)  override;
 private:
   int _intValue;
   mutable QString _textValue;
   SpinBoxStateFlag _state = Int;
   void privateEditingFinished();
+signals:
+  void textOnEditingFinished(const QString &value);
 };
 

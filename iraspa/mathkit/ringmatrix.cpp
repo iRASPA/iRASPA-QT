@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <assert.h>
 
 template <typename T> int sign(T val)
 {

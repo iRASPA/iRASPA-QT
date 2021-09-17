@@ -22,35 +22,17 @@
 #pragma once
 
 #include <QObject>
-#include <QSpinBox>
-#include <QWheelEvent>
+#include <QWidget>
+#include <QLineEdit>
 
-class CustomDoubleSpinBox: public QDoubleSpinBox
+class CustomLineEdit : public QLineEdit
 {
   Q_OBJECT
 
 public:
-  CustomDoubleSpinBox(QWidget* parent);
-
-  enum SpinBoxStateFlag { Double = 0x00, Text = 0x01};
-
-  void setText(QString text);
-  void setValue(double value);
-
-  void focusInEvent(QFocusEvent *event) override final;
-  void wheelEvent(QWheelEvent *event) override final;
-  bool focusNextPrevChild(bool next) override final;
-
-  QString textFromValue(double value) const override final;
-  double valueFromText(const QString &text) const override final;
-  QValidator::State validate(QString& input, int& pos) const override final;
-
-  void stepBy(int steps) override final;
+  CustomLineEdit(QWidget* parent);
 private:
-  double _doubleValue;
-  mutable QString _textValue;
-  SpinBoxStateFlag _state = Double;
   void privateEditingFinished();
 signals:
-  void textOnEditingFinished(const QString &text);
+  void textOnEditingFinished(const QString &value);
 };

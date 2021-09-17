@@ -32,6 +32,7 @@ public:
   QDoubleSlider(Qt::Orientation orientation, QWidget *parent);
 
   void wheelEvent(QWheelEvent *event) override final;
+  void mouseReleaseEvent(QMouseEvent* event) override final;
 
   double doubleMinimum()
   {
@@ -73,6 +74,7 @@ public:
 signals:
   void sliderMoved(double value);
   void valueChanged(double value);
+  void sliderReleaseValue(double value);
 public slots:
 
 private:

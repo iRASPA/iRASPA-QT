@@ -31,7 +31,7 @@ Output:
 *Screenshot of iRASPA*
 
 Package creation:
-* Debian packages, use: 'debuild -i -us -uc -b'.
+* Debian packages, use: 'debuild -i -us -uc -b -j8'.
    * topline changelog for Ubuntu 20.04: 'iraspa (2.0.0-ubuntu-20.04) focal; urgency=low'.
    * topline changelog for Ubuntu 18.04: 'iraspa (2.0.0-ubuntu-18.04) bionic; urgency=low'.
    * topline changelog for Ubuntu 16.04: 'iraspa (2.0.0-ubuntu-16.04) xenial; urgency=low'.

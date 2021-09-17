@@ -26,6 +26,7 @@
 #include <QDebug>
 #include "skpointgroup.h"
 #include "skintegerchangeofbasis.h"
+#include <assert.h>
 
 SKSpaceGroup::SKSpaceGroup(int HallNumber)
 {
@@ -200,11 +201,11 @@ std::optional<SKSpaceGroup::FoundPrimitiveCellInfo> SKSpaceGroup::SKFindPrimitiv
     SKSpaceGroup spaceGroup = SKSpaceGroup(HallNumber);
     Centring centring = spaceGroup.spaceGroupSetting().centring();
 
-    double3x3 transformation = double3x3(1.0);
+    double3x3 transformation = double3x3::identity();
     switch(centring)
     {
     case Centring::primitive:
-      transformation = double3x3(1.0);
+      transformation = double3x3::identity();
       break;
     case Centring::body:
       transformation = SKTransformationMatrix::bodyCenteredToPrimitive;
@@ -228,17 +229,19 @@ std::optional<SKSpaceGroup::FoundPrimitiveCellInfo> SKSpaceGroup::SKFindPrimitiv
       transformation = SKTransformationMatrix::hexagonalToPrimitive;
       break;
     default:
-      transformation = double3x3(1.0);
+      transformation = double3x3::identity();
       break;
     }
 
     double3x3 primitiveUnitCell = cell.unitCell() * transformation;
+
     SKSymmetryCell primitiveCell = SKSymmetryCell::createFromUnitCell(primitiveUnitCell);
 
     std::vector<std::tuple<double3, int, double>> positionInPrimitiveCell= SKSymmetryCell::trim(atoms, cell.unitCell(), primitiveUnitCell, allowPartialOccupancies, symmetryPrecision);
 
     return SKSpaceGroup::FoundPrimitiveCellInfo{primitiveCell, positionInPrimitiveCell};
   }
+
 
   return std::nullopt;
 }
@@ -456,10 +459,6 @@ std::optional<SKSpaceGroup::FoundNiggliCellInfo> SKSpaceGroup::findNiggliCell(do
       double3x3 NiggliUnitCell = std::get<0>(*NiggliSymmetryCell).unitCell();
       SKTransformationMatrix changeOfBasis = std::get<1>(*NiggliSymmetryCell);
 
-      qDebug() << *primitiveDelaunayUnitCell;
-      qDebug() << changeOfBasis;
-      qDebug() << std::get<0>(*NiggliSymmetryCell);
-
       std::vector<std::tuple<double3, int, double>> positionInNiggliCell{};
       std::transform(positionInPrimitiveDelaunayCell.begin(), positionInPrimitiveDelaunayCell.end(), std::back_inserter(positionInNiggliCell),
                              [changeOfBasis](const std::tuple<double3, int, double>& tuple) { return std::make_tuple(double3x3(changeOfBasis.transformation).inverse() * std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));});
@@ -600,9 +599,6 @@ std::optional<double3> SKSpaceGroup::getOriginShift(int HallNumber, Centring cen
   SKSpaceGroup dataBaseSpaceGroup = SKSpaceGroup(HallNumber);
   std::vector<SKSeitzIntegerMatrix> dataBaseSpaceGroupGenerators = SKSeitzIntegerMatrix::SeitzMatrices(dataBaseSpaceGroup.spaceGroupSetting().encodedGenerators());
 
- // qDebug() << "HallNumber " << HallNumber;
- // qDebug() << "seitzMatrices " << seitzMatrices.size();
- // qDebug() << "dataBaseSpaceGroupGenerators: " << dataBaseSpaceGroupGenerators.size() << QString::fromStdString(dataBaseSpaceGroup.spaceGroupSetting().encodedGenerators());
   assert(!dataBaseSpaceGroupGenerators.empty());
 
   // apply change-of-basis to generators
@@ -645,7 +641,6 @@ std::optional<double3> SKSpaceGroup::getOriginShift(int HallNumber, Centring cen
   // return if the centring is not equal to the spacegroup one
   if(centering != dataBaseSpaceGroupCentering)
   {
-   // qDebug() << "FAIL: different centering";
     return std::nullopt;
   }
 

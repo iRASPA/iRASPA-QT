@@ -632,28 +632,36 @@ std::pair<double3, double3> Molecule::computeChangedBondLength(std::shared_ptr<S
 
 SKBoundingBox Molecule::boundingBox() const
 {
-	double3 minimum = double3(1e10, 1e10, 1e10);
-	double3 maximum = double3(-1e10, -1e10, -1e10);
+  double3 minimum = double3(1e10, 1e10, 1e10);
+  double3 maximum = double3(-1e10, -1e10, -1e10);
 
-	std::vector<std::shared_ptr<SKAtomCopy>> atoms = _atomsTreeController->atomCopies();
+  std::vector<std::shared_ptr<SKAtomCopy>> atoms = _atomsTreeController->atomCopies();
 
-	if (atoms.empty())
-	{
-		return SKBoundingBox(double3(0.0,0.0,0.0), double3(0.0, 0.0, 0.0));
-	}
+  if (atoms.empty())
+  {
+    return SKBoundingBox(double3(0.0,0.0,0.0), double3(0.0, 0.0, 0.0));
+  }
 
-    for (const std::shared_ptr<SKAtomCopy> &atom : atoms)
-	{
-		double3 CartesianPosition = atom->position();
-		minimum.x = std::min(minimum.x, CartesianPosition.x);
-		minimum.y = std::min(minimum.y, CartesianPosition.y);
-		minimum.z = std::min(minimum.z, CartesianPosition.z);
-		maximum.x = std::max(maximum.x, CartesianPosition.x);
+  for (const std::shared_ptr<SKAtomCopy> &atom : atoms)
+  {
+    double3 CartesianPosition = atom->position();
+    minimum.x = std::min(minimum.x, CartesianPosition.x);
+    minimum.y = std::min(minimum.y, CartesianPosition.y);
+    minimum.z = std::min(minimum.z, CartesianPosition.z);
+    maximum.x = std::max(maximum.x, CartesianPosition.x);
     maximum.y = std::max(maximum.y, CartesianPosition.y);
     maximum.z = std::max(maximum.z, CartesianPosition.z);
-	}
+  }
 
-	return SKBoundingBox(minimum, maximum);
+  return SKBoundingBox(minimum, maximum);
+}
+
+void Molecule::reComputeBoundingBox()
+{
+  SKBoundingBox boundingBox = this->boundingBox();
+
+  // store in the cell datastructure
+  _cell->setBoundingBox(boundingBox);
 }
 
 

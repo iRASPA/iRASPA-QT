@@ -315,7 +315,22 @@ void SKCIFParser::parseLoop(QString& string)
           double charge=0.0;
           bool succes = false;
           charge = atom_charge->second.split('(').at(0).toDouble(&succes);
-          atom->setCharge(charge);
+          if(succes)
+          {
+            atom->setCharge(charge);
+          }
+        }
+
+        std::map<QString,QString>::iterator atom_occupancy = dictionary.find(QString("_atom_site_occupancy"));
+        if (atom_occupancy != dictionary.end())
+        {
+          double occpuancy=0.0;
+          bool succes = false;
+          occpuancy = atom_occupancy->second.split('(').at(0).toDouble(&succes);
+          if(succes)
+          {
+            atom->setOccupancy(occpuancy);
+          }
         }
 
         if (std::map<QString,int>::iterator chemicalElementIndex = PredefinedElements::atomicNumberData.find(chemicalElement); chemicalElementIndex != PredefinedElements::atomicNumberData.end())
@@ -345,7 +360,7 @@ void SKCIFParser::parseLoop(QString& string)
           std::map<QString,QString>::iterator atom_site_x = dictionary.find(QString("_atom_site.fract_x"));
           std::map<QString,QString>::iterator atom_site_y = dictionary.find(QString("_atom_site.fract_y"));
           std::map<QString,QString>::iterator atom_site_z = dictionary.find(QString("_atom_site.fract_z"));
-          if ((atom_site_x != dictionary.end()) && (atom_site_y != dictionary.end()) && (dictionary.find(QString("atom_site_z")) != dictionary.end()))
+          if ((atom_site_x != dictionary.end()) && (atom_site_y != dictionary.end()) && (atom_site_z != dictionary.end()))
           {
             double3 position;
             bool succes = false;

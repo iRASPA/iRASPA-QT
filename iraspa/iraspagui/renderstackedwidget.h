@@ -101,6 +101,7 @@ public slots:
   void resetData();
   void reloadRenderData();
   void reloadData();
+  void reloadBoundingBoxData();
   void reloadAmbientOcclusionData();
   void reloadSelectionData();
   void reloadBackgroundImage();
@@ -146,6 +147,7 @@ private slots:
   void showBoundingBox(bool checked);
   void computeAOHighQuality();
 signals:
+  void updateCameraMovement();
   void updateCameraModelViewMatrix();
   void updateCameraEulerAngles();
   void updateCameraResetDirection();

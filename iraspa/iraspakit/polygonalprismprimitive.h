@@ -45,6 +45,8 @@ public:
   std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
 
   SKBoundingBox boundingBox() const final override;
+  void reComputeBoundingBox() final override;
+
   void expandSymmetry() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions() override final;

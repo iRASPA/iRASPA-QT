@@ -33,12 +33,19 @@ QDoubleDial::QDoubleDial(QWidget *parent) : QDial(parent)
   connect(this, &QDial::valueChanged, this, &QDoubleDial::convertIntToDouble);
 }
 
+void QDoubleDial::mouseReleaseEvent(QMouseEvent* event)
+{
+  QDial::mouseReleaseEvent(event);
+  emit sliderReleaseValue(m_DoubleValue);
+}
+
 void QDoubleDial::convertIntToDouble(int value)
 {
   double t = value * 1.0 / this->maximum();
   double dValue = m_DoubleMin + t * (m_DoubleMax - m_DoubleMin);
   emit sliderMoved(dValue);
 }
+
 void QDoubleDial::updateRange()
 {
   int mymax = ceil((m_DoubleMax - m_DoubleMin) / m_DoubleStep);

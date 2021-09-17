@@ -95,6 +95,12 @@ double3x3::double3x3(double lattice[3][3])
   m13 = lattice[0][2]; m23 = lattice[1][2]; m33 = lattice[2][2];
 }
 
+double3x3 double3x3::identity()
+{
+  return double3x3(double3(1.0,0.0,0.0),double3(0.0,1.0,0.0),double3(0.0,0.0,1.0));
+}
+
+
 double double3x3::trace(void)
 {
   return m11+m22+m33;

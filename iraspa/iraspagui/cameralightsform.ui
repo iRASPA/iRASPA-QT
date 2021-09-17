@@ -141,14 +141,14 @@
    <header>customdoublespinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>QDoubleSlider</class>
-   <extends>QSlider</extends>
-   <header>qdoubleslider.h</header>
-  </customwidget>
-  <customwidget>
    <class>SelectColorButton</class>
    <extends>QPushButton</extends>
    <header>selectcolorbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QDoubleSlider</class>
+   <extends>QSlider</extends>
+   <header>qdoubleslider.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

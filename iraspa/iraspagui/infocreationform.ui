@@ -19,7 +19,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout" columnstretch="1,1,1">
        <item row="1" column="1">
-        <widget class="QLineEdit" name="temperatureLineEdit"/>
+        <widget class="CustomLineEdit" name="temperatureLineEdit"/>
        </item>
        <item row="2" column="2">
         <widget class="QComboBox" name="pressureComboBox"/>
@@ -46,7 +46,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QDateEdit" name="creationDateEdit"/>
+        <widget class="CustomDateEdit" name="creationDateEdit"/>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label">
@@ -62,7 +62,7 @@
         <widget class="QComboBox" name="temperatureComboBox"/>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="pressureLineEdit"/>
+        <widget class="CustomLineEdit" name="pressureLineEdit"/>
        </item>
       </layout>
      </item>
@@ -71,7 +71,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -228,7 +228,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit_7"/>
+          <widget class="CustomLineEdit" name="experimentalRadiationTypeLineEdit"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_16">
@@ -247,7 +247,7 @@
          <item row="2" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox">
+            <widget class="CustomDoubleSpinBox" name="experimentalMeasurementThetaMinDoubleSpinBox">
              <property name="keyboardTracking">
               <bool>false</bool>
              </property>
@@ -257,7 +257,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+            <widget class="CustomDoubleSpinBox" name="experimentalMeasurementThetaMaxDoubleSpinBox">
              <property name="keyboardTracking">
               <bool>false</bool>
              </property>
@@ -269,7 +269,7 @@
           </layout>
          </item>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_14">
+          <widget class="CustomDoubleSpinBox" name="experimentalRadiationWavelengthDoubleSpinBox">
            <property name="keyboardTracking">
             <bool>false</bool>
            </property>
@@ -290,22 +290,22 @@
           </widget>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+          <widget class="CustomDoubleSpinBox" name="experimentalhminDoubleSpinBox"/>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+          <widget class="CustomDoubleSpinBox" name="experimentalhmaxDoubleSpinBox"/>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_5"/>
+          <widget class="CustomDoubleSpinBox" name="experimentalkminDoubleSpinBox"/>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
+          <widget class="CustomDoubleSpinBox" name="experimentalkmaxDoubleSpinBox"/>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+          <widget class="CustomDoubleSpinBox" name="experimentallminDoubleSpinBox"/>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+          <widget class="CustomDoubleSpinBox" name="experimentallmaxDoubleSpinBox"/>
          </item>
         </layout>
        </item>
@@ -319,7 +319,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBox">
+          <widget class="CustomIntSpinBox" name="experimentalNumberOfReflectionsSpinBox">
            <property name="maximum">
             <number>9999</number>
            </property>
@@ -333,12 +333,12 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_9"/>
+          <widget class="CustomLineEdit" name="experimentalSoftwareLineEdit"/>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QPlainTextEdit" name="plainTextEdit"/>
+        <widget class="CustomPlainTextEdit" name="experimentalDetailsTextEdit"/>
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_5">
@@ -350,7 +350,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+          <widget class="CustomDoubleSpinBox" name="experimentalGoodnessOfFitDoubleSpinBox"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_22">
@@ -360,7 +360,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+          <widget class="CustomDoubleSpinBox" name="experimentalFinalIndicesDoubleSpinBox"/>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_23">
@@ -370,7 +370,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
+          <widget class="CustomDoubleSpinBox" name="experimentalRIndicesDoubleSpinBox"/>
          </item>
         </layout>
        </item>
@@ -380,6 +380,67 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>customlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomPlainTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>customplaintextedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomDateEdit</class>
+   <extends>QDateEdit</extends>
+   <header>customdateedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>customdoublespinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomIntSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>customintspinbox.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>creationDateEdit</tabstop>
+  <tabstop>temperatureLineEdit</tabstop>
+  <tabstop>temperatureComboBox</tabstop>
+  <tabstop>pressureLineEdit</tabstop>
+  <tabstop>pressureComboBox</tabstop>
+  <tabstop>methodComboBox</tabstop>
+  <tabstop>relaxUnitCellComboBox</tabstop>
+  <tabstop>positionsSoftwarePackageComboBox</tabstop>
+  <tabstop>positionsAlgorithmComboBox</tabstop>
+  <tabstop>positionsEigenvaluesComboBox</tabstop>
+  <tabstop>positionsForceFieldComboBox</tabstop>
+  <tabstop>positionsForceFieldDetailsComboBox</tabstop>
+  <tabstop>chargeSoftwarePackageComboBox</tabstop>
+  <tabstop>chargeAlgorithmComboBox</tabstop>
+  <tabstop>chargeForceFieldComboBox</tabstop>
+  <tabstop>chargeForceFieldDetailsComboBox</tabstop>
+  <tabstop>experimentalRadiationTypeLineEdit</tabstop>
+  <tabstop>experimentalMeasurementThetaMinDoubleSpinBox</tabstop>
+  <tabstop>experimentalMeasurementThetaMaxDoubleSpinBox</tabstop>
+  <tabstop>experimentalRadiationWavelengthDoubleSpinBox</tabstop>
+  <tabstop>experimentalhminDoubleSpinBox</tabstop>
+  <tabstop>experimentalhmaxDoubleSpinBox</tabstop>
+  <tabstop>experimentalkminDoubleSpinBox</tabstop>
+  <tabstop>experimentalkmaxDoubleSpinBox</tabstop>
+  <tabstop>experimentallminDoubleSpinBox</tabstop>
+  <tabstop>experimentallmaxDoubleSpinBox</tabstop>
+  <tabstop>experimentalNumberOfReflectionsSpinBox</tabstop>
+  <tabstop>experimentalSoftwareLineEdit</tabstop>
+  <tabstop>experimentalDetailsTextEdit</tabstop>
+  <tabstop>experimentalGoodnessOfFitDoubleSpinBox</tabstop>
+  <tabstop>experimentalFinalIndicesDoubleSpinBox</tabstop>
+  <tabstop>experimentalRIndicesDoubleSpinBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

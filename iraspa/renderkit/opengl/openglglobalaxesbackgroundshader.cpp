@@ -43,7 +43,7 @@ void OpenGLGlobalAxesBackgroundShader::paintGL()
   {
     glDepthFunc(GL_ALWAYS);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     glUseProgram(_program);
     check_gl_error();

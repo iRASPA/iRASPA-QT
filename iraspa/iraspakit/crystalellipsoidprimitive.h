@@ -44,10 +44,14 @@ public:
 
   std::vector<RKInPerInstanceAttributesAtoms> renderCrystalPrimitiveEllipsoidObjects() const override;
   std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitiveEllipsoidObjects() const override;
+  std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const override final;
+  std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const override final;
 
   std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
 
   SKBoundingBox boundingBox() const final override;
+  void reComputeBoundingBox() final override;
+
   void expandSymmetry() final override;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions() override final;

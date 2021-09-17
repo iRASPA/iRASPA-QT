@@ -203,7 +203,7 @@ private:
   void printDeviceInformation(cl_device_id &clDeviceId);
   bool supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId);
 
-  void drawSceneToFramebuffer(GLuint framebuffer);
+  void drawSceneToFramebuffer(GLuint framebuffer, int width, int height, int devicePixelRatio);
 
   void adjustAmbientOcclusionTextureSize();
 

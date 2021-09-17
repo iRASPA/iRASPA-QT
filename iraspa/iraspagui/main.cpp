@@ -69,7 +69,11 @@ int main(int argc, char *argv[])
   //QLocale::setDefault(QLocale(QLocale::Persian, QLocale::Script::ArabicScript, QLocale::Country::Iran));
   //QLocale::setDefault(QLocale(QLocale::German, QLocale::Script::LatinScript, QLocale::Country::Germany));
 
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+  if( qtTranslator.load(QLocale(), QLatin1String("qt"), QLatin1String("_"), QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+#else
   if( qtTranslator.load(QLocale(), QLatin1String("qt"), QLatin1String("_"), QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+#endif
   {
     a.installTranslator(&qtTranslator);
   }

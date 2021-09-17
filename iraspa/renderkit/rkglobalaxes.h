@@ -151,7 +151,7 @@ private:
   double _borderOffsetScreenFraction = 1.0/32.0;
   double _sizeScreenFraction = 1.0/5.0;
 
-  QColor _axesBackgroundColor = QColor(204, 204, 204, 12);
+  QColor _axesBackgroundColor = QColor(204, 204, 204, 48);
   double _axesBackgroundAdditionalSize = 0.0;
   BackgroundStyle _axesBackgroundStyle = BackgroundStyle::filledCircle;
 

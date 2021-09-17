@@ -61,6 +61,7 @@ public:
   std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &) override final;
 
   SKBoundingBox boundingBox() const final override;
+  void reComputeBoundingBox() final override;
 
   void expandSymmetry() final override;
   void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);

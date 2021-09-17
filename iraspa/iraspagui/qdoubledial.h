@@ -31,6 +31,7 @@ public:
   explicit QDoubleDial(QWidget *parent = nullptr);
 
   void wheelEvent(QWheelEvent *event) override final;
+  void mouseReleaseEvent(QMouseEvent* event) override final;
 
   double doubleMinimum()
   {
@@ -69,9 +70,12 @@ public:
 
   void setDoubleValue(double x);
 
+  void sliderLastValue();
+
 signals:
   void sliderMoved(double value);
   void valueChanged(double value);
+  void sliderReleaseValue(double value);
 public slots:
 
 private:

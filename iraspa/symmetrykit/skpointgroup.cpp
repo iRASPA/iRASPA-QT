@@ -28,6 +28,7 @@
 #include "skrotationaloccurancetable.h"
 #include "skrotationmatrix.h"
 #include <type_traits>
+#include <assert.h>
 
 SKPointGroup::SKPointGroup(SKRotationalOccuranceTable table, qint64 number, QString symbol, QString schoenflies, Holohedry holohedry, Laue laue, bool centrosymmetric, bool enantiomorphic):
     _table(table), _number(number), _symbol(symbol), _schoenflies(schoenflies), _holohedry(holohedry), _laue(laue), _centrosymmetric(centrosymmetric), _enantiomorphic(enantiomorphic)

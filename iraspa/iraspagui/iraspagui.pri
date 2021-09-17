@@ -11,6 +11,9 @@ SOURCES += \
     $$PWD/bondlistviewcomboboxstyleditemdelegate.cpp \
     $$PWD/cameraaxesform.cpp \
     $$PWD/celltransformcontentform.cpp \
+    $$PWD/customdateedit.cpp \
+    $$PWD/customlineedit.cpp \
+    $$PWD/customplaintextedit.cpp \
     $$PWD/frameliststyleditemdelegate.cpp \
     $$PWD/framelistviewproxystyle.cpp \
     $$PWD/importfiledialog.cpp \
@@ -97,6 +100,9 @@ HEADERS += \
     $$PWD/bondlistviewcomboboxstyleditemdelegate.h \
     $$PWD/cameraaxesform.h \
     $$PWD/celltransformcontentform.h \
+    $$PWD/customdateedit.h \
+    $$PWD/customlineedit.h \
+    $$PWD/customplaintextedit.h \
     $$PWD/frameliststyleditemdelegate.h \
     $$PWD/framelistviewproxystyle.h \
     $$PWD/importfiledialog.h \

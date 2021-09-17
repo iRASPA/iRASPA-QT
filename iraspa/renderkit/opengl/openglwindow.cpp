@@ -103,8 +103,6 @@ void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> sourc
 {
   makeCurrent();
 
-  qDebug() << "setRenderDataSource";
-
   _dataSource = source;
   _boundingBoxShader.setRenderDataSource(source);
   _globalAxesShader.setRenderDataSource(source);
@@ -139,7 +137,6 @@ void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> sourc
 
 void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
 {
-    qDebug() << "setRenderStructures";
   makeCurrent();
   _renderStructures = structures;
 
@@ -1250,6 +1247,8 @@ void OpenGLWindow::paintGL()
     updateGlobalAxesUniforms();
     check_gl_error();
 
+    glEnable(GL_MULTISAMPLE);
+
     glDepthFunc(GL_LEQUAL);
 
     glViewport(0,0,_width,_height);
@@ -1258,11 +1257,8 @@ void OpenGLWindow::paintGL()
     _pickingShader.paintGL(_width, _height, _structureUniformBuffer);
 
     glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
-    drawSceneToFramebuffer(_sceneFrameBuffer);
+    drawSceneToFramebuffer(_sceneFrameBuffer, _width, _height, _devicePixelRatio);
     check_gl_error();
-
-    //glEnable (GL_DEPTH_TEST);
-    //_globalAxesShader.paintGL(_sceneFrameBuffer, _width * _devicePixelRatio, _height * _devicePixelRatio);
 
     glViewport(0,0,_width,_height);
     _blurShader.paintGL(_glowSelectionTexture, _width, _height);
@@ -1271,7 +1267,7 @@ void OpenGLWindow::paintGL()
     glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
     check_gl_error();
 
-    GLfloat black[4] = {0.0,1.0,0.0,0.0};
+    GLfloat black[4] = {0.0,0.0,0.0,0.0};
     glDisable(GL_BLEND);
     glDisable (GL_DEPTH_TEST);
     glClearBufferfv(GL_COLOR, 0, black);
@@ -1347,6 +1343,9 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
 
   makeCurrent();
 
+  glEnable(GL_MULTISAMPLE);
+  glDepthFunc(GL_LEQUAL);
+
   _atomShader.reloadAmbientOcclusionData(_dataSource, quality);
 
   updateStructureUniforms();
@@ -1419,7 +1418,7 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
 
   glViewport(0,0,width,height);
 
-  drawSceneToFramebuffer(sceneFrameBuffer);
+  drawSceneToFramebuffer(sceneFrameBuffer, width, height, 1);
 
   GLuint downSamplerFrameBufferObject;
   GLuint downSamplerTexture;
@@ -1498,7 +1497,7 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   return img.mirrored();
 }
 
-void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer)
+void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int height, int devicePixelRatio)
 {
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER,framebuffer);
   check_gl_error();
@@ -1543,10 +1542,10 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer)
 
     _textShader.paintGL(_structureUniformBuffer);
 
-    _globalAxesShader.paintGL(_width * _devicePixelRatio, _height * _devicePixelRatio);
+    _globalAxesShader.paintGL(width * devicePixelRatio, height * devicePixelRatio);
   }
 
-  glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
+  glViewport(0,0, width * devicePixelRatio, height * devicePixelRatio);
   glDrawBuffer(GL_COLOR_ATTACHMENT1);
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT);
@@ -2024,7 +2023,6 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
 
 void OpenGLWindow::reloadAmbientOcclusionData()
 {
-  qDebug() << "GLWidget reloadAmbientOcclusionData";
   makeCurrent();
   _atomShader.reloadAmbientOcclusionData(_dataSource, RKRenderQuality::low);
 }
@@ -2055,6 +2053,7 @@ void OpenGLWindow::reloadRenderMeasurePointsData()
 
 void OpenGLWindow::reloadBoundingBoxData()
 {
+  _boundingBoxShader.initializeVertexArrayObject();
   makeCurrent();
 }
 

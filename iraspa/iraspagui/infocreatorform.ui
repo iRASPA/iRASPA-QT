@@ -32,7 +32,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="firstNameLineEdit">
+        <widget class="CustomLineEdit" name="firstNameLineEdit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>2</horstretch>
@@ -48,7 +48,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="middleNameLineEdit">
+        <widget class="CustomLineEdit" name="middleNameLineEdit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>2</horstretch>
@@ -72,7 +72,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout" columnstretch="1,2">
        <item row="2" column="1">
-        <widget class="QLineEdit" name="researcherIDLineEdit">
+        <widget class="CustomLineEdit" name="researcherIDLineEdit">
          <property name="text">
           <string/>
          </property>
@@ -82,7 +82,11 @@
         </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QComboBox" name="countryComboBox"/>
+        <widget class="QComboBox" name="countryComboBox">
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_3">
@@ -99,7 +103,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="universityNameLineEdit">
+        <widget class="CustomLineEdit" name="universityNameLineEdit">
          <property name="text">
           <string/>
          </property>
@@ -116,7 +120,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="lastNameLineEdit">
+        <widget class="CustomLineEdit" name="lastNameLineEdit">
          <property name="text">
           <string/>
          </property>
@@ -126,7 +130,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="orchidLineEdit">
+        <widget class="CustomLineEdit" name="orchidLineEdit">
          <property name="text">
           <string/>
          </property>
@@ -136,7 +140,7 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="facultyNameLineEdit">
+        <widget class="CustomLineEdit" name="facultyNameLineEdit">
          <property name="text">
           <string/>
          </property>
@@ -146,7 +150,7 @@
         </widget>
        </item>
        <item row="5" column="1">
-        <widget class="QLineEdit" name="instituteNameLineEdit">
+        <widget class="CustomLineEdit" name="instituteNameLineEdit">
          <property name="text">
           <string/>
          </property>
@@ -156,7 +160,10 @@
         </widget>
        </item>
        <item row="6" column="1">
-        <widget class="QLineEdit" name="cityNameLineEdit">
+        <widget class="CustomLineEdit" name="cityNameLineEdit">
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -171,6 +178,25 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>customlineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>firstNameLineEdit</tabstop>
+  <tabstop>middleNameLineEdit</tabstop>
+  <tabstop>lastNameLineEdit</tabstop>
+  <tabstop>orchidLineEdit</tabstop>
+  <tabstop>researcherIDLineEdit</tabstop>
+  <tabstop>universityNameLineEdit</tabstop>
+  <tabstop>facultyNameLineEdit</tabstop>
+  <tabstop>instituteNameLineEdit</tabstop>
+  <tabstop>cityNameLineEdit</tabstop>
+  <tabstop>countryComboBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

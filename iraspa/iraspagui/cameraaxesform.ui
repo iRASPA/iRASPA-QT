@@ -111,7 +111,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="cameraAxesBackgroundAdditionalSize"/>
+      <widget class="CustomDoubleSpinBox" name="cameraAxesBackgroundAdditionalSize"/>
      </item>
      <item row="0" column="2">
       <widget class="SelectColorButton" name="cameraAxesBackgroundColor">
@@ -159,40 +159,40 @@
          </widget>
         </item>
         <item row="1" column="3">
-         <widget class="QDoubleSpinBox" name="cameraAxesXTextDisplacementZ"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesXTextDisplacementZ"/>
         </item>
         <item row="1" column="2">
-         <widget class="QDoubleSpinBox" name="cameraAxesXTextDisplacementY"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesXTextDisplacementY"/>
         </item>
         <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="cameraAxesXTextDisplacementX"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesXTextDisplacementX"/>
         </item>
         <item row="0" column="1">
-         <widget class="QDoubleSpinBox" name="cameraAxesTextScalingX"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesTextScalingX"/>
         </item>
         <item row="0" column="2">
-         <widget class="QDoubleSpinBox" name="cameraAxesTextScalingY"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesTextScalingY"/>
         </item>
         <item row="0" column="3">
-         <widget class="QDoubleSpinBox" name="cameraAxesTextScalingZ"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesTextScalingZ"/>
         </item>
         <item row="2" column="1">
-         <widget class="QDoubleSpinBox" name="cameraAxesYTextDisplacementX"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesYTextDisplacementX"/>
         </item>
         <item row="3" column="1">
-         <widget class="QDoubleSpinBox" name="cameraAxesZTextDisplacementX"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesZTextDisplacementX"/>
         </item>
         <item row="2" column="2">
-         <widget class="QDoubleSpinBox" name="cameraAxesYTextDisplacementY"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesYTextDisplacementY"/>
         </item>
         <item row="3" column="2">
-         <widget class="QDoubleSpinBox" name="cameraAxesZTextDisplacementY"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesZTextDisplacementY"/>
         </item>
         <item row="2" column="3">
-         <widget class="QDoubleSpinBox" name="cameraAxesYTextDisplacementZ"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesYTextDisplacementZ"/>
         </item>
         <item row="3" column="3">
-         <widget class="QDoubleSpinBox" name="cameraAxesZTextDisplacementZ"/>
+         <widget class="CustomDoubleSpinBox" name="cameraAxesZTextDisplacementZ"/>
         </item>
         <item row="1" column="4">
          <widget class="SelectColorButton" name="cameraAxesTextColorX">
@@ -224,14 +224,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SelectColorButton</class>
-   <extends>QPushButton</extends>
-   <header>selectcolorbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>CustomDoubleSpinBox</class>
    <extends>QDoubleSpinBox</extends>
    <header>customdoublespinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SelectColorButton</class>
+   <extends>QPushButton</extends>
+   <header>selectcolorbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

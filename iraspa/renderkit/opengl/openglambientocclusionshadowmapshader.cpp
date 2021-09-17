@@ -340,16 +340,16 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
 
     glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
     check_gl_error();
-    glUniformBlockBinding(_shadowMapProgram, glGetUniformBlockIndex(_shadowMapProgram, "StructureUniformBlock"), 6);
+    glUniformBlockBinding(_shadowMapProgram, glGetUniformBlockIndex(_shadowMapProgram, "StructureUniformBlock"), 1);
     check_gl_error();
-    glUniformBlockBinding(_ambientOcclusionProgram, glGetUniformBlockIndex(_ambientOcclusionProgram, "StructureUniformBlock"), 6);
+    glUniformBlockBinding(_ambientOcclusionProgram, glGetUniformBlockIndex(_ambientOcclusionProgram, "StructureUniformBlock"), 1);
     check_gl_error();
 
     glBindBuffer(GL_UNIFORM_BUFFER, shadowMapFrameUniformBuffer);
     check_gl_error();
-    glUniformBlockBinding(_shadowMapProgram, glGetUniformBlockIndex(_shadowMapProgram, "ShadowUniformBlock"), 7);
+    glUniformBlockBinding(_shadowMapProgram, glGetUniformBlockIndex(_shadowMapProgram, "ShadowUniformBlock"), 2);
     check_gl_error();
-    glUniformBlockBinding(_ambientOcclusionProgram, glGetUniformBlockIndex(_ambientOcclusionProgram, "ShadowUniformBlock"), 7);
+    glUniformBlockBinding(_ambientOcclusionProgram, glGetUniformBlockIndex(_ambientOcclusionProgram, "ShadowUniformBlock"), 2);
     check_gl_error();
 
 
@@ -500,9 +500,15 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
             glBufferData(GL_UNIFORM_BUFFER, sizeof(RKShadowUniforms) * maxk, shadowMapFrameUniforms.data(), GL_DYNAMIC_DRAW);
             check_gl_error();
 
+            //glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
+            //check_gl_error();
+
+            //glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, i * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+            //check_gl_error();
+
             // clear the ambient-occlusion texture
             int textureSize = _renderStructures[i][j]->atomAmbientOcclusionTextureSize();
-
+            qDebug() << "size: " << textureSize;
             glViewport(0,0,textureSize,textureSize);
             check_gl_error();
 
@@ -518,11 +524,11 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
               // create shadow map for direction d_k
               glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFrameBufferObject);
 
-              glViewport(0,0,2048,2048);
-
               glEnable(GL_DEPTH_TEST);
               glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
               glClear(GL_DEPTH_BUFFER_BIT);
+
+              glViewport(0,0,2048,2048);
 
               glUseProgram(_shadowMapProgram);
 
@@ -532,9 +538,9 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
                 {
                   glBindVertexArray(_atomShadowMapVertexArrayObject[i][l]);
 
-                  glBindBufferRange(GL_UNIFORM_BUFFER, 6, structureAmbientOcclusionUniformBuffer, l * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+                  glBindBufferRange(GL_UNIFORM_BUFFER, 2, shadowMapFrameUniformBuffer, k * sizeof(RKShadowUniforms), sizeof(RKShadowUniforms));
 
-                  glBindBufferRange(GL_UNIFORM_BUFFER, 7, shadowMapFrameUniformBuffer, k * sizeof(RKShadowUniforms), sizeof(RKShadowUniforms));
+                  glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, l * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
 
                   glDrawElementsInstanced(GL_TRIANGLE_STRIP, GLsizei(4),GLenum(GL_UNSIGNED_SHORT), nullptr, static_cast<GLsizei>(_atomShader._numberOfDrawnAtoms[i][l]));
 
@@ -564,9 +570,10 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
               {
                 glBindVertexArray(_atomAmbientOcclusionMapVertexArrayObject[i][j]);
 
-                glBindBufferRange(GL_UNIFORM_BUFFER, 6, structureAmbientOcclusionUniformBuffer, j * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+                glBindBufferRange(GL_UNIFORM_BUFFER, 2, shadowMapFrameUniformBuffer, k * sizeof(RKShadowUniforms), sizeof(RKShadowUniforms));
 
-                glBindBufferRange(GL_UNIFORM_BUFFER, 7, shadowMapFrameUniformBuffer, k * sizeof(RKShadowUniforms), sizeof(RKShadowUniforms));
+                glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, j * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+
 
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, shadowMapDepthTexture);

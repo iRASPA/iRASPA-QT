@@ -44,7 +44,8 @@ void AtomTreeViewFindNiggliCommand::redo()
   const std::vector<std::tuple<double3,int,double>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
 
   double3x3 unitCell = _iraspaStructure->structure()->cell()->unitCell();
-  std::optional<SKSpaceGroup::FoundNiggliCellInfo> foundSpaceGroup = SKSpaceGroup::findNiggliCell(unitCell,symmetryData,false,1e-2);
+  double precision = _iraspaStructure->structure()->cell()->precision();
+  std::optional<SKSpaceGroup::FoundNiggliCellInfo> foundSpaceGroup = SKSpaceGroup::findNiggliCell(unitCell,symmetryData,false,precision);
   if(foundSpaceGroup)
   {
     int HallNumber = foundSpaceGroup->HallNumber;

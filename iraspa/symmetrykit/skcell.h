@@ -135,7 +135,7 @@ private:
 
   double3 _origin = double3(0.0, 0.0, 0.0);
 
-  double _precision = 1e-4;
+  double _precision = 1e-2;
 
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<SKCell> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<SKCell> &);

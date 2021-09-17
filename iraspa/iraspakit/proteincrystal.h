@@ -43,7 +43,7 @@ public:
   std::shared_ptr<Structure> flattenHierarchy() const override final;
   std::shared_ptr<Structure> appliedCellContentShift() const override final;
 
-	iRASPAStructureType structureType() override final  { return iRASPAStructureType::proteinCrystal; }
+  iRASPAStructureType structureType() override final  { return iRASPAStructureType::proteinCrystal; }
 
   std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override final;
   std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const override final;
@@ -57,6 +57,7 @@ public:
   std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &) override final;
 
   SKBoundingBox boundingBox() const final override;
+  void reComputeBoundingBox() final override;
 
   void expandSymmetry() final override;
   void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);

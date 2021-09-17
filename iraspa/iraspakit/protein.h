@@ -38,9 +38,8 @@ public:
   std::shared_ptr<Structure> flattenHierarchy() const override final;
   std::shared_ptr<Structure> appliedCellContentShift() const override final;
 
-
-	void expandSymmetry() final override;
-	void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);
+  void expandSymmetry() final override;
+  void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToFractionalPositions() override final;
@@ -58,6 +57,7 @@ public:
   std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &) override final;
 
   SKBoundingBox boundingBox() const final override;
+  void reComputeBoundingBox() final override;
 
   double bondLength(std::shared_ptr<SKBond> bond) const override final;
   double3 bondVector(std::shared_ptr<SKBond> bond) const override final;

@@ -72,6 +72,9 @@
     <ClCompile Include="iraspagui\appearancebondsform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="iraspagui\appearancelocalaxesform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="iraspagui\appearanceprimitiveform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,9 +82,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspagui\appearanceunitcellform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\arithmetic.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderkit\opengl\geometry\arrowxgeometry.cpp">
@@ -103,6 +103,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspagui\atomtreeviewchangeelementcommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewchangeoccupancycommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspagui\atomtreeviewchangepositionxcommand.cpp">
@@ -130,6 +133,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspagui\atomtreeviewdropmovecommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\atomtreeviewfindnigglicommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspagui\atomtreeviewfindprimitivecommand.cpp">
@@ -243,9 +249,6 @@
     <ClCompile Include="renderkit\opengl\geometry\cappednsidedprismgeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\cell.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="iraspagui\cellcellform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -294,10 +297,19 @@
     <ClCompile Include="renderkit\opengl\geometry\cubeprimitivegeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="iraspagui\customdateedit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="iraspagui\customdoublespinbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspagui\customintspinbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\customlineedit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iraspagui\customplaintextedit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderkit\opengl\geometry\cylindergeometry.cpp">
@@ -306,16 +318,7 @@
     <ClCompile Include="iraspakit\cylinderprimitive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\debug.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\delaunay.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="iraspagui\detailtabviewcontroller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\determination.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspakit\documentdata.cpp">
@@ -331,6 +334,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mathkit\double4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\double4x3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mathkit\double4x4.cpp">
@@ -411,9 +417,6 @@
     <ClCompile Include="renderkit\opengl\glgeterror.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\hall_symbol.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="iraspagui\helpbrowser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -468,12 +471,6 @@
     <ClCompile Include="iraspagui\iraspatreeview.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\kgrid.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\kpoint.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="iraspagui\linenumberplaintextedit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -498,7 +495,7 @@
     <ClCompile Include="iraspagui\mastertoolbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\mathfunc.c">
+    <ClCompile Include="mathkit\matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspakit\molecularcrystal.cpp">
@@ -511,9 +508,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspagui\moviemaker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\niggli.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderkit\opengl\geometry\nsidedprismgeometry.cpp">
@@ -735,6 +729,9 @@
     <ClCompile Include="renderkit\opengl\openglinternalbondshader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="renderkit\opengl\opengllocalaxesshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="renderkit\opengl\openglobjectselectionshader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -786,16 +783,7 @@
     <ClCompile Include="iraspagui\openiraspaformatdialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\overlap.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\pointgroup.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="iraspakit\polygonalprismprimitive.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\primitive.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="iraspakit\project.cpp">
@@ -870,9 +858,6 @@
     <ClCompile Include="renderkit\opengl\geometry\quadgeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\refinement.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="iraspagui\renderstackedwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -912,6 +897,12 @@
     <ClCompile Include="iraspagui\renderviewtranslatepositionscartesiansubcommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mathkit\ring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathkit\ringmatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="renderkit\rkcamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -922,6 +913,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderkit\rklight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\rklocalaxes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderkit\rkrenderkitprotocols.cpp">
@@ -1020,16 +1014,13 @@
     <ClCompile Include="mathkit\simd_quatd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\site_symmetry.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\sitesym_database.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="symmetrykit\skasymmetricatom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\skasymmetricbond.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skasymmetricunit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\skatomcopy.cpp">
@@ -1068,6 +1059,12 @@
     <ClCompile Include="symmetrykit\skelement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="symmetrykit\skintegerchangeofbasis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skintegersymmetryoperationset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="symmetrykit\skmmcifparser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1101,10 +1098,19 @@
     <ClCompile Include="symmetrykit\skpointgroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="symmetrykit\skpointsymmetryset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skposcarlegacyparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="symmetrykit\skposcarparser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\skposcarwriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\skrotationalchangeofbasis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\skrotationaloccurancetable.cpp">
@@ -1113,16 +1119,28 @@
     <ClCompile Include="symmetrykit\skrotationmatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="symmetrykit\skseitzintegermatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="symmetrykit\skseitzmatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\skspacegroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="symmetrykit\skspacegroupdatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="symmetrykit\skspacegroupsetting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="symmetrykit\sksymmetrycell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="symmetrykit\sksymmetryoperationset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symmetrykit\sktransformationmatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\skxyzparser.cpp">
@@ -1131,25 +1149,10 @@
     <ClCompile Include="symmetrykit\skxyzwriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\spacegroup.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\spg_database.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\spglib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="renderkit\opengl\geometry\spheregeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spglib\spin.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="iraspakit\structure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spglib\symmetry.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\symmetrykitprotocols.cpp">
@@ -1190,6 +1193,9 @@
     <CustomBuild Include="iraspagui\appearancebondsform.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="iraspagui\appearancelocalaxesform.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="iraspagui\appearanceprimitiveform.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -1199,9 +1205,6 @@
     <CustomBuild Include="iraspagui\appearanceunitcellform.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="spglib\arithmetic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="renderkit\opengl\geometry\arrowxgeometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1224,6 +1227,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspagui\atomtreeviewchangeelementcommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewchangeoccupancycommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspagui\atomtreeviewchangepositionxcommand.h">
@@ -1251,6 +1257,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspagui\atomtreeviewdropmovecommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iraspagui\atomtreeviewfindnigglicommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspagui\atomtreeviewfindprimitivecommand.h">
@@ -1364,9 +1373,6 @@
     <ClInclude Include="renderkit\opengl\geometry\cappednsidedprismgeometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spglib\cell.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="iraspagui\cellcellform.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -1415,10 +1421,19 @@
     <ClInclude Include="renderkit\opengl\geometry\cubeprimitivegeometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <CustomBuild Include="iraspagui\customdateedit.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="iraspagui\customdoublespinbox.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="iraspagui\customintspinbox.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="iraspagui\customlineedit.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="iraspagui\customplaintextedit.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <ClInclude Include="renderkit\opengl\geometry\cylindergeometry.h">
@@ -1427,18 +1442,9 @@
     <ClInclude Include="iraspakit\cylinderprimitive.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spglib\debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\delaunay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="iraspagui\detailtabviewcontroller.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="spglib\determination.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="iraspakit\documentdata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1452,6 +1458,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mathkit\double4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\double4x3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mathkit\double4x4.h">
@@ -1538,7 +1547,7 @@
     <ClInclude Include="renderkit\opengl\glgeterror.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spglib\hall_symbol.h">
+    <ClInclude Include="mathkit\hashcombine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspagui\helpbrowser.h">
@@ -1598,12 +1607,6 @@
     <CustomBuild Include="iraspagui\iraspatreeview.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="spglib\kgrid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\kpoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="iraspagui\linenumberplaintextedit.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -1625,10 +1628,10 @@
     <CustomBuild Include="iraspagui\mastertoolbar.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="spglib\mathfunc.h">
+    <ClInclude Include="mathkit\mathkit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mathkit\mathkit.h">
+    <ClInclude Include="mathkit\matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspakit\molecularcrystal.h">
@@ -1641,9 +1644,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspagui\moviemaker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\niggli.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="renderkit\opengl\geometry\nsidedprismgeometry.h">
@@ -1865,6 +1865,9 @@
     <ClInclude Include="renderkit\opengl\openglinternalbondshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="renderkit\opengl\opengllocalaxesshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="renderkit\opengl\openglobjectselectionshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1916,16 +1919,7 @@
     <ClInclude Include="iraspagui\openiraspaformatdialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spglib\overlap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\pointgroup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="iraspakit\polygonalprismprimitive.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\primitive.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iraspakit\project.h">
@@ -2003,9 +1997,6 @@
     <ClInclude Include="renderkit\opengl\geometry\quadgeometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spglib\refinement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="renderkit\renderkit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2048,6 +2039,12 @@
     <ClInclude Include="iraspagui\renderviewtranslatepositionscartesiansubcommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mathkit\ring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathkit\ringmatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="renderkit\rkcamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2058,6 +2055,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="renderkit\rklight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\rklocalaxes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="renderkit\rkrenderkitprotocols.h">
@@ -2165,16 +2165,13 @@
     <ClInclude Include="simulationkit\simulationkit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spglib\site_symmetry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\sitesym_database.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="symmetrykit\skasymmetricatom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skasymmetricbond.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skasymmetricunit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skatomcopy.h">
@@ -2216,6 +2213,12 @@
     <ClInclude Include="symmetrykit\skelement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="symmetrykit\skintegerchangeofbasis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skintegersymmetryoperationset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="symmetrykit\skmmcifparser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2249,10 +2252,19 @@
     <ClInclude Include="symmetrykit\skpointgroup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="symmetrykit\skpointsymmetryset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skposcarlegacyparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="symmetrykit\skposcarparser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skposcarwriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skrotationalchangeofbasis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skrotationaloccurancetable.h">
@@ -2261,10 +2273,16 @@
     <ClInclude Include="symmetrykit\skrotationmatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="symmetrykit\skseitzintegermatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="symmetrykit\skseitzmatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skspacegroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\skspacegroupdatabase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skspacegroupsetting.h">
@@ -2273,7 +2291,13 @@
     <ClInclude Include="symmetrykit\skstructure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="symmetrykit\sksymmetrycell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="symmetrykit\sksymmetryoperationset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symmetrykit\sktransformationmatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skxyzparser.h">
@@ -2282,25 +2306,10 @@
     <ClInclude Include="symmetrykit\skxyzwriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spglib\spacegroup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\spg_database.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\spglib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="renderkit\opengl\geometry\spheregeometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spglib\spin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="iraspakit\structure.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\symmetry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\symmetrykit.h">
@@ -2322,9 +2331,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="renderkit\opengl\geometry\uncappedcylindergeometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spglib\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="foundationkit\zipreader.h">
@@ -2357,6 +2363,12 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_appearancebondsform.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_appearancelocalaxesform.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_appearancelocalaxesform.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_appearanceprimitiveform.cpp">
@@ -2497,6 +2509,12 @@
     <ClCompile Include="release\moc_celltreewidgetcontroller.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="debug\moc_customdateedit.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_customdateedit.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
     <ClCompile Include="debug\moc_customdoublespinbox.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -2507,6 +2525,18 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_customintspinbox.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_customlineedit.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_customlineedit.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_customplaintextedit.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_customplaintextedit.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_detailtabviewcontroller.cpp">
@@ -2764,6 +2794,9 @@
     <ClInclude Include="ui_appearancebondsform.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="ui_appearancelocalaxesform.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
     <ClInclude Include="ui_appearanceprimitiveform.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -2841,7 +2874,16 @@
     <CustomBuild Include="i18n\iraspa_ja.ts">
       <Filter>Translation Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="i18n\iraspa_ko.ts">
+      <Filter>Translation Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="i18n\iraspa_nl.ts">
+      <Filter>Translation Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="i18n\iraspa_pt.ts">
+      <Filter>Translation Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="i18n\iraspa_ru.ts">
       <Filter>Translation Files</Filter>
     </CustomBuild>
     <CustomBuild Include="i18n\iraspa_zh_Hans.ts">
@@ -2862,6 +2904,9 @@
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="iraspagui\appearancebondsform.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="iraspagui\appearancelocalaxesform.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="iraspagui\appearanceprimitiveform.ui">
@@ -2986,10 +3031,28 @@
     <None Include="release\iraspa_ja.qm">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="debug\iraspa_ko.qm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="release\iraspa_ko.qm">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="debug\iraspa_nl.qm">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="release\iraspa_nl.qm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="debug\iraspa_pt.qm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="release\iraspa_pt.qm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="debug\iraspa_ru.qm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="release\iraspa_ru.qm">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="debug\iraspa_zh_Hans.qm">

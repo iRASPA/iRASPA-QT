@@ -44,7 +44,8 @@ void AtomTreeViewFindSymmetryCommand::redo()
   const std::vector<std::tuple<double3,int,double>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
 
   double3x3 unitCell = _iraspaStructure->structure()->cell()->unitCell();
-  std::optional<SKSpaceGroup::FoundSpaceGroupInfo> foundSpaceGroup = SKSpaceGroup::findSpaceGroup(unitCell,symmetryData,true,1e-2);
+  double precision = _iraspaStructure->structure()->cell()->precision();
+  std::optional<SKSpaceGroup::FoundSpaceGroupInfo> foundSpaceGroup = SKSpaceGroup::findSpaceGroup(unitCell,symmetryData,true,precision);
   if(foundSpaceGroup)
   {
     std::shared_ptr<Structure> structure = _iraspaStructure->structure()->clone();

@@ -172,8 +172,10 @@ public slots:
   void reloadCameraResetDirection();
   void reloadCameraProjection();
   void reloadCameraProperties();
+
   void reloadCameraEulerAngles();
   void reloadCameraModelViewMatrix();
+  void reloadCameraMovement();
 
   void reloadSelectionProperties();
 

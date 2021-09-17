@@ -45,8 +45,10 @@ void CustomDoubleSpinBox::privateEditingFinished()
       _state = Double;
       _doubleValue = value;
       setPrefix("");
+      lineEdit()->deselect();
+      clearFocus();
+      emit textOnEditingFinished(text());
     }
-    //clearFocus();
   }
 }
 
@@ -132,4 +134,5 @@ void CustomDoubleSpinBox::stepBy(int steps)
 {
   QDoubleSpinBox::stepBy(steps);
   _textValue = text();
+  lineEdit()->deselect();
 }

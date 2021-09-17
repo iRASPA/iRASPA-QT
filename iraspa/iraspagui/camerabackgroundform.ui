@@ -58,7 +58,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QGridLayout" name="gridLayout_2">
@@ -331,14 +331,14 @@
    <header>customdoublespinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>QDoubleSlider</class>
-   <extends>QSlider</extends>
-   <header>qdoubleslider.h</header>
-  </customwidget>
-  <customwidget>
    <class>SelectColorButton</class>
    <extends>QPushButton</extends>
    <header>selectcolorbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QDoubleSlider</class>
+   <extends>QSlider</extends>
+   <header>qdoubleslider.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

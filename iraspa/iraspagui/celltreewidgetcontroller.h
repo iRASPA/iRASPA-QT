@@ -148,10 +148,13 @@ private:
   void rotateRollMinus();
 
   std::optional<double> EulerAngleX();
+  void setEulerAngleXIntermediate(double angle);
   void setEulerAngleX(double angle);
   std::optional<double> EulerAngleY();
+  void setEulerAngleYIntermediate(double angle);
   void setEulerAngleY(double angle);
   std::optional<double> EulerAngleZ();
+  void setEulerAngleZIntermediate(double angle);
   void setEulerAngleZ(double angle);
 
   std::optional<double> originX();
@@ -269,6 +272,7 @@ private slots:
   void computeGravimetricSurfaceAreaPushButton();
 signals:
   void rendererReloadData();
+  void rendererReloadBoundingBoxData();
   void reloadAllViews();
   void redrawWithQuality(RKRenderQuality quality);
   void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures);

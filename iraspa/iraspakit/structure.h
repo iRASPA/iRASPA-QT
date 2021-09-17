@@ -173,7 +173,7 @@ public:
 
   SKBoundingBox boundingBox() const override;
   SKBoundingBox transformedBoundingBox() const final override;
-  void reComputeBoundingBox() final override;
+  void reComputeBoundingBox() override;
 
   void expandSymmetry() override;
   virtual double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
@@ -618,6 +618,7 @@ public:
   QString experimentalMeasurementSoftware() {return _experimentalMeasurementSoftware;}
   void setExperimentalMeasurementSoftware(QString name) {_experimentalMeasurementSoftware = name;}
   QString experimentalMeasurementRefinementDetails() {return _experimentalMeasurementRefinementDetails;}
+  void setExperimentalMeasurementGoodnessOfFit(QString goodness) {_experimentalMeasurementGoodnessOfFit = goodness;}
   QString experimentalMeasurementGoodnessOfFit() {return _experimentalMeasurementGoodnessOfFit;}
   void setExperimentalMeasurementRefinementDetails(QString name) {_experimentalMeasurementGoodnessOfFit = name;}
   QString experimentalMeasurementRFactorGt() {return _experimentalMeasurementRFactorGt;}

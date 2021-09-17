@@ -27,7 +27,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QTextEdit" name="articleTitleTextEdit"/>
+      <widget class="CustomPlainTextEdit" name="articleTitleTextEdit"/>
      </item>
     </layout>
    </item>
@@ -43,7 +43,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="journalTitleLineEdit"/>
+        <widget class="CustomLineEdit" name="journalTitleLineEdit"/>
        </item>
       </layout>
      </item>
@@ -64,7 +64,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="articleAuthorsTextEdit"/>
+        <widget class="CustomPlainTextEdit" name="articleAuthorsTextEdit"/>
        </item>
       </layout>
      </item>
@@ -75,21 +75,21 @@
      <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="3" column="1">
-        <widget class="QLineEdit" name="publicationDOILineEdit">
+        <widget class="CustomLineEdit" name="publicationDOILineEdit">
          <property name="placeholderText">
           <string>Unknown</string>
          </property>
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="publicationDatabaseCodeLineEdit">
+        <widget class="CustomLineEdit" name="publicationDatabaseCodeLineEdit">
          <property name="placeholderText">
           <string>Unknown</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QDateEdit" name="publicationDateEdit"/>
+        <widget class="CustomDateEdit" name="publicationDateEdit"/>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_2">
@@ -127,14 +127,14 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="journalNumberLineEdit">
+        <widget class="CustomLineEdit" name="journalNumberLineEdit">
          <property name="placeholderText">
           <string>Unknown</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="journalVolumeLineEdit">
+        <widget class="CustomLineEdit" name="journalVolumeLineEdit">
          <property name="placeholderText">
           <string>Unknown</string>
          </property>
@@ -146,6 +146,31 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>customlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomPlainTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>customplaintextedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomDateEdit</class>
+   <extends>QDateEdit</extends>
+   <header>customdateedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>journalTitleLineEdit</tabstop>
+  <tabstop>journalVolumeLineEdit</tabstop>
+  <tabstop>journalNumberLineEdit</tabstop>
+  <tabstop>publicationDateEdit</tabstop>
+  <tabstop>publicationDOILineEdit</tabstop>
+  <tabstop>publicationDatabaseCodeLineEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

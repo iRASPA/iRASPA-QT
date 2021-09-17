@@ -696,10 +696,6 @@ SKBoundingBox Structure::transformedBoundingBox() const
 
 void Structure::reComputeBoundingBox()
 {
-  SKBoundingBox boundingBox = this->boundingBox();
-
-  // store in the cell datastructure
-  _cell->setBoundingBox(boundingBox);
 }
 
 // MARK: Symmetry

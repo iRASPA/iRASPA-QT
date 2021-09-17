@@ -27,6 +27,7 @@
 #include <utility>
 #include "skpointgroup.h"
 #include "skspacegroup.h"
+#include <assert.h>
 
 SKSymmetryCell::SKSymmetryCell()
 {

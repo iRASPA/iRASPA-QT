@@ -343,17 +343,6 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QObject::connect(_cameraAxesForm->cameraAxesZTextDisplacementZ,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAxesZTextDisplacementZ);
 
 
-  /*
-  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setMinimum(0.0);
-  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setDecimals(5);
-  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setSingleStep(0.1);
-  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setKeyboardTracking(false);
-  _cameraAxesForm->primitiveSelectionScalingDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cameraAxesForm->primitiveSelectionScalingDoubleSlider->setDoubleMinimum(1.0);
-  _cameraAxesForm->primitiveSelectionScalingDoubleSlider->setDoubleMaximum(1.25);
-*/
-
-
   pushButtonAxes->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   pushButtonAxes->resize(size().width(), fm.height());
 
@@ -900,6 +889,126 @@ void CameraTreeWidgetController::reloadCameraModelViewMatrix()
   }
 }
 
+void CameraTreeWidgetController::reloadCameraMovement()
+{
+  _cameraCameraForm->EulerAngleXDial->setDisabled(true);
+  _cameraCameraForm->EulerAngleXDial->setDisabled(true);
+  _cameraCameraForm->EulerAngleXDial->setDisabled(true);
+  _cameraCameraForm->EulerAngleZDial->setDisabled(true);
+  _cameraCameraForm->EulerAngleZDial->setDisabled(true);
+  _cameraCameraForm->EulerAngleZDial->setDisabled(true);
+  _cameraCameraForm->EulerAngleYSlider->setDisabled(true);
+  _cameraCameraForm->EulerAngleYSlider->setDisabled(true);
+  _cameraCameraForm->EulerAngleYSlider->setDisabled(true);
+
+  _cameraCameraForm->EulerAngleXSpinBox->setDisabled(true);
+  _cameraCameraForm->EulerAngleZSpinBox->setDisabled(true);
+  _cameraCameraForm->EulerAngleYSpinBox->setDisabled(true);
+
+  _cameraCameraForm->viewMatrixM11->setDisabled(true);
+  _cameraCameraForm->viewMatrixM12->setDisabled(true);
+  _cameraCameraForm->viewMatrixM13->setDisabled(true);
+  _cameraCameraForm->viewMatrixM14->setDisabled(true);
+
+  _cameraCameraForm->viewMatrixM21->setDisabled(true);
+  _cameraCameraForm->viewMatrixM22->setDisabled(true);
+  _cameraCameraForm->viewMatrixM23->setDisabled(true);
+  _cameraCameraForm->viewMatrixM24->setDisabled(true);
+
+  _cameraCameraForm->viewMatrixM31->setDisabled(true);
+  _cameraCameraForm->viewMatrixM32->setDisabled(true);
+  _cameraCameraForm->viewMatrixM33->setDisabled(true);
+  _cameraCameraForm->viewMatrixM34->setDisabled(true);
+
+  _cameraCameraForm->viewMatrixM41->setDisabled(true);
+  _cameraCameraForm->viewMatrixM42->setDisabled(true);
+  _cameraCameraForm->viewMatrixM43->setDisabled(true);
+  _cameraCameraForm->viewMatrixM44->setDisabled(true);
+
+  _cameraCameraForm->cameraPositionXLineEdit->setDisabled(true);
+  _cameraCameraForm->cameraPositionYLineEdit->setDisabled(true);
+  _cameraCameraForm->cameraPositionZLineEdit->setDisabled(true);
+  _cameraCameraForm->cameraDistanceLineEdit->setDisabled(true);
+
+  if(std::shared_ptr<RKCamera> camera = _camera.lock())
+  {
+    _cameraCameraForm->EulerAngleXDial->setEnabled(true);
+    _cameraCameraForm->EulerAngleXDial->setEnabled(true);
+    _cameraCameraForm->EulerAngleXDial->setEnabled(true);
+    _cameraCameraForm->EulerAngleZDial->setEnabled(true);
+    _cameraCameraForm->EulerAngleZDial->setEnabled(true);
+    _cameraCameraForm->EulerAngleZDial->setEnabled(true);
+    _cameraCameraForm->EulerAngleYSlider->setEnabled(true);
+    _cameraCameraForm->EulerAngleYSlider->setEnabled(true);
+    _cameraCameraForm->EulerAngleYSlider->setEnabled(true);
+
+    _cameraCameraForm->EulerAngleXSpinBox->setEnabled(true);
+    _cameraCameraForm->EulerAngleZSpinBox->setEnabled(true);
+    _cameraCameraForm->EulerAngleYSpinBox->setEnabled(true);
+
+    _cameraCameraForm->viewMatrixM11->setEnabled(true);
+    _cameraCameraForm->viewMatrixM12->setEnabled(true);
+    _cameraCameraForm->viewMatrixM13->setEnabled(true);
+    _cameraCameraForm->viewMatrixM14->setEnabled(true);
+
+    _cameraCameraForm->viewMatrixM21->setEnabled(true);
+    _cameraCameraForm->viewMatrixM22->setEnabled(true);
+    _cameraCameraForm->viewMatrixM23->setEnabled(true);
+    _cameraCameraForm->viewMatrixM24->setEnabled(true);
+
+    _cameraCameraForm->viewMatrixM31->setEnabled(true);
+    _cameraCameraForm->viewMatrixM32->setEnabled(true);
+    _cameraCameraForm->viewMatrixM33->setEnabled(true);
+    _cameraCameraForm->viewMatrixM34->setEnabled(true);
+
+    _cameraCameraForm->viewMatrixM41->setEnabled(true);
+    _cameraCameraForm->viewMatrixM42->setEnabled(true);
+    _cameraCameraForm->viewMatrixM43->setEnabled(true);
+    _cameraCameraForm->viewMatrixM44->setEnabled(true);
+
+    _cameraCameraForm->cameraPositionXLineEdit->setEnabled(true);
+    _cameraCameraForm->cameraPositionYLineEdit->setEnabled(true);
+    _cameraCameraForm->cameraPositionZLineEdit->setEnabled(true);
+    _cameraCameraForm->cameraDistanceLineEdit->setEnabled(true);
+
+    double3 EulerAngles = camera->EulerAngles();
+    whileBlocking(_cameraCameraForm->EulerAngleXDial)->setValue(EulerAngles.x*180.0/M_PI);
+    whileBlocking(_cameraCameraForm->EulerAngleZDial)->setValue(EulerAngles.z*180.0/M_PI);
+    whileBlocking(_cameraCameraForm->EulerAngleYSlider)->setValue(EulerAngles.y*180.0/M_PI);
+
+    whileBlocking(_cameraCameraForm->EulerAngleXSpinBox)->setValue(EulerAngles.x*180.0/M_PI);
+    whileBlocking(_cameraCameraForm->EulerAngleZSpinBox)->setValue(EulerAngles.z*180.0/M_PI);
+    whileBlocking(_cameraCameraForm->EulerAngleYSpinBox)->setValue(EulerAngles.y*180.0/M_PI);
+
+    double4x4 viewMatrix = camera->modelViewMatrix();
+    whileBlocking(_cameraCameraForm->viewMatrixM11)->setText(QString::number(viewMatrix.m11, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM12)->setText(QString::number(viewMatrix.m12, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM13)->setText(QString::number(viewMatrix.m13, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM14)->setText(QString::number(viewMatrix.m14, 'f', 5));
+
+    whileBlocking(_cameraCameraForm->viewMatrixM21)->setText(QString::number(viewMatrix.m21, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM22)->setText(QString::number(viewMatrix.m22, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM23)->setText(QString::number(viewMatrix.m23, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM24)->setText(QString::number(viewMatrix.m24, 'f', 5));
+
+    whileBlocking(_cameraCameraForm->viewMatrixM31)->setText(QString::number(viewMatrix.m31, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM32)->setText(QString::number(viewMatrix.m32, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM33)->setText(QString::number(viewMatrix.m33, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM34)->setText(QString::number(viewMatrix.m34, 'f', 5));
+
+    whileBlocking(_cameraCameraForm->viewMatrixM41)->setText(QString::number(viewMatrix.m41, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM42)->setText(QString::number(viewMatrix.m42, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM43)->setText(QString::number(viewMatrix.m43, 'f', 5));
+    whileBlocking(_cameraCameraForm->viewMatrixM44)->setText(QString::number(viewMatrix.m44, 'f', 5));
+
+    double3 cameraPosition = camera->position();
+    whileBlocking(_cameraCameraForm->cameraPositionXLineEdit)->setText(QString::number(cameraPosition.x, 'f', 5));
+    whileBlocking(_cameraCameraForm->cameraPositionYLineEdit)->setText(QString::number(cameraPosition.y, 'f', 5));
+    whileBlocking(_cameraCameraForm->cameraPositionZLineEdit)->setText(QString::number(cameraPosition.z, 'f', 5));
+    whileBlocking(_cameraCameraForm->cameraDistanceLineEdit)->setText(QString::number(cameraPosition.length(), 'f', 5));
+  }
+}
+
 void CameraTreeWidgetController::reloadCameraData()
 {
   reloadCameraProperties();
@@ -1346,15 +1455,18 @@ void CameraTreeWidgetController::reloadAxesProperties()
     int positionIndex = static_cast<typename std::underlying_type<RKGlobalAxes::Position>::type>(_project->axes()->position());
     whileBlocking(_cameraAxesForm->cameraAxesPosition)->setCurrentIndex(positionIndex);
 
-    _cameraAxesForm->cameraAxesStyle->setEnabled(true);
-    int styleIndex = static_cast<typename std::underlying_type<RKGlobalAxes::Style>::type>(_project->axes()->style());
-    whileBlocking(_cameraAxesForm->cameraAxesStyle)->setCurrentIndex(styleIndex);
+    if(_project->axes()->position() != RKGlobalAxes::Position::none)
+    {
+      _cameraAxesForm->cameraAxesStyle->setEnabled(true);
+      int styleIndex = static_cast<typename std::underlying_type<RKGlobalAxes::Style>::type>(_project->axes()->style());
+      whileBlocking(_cameraAxesForm->cameraAxesStyle)->setCurrentIndex(styleIndex);
 
-    _cameraAxesForm->cameraAxesSize->setEnabled(true);
-    whileBlocking(_cameraAxesForm->cameraAxesSize)->setValue(100.0 * _project->axes()->sizeScreenFraction());
+      _cameraAxesForm->cameraAxesSize->setEnabled(true);
+      whileBlocking(_cameraAxesForm->cameraAxesSize)->setValue(100.0 * _project->axes()->sizeScreenFraction());
 
-    _cameraAxesForm->cameraAxesOffset->setEnabled(true);
-    whileBlocking(_cameraAxesForm->cameraAxesOffset)->setValue(100.0 * _project->axes()->borderOffsetScreenFraction());
+      _cameraAxesForm->cameraAxesOffset->setEnabled(true);
+      whileBlocking(_cameraAxesForm->cameraAxesOffset)->setValue(100.0 * _project->axes()->borderOffsetScreenFraction());
+    }
   }
 }
 
@@ -1369,7 +1481,9 @@ void CameraTreeWidgetController::setAxesPosition(int value)
       _project->axes()->setPosition(RKGlobalAxes::Position(value));
 
       reloadAxesProperties();
-      //emit rendererReloadData();
+      reloadAxesBackgroundProperties();
+      reloadAxesTextProperties();
+
       emit updateRenderer();
 
       _mainWindow->documentWasModified();
@@ -1424,14 +1538,17 @@ void CameraTreeWidgetController::reloadAxesBackgroundProperties()
   _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setDisabled(true);
   if(_project)
   {
-    _cameraAxesForm->cameraAxesBackgroundShape->setEnabled(true);
-    _cameraAxesForm->cameraAxesBackgroundColor->setEnabled(true);
-    _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setEnabled(true);
-    int positionIndex = static_cast<typename std::underlying_type<RKGlobalAxes::BackgroundStyle>::type>(_project->axes()->axesBackgroundStyle());
-    whileBlocking(_cameraAxesForm->cameraAxesBackgroundShape)->setCurrentIndex(positionIndex);
+    if(_project->axes()->position() != RKGlobalAxes::Position::none)
+    {
+      _cameraAxesForm->cameraAxesBackgroundShape->setEnabled(true);
+      _cameraAxesForm->cameraAxesBackgroundColor->setEnabled(true);
+      _cameraAxesForm->cameraAxesBackgroundAdditionalSize->setEnabled(true);
+      int positionIndex = static_cast<typename std::underlying_type<RKGlobalAxes::BackgroundStyle>::type>(_project->axes()->axesBackgroundStyle());
+      whileBlocking(_cameraAxesForm->cameraAxesBackgroundShape)->setCurrentIndex(positionIndex);
 
-    whileBlocking(_cameraAxesForm->cameraAxesBackgroundColor)->setColor(_project->axes()->axesBackgroundColor());
-    whileBlocking(_cameraAxesForm->cameraAxesBackgroundAdditionalSize)->setValue(_project->axes()->axesBackgroundAdditionalSize());
+      whileBlocking(_cameraAxesForm->cameraAxesBackgroundColor)->setColor(_project->axes()->axesBackgroundColor());
+      whileBlocking(_cameraAxesForm->cameraAxesBackgroundAdditionalSize)->setValue(_project->axes()->axesBackgroundAdditionalSize());
+    }
   }
 }
 
@@ -1510,41 +1627,44 @@ void CameraTreeWidgetController::reloadAxesTextProperties()
 
   if(_project)
   {
-    _cameraAxesForm->cameraAxesTextScalingX->setEnabled(true);
-    _cameraAxesForm->cameraAxesTextScalingY->setEnabled(true);
-    _cameraAxesForm->cameraAxesTextScalingZ->setEnabled(true);
+    if(_project->axes()->position() != RKGlobalAxes::Position::none)
+    {
+      _cameraAxesForm->cameraAxesTextScalingX->setEnabled(true);
+      _cameraAxesForm->cameraAxesTextScalingY->setEnabled(true);
+      _cameraAxesForm->cameraAxesTextScalingZ->setEnabled(true);
 
-    _cameraAxesForm->cameraAxesTextColorX->setEnabled(true);
-    _cameraAxesForm->cameraAxesTextColorY->setEnabled(true);
-    _cameraAxesForm->cameraAxesTextColorZ->setEnabled(true);
+      _cameraAxesForm->cameraAxesTextColorX->setEnabled(true);
+      _cameraAxesForm->cameraAxesTextColorY->setEnabled(true);
+      _cameraAxesForm->cameraAxesTextColorZ->setEnabled(true);
 
-    _cameraAxesForm->cameraAxesXTextDisplacementX->setEnabled(true);
-    _cameraAxesForm->cameraAxesXTextDisplacementY->setEnabled(true);
-    _cameraAxesForm->cameraAxesXTextDisplacementZ->setEnabled(true);
-    _cameraAxesForm->cameraAxesYTextDisplacementX->setEnabled(true);
-    _cameraAxesForm->cameraAxesYTextDisplacementY->setEnabled(true);
-    _cameraAxesForm->cameraAxesYTextDisplacementZ->setEnabled(true);
-    _cameraAxesForm->cameraAxesZTextDisplacementX->setEnabled(true);
-    _cameraAxesForm->cameraAxesZTextDisplacementY->setEnabled(true);
-    _cameraAxesForm->cameraAxesZTextDisplacementZ->setEnabled(true);
+      _cameraAxesForm->cameraAxesXTextDisplacementX->setEnabled(true);
+      _cameraAxesForm->cameraAxesXTextDisplacementY->setEnabled(true);
+      _cameraAxesForm->cameraAxesXTextDisplacementZ->setEnabled(true);
+      _cameraAxesForm->cameraAxesYTextDisplacementX->setEnabled(true);
+      _cameraAxesForm->cameraAxesYTextDisplacementY->setEnabled(true);
+      _cameraAxesForm->cameraAxesYTextDisplacementZ->setEnabled(true);
+      _cameraAxesForm->cameraAxesZTextDisplacementX->setEnabled(true);
+      _cameraAxesForm->cameraAxesZTextDisplacementY->setEnabled(true);
+      _cameraAxesForm->cameraAxesZTextDisplacementZ->setEnabled(true);
 
-    whileBlocking(_cameraAxesForm->cameraAxesTextScalingX)->setValue(_project->axes()->textScale().x);
-    whileBlocking(_cameraAxesForm->cameraAxesTextScalingY)->setValue(_project->axes()->textScale().y);
-    whileBlocking(_cameraAxesForm->cameraAxesTextScalingZ)->setValue(_project->axes()->textScale().z);
+      whileBlocking(_cameraAxesForm->cameraAxesTextScalingX)->setValue(_project->axes()->textScale().x);
+      whileBlocking(_cameraAxesForm->cameraAxesTextScalingY)->setValue(_project->axes()->textScale().y);
+      whileBlocking(_cameraAxesForm->cameraAxesTextScalingZ)->setValue(_project->axes()->textScale().z);
 
-    whileBlocking(_cameraAxesForm->cameraAxesTextColorX)->setColor(_project->axes()->textColorX());
-    whileBlocking(_cameraAxesForm->cameraAxesTextColorY)->setColor(_project->axes()->textColorY());
-    whileBlocking(_cameraAxesForm->cameraAxesTextColorZ)->setColor(_project->axes()->textColorZ());
+      whileBlocking(_cameraAxesForm->cameraAxesTextColorX)->setColor(_project->axes()->textColorX());
+      whileBlocking(_cameraAxesForm->cameraAxesTextColorY)->setColor(_project->axes()->textColorY());
+      whileBlocking(_cameraAxesForm->cameraAxesTextColorZ)->setColor(_project->axes()->textColorZ());
 
-    whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementX)->setValue(_project->axes()->textDisplacementX().x);
-    whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementY)->setValue(_project->axes()->textDisplacementX().y);
-    whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementZ)->setValue(_project->axes()->textDisplacementX().z);
-    whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementX)->setValue(_project->axes()->textDisplacementY().x);
-    whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementY)->setValue(_project->axes()->textDisplacementY().y);
-    whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementZ)->setValue(_project->axes()->textDisplacementY().z);
-    whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementX)->setValue(_project->axes()->textDisplacementZ().x);
-    whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementY)->setValue(_project->axes()->textDisplacementZ().y);
-    whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementZ)->setValue(_project->axes()->textDisplacementZ().z);
+      whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementX)->setValue(_project->axes()->textDisplacementX().x);
+      whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementY)->setValue(_project->axes()->textDisplacementX().y);
+      whileBlocking(_cameraAxesForm->cameraAxesXTextDisplacementZ)->setValue(_project->axes()->textDisplacementX().z);
+      whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementX)->setValue(_project->axes()->textDisplacementY().x);
+      whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementY)->setValue(_project->axes()->textDisplacementY().y);
+      whileBlocking(_cameraAxesForm->cameraAxesYTextDisplacementZ)->setValue(_project->axes()->textDisplacementY().z);
+      whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementX)->setValue(_project->axes()->textDisplacementZ().x);
+      whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementY)->setValue(_project->axes()->textDisplacementZ().y);
+      whileBlocking(_cameraAxesForm->cameraAxesZTextDisplacementZ)->setValue(_project->axes()->textDisplacementZ().z);
+    }
   }
 }
 

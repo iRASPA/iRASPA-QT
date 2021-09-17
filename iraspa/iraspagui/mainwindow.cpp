@@ -140,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   // connect the cell tab
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::reloadAllViews,this, &MainWindow::reloadAllViews);
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::rendererReloadData,ui->stackedRenderers, &RenderStackedWidget::reloadRenderData);
+  QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::rendererReloadBoundingBoxData,ui->stackedRenderers, &RenderStackedWidget::reloadBoundingBoxData);
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::redrawWithQuality,ui->stackedRenderers, &RenderStackedWidget::redrawWithQuality);
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::computeHeliumVoidFraction,ui->stackedRenderers, &RenderStackedWidget::computeHeliumVoidFraction);
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::computeNitrogenSurfaceArea,ui->stackedRenderers, &RenderStackedWidget::computeNitrogenSurfaceArea);
@@ -156,6 +157,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   // connect the renderer
   QObject::connect(ui->stackedRenderers, &RenderStackedWidget::updateCameraModelViewMatrix, ui->cameraTreeWidget, &CameraTreeWidgetController::reloadCameraModelViewMatrix);
   QObject::connect(ui->stackedRenderers, &RenderStackedWidget::updateCameraEulerAngles, ui->cameraTreeWidget, &CameraTreeWidgetController::reloadCameraEulerAngles);
+  QObject::connect(ui->stackedRenderers, &RenderStackedWidget::updateCameraMovement, ui->cameraTreeWidget, &CameraTreeWidgetController::reloadCameraMovement);
   QObject::connect(ui->stackedRenderers, &RenderStackedWidget::updateCameraProjection, ui->cameraTreeWidget, &CameraTreeWidgetController::reloadCameraProjection);
   QObject::connect(ui->stackedRenderers, &RenderStackedWidget::updateCameraResetDirection, ui->cameraTreeWidget, &CameraTreeWidgetController::reloadCameraResetDirection);
   QObject::connect(ui->stackedRenderers, &RenderStackedWidget::rendererWidgetResized,ui->detailTabViewController, &DetailTabViewController::rendererWidgetResized);

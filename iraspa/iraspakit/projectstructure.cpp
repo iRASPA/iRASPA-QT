@@ -170,7 +170,7 @@ SKBoundingBox ProjectStructure::renderBoundingBox() const
   std::vector<std::shared_ptr<iRASPAStructure>> flattenedRenderStructures{};
   for(const std::vector<std::shared_ptr<iRASPAStructure>> &v : structures)
   {
-    flattenedRenderStructures.insert(flattenedRenderStructures.end(), v.begin(), v.end());
+    std::copy(v.begin(), v.end(), std::back_inserter(flattenedRenderStructures));
   }
 
    if(flattenedRenderStructures.empty())
@@ -413,18 +413,6 @@ size_t ProjectStructure::maxNumberOfMoviesFrames()
   return maxNumberOfFrames;
 }
 
-/*
-void ProjectStructure::setMovieFrameIndex(int index)
-{
-  _sceneList->se
-  for(std::shared_ptr<Scene> scene : _sceneList->scenes())
-  {
-    for(std::shared_ptr<Movie> movie : scene->movies())
-    {
-      movie->setSelectedFrameIndex(index);
-    }
-  }
-}*/
 
 QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<ProjectStructure>& node)
 {

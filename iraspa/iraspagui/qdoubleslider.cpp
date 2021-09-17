@@ -45,6 +45,13 @@ QDoubleSlider::QDoubleSlider(Qt::Orientation orientation, QWidget *parent) : QSl
   connect(this, &QSlider::valueChanged, this, &QDoubleSlider::convertIntToDouble);
 }
 
+void QDoubleSlider::mouseReleaseEvent(QMouseEvent* event)
+{
+  QSlider::mouseReleaseEvent(event);
+  emit sliderReleaseValue(m_DoubleValue);
+}
+
+
 void QDoubleSlider::convertIntToDouble(int value)
 {
   double t = value * 1.0 / this->maximum();

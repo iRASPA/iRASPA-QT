@@ -44,7 +44,8 @@ void AtomTreeViewFindPrimitiveCommand::redo()
   const std::vector<std::tuple<double3,int,double>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
 
   double3x3 unitCell = _iraspaStructure->structure()->cell()->unitCell();
-  std::optional<SKSpaceGroup::FoundPrimitiveCellInfo> foundSpaceGroup = SKSpaceGroup::SKFindPrimitive(unitCell,symmetryData,true,1e-2);
+  double precision = _iraspaStructure->structure()->cell()->precision();
+  std::optional<SKSpaceGroup::FoundPrimitiveCellInfo> foundSpaceGroup = SKSpaceGroup::SKFindPrimitive(unitCell,symmetryData,true,precision);
   if(foundSpaceGroup)
   {
     std::shared_ptr<Structure> structure = _iraspaStructure->structure()->clone();
@@ -64,7 +65,7 @@ void AtomTreeViewFindPrimitiveCommand::redo()
     structure->setSpaceGroupHallNumber(1);
     _iraspaStructure->setStructure(structure);
 
-    // emit _controller->invalidateCachedAmbientOcclusionTexture(_projectStructure->sceneList()->allIRASPAStructures());
+    //emit _controller->invalidateCachedAmbientOcclusionTexture(_projectStructure->sceneList()->allIRASPAStructures());
 
     _mainWindow->resetData();
 

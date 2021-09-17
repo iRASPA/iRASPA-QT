@@ -229,13 +229,23 @@ void RenderStackedWidget::resizeEvent(QResizeEvent *event)
 
 bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
 {
+  static int coalesce = 0;
   Q_UNUSED(object);
 
-  if(event->type() == QEvent::MouseMove || event->type() == QEvent::Wheel)
+  if(event->type() == QEvent::MouseMove)
   {
-    emit updateCameraModelViewMatrix();
-    emit updateCameraEulerAngles();
+    coalesce++;
+    if(coalesce%10 == 0)
+    {
+      emit updateCameraMovement();
+    }
   }
+
+  if(event->type() == QEvent::MouseButtonRelease || event->type() == QEvent::Wheel)
+  {
+    emit updateCameraMovement();
+  }
+
 
   if(object == renderWindow || object == this)
   {
@@ -719,7 +729,6 @@ void RenderStackedWidget::reloadRenderData()
     render_structures.push_back(r);
   }
 
-  qDebug() << "RenderStackedWidget::reloadRenderData(): " << render_structures.size();
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->setRenderStructures(render_structures);
@@ -758,6 +767,15 @@ void RenderStackedWidget::reloadData()
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     widget->reloadData();
+  }
+  update();
+}
+
+void RenderStackedWidget::reloadBoundingBoxData()
+{
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+  {
+    widget->reloadBoundingBoxData();
   }
   update();
 }
@@ -1474,7 +1492,6 @@ void RenderStackedWidget::redrawWithQuality(RKRenderQuality quality)
 
 void RenderStackedWidget::invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures)
 {
-  qDebug() << "invalidateCachedAmbientOcclusionTextures: " << structures.size();
   std::vector<std::shared_ptr<RKRenderStructure>> renderStructures{};
   for (const std::vector<std::shared_ptr<iRASPAStructure>> &v : structures)
   {

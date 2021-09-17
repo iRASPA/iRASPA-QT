@@ -27,6 +27,7 @@
 #include "cylindergeometry.h"
 #include "glgeterror.h"
 #include "opengltextrenderingshader.h"
+#include <rkfontatlas.h>
 
 #if defined (Q_OS_OSX)
   const QString OpenGLGlobalAxesTextShader::fontString = QString("Helvetica");
@@ -148,9 +149,9 @@ void OpenGLGlobalAxesTextShader::initializeVertexArrayObject()
     }
     RKFontAtlas *atlas = OpenGLTextRenderingShader::_cachedFontAtlas.object(fontString);
 
-    std::vector<RKInPerInstanceAttributesText> atomTextDataX = atlas->buildMeshWithString(float4(1.0,0.0,0.0,1.0), float4(3,3,3,3), "X", RKTextAlignment::center);
-    std::vector<RKInPerInstanceAttributesText> atomTextDataY = atlas->buildMeshWithString(float4(0.0,1.0,0.0,1.0), float4(3,3,3,3), "Y", RKTextAlignment::center);
-    std::vector<RKInPerInstanceAttributesText> atomTextDataZ = atlas->buildMeshWithString(float4(0.0,0.0,1.0,1.0), float4(3,3,3,3), "Z", RKTextAlignment::center);
+    std::vector<RKInPerInstanceAttributesText> atomTextDataX = atlas->buildMeshWithString(float4(1.0,0.0,0.0,1.0), float4(3,3,3,3), QString("X"), RKTextAlignment::center);
+    std::vector<RKInPerInstanceAttributesText> atomTextDataY = atlas->buildMeshWithString(float4(0.0,1.0,0.0,1.0), float4(3,3,3,3), QString("Y"), RKTextAlignment::center);
+    std::vector<RKInPerInstanceAttributesText> atomTextDataZ = atlas->buildMeshWithString(float4(0.0,0.0,1.0,1.0), float4(3,3,3,3), QString("Z"), RKTextAlignment::center);
 
     std::vector<RKInPerInstanceAttributesText> atomTextData;
     std::copy(atomTextDataX.begin(), atomTextDataX.end(), std::back_inserter(atomTextData));

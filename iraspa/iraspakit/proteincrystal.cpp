@@ -114,7 +114,7 @@ std::vector<RKInPerInstanceAttributesAtoms> ProteinCrystal::renderAtoms() const
 
       float4 specular = float4(1.0, 1.0, 1.0, 1.0);
 
-      double radius = atom->drawRadius() * atom->occupancy();
+      double radius = atom->drawRadius(); // * atom->occupancy();
       float4 scale = float4(radius, radius, radius, 1.0);
       for (std::shared_ptr<SKAtomCopy> copy : atom->copies())
       {
@@ -349,7 +349,7 @@ std::vector<RKInPerInstanceAttributesAtoms> ProteinCrystal::renderSelectedAtoms(
         float4 diffuse = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
 
         float4 specular = float4(1.0, 1.0, 1.0, 1.0);
-        double radius = atom->drawRadius() * atom->occupancy();
+        double radius = atom->drawRadius(); // * atom->occupancy();
         float4 scale = float4(radius, radius, radius, 1.0);
 
         for (std::shared_ptr<SKAtomCopy> copy : atom->copies())
@@ -654,6 +654,15 @@ SKBoundingBox ProteinCrystal::boundingBox() const
   return SKBoundingBox(minimum, maximum);
 }
 
+void ProteinCrystal::reComputeBoundingBox()
+{
+  SKBoundingBox boundingBox = this->boundingBox();
+
+  // store in the cell datastructure
+  _cell->setBoundingBox(boundingBox);
+}
+
+
 
 // MARK: Symmetry
 // =====================================================================
@@ -732,9 +741,10 @@ void ProteinCrystal::setAtomSymmetryData(double3x3 unitCell, std::vector<std::tu
   {
     double3 position = std::get<0>(tuple);
     int elementIdentifier = std::get<1>(tuple);
+    double occupancy = std::get<2>(tuple);
 
     QString displayName = PredefinedElements::predefinedElements[elementIdentifier]._chemicalSymbol;
-    std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = std::make_shared<SKAsymmetricAtom>(displayName, elementIdentifier);
+    std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = std::make_shared<SKAsymmetricAtom>(displayName, elementIdentifier, occupancy);
     asymmetricAtom->setPosition(unitCell * position);
     std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(asymmetricAtom);
     atomtreeNode->setDisplayName(displayName);
@@ -1165,33 +1175,33 @@ void ProteinCrystal::computeBonds()
     double covalentRadiusA = PredefinedElements::predefinedElements[elementIdentifierA]._covalentRadius;
     for(size_t j=i+1;j<copies.size();j++)
     {
-      if((copies[i]->parent()->occupancy() == 1.0 && copies[j]->parent()->occupancy() == 1.0) ||
-         (copies[i]->parent()->occupancy() < 1.0 && copies[j]->parent()->occupancy() < 1.0))
-      {
-        double3 posB = copies[j]->position();
-        int elementIdentifierB = copies[j]->parent()->elementIdentifier();
-        double covalentRadiusB = PredefinedElements::predefinedElements[elementIdentifierB]._covalentRadius;
+      double3 posB = copies[j]->position();
+      int elementIdentifierB = copies[j]->parent()->elementIdentifier();
+      double covalentRadiusB = PredefinedElements::predefinedElements[elementIdentifierB]._covalentRadius;
 
-        double3 separationVector = (posA-posB);
-        double3 periodicSeparationVector = _cell->applyUnitCellBoundaryCondition(separationVector);
-        double bondCriteria = covalentRadiusA + covalentRadiusB + 0.56;
-        double bondLength = periodicSeparationVector.length();
-        if(bondLength < bondCriteria)
+      double3 separationVector = (posA-posB);
+      double3 periodicSeparationVector = _cell->applyUnitCellBoundaryCondition(separationVector);
+      double bondCriteria = covalentRadiusA + covalentRadiusB + 0.56;
+      double bondLength = periodicSeparationVector.length();
+      if(bondLength < bondCriteria)
+      {
+        if(bondLength<0.1)
         {
-          if(bondLength<0.1)
+          // a duplicate when: (a) both occupancies are 1.0, or (b) when they are the same asymmetric type
+          if(!(copies[i]->parent()->occupancy() < 1.0 || copies[j]->parent()->occupancy() < 1.0) || copies[i]->asymmetricIndex() == copies[j]->asymmetricIndex())
           {
             copies[i]->setType(SKAtomCopy::AtomCopyType::duplicate);
           }
-          if (separationVector.length() > bondCriteria)
-          {
-            std::shared_ptr<SKBond> bond = std::make_shared<SKBond>(copies[i],copies[j], SKBond::BoundaryType::external);
-            bonds.push_back(bond);
-          }
-          else
-          {
-            std::shared_ptr<SKBond> bond = std::make_shared<SKBond>(copies[i],copies[j], SKBond::BoundaryType::internal);
-            bonds.push_back(bond);
-          }
+        }
+        if (separationVector.length() > bondCriteria)
+        {
+          std::shared_ptr<SKBond> bond = std::make_shared<SKBond>(copies[i],copies[j], SKBond::BoundaryType::external);
+          bonds.push_back(bond);
+        }
+        else
+        {
+          std::shared_ptr<SKBond> bond = std::make_shared<SKBond>(copies[i],copies[j], SKBond::BoundaryType::internal);
+          bonds.push_back(bond);
         }
       }
     }

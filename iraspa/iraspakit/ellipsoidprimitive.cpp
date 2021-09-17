@@ -239,6 +239,14 @@ SKBoundingBox EllipsoidPrimitive::boundingBox() const
   return SKBoundingBox(minimum, maximum);
 }
 
+void EllipsoidPrimitive::reComputeBoundingBox()
+{
+  SKBoundingBox boundingBox = this->boundingBox();
+
+  // store in the cell datastructure
+  _cell->setBoundingBox(boundingBox);
+}
+
 // MARK: Symmetry
 // =====================================================================
 

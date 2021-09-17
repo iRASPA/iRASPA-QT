@@ -70,6 +70,8 @@ union double3x3
   inline double3 & operator [] (int i) { return v[i]; }
   inline const double3 & operator [] (int i) const { return v[i]; }
 
+  static double3x3 identity();
+
   double determinant(void);
   double trace(void);
   double3x3 const inverse();

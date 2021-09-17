@@ -239,6 +239,14 @@ SKBoundingBox CylinderPrimitive::boundingBox() const
   return SKBoundingBox(minimum, maximum);
 }
 
+void CylinderPrimitive::reComputeBoundingBox()
+{
+  SKBoundingBox boundingBox = this->boundingBox();
+
+  // store in the cell datastructure
+  _cell->setBoundingBox(boundingBox);
+}
+
 // MARK: Symmetry
 // =====================================================================
 
