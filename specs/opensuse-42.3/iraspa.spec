@@ -1,5 +1,5 @@
 Name:           iraspa
-Version:        2.0.0
+Version:        2.1.5
 Release:        1%{?dist}
 Summary:        A molecular visualizer/editor
 Group:          Sciences/Chemistry
@@ -18,7 +18,7 @@ the latest visualization technologies with stunning performance. It can
 handle large structures (hundreds of thousands of atoms), including ambient
 occlusion, with high frame rates.
 
-BuildRequires:  gcc-c++, libqt5-qtbase-devel, libqt5-qtwebengine-devel, libqt5-qtdeclarative-devel, python3-devel, ffmpeg-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel
+BuildRequires:  gcc-c++, libqt5-qtbase-devel, libqt5-qttools-devel, libqt5-qtwebengine-devel, libqt5-qtdeclarative-devel, python3-devel, ffmpeg-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel
 Requires:       libqt5-qtbase, libqt5-qtwebengine, libQt5DBus5, libQt5Gui5, libQt5Core5, libQt5OpenGL5, libQt5Positioning5, libQt5Concurrent5, ocl-icd, libpython3_6m1_0, liblzma5, zlib, ffmpeg-4
 
 %prep

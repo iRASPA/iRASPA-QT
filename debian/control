@@ -2,7 +2,7 @@ Source: iraspa
 Section: science
 Priority: optional
 Maintainer: David Dubbeldam <d.dubbeldam@uva.nl>
-Build-Depends: debhelper (>= 9), build-essential, dbus, qtdeclarative5-dev-tools, qt5-default, qtbase5-dev, liblzma-dev, ocl-icd-opencl-dev, python3-dev, zlib1g-dev, libqt5opengl5-dev, libswscale-dev, libavformat-dev,  qtwebengine5-dev | libqt5webkit5-dev
+Build-Depends: debhelper (>= 9), devscripts, build-essential, dbus, qtdeclarative5-dev-tools, qt5-default, qttools5-dev-tools, qtbase5-dev, liblzma-dev, ocl-icd-opencl-dev, python3-dev, zlib1g-dev, libqt5opengl5-dev, libswscale-dev, libavformat-dev,  qtwebengine5-dev | libqt5webkit5-dev
 Standards-Version: 3.9.6
 Homepage: https://github.com/iRASPA/iRASPA-QT
 

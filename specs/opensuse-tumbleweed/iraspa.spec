@@ -18,14 +18,14 @@ the latest visualization technologies with stunning performance. It can
 handle large structures (hundreds of thousands of atoms), including ambient
 occlusion, with high frame rates.
 
-BuildRequires:  gcc-c++, libqt5-qtbase-devel, libqt5-qttools-devel, libqt5-qtwebengine-devel, libqt5-qtdeclarative-devel, python3-devel, ffmpeg-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel
-Requires:       libqt5-qtbase, libqt5-qtwebengine, libQt5DBus5, libQt5Gui5, libQt5Core5, libQt5OpenGL5, libQt5Positioning5, libQt5Concurrent5, ocl-icd, libpython3_6m1_0, liblzma5, zlib, ffmpeg-3
+BuildRequires:  gcc11-c++, gcc-c++, qt6-tools-devel, qt6-core-devel, qt6-concurrent-devel, qt6-opengl-devel, qt6-base-devel, qt6-openglwidgets-devel, qt6-platformsupport-devel-static, ffmpeg-4-libavcodec-devel, ffmpeg-4-libavdevice-devel, ffmpeg-4-libavfilter-devel, ffmpeg-4-libavformat-devel, ffmpeg-4-libavresample-devel, ffmpeg-4-libavutil-devel, ffmpeg-4-libpostproc-devel, ffmpeg-4-libswresample-dev, ffmpeg-4-libswscale-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel, python3-devel
+Requires:       libQt6Core6, libQt6DBus6, libQt6Gui6, ffmpeg-4, libpython3_9-1_0, liblzma5, zlib
 
 %prep
 %setup -q -n %{name}
 
 %build
-qmake-qt5 iraspa.pro
+qmake6 iraspa.pro
 make %{?_smp_mflags} BINDIR=%{_bindir}
 
 %install

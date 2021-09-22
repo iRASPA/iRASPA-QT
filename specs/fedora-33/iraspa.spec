@@ -18,8 +18,8 @@ the latest visualization technologies with stunning performance. It can
 handle large structures (hundreds of thousands of atoms), including ambient
 occlusion, with high frame rates.
 
-BuildRequires:  gcc-c++, libqt5-qtbase-devel, libqt5-qttools-devel, libqt5-qtwebengine-devel, libqt5-qtdeclarative-devel, python3-devel, ffmpeg-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel
-Requires:       libqt5-qtbase, libqt5-qtwebengine, libQt5DBus5, libQt5Gui5, libQt5Core5, libQt5OpenGL5, libQt5Positioning5, libQt5Concurrent5, ocl-icd, libpython3_6m1_0, liblzma5, zlib, ffmpeg-3
+BuildRequires:  gcc-c++, dbus-devel, qt5-qtbase-devel, qt5-qttools-devel, qt5-qtwebengine-devel, qt5-qtdeclarative-devel, python3-devel, ffmpeg-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel
+Requires:       dbus-libs, qt5-qtbase, qt5-qtbase-gui, qt5-qtwebchannel, qt5-qtlocation, qt5-qtwebengine, qt5-qtdeclarative, ocl-icd, xz-devel, zlib, ffmpeg-libs, python3-libs
 
 %prep
 %setup -q -n %{name}
