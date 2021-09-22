@@ -733,6 +733,7 @@ void RenderStackedWidget::reloadRenderData()
   {
     widget->setRenderStructures(render_structures);
     widget->reloadRenderData();
+    widget->redraw();
   }
 }
 
@@ -759,7 +760,7 @@ void RenderStackedWidget::resetData()
     widget->setRenderStructures(render_structures);
     widget->reloadData();
   }
-  update();
+  redraw();
 }
 
 void RenderStackedWidget::reloadData()
@@ -768,7 +769,7 @@ void RenderStackedWidget::reloadData()
   {
     widget->reloadData();
   }
-  update();
+  redraw();
 }
 
 void RenderStackedWidget::reloadBoundingBoxData()
@@ -777,7 +778,7 @@ void RenderStackedWidget::reloadBoundingBoxData()
   {
     widget->reloadBoundingBoxData();
   }
-  update();
+  redraw();
 }
 
 void RenderStackedWidget::reloadAmbientOcclusionData()
@@ -786,7 +787,7 @@ void RenderStackedWidget::reloadAmbientOcclusionData()
   {
     widget->reloadAmbientOcclusionData();
   }
-  update();
+  redraw();
 }
 
 void RenderStackedWidget::reloadSelectionData()
@@ -795,7 +796,7 @@ void RenderStackedWidget::reloadSelectionData()
   {
     widget->reloadData();
   }
-  update();
+  redraw();
 }
 
 void RenderStackedWidget::reloadBackgroundImage()
@@ -804,7 +805,7 @@ void RenderStackedWidget::reloadBackgroundImage()
   {
     widget->reloadBackgroundImage();
   }
-  update();
+  redraw();
 }
 
 
@@ -814,6 +815,7 @@ void RenderStackedWidget::resetCameraDistance()
   {
      project->camera()->resetCameraDistance();
      emit updateCameraModelViewMatrix();
+     redraw();
   }
 }
 
@@ -826,6 +828,7 @@ void RenderStackedWidget::resetCameraToZ()
     project->camera()->resetCameraToDirection();
     project->camera()->resetCameraDistance();
     emit updateCameraResetDirection();
+    redraw();
   }
 }
 
@@ -838,6 +841,7 @@ void RenderStackedWidget::resetCameraToY()
     project->camera()->resetCameraToDirection();
     project->camera()->resetCameraDistance();
     emit updateCameraResetDirection();
+    redraw();
   }
 }
 
@@ -850,6 +854,7 @@ void RenderStackedWidget::resetCameraToX()
     project->camera()->resetCameraToDirection();
     project->camera()->resetCameraDistance();
     emit updateCameraResetDirection();
+    redraw();
   }
 }
 
@@ -859,6 +864,7 @@ void RenderStackedWidget::setCameraToOrthographic()
   {
     project->camera()->setCameraToOrthographic();
     emit updateCameraProjection();
+    redraw();
   }
 }
 
@@ -868,6 +874,7 @@ void RenderStackedWidget::setCameraToPerspective()
   {
     project->camera()->setCameraToPerspective();
     emit updateCameraProjection();
+    redraw();
   }
 }
 
@@ -877,6 +884,7 @@ void RenderStackedWidget::showBoundingBox(bool checked)
   {
     project->setShowBoundingBox(checked);
     reloadData();
+    redraw();
   }
 }
 
@@ -889,7 +897,6 @@ void RenderStackedWidget::computeAOHighQuality()
     {
       invalidateCachedAmbientOcclusionTextures(project->sceneList()->allIRASPAStructures());
     }
-    qDebug() << "computeAOHighQuality";
     widget->reloadData(RKRenderQuality::picture);
     widget->redraw();
   }
@@ -907,7 +914,6 @@ void RenderStackedWidget::createPicture(QUrl fileURL, int width, int height)
     {
       invalidateCachedAmbientOcclusionTextures(project->sceneList()->allIRASPAStructures());
     }
-    std::cout << "Saving file: " << fileURL.path().toStdString() << std::endl;
     QImage image = widget->renderSceneToImage(width, height, RKRenderQuality::picture);
     image.save(fileURL.toLocalFile());
   }

@@ -40,8 +40,12 @@ Package creation:
    * topline changelog for Debian 10.6: 'iraspa (2.1.5-debian-10.6) unstable; urgency=medium'.
    * topline changelog for Manjaro 20.1: 'iraspa (2.1.5-manjaro-20.1) mikah; urgency=low'.
    * topline changelog for MX linux 19.2: 'iraspa (2.1.5-mxlinux-19.2) patito; urgency=low'.
+   * topline changelog for MX linux 19.3: 'iraspa (2.1.5-mxlinux-19.3) patito; urgency=low'.
+   * topline changelog for MX linux 19.4: 'iraspa (2.1.5-mxlinux-19.4) patito; urgency=low'.
    * topline changelog for Mint 19.3: 'iraspa (2.1.5-mint-19.3) tricia; urgency=low'.
    * topline changelog for Mint 20: 'iraspa (2.1.5-mint-20) ulyana; urgency=low'.
+   * topline changelog for Mint 20.1: 'iraspa (2.1.5-mint-20.1) ulyssa; urgency=low'.
+   * topline changelog for Mint 20.2: 'iraspa (2.1.5-mint-20.2) uma; urgency=low'.
    * topline changelog for Popos 20.04: 'iraspa (2.1.5-popos-20.04) focal; urgency=low'.
    * topline changelog for Elementary OS 5.1: 'iraspa (2.1.5-elementaryos-5.1) hera; urgency=low'.
 * Snap package: in the 'iraspa' directory, run 'snapcraft'  (or 'snapcraft --use-lxd' for software virtualization when kvm is not working).
