@@ -58,6 +58,8 @@ int main(int argc, char *argv[])
 
   QApplication a(argc, argv);
 
+  a.setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+
   QTranslator qtTranslator, appTranslator;
 
   //QLocale::setDefault(QLocale(QLocale::Chinese, QLocale::Script::SimplifiedChineseScript, QLocale::Country::China));
