@@ -942,13 +942,40 @@ void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, Movie
       for (size_t iframe = 0; iframe < numberOfFrames; iframe++)
       {
         project->sceneList()->setSelectedFrameIndex(iframe);
-        _mainWindow->propagateProject(_projectTreeNode.lock(), _mainWindow);
-        widget->reloadData();
+
+         std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> iraspa_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
+
+        std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
+        for(std::vector<std::shared_ptr<iRASPAStructure>> v : iraspa_structures)
+        {
+          std::vector<std::shared_ptr<RKRenderStructure>> r{};
+          std::transform(v.begin(),v.end(),std::back_inserter(r),
+                         [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+          render_structures.push_back(r);
+        }
+
+        renderViewController->setRenderStructures(render_structures);
+
+        renderViewController->reloadData();
+        // invalidate all lower quality caches
+
+        invalidateCachedAmbientOcclusionTextures(project->sceneList()->allIRASPAStructures());
         QImage image = widget->renderSceneToImage(nearestEvenInt(width), nearestEvenInt(height), RKRenderQuality::picture);
 
         movie.addFrame(image.bits(), iframe);
       }
       movie.finalize();
+
+      std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
+      for(std::vector<std::shared_ptr<iRASPAStructure>> v : _iraspa_structures)
+      {
+        std::vector<std::shared_ptr<RKRenderStructure>> r{};
+        std::transform(v.begin(),v.end(),std::back_inserter(r),
+                       [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+        render_structures.push_back(r);
+      }
+      renderViewController->setRenderStructures(render_structures);
+      renderViewController->reloadData();
     }
   }
 }
