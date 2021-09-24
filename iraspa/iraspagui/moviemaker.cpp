@@ -48,28 +48,16 @@ int MovieWriter::initialize(const std::string& filename)
   switch(_type)
   {
   case Type::h265:
-    #ifdef AV_CODEC_ID_HEVC
     _oformat->video_codec = AV_CODEC_ID_HEVC;
-    #else
-      return -1;
-    #endif
     break;
   case Type::h264:
     _oformat->video_codec = AV_CODEC_ID_H264;
     break;
   case Type::vp9:
-    #ifdef AV_CODEC_ID_VP9
-      _oformat->video_codec = AV_CODEC_ID_VP9;
-    #else
-      return -1;
-    #endif
+    _oformat->video_codec = AV_CODEC_ID_VP9;
     break;
   case Type::av1:
-    #ifdef AV_CODEC_ID_AV1
-      _oformat->video_codec = AV_CODEC_ID_AV1;
-    #else
-      return -1;
-    #endif
+    _oformat->video_codec = AV_CODEC_ID_AV1;
     break;
   default:
     _oformat->video_codec = AV_CODEC_ID_H264;

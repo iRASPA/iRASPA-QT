@@ -132,7 +132,7 @@ win32{
   QMAKE_LFLAGS_RELEASE   += /STACK:4194304  /DEBUG /INCREMENTAL
 
   INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include"
-  INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include/python2.7"
+  INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include/python2.7/"
 
 
   CONFIG(debug, debug|release){
@@ -146,12 +146,12 @@ win32{
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/swscale.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/libx264.lib"
     LIBS += "C:/vcpkg/installed/x64-windows/debug/lib/x265-static.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/vpxmtd.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/vpxd.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/python27_d.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/lzmad.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/zlibd.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/OpenCL.lib"
-    LIBS += secur32.lib ws2_32.lib bcrypt.lib kernel32.lib cfgmgr32.lib user32.lib ole32.lib advapi32.lib msvcrtd.lib
+    LIBS += strmiids.lib mfplat.lib mfuuid.lib secur32.lib ws2_32.lib bcrypt.lib kernel32.lib cfgmgr32.lib user32.lib ole32.lib advapi32.lib msvcrtd.lib
 } else {
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avutil.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avfilter.lib"
@@ -163,13 +163,13 @@ win32{
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/swscale.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/libx264.lib"
     LIBS += "C:/vcpkg/installed/x64-windows/lib/x265-static.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows-static/lib/vpxmt.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows-static/lib/vpx.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/python27.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/lzma.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/zlib.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/OpenCL.lib"
 
-    LIBS += secur32.lib ws2_32.lib bcrypt.lib kernel32.lib cfgmgr32.lib user32.lib ole32.lib advapi32.lib
+    LIBS += strmiids.lib mfplat.lib mfuuid.lib secur32.lib ws2_32.lib bcrypt.lib kernel32.lib cfgmgr32.lib user32.lib ole32.lib advapi32.lib
   }
 }
 

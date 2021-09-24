@@ -153,7 +153,7 @@ private:
   GLuint _downSamplerVertexArray;
   GLuint _quad_vertexbuffer;
   GLuint _quad_indexbuffer;
-  int _devicePixelRatio;
+  qreal _devicePixelRatio;
   int _maxTextureSize;
   GLint _maxNumberOfClipPlanes;
   GLint _maxSampleCount;
@@ -203,7 +203,7 @@ private:
   void printDeviceInformation(cl_device_id &clDeviceId);
   bool supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId);
 
-  void drawSceneToFramebuffer(GLuint framebuffer, int width, int height, int devicePixelRatio);
+  void drawSceneToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio);
 
   void adjustAmbientOcclusionTextureSize();
 

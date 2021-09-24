@@ -1497,7 +1497,7 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   return img.mirrored();
 }
 
-void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int height, int devicePixelRatio)
+void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio)
 {
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER,framebuffer);
   check_gl_error();

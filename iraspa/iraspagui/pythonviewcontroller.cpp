@@ -93,7 +93,7 @@ sys.stderr = CatchOutErr\n";
 
   PyObject *output = PyObject_GetAttrString(_catcher,"value");
 
-  #if defined(Q_OS_LINUX)
+  #if PY_MAJOR_VERSION >= 3
     PyObject* utf8string = PyUnicode_AsUTF8String(output);
   #else
     PyObject* utf8string = PyObject_Str(output);
@@ -124,7 +124,7 @@ void PythonViewController::ExecutePythonCommand(QString command)
   PyObject *output = PyObject_GetAttrString(_catcher,"value");
 
 
-  #if defined(Q_OS_LINUX)
+  #if PY_MAJOR_VERSION >= 3
     PyObject* outputString = PyUnicode_AsUTF8String(output);
   #else
     PyObject* outputString = PyObject_Str(output);
