@@ -132,7 +132,7 @@ void ProjectTreeView::TabItemWasSelected()
     {
       if(std::shared_ptr<ProjectStructure> structureProject = std::dynamic_pointer_cast<ProjectStructure>(iraspaProject->project()))
       {
-        emit setSelectedRenderFrames(structureProject->sceneList()->selectediRASPARenderStructures());
+        emit setSelectedRenderFrames(structureProject->sceneList()->selectediRASPAStructures());
         emit setFlattenedSelectedFrames(structureProject->sceneList()->flattenedAllIRASPAStructures());
 
         if(std::shared_ptr<Scene> selectedScene = structureProject->sceneList()->selectedScene())

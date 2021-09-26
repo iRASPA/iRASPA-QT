@@ -35,14 +35,24 @@ MovieWriter::~MovieWriter()
 
 int MovieWriter::initialize(const std::string& filename)
 {
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "ffmpeg start initialization");
+  }
+  qDebug() << "ffmpeg start initialization";
+
   // register is needed on Ubuntu 18 for snaps
   av_register_all();
   avcodec_register_all();
+  qDebug() << "ffmpeg registration";
 
   _oformat = av_guess_format(nullptr, filename.c_str(), nullptr);
   if (!_oformat)
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not guess output format");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not guess output format");
+    }
     return -1;
   }
   switch(_type)
@@ -63,77 +73,110 @@ int MovieWriter::initialize(const std::string& filename)
     _oformat->video_codec = AV_CODEC_ID_H264;
     break;
   }
+  qDebug() << "ffmpeg form at guessed done";
 
-#if(LIBAVUTIL_VERSION_MAJOR >= 56)
   int err = avformat_alloc_output_context2(&_ofctx, _oformat, NULL, filename.c_str());
-  if (err)
+  if (err<0)
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg output context");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg output context");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg avformat_alloc_output_context2 done";
 
   _codec = avcodec_find_encoder(_oformat->video_codec);
   if (!_codec)
   {
     avformat_free_context(_ofctx);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg codec");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg codec");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg avcodec_find_encoder done";
 
   // Add a new stream to a media file
   _videoStream = avformat_new_stream(_ofctx, _codec);
   if (!_videoStream)
   {
     avformat_free_context(_ofctx);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg stream");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg stream");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg avformat_new_stream done";
 
   _cctx = avcodec_alloc_context3(_codec);
   if (!_cctx)
   {
     avformat_free_context(_ofctx);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg codec context");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg codec context");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg avcodec_alloc_context3 done";
 
   _pkt = av_packet_alloc();
   if (!_pkt)
   {
     avformat_free_context(_ofctx);
     avcodec_free_context(&_cctx);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg packet");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg packet");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg av_packet_alloc done";
 
-  _videoStream->codecpar->codec_id = _oformat->video_codec;
-  _videoStream->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
-  _videoStream->codecpar->width = _width;
-  _videoStream->codecpar->height = _height;
-  _videoStream->codecpar->format = AV_PIX_FMT_YUV420P;
+  AVCodecParameters *codecpar = _videoStream->codecpar;
+  if (!codecpar)
+  {
+      avformat_free_context(_ofctx);
+      avcodec_free_context(&_cctx);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to access codecpar of the videostream");
+    }
+    return -1;
+  }
+  qDebug() << "ffmpeg codecpar accessed";
 
-  _videoStream->codecpar->codec_tag = 0;
+  codecpar->codec_id = _oformat->video_codec;
+  codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
+  codecpar->width = _width;
+  codecpar->height = _height;
+  codecpar->format = AV_PIX_FMT_YUV420P;
+
+  codecpar->codec_tag = 0;
   switch(_type)
   {
   case Type::h265:
-    _videoStream->codecpar->codec_tag = MKTAG('h', 'v', 'c', '1'); // for h265
-    _videoStream->codecpar->bit_rate = 5000000;
+    codecpar->codec_tag = MKTAG('h', 'v', 'c', '1'); // for h265
+    codecpar->bit_rate = 5000000;
     break;
   case Type::h264:
-    _videoStream->codecpar->bit_rate = 5000000;
+    codecpar->bit_rate = 5000000;
     break;
   case Type::vp9:
-    _videoStream->codecpar->bit_rate = 5000000;
+    codecpar->bit_rate = 5000000;
     break;
   case Type::av1:
-    _videoStream->codecpar->bit_rate = 5000000;
+    codecpar->bit_rate = 5000000;
     break;
   default:
-    _videoStream->codecpar->bit_rate = 5000000;
+    codecpar->bit_rate = 5000000;
     break;
   }
 
-  avcodec_parameters_to_context(_cctx, _videoStream->codecpar);
+  avcodec_parameters_to_context(_cctx, codecpar);
 
   _cctx->time_base = { 1, _fps };
   _cctx->framerate = {_fps, 1};
@@ -152,14 +195,19 @@ int MovieWriter::initialize(const std::string& filename)
 
   av_dump_format(_ofctx, 0, filename.c_str(), 1);
 
-  if ((err = avcodec_open2(_cctx, _codec, NULL)) < 0)
+  err = avcodec_open2(_cctx, _codec, NULL);
+  if (err < 0)
   {
     avformat_free_context(_ofctx);
     avcodec_free_context(&_cctx);
     av_packet_free(&_pkt);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to open codec");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to open codec");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg codec opened";
   if (_ofctx->oformat->flags & AVFMT_GLOBALHEADER) 
   {
       _cctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
@@ -168,25 +216,38 @@ int MovieWriter::initialize(const std::string& filename)
 
   if (!(_oformat->flags & AVFMT_NOFILE))
   {
-    if ((err = avio_open(&_ofctx->pb, filename.c_str(), AVIO_FLAG_WRITE)) < 0)
+    err = avio_open(&_ofctx->pb, filename.c_str(), AVIO_FLAG_WRITE);
+    if (err < 0)
     {
       avformat_free_context(_ofctx);
       avcodec_free_context(&_cctx);
       av_packet_free(&_pkt);
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to open file");
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to open file");
+      }
       return -1;
     }
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "file opened " + QString::fromStdString(filename));
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "file opened " + QString::fromStdString(filename));
+    }
   }
+  qDebug() << "ffmpeg avio_open done";
 
-  if ((err = avformat_write_header(_ofctx, NULL)) < 0)
+  err = avformat_write_header(_ofctx, NULL);
+  if (err < 0)
   {
     avformat_free_context(_ofctx);
     avcodec_free_context(&_cctx);
     av_packet_free(&_pkt);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to write header " + QString::number(err));
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to write header " + QString::number(err));
+    }
     return -1;
   }
+  qDebug() << "ffmpeg avformat_write_header done";
 
   int ret;
   _rgbpic = av_frame_alloc();
@@ -199,12 +260,29 @@ int MovieWriter::initialize(const std::string& filename)
     avformat_free_context(_ofctx);
     avcodec_free_context(&_cctx);
     av_packet_free(&_pkt);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not allocate the video frame data");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not allocate the video frame data");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg av_frame_alloc done";
 
   // Allocating memory for each conversion output YUV frame.
   _frame = av_frame_alloc();
+  if (!_frame)
+  {
+    avformat_free_context(_ofctx);
+    avcodec_free_context(&_cctx);
+    av_packet_free(&_pkt);
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not allocate a frame");
+    }
+    return -1;
+  }
+  qDebug() << "ffmpeg av_frame_alloc done";
+
   _frame->format = AV_PIX_FMT_YUV420P;
   _frame->width = _width;
   _frame->height = _height;
@@ -215,9 +293,13 @@ int MovieWriter::initialize(const std::string& filename)
     avcodec_free_context(&_cctx);
     av_packet_free(&_pkt);
     av_frame_free(&_rgbpic);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not allocate the video frame data");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not allocate the video frame data");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg av_frame_get_buffer done";
 
   if(!(_swsCtx = sws_getContext(_width, _height, AV_PIX_FMT_BGR0, _width, _height, AV_PIX_FMT_YUV420P, SWS_FAST_BILINEAR, NULL, NULL, NULL)))
   {
@@ -225,12 +307,20 @@ int MovieWriter::initialize(const std::string& filename)
     avcodec_free_context(&_cctx);
     av_packet_free(&_pkt);
     av_frame_free(&_rgbpic);
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not allocate a SwsContext");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg could not allocate a SwsContext");
+    }
     return -1;
   }
+  qDebug() << "ffmpeg sws_getContext done";
 
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "ffmpeg initialized");
-#endif
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "ffmpeg initialized");
+  }
+  qDebug() << "ffmpeg init done";
+
   return 0;
 }
 
@@ -238,10 +328,13 @@ void MovieWriter::encodeFrame(AVFrame *frame)
 {
   int ret;
 
-  #if(LIBAVUTIL_VERSION_MAJOR >= 56)
-  if ((ret = avcodec_send_frame(_cctx, frame)) < 0)
+  ret = avcodec_send_frame(_cctx, frame);
+  if(ret < 0)
   {
-    _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg failed to send frame");
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg failed to send frame");
+    }
     return;
   }
 
@@ -258,7 +351,11 @@ void MovieWriter::encodeFrame(AVFrame *frame)
       av_frame_free(&_rgbpic);
       av_frame_free(&_frame);
       sws_freeContext(_swsCtx);
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg error during encoding");
+
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg error during encoding");
+      }
       return;
     }
 
@@ -268,7 +365,6 @@ void MovieWriter::encodeFrame(AVFrame *frame)
     av_write_frame(_ofctx, _pkt);
     av_packet_unref(_pkt);
   }
-#endif
 }
 
 
@@ -285,8 +381,10 @@ void MovieWriter::addFrame(const uint8_t* pixels, size_t iframe)
 
 int MovieWriter::finalize()
 {
-  #if(LIBAVUTIL_VERSION_MAJOR >= 56)
-  _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "ffmpeg finalizing movie");
+  if(_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "ffmpeg finalizing movie");
+  }
   
   encodeFrame(NULL);
 
@@ -303,7 +401,10 @@ int MovieWriter::finalize()
       av_frame_free(&_rgbpic);
       av_frame_free(&_frame);
       sws_freeContext(_swsCtx);
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg failed to close file");
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg failed to close file");
+      }
     }
   }
 
@@ -313,6 +414,5 @@ int MovieWriter::finalize()
   av_frame_free(&_rgbpic);
   av_frame_free(&_frame);
   sws_freeContext(_swsCtx);
-#endif
   return 0;
 }

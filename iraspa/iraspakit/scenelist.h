@@ -54,7 +54,8 @@ public:
   std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> allIRASPAStructures() const;
   std::vector<std::shared_ptr<iRASPAStructure>> flattenedAllIRASPAStructures();
   std::vector<std::shared_ptr<iRASPAStructure>> selectedMoviesIRASPAStructures();
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> selectediRASPARenderStructures() const;
+  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> selectediRASPAStructures() const;
+  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> selectediRASPARenderStructures() const;
 
   std::shared_ptr<Scene> selectedScene();
   std::set<std::shared_ptr<Scene>> &selectedScenes() {return _selectedScenes;}

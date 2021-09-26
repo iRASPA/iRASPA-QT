@@ -137,7 +137,7 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
 
           this->_project = projectStructure;
           this->_camera = projectStructure->camera();
-          _iraspa_structures = projectStructure->sceneList()->selectediRASPARenderStructures();
+          _iraspa_structures = projectStructure->sceneList()->selectediRASPAStructures();
 
           for(std::vector<std::shared_ptr<iRASPAStructure>> v : _iraspa_structures)
           {
@@ -718,7 +718,7 @@ void RenderStackedWidget::ShowContextMenu(const QPoint &pos)
 // reload-data but also injects the selected frames
 void RenderStackedWidget::reloadRenderData()
 {
-  _iraspa_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
+  _iraspa_structures = _project.lock()->sceneList()->selectediRASPAStructures();
 
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
   for(std::vector<std::shared_ptr<iRASPAStructure>> v : _iraspa_structures)
@@ -943,21 +943,10 @@ void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, Movie
       {
         project->sceneList()->setSelectedFrameIndex(iframe);
 
-         std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> iraspa_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
-
-        std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
-        for(std::vector<std::shared_ptr<iRASPAStructure>> v : iraspa_structures)
-        {
-          std::vector<std::shared_ptr<RKRenderStructure>> r{};
-          std::transform(v.begin(),v.end(),std::back_inserter(r),
-                         [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
-          render_structures.push_back(r);
-        }
+        std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
 
         renderViewController->setRenderStructures(render_structures);
-
         renderViewController->reloadData();
-        // invalidate all lower quality caches
 
         invalidateCachedAmbientOcclusionTextures(project->sceneList()->allIRASPAStructures());
         QImage image = widget->renderSceneToImage(nearestEvenInt(width), nearestEvenInt(height), RKRenderQuality::picture);
@@ -966,14 +955,7 @@ void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, Movie
       }
       movie.finalize();
 
-      std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
-      for(std::vector<std::shared_ptr<iRASPAStructure>> v : _iraspa_structures)
-      {
-        std::vector<std::shared_ptr<RKRenderStructure>> r{};
-        std::transform(v.begin(),v.end(),std::back_inserter(r),
-                       [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
-        render_structures.push_back(r);
-      }
+      std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
       renderViewController->setRenderStructures(render_structures);
       renderViewController->reloadData();
     }

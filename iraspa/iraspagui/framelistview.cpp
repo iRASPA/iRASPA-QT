@@ -122,7 +122,7 @@ void FrameListView::TabItemWasSelected()
     }
 
     // propagates the selected-frames to the renderer
-    emit setSelectedRenderFrames(_sceneList->selectediRASPARenderStructures());
+    emit setSelectedRenderFrames(_sceneList->selectediRASPAStructures());
 
     // propagates the structures to the info, appearance, and cell-tabs
     emit setFlattenedSelectedFrames(_movie->selectedFramesiRASPAStructures());
@@ -194,7 +194,7 @@ void FrameListView::selectionChanged(const QItemSelection &selected, const QItem
     if(_movie->selectedFramesIndexSet().size() > 1)
     {
       // multiple frames selected, so the ambient occlusion needs to be recomputed
-      emit invalidateCachedAmbientOcclusionTexture(_sceneList->selectediRASPARenderStructures());
+      emit invalidateCachedAmbientOcclusionTexture(_sceneList->selectediRASPAStructures());
     }
 
     // only when q single frame is selected, set the selected frame
@@ -227,7 +227,7 @@ void FrameListView::selectionChanged(const QItemSelection &selected, const QItem
     }
 
     // propagates the selected-frames to the renderer
-    emit setSelectedRenderFrames(_sceneList->selectediRASPARenderStructures());
+    emit setSelectedRenderFrames(_sceneList->selectediRASPAStructures());
 
     // propagates the structures to the info, appearance, and cell-tabs
     emit setFlattenedSelectedFrames(_movie->selectedFramesiRASPAStructures());

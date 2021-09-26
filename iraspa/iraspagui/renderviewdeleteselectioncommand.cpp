@@ -37,7 +37,7 @@ RenderViewDeleteSelectionCommand::RenderViewDeleteSelectionCommand(MainWindow *m
   setText(QString("Delete selected atoms"));
 
   _structures = projectStructure->sceneList()->invalidatediRASPAStructures();
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures = projectStructure->sceneList()->selectediRASPARenderStructures();
+  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures = projectStructure->sceneList()->selectediRASPAStructures();
 
   for(const std::vector<std::shared_ptr<iRASPAStructure>> &scene : structures)
   {

@@ -217,7 +217,7 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::invalidate
   return sceneStructures;
 }
 
-std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::selectediRASPARenderStructures() const
+std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::selectediRASPAStructures() const
 {
   std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> sceneStructures{};
 
@@ -234,6 +234,25 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::selectediR
     sceneStructures.push_back(structures);
   }
   return sceneStructures;
+}
+
+
+std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> SceneList::selectediRASPARenderStructures() const
+{
+  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> renderStructures{};
+
+  for(const std::shared_ptr<Scene> &scene : _scenes)
+  {
+    std::vector<std::shared_ptr<RKRenderStructure>> structures = std::vector<std::shared_ptr<RKRenderStructure>>();
+    for(std::shared_ptr<Movie> movie: scene->movies())
+    {
+      const std::vector<std::shared_ptr<iRASPAStructure>> selectedFrames = movie->selectedFrames();
+      std::transform(selectedFrames.begin(),selectedFrames.end(),std::back_inserter(structures),
+                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+    }
+    renderStructures.push_back(structures);
+  }
+  return renderStructures;
 }
 
 SceneListSelection SceneList::allSelection()

@@ -146,7 +146,7 @@ void SceneTreeView::reloadSelection()
         }
       }
     }
-    emit setSelectedRenderFrames(_sceneList->selectediRASPARenderStructures());
+    emit setSelectedRenderFrames(_sceneList->selectediRASPAStructures());
     emit setFlattenedSelectedFrames(_sceneList->selectedMoviesIRASPAStructures());
 
     std::optional<int> sceneIndex = _sceneList->selectedSceneIndex();
@@ -287,7 +287,7 @@ void SceneTreeView::selectionChanged(const QItemSelection &selected, const QItem
     }
 
     // propagates the selected-frames to the renderer
-    emit setSelectedRenderFrames(_sceneList->selectediRASPARenderStructures());
+    emit setSelectedRenderFrames(_sceneList->selectediRASPAStructures());
 
     // propagates the structures to the info, appearance, and cell-tabs
     emit setFlattenedSelectedFrames(_sceneList->selectedMoviesIRASPAStructures());

@@ -165,7 +165,7 @@ std::vector<RKRenderStructure> ProjectStructure::renderMeasurementStructure() co
 
 SKBoundingBox ProjectStructure::renderBoundingBox() const
 {
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures = _sceneList->selectediRASPARenderStructures();
+  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures = _sceneList->selectediRASPAStructures();
 
   std::vector<std::shared_ptr<iRASPAStructure>> flattenedRenderStructures{};
   for(const std::vector<std::shared_ptr<iRASPAStructure>> &v : structures)
@@ -201,7 +201,7 @@ SKBoundingBox ProjectStructure::renderBoundingBox() const
 
 bool ProjectStructure::hasSelectedObjects() const
 {
-  for (const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures: _sceneList->selectediRASPARenderStructures())
+  for (const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures: _sceneList->selectediRASPAStructures())
   {
     for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: iraspa_structures)
     {
