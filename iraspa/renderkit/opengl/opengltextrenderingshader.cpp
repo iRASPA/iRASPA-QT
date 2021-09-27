@@ -147,8 +147,11 @@ void OpenGLTextRenderingShader::initializeVertexArrayObject()
 
       glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
       check_gl_error();
-      glBufferData(GL_ARRAY_BUFFER, coords.size()*sizeof(float4), coords.data(), GL_DYNAMIC_DRAW);
-      check_gl_error();
+      if(coords.size()>0)
+      {
+        glBufferData(GL_ARRAY_BUFFER, coords.size()*sizeof(float4), coords.data(), GL_DYNAMIC_DRAW);
+        check_gl_error();
+      }
 
 
       std::vector<RKInPerInstanceAttributesText> atomTextData = _renderStructures[i][j]->atomTextData(atlas);
@@ -156,11 +159,10 @@ void OpenGLTextRenderingShader::initializeVertexArrayObject()
 
       glBindBuffer(GL_ARRAY_BUFFER,_instanceBuffer[i][j]);
       check_gl_error();
-      if(atomTextData.size()>0)
+      if(atomTextData.size()>0 && _numberOfDrawnAtoms[i][j]>0)
       {
-        glBufferData(GL_ARRAY_BUFFER, _numberOfDrawnAtoms[i][j]*sizeof(RKInPerInstanceAttributesAtoms), atomTextData.data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, _numberOfDrawnAtoms[i][j]*sizeof(RKInPerInstanceAttributesText), atomTextData.data(), GL_DYNAMIC_DRAW);
       }
-
 
       glVertexAttribPointer(_instancePositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesText), (GLvoid *)offsetof(RKInPerInstanceAttributesText,position));
       check_gl_error();
