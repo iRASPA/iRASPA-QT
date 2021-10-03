@@ -33,7 +33,7 @@
 #include <proteincrystal.h>
 #include <molecule.h>
 #include <protein.h>
-#include <iraspastructure.h>
+#include <iraspaobject.h>
 
 #include <movie.h>
 #include <scene.h>

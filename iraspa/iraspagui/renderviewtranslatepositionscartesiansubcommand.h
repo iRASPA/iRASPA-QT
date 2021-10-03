@@ -35,12 +35,12 @@
 class RenderViewTranslatePositionsCartesianSubCommand : public QUndoCommand
 {
 public:
-  RenderViewTranslatePositionsCartesianSubCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAStructure> iraspaStructure, double3 translation, QUndoCommand *parent = nullptr);
+  RenderViewTranslatePositionsCartesianSubCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAObject> iraspaStructure, double3 translation, QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
   MainWindow *_mainWindow;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   double3 _translation;
   std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> _oldPositions;
 };

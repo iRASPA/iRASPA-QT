@@ -41,7 +41,7 @@ MolecularCrystal::MolecularCrystal(const MolecularCrystal &molecularCrystal): St
 }
 
 
-MolecularCrystal::MolecularCrystal(std::shared_ptr<SKStructure> structure): Structure(structure)
+MolecularCrystal::MolecularCrystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
   expandSymmetry();
   _atomsTreeController->setTags();
@@ -1172,20 +1172,6 @@ std::pair<double3, double3> MolecularCrystal::computeChangedBondLength(std::shar
 }
 
 
-void MolecularCrystal::setSpaceGroupHallNumber(int HallNumber)
-{
-	_spaceGroup = SKSpaceGroup(HallNumber);
-
-	std::cout << "Crystal spacegroup set to: " << HallNumber << std::endl;
-
-	expandSymmetry();
-  _atomsTreeController->setTags();
-
-  computeBonds();
-}
-
-
-
 std::vector<double3> MolecularCrystal::atomPositions() const
 {
   int minimumReplicaX = _cell->minimumReplicaX();
@@ -1604,6 +1590,10 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> MolecularCrys
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<MolecularCrystal> &molecularCrystal)
 {
   stream << molecularCrystal->_versionNumber;
+
+  // handle super class
+  stream << std::static_pointer_cast<Structure>(molecularCrystal);
+
   return stream;
 }
 
@@ -1615,5 +1605,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<MolecularCrystal> &
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "MolecularCrystal");
   }
+
+  std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(molecularCrystal);
+  stream >> structure;
+
   return stream;
 }

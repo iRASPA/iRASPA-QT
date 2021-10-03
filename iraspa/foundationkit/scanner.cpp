@@ -20,7 +20,25 @@
  ********************************************************************************************************************/
 
 #include "scanner.h"
+#include <QFile>
+#include <QTextStream>
+#include <QFileInfo>
 
+Scanner::Scanner(QUrl &url, CharacterSet charactersToBeSkipped): _charactersToBeSkipped(charactersToBeSkipped)
+{
+  QFile file(url.toLocalFile());
+  QFileInfo info(file);
+
+  if (file.open(QIODevice::ReadOnly))
+  {
+    QTextStream in(&file);
+
+    _displayName = info.baseName();
+
+    _string = in.readAll();
+  }
+   _scanLocation = _string.constBegin();
+}
 
 QString::const_iterator Scanner::find_first_not_of(const QString & chars, const QString & text, QString::const_iterator location)
 {

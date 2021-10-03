@@ -67,7 +67,7 @@ void AtomTreeViewModel::resetData()
   endResetModel();
 }
 
-void AtomTreeViewModel::setFrame(std::shared_ptr<iRASPAStructure> frame)
+void AtomTreeViewModel::setFrame(std::shared_ptr<iRASPAObject> frame)
 {
   if(_iraspaStructure != frame)
   {
@@ -83,13 +83,16 @@ QModelIndexList AtomTreeViewModel::selectedIndexes()
   QModelIndexList list = QModelIndexList();
   if(_iraspaStructure)
   {
-    std::set<IndexPath> selectedIndexPaths = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths().second;
-    for(const IndexPath &indexPath : selectedIndexPaths)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      std::shared_ptr<SKAtomTreeNode> node = _iraspaStructure->structure()->atomsTreeController()->nodeAtIndexPath(indexPath);
-      int localRow = int(indexPath.lastIndex());
-      QModelIndex index = createIndex(localRow,0,node.get());
-      list.push_back(index);
+      std::set<IndexPath> selectedIndexPaths = structure->atomsTreeController()->selectionIndexPaths().second;
+      for(const IndexPath &indexPath : selectedIndexPaths)
+      {
+        std::shared_ptr<SKAtomTreeNode> node = structure->atomsTreeController()->nodeAtIndexPath(indexPath);
+        int localRow = int(indexPath.lastIndex());
+        QModelIndex index = createIndex(localRow,0,node.get());
+        list.push_back(index);
+      }
     }
   }
   return list;
@@ -106,7 +109,7 @@ SKAtomTreeNode *AtomTreeViewModel::getItem(const QModelIndex &index) const
        return item;
      }
   }
-  return _iraspaStructure->structure()->atomsTreeController()->hiddenRootNode().get();
+  return std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomsTreeController()->hiddenRootNode().get();
 }
 
 
@@ -125,7 +128,7 @@ QModelIndex AtomTreeViewModel::parent(const QModelIndex &child) const
   SKAtomTreeNode *childNode = nodeForIndex(child);
   SKAtomTreeNode *parentNode = childNode->parent().get();
 
-  if (_iraspaStructure->structure()->atomsTreeController()->isRootNode(parentNode))
+  if (std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomsTreeController()->isRootNode(parentNode))
     return QModelIndex();
 
   int row = rowForNode(parentNode);
@@ -143,9 +146,12 @@ int AtomTreeViewModel::rowCount(const QModelIndex &parent) const
 {
   if(_iraspaStructure)
   {
-    SKAtomTreeNode *parentItem = nodeForIndex(parent);
-    if(parentItem)
-      return static_cast<int>(parentItem->childCount());
+    if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
+    {
+      SKAtomTreeNode *parentItem = nodeForIndex(parent);
+      if(parentItem)
+        return static_cast<int>(parentItem->childCount());
+    }
   }
   return 0;
 }
@@ -180,7 +186,7 @@ QVariant AtomTreeViewModel::data(const QModelIndex &index, int role) const
         if(_mainWindow)
         {
           ForceFieldSets& forceFieldSets = _mainWindow->forceFieldSets();
-          QString currentForceFieldName = _iraspaStructure->structure()->atomForceFieldIdentifier();
+          QString currentForceFieldName = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomForceFieldIdentifier();
           ForceFieldSet* currentForceFieldSet = forceFieldSets[currentForceFieldName];
           if(currentForceFieldSet)
           {
@@ -651,7 +657,7 @@ bool AtomTreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
         beginRow += 1;
       }
 
-      AtomSelectionIndexPaths selection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
+      AtomSelectionIndexPaths selection = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomsTreeController()->selectionIndexPaths();
       AtomTreeViewDropMoveCommand *moveCommand = new AtomTreeViewDropMoveCommand(_mainWindow, this, _iraspaStructure, moves, selection, nullptr);
       _projectTreeNode->representedObject()->undoManager().push(moveCommand);
     }
@@ -793,7 +799,7 @@ void AtomTreeViewModel::insertSelection(std::shared_ptr<Structure> structure, st
 // Helper functions
 QModelIndex AtomTreeViewModel::indexForNode(SKAtomTreeNode *node, int column) const
 {
-  if(_iraspaStructure->structure()->atomsTreeController()->isRootNode(node))
+  if(std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomsTreeController()->isRootNode(node))
   {
     return QModelIndex();
   }
@@ -811,7 +817,7 @@ SKAtomTreeNode *AtomTreeViewModel::nodeForIndex(const QModelIndex &index) const
     else
       return nullptr;
   }
-  return _iraspaStructure->structure()->atomsTreeController()->hiddenRootNode().get();
+  return std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomsTreeController()->hiddenRootNode().get();
 }
 
 int AtomTreeViewModel::rowForNode(SKAtomTreeNode *node) const

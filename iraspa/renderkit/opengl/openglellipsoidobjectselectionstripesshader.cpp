@@ -56,26 +56,29 @@ void OpenGLEllipsoidObjectSelectionStripesShader::paintGL(GLuint structureUnifor
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderPrimitiveEllipsoidObjectsSource* object = dynamic_cast<RKRenderPrimitiveEllipsoidObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
-        if(object->primitiveSelectionStyle() == RKSelectionStyle::striped)
+        if (RKRenderPrimitiveEllipsoidObjectsSource* object = dynamic_cast<RKRenderPrimitiveEllipsoidObjectsSource*>(_renderStructures[i][j].get()))
         {
-          if(_renderStructures[i][j]->isVisible() && _ellipsoidShader._numberOfIndices[i][j]>0 && _instanceShader._numberOfDrawnAtoms[i][j]>0)
+          if(source->primitiveSelectionStyle() == RKSelectionStyle::striped)
           {
-            glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
+            if(_renderStructures[i][j]->isVisible() && _ellipsoidShader._numberOfIndices[i][j]>0 && _instanceShader._numberOfDrawnAtoms[i][j]>0)
+            {
+              glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
 
-            glBindVertexArray(_vertexArrayObject[i][j]);
-            check_gl_error();
+              glBindVertexArray(_vertexArrayObject[i][j]);
+              check_gl_error();
 
-            glCullFace(GL_FRONT);
-            glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_ellipsoidShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDrawnAtoms[i][j]));
-            check_gl_error();
+              glCullFace(GL_FRONT);
+              glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_ellipsoidShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDrawnAtoms[i][j]));
+              check_gl_error();
 
-            glCullFace(GL_BACK);
-            glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_ellipsoidShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDrawnAtoms[i][j]));
-            check_gl_error();
+              glCullFace(GL_BACK);
+              glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_ellipsoidShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDrawnAtoms[i][j]));
+              check_gl_error();
 
-            glBindVertexArray(0);
+              glBindVertexArray(0);
+            }
           }
         }
       }

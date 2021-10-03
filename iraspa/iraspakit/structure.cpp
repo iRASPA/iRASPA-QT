@@ -1,3 +1,4 @@
+
 /********************************************************************************************************************
     iRASPA: GPU-accelated visualisation software for materials scientists
     Copyright (c) 2016-2021 David Dubbeldam, Sofia Calero, Thijs J.H. Vlugt.
@@ -29,24 +30,24 @@
 #include "skbondsetcontroller.h"
 
 Structure::Structure(): _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-                        _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1), _cell(std::make_shared<SKCell>())
+                        _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
 {
 }
 
 Structure::Structure(std::shared_ptr<SKAtomTreeController> atomTreeController): _atomsTreeController(atomTreeController),
-                     _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1), _cell(std::make_shared<SKCell>())
+                     _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
 {
 }
 
-Structure::Structure(std::shared_ptr<SKStructure> structure): _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-  _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1), _cell(structure->cell)
+Structure::Structure(std::shared_ptr<SKStructure> frame): Object(frame), _atomsTreeController(std::make_shared<SKAtomTreeController>()),
+  _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
 {
-  if(structure->spaceGroupHallNumber)
+  if(frame->spaceGroupHallNumber)
   {
-    this->_spaceGroup = *(structure->spaceGroupHallNumber);
+    this->_spaceGroup = *(frame->spaceGroupHallNumber);
   }
 
-  for(std::shared_ptr<SKAsymmetricAtom> atom: structure->atoms)
+  for(std::shared_ptr<SKAsymmetricAtom> atom: frame->atoms)
   {
     std::shared_ptr<SKAtomTreeNode> node = std::make_shared<SKAtomTreeNode>(atom);
     _atomsTreeController->appendToRootnodes(node);
@@ -54,19 +55,11 @@ Structure::Structure(std::shared_ptr<SKStructure> structure): _atomsTreeControll
 }
 
 // shallow copy, atoms/bonds are empty, spacegroup no symmetry
-Structure::Structure(const Structure &structure): _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-  _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1), _cell(std::make_shared<SKCell>())
+Structure::Structure(const Structure &structure): Object(structure),  _atomsTreeController(std::make_shared<SKAtomTreeController>()),
+  _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
 {
   qDebug() << "Base-class Copy constructor";
-  _displayName = structure._displayName;
 
-  _origin = structure._origin;
-  _scaling = structure._scaling;
-  _orientation = structure._orientation;
-  _rotationDelta = structure._rotationDelta;
-  _periodic = structure._periodic;
-  _isVisible = structure._isVisible;
-  _cell = std::make_shared<SKCell>(*structure._cell);
   _minimumGridEnergyValue = structure._minimumGridEnergyValue;
 
   _selectionCOMTranslation = structure._selectionCOMTranslation;
@@ -207,12 +200,6 @@ Structure::Structure(const Structure &structure): _atomsTreeController(std::make
   _atomTextAlignment = structure._atomTextAlignment;
   _atomTextOffset = structure._atomTextOffset;
 
-  // unit cell
-  _drawUnitCell = structure._drawUnitCell;
-  _unitCellScaleFactor = structure._unitCellScaleFactor;
-  _unitCellDiffuseColor = structure._unitCellDiffuseColor;
-  _unitCellDiffuseIntensity = structure._unitCellDiffuseIntensity;
-
   // adsorption surface
   _frameworkProbeMolecule = structure._frameworkProbeMolecule;
 
@@ -318,7 +305,7 @@ Structure::Structure(const Structure &structure): _atomsTreeController(std::make
 }
 
 Structure::Structure(std::shared_ptr<Structure> clone): _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-   _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1), _cell(std::make_shared<SKCell>())
+   _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
 {
   qDebug() << "Copy constructor Structure";
   _displayName = clone->_displayName;
@@ -811,70 +798,6 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Structure::ro
   return {};
 }
 
-double Structure::primitiveSelectionFrequency() const
-{
-  switch(_primitiveSelectionStyle)
-  {
-  case RKSelectionStyle::WorleyNoise3D:
-    return _primitiveSelectionWorleyNoise3DFrequency;
-  case RKSelectionStyle::striped:
-      return _primitiveSelectionStripesFrequency;
-  case RKSelectionStyle::None:
-  case RKSelectionStyle::glow:
-  case RKSelectionStyle::multiple_values:
-     return 0.0;
-  }
-  return 0.0;
-}
-
-void Structure::setPrimitiveSelectionFrequency(double value)
-{
-  switch(_primitiveSelectionStyle)
-  {
-  case RKSelectionStyle::WorleyNoise3D:
-    _primitiveSelectionWorleyNoise3DFrequency = value;
-    break;
-  case RKSelectionStyle::striped:
-    _primitiveSelectionStripesFrequency = value;
-    break;
-  case RKSelectionStyle::None:
-  case RKSelectionStyle::glow:
-  case RKSelectionStyle::multiple_values:
-    break;
-  }
-}
-
-double Structure::primitiveSelectionDensity() const
-{
-  switch(_primitiveSelectionStyle)
-  {
-  case RKSelectionStyle::WorleyNoise3D:
-    return _primitiveSelectionWorleyNoise3DJitter;
-  case RKSelectionStyle::striped:
-    return _primitiveSelectionStripesDensity;
-  case RKSelectionStyle::None:
-  case RKSelectionStyle::glow:
-  case RKSelectionStyle::multiple_values:
-    return 0.0;
-  }
-  return 0.0;
-}
-void Structure::setPrimitiveSelectionDensity(double value)
-{
-  switch(_primitiveSelectionStyle)
-  {
-  case RKSelectionStyle::WorleyNoise3D:
-    _primitiveSelectionWorleyNoise3DJitter = value;
-    break;
-  case RKSelectionStyle::striped:
-    _primitiveSelectionStripesDensity = value;
-    break;
-  case RKSelectionStyle::None:
-  case RKSelectionStyle::glow:
-  case RKSelectionStyle::multiple_values:
-    break;
-  }
-}
 
 // MARK: bond-computations
 // =====================================================================
@@ -1789,62 +1712,72 @@ void Structure::recomputeDensityProperties()
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &structure)
 {
   stream << structure->_versionNumber;
-  stream << structure->_displayName;
-  stream << structure->_isVisible;
+
+  if(structure->_versionNumber < 9)
+  {
+    stream << structure->_displayName;
+    stream << structure->_isVisible;
+  }
 
   stream << structure->_spaceGroup;
-  stream << structure->_cell;
-  stream << structure->_periodic;
-  stream << structure->_origin;
-  stream << structure->_scaling;
-  stream << structure->_orientation;
-  stream << structure->_rotationDelta;
 
-  stream << structure->_primitiveTransformationMatrix;
-  stream << structure->_primitiveOrientation;
-  stream << structure->_primitiveRotationDelta;
+  if(structure->_versionNumber < 9)
+  {
+    stream << structure->_cell;
+    stream << structure->_periodic;
+    stream << structure->_origin;
+    stream << structure->_scaling;
+    stream << structure->_orientation;
+    stream << structure->_rotationDelta;
+  }
 
-  stream << structure->_primitiveOpacity;
-  stream << structure->_primitiveIsCapped;
-  stream << structure->_primitiveIsFractional;
-  stream << structure->_primitiveNumberOfSides;
-  stream << structure->_primitiveThickness;
+  if(structure->_versionNumber < 9)
+  {
+    stream << structure->_primitiveTransformationMatrix;
+    stream << structure->_primitiveOrientation;
+    stream << structure->_primitiveRotationDelta;
 
-
-  stream << structure->_primitiveHue;
-  stream << structure->_primitiveSaturation;
-  stream << structure->_primitiveValue;
-
-  stream << static_cast<typename std::underlying_type<RKSelectionStyle>::type>(structure->_primitiveSelectionStyle);
-  stream << structure->_primitiveSelectionStripesDensity;
-  stream << structure->_primitiveSelectionStripesFrequency;
-  stream << structure->_primitiveSelectionWorleyNoise3DFrequency;
-  stream << structure->_primitiveSelectionWorleyNoise3DJitter;
-  stream << structure->_primitiveSelectionScaling;
-  stream << structure->_primitiveSelectionIntensity;
+    stream << structure->_primitiveOpacity;
+    stream << structure->_primitiveIsCapped;
+    stream << structure->_primitiveIsFractional;
+    stream << structure->_primitiveNumberOfSides;
+    stream << structure->_primitiveThickness;
 
 
-  stream << structure->_primitiveFrontSideHDR;
-  stream << structure->_primitiveFrontSideHDRExposure;
-  stream << structure->_primitiveFrontSideAmbientColor;
-  stream << structure->_primitiveFrontSideDiffuseColor;
-  stream << structure->_primitiveFrontSideSpecularColor;
-  stream << structure->_primitiveFrontSideDiffuseIntensity;
-  stream << structure->_primitiveFrontSideAmbientIntensity;
-  stream << structure->_primitiveFrontSideSpecularIntensity;
-  stream << structure->_primitiveFrontSideShininess;
+    stream << structure->_primitiveHue;
+    stream << structure->_primitiveSaturation;
+    stream << structure->_primitiveValue;
 
-  stream << structure->_primitiveBackSideHDR;
-  stream << structure->_primitiveBackSideHDRExposure;
-  stream << structure->_primitiveBackSideAmbientColor;
-  stream << structure->_primitiveBackSideDiffuseColor;
-  stream << structure->_primitiveBackSideSpecularColor;
-  stream << structure->_primitiveBackSideDiffuseIntensity;
-  stream << structure->_primitiveBackSideAmbientIntensity;
-  stream << structure->_primitiveBackSideSpecularIntensity;
-  stream << structure->_primitiveBackSideShininess;
+    stream << static_cast<typename std::underlying_type<RKSelectionStyle>::type>(structure->_primitiveSelectionStyle);
+    stream << structure->_primitiveSelectionStripesDensity;
+    stream << structure->_primitiveSelectionStripesFrequency;
+    stream << structure->_primitiveSelectionWorleyNoise3DFrequency;
+    stream << structure->_primitiveSelectionWorleyNoise3DJitter;
+    stream << structure->_primitiveSelectionScaling;
+    stream << structure->_primitiveSelectionIntensity;
 
-  stream << static_cast<typename std::underlying_type<Structure::ProbeMolecule>::type>(structure->_frameworkProbeMolecule);
+
+    stream << structure->_primitiveFrontSideHDR;
+    stream << structure->_primitiveFrontSideHDRExposure;
+    stream << structure->_primitiveFrontSideAmbientColor;
+    stream << structure->_primitiveFrontSideDiffuseColor;
+    stream << structure->_primitiveFrontSideSpecularColor;
+    stream << structure->_primitiveFrontSideDiffuseIntensity;
+    stream << structure->_primitiveFrontSideAmbientIntensity;
+    stream << structure->_primitiveFrontSideSpecularIntensity;
+    stream << structure->_primitiveFrontSideShininess;
+
+    stream << structure->_primitiveBackSideHDR;
+    stream << structure->_primitiveBackSideHDRExposure;
+    stream << structure->_primitiveBackSideAmbientColor;
+    stream << structure->_primitiveBackSideDiffuseColor;
+    stream << structure->_primitiveBackSideSpecularColor;
+    stream << structure->_primitiveBackSideDiffuseIntensity;
+    stream << structure->_primitiveBackSideAmbientIntensity;
+    stream << structure->_primitiveBackSideSpecularIntensity;
+    stream << structure->_primitiveBackSideShininess;
+  }
+  stream << static_cast<typename std::underlying_type<ProbeMolecule>::type>(structure->_frameworkProbeMolecule);
 
   stream << structure->_minimumGridEnergyValue;
 
@@ -1936,13 +1869,15 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
 
   stream << structure->_bondAmbientOcclusion;
 
+  if(structure->_versionNumber < 9)
+  {
+    stream << structure->_drawUnitCell;
+    stream << structure->_unitCellScaleFactor;
+    stream << structure->_unitCellDiffuseColor;
+    stream << structure->_unitCellDiffuseIntensity;
 
-  stream << structure->_drawUnitCell;
-  stream << structure->_unitCellScaleFactor;
-  stream << structure->_unitCellDiffuseColor;
-  stream << structure->_unitCellDiffuseIntensity;
-
-  stream << structure->_localAxes;
+    stream << structure->_localAxes;
+  }
 
   stream << structure->_drawAdsorptionSurface;
   stream << structure->_adsorptionSurfaceOpacity;
@@ -1952,7 +1887,7 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << structure->_adsorptionSurfaceSize;
   stream << structure->_adsorptionSurfaceNumberOfTriangles;
 
-  stream << static_cast<typename std::underlying_type<Structure::ProbeMolecule>::type>(structure->_adsorptionSurfaceProbeMolecule);
+  stream << static_cast<typename std::underlying_type<ProbeMolecule>::type>(structure->_adsorptionSurfaceProbeMolecule);
 
   stream << structure->_adsorptionSurfaceHue;
   stream << structure->_adsorptionSurfaceSaturation;
@@ -2058,6 +1993,9 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << uint32_t(structure->_citationPublicationDate.year());
   stream << structure->_citationDatebaseCodes;
 
+  // handle super class
+  stream << std::static_pointer_cast<Object>(structure);
+
   return stream;
 }
 
@@ -2073,72 +2011,83 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "Structure");
   }
 
-  stream >> structure->_displayName;
-  stream >> structure->_isVisible;
+  if(versionNumber < 9)
+  {
+    stream >> structure->_displayName;
+    stream >> structure->_isVisible;
+  }
 
   stream >> structure->_spaceGroup;
-  stream >> structure->_cell;
-  stream >> structure->_periodic;
-  stream >> structure->_origin;
-  stream >> structure->_scaling;
-  stream >> structure->_orientation;
-  stream >> structure->_rotationDelta;
 
-  if(versionNumber >= 2)
+
+  if(versionNumber < 9)
   {
-    stream >> structure->_primitiveTransformationMatrix;
-    stream >> structure->_primitiveOrientation;
-    stream >> structure->_primitiveRotationDelta;
+    stream >> structure->_cell;
+    stream >> structure->_periodic;
+    stream >> structure->_origin;
+    stream >> structure->_scaling;
+    stream >> structure->_orientation;
+    stream >> structure->_rotationDelta;
+  }
 
-    stream >> structure->_primitiveOpacity;
-    stream >> structure->_primitiveIsCapped;
-    stream >> structure->_primitiveIsFractional;
-    stream >> structure->_primitiveNumberOfSides;
-    stream >> structure->_primitiveThickness;
-
-    if(versionNumber >= 6)
+  if(versionNumber < 9)
+  {
+    if(versionNumber >= 2)
     {
-      stream >> structure->_primitiveHue;
-      stream >> structure->_primitiveSaturation;
-      stream >> structure->_primitiveValue;
+      stream >> structure->_primitiveTransformationMatrix;
+      stream >> structure->_primitiveOrientation;
+      stream >> structure->_primitiveRotationDelta;
 
-      qint64 primitiveSelectionStyle;
-      stream >> primitiveSelectionStyle;
-      structure->_primitiveSelectionStyle = RKSelectionStyle(primitiveSelectionStyle);
-      stream >> structure->_primitiveSelectionStripesDensity;
-      stream >> structure->_primitiveSelectionStripesFrequency;
-      stream >> structure->_primitiveSelectionWorleyNoise3DFrequency;
-      stream >> structure->_primitiveSelectionWorleyNoise3DJitter;
-      stream >> structure->_primitiveSelectionScaling;
-      stream >> structure->_primitiveSelectionIntensity;
+      stream >> structure->_primitiveOpacity;
+      stream >> structure->_primitiveIsCapped;
+      stream >> structure->_primitiveIsFractional;
+      stream >> structure->_primitiveNumberOfSides;
+      stream >> structure->_primitiveThickness;
+
+      if(versionNumber >= 6)
+      {
+        stream >> structure->_primitiveHue;
+        stream >> structure->_primitiveSaturation;
+        stream >> structure->_primitiveValue;
+
+        qint64 primitiveSelectionStyle;
+        stream >> primitiveSelectionStyle;
+        structure->_primitiveSelectionStyle = RKSelectionStyle(primitiveSelectionStyle);
+        stream >> structure->_primitiveSelectionStripesDensity;
+        stream >> structure->_primitiveSelectionStripesFrequency;
+        stream >> structure->_primitiveSelectionWorleyNoise3DFrequency;
+        stream >> structure->_primitiveSelectionWorleyNoise3DJitter;
+        stream >> structure->_primitiveSelectionScaling;
+        stream >> structure->_primitiveSelectionIntensity;
+      }
+
+      stream >> structure->_primitiveFrontSideHDR;
+      stream >> structure->_primitiveFrontSideHDRExposure;
+      stream >> structure->_primitiveFrontSideAmbientColor;
+      stream >> structure->_primitiveFrontSideDiffuseColor;
+      stream >> structure->_primitiveFrontSideSpecularColor;
+      stream >> structure->_primitiveFrontSideDiffuseIntensity;
+      stream >> structure->_primitiveFrontSideAmbientIntensity;
+      stream >> structure->_primitiveFrontSideSpecularIntensity;
+      stream >> structure->_primitiveFrontSideShininess;
+
+      stream >> structure->_primitiveBackSideHDR;
+      stream >> structure->_primitiveBackSideHDRExposure;
+      stream >> structure->_primitiveBackSideAmbientColor;
+      stream >> structure->_primitiveBackSideDiffuseColor;
+      stream >> structure->_primitiveBackSideSpecularColor;
+      stream >> structure->_primitiveBackSideDiffuseIntensity;
+      stream >> structure->_primitiveBackSideAmbientIntensity;
+      stream >> structure->_primitiveBackSideSpecularIntensity;
+      stream >> structure->_primitiveBackSideShininess;
     }
-
-    stream >> structure->_primitiveFrontSideHDR;
-    stream >> structure->_primitiveFrontSideHDRExposure;
-    stream >> structure->_primitiveFrontSideAmbientColor;
-    stream >> structure->_primitiveFrontSideDiffuseColor;
-    stream >> structure->_primitiveFrontSideSpecularColor;
-    stream >> structure->_primitiveFrontSideDiffuseIntensity;
-    stream >> structure->_primitiveFrontSideAmbientIntensity;
-    stream >> structure->_primitiveFrontSideSpecularIntensity;
-    stream >> structure->_primitiveFrontSideShininess;
-
-    stream >> structure->_primitiveBackSideHDR;
-    stream >> structure->_primitiveBackSideHDRExposure;
-    stream >> structure->_primitiveBackSideAmbientColor;
-    stream >> structure->_primitiveBackSideDiffuseColor;
-    stream >> structure->_primitiveBackSideSpecularColor;
-    stream >> structure->_primitiveBackSideDiffuseIntensity;
-    stream >> structure->_primitiveBackSideAmbientIntensity;
-    stream >> structure->_primitiveBackSideSpecularIntensity;
-    stream >> structure->_primitiveBackSideShininess;
   }
 
   if(versionNumber >= 3)
   {
     qint64 probeMolecule;
     stream >> probeMolecule;
-    structure->_frameworkProbeMolecule = Structure::ProbeMolecule(probeMolecule);
+    structure->_frameworkProbeMolecule = ProbeMolecule(probeMolecule);
   }
 
   stream >> structure->_minimumGridEnergyValue;
@@ -2291,14 +2240,17 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
 
   stream >> structure->_bondAmbientOcclusion;
 
-  stream >> structure->_drawUnitCell;
-  stream >> structure->_unitCellScaleFactor;
-  stream >> structure->_unitCellDiffuseColor;
-  stream >> structure->_unitCellDiffuseIntensity;
-
-  if(versionNumber >= 8) // introduced in version 8
+  if(versionNumber < 9)
   {
-    stream >> structure->_localAxes;
+    stream >> structure->_drawUnitCell;
+    stream >> structure->_unitCellScaleFactor;
+    stream >> structure->_unitCellDiffuseColor;
+    stream >> structure->_unitCellDiffuseIntensity;
+
+    if(versionNumber >= 8) // introduced in version 8
+    {
+      stream >> structure->_localAxes;
+    }
   }
 
   stream >> structure->_drawAdsorptionSurface;
@@ -2311,7 +2263,7 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
 
   qint64 adsorptionSurfaceProbeMolecule;
   stream >> adsorptionSurfaceProbeMolecule;
-  structure->_adsorptionSurfaceProbeMolecule = Structure::ProbeMolecule(adsorptionSurfaceProbeMolecule);
+  structure->_adsorptionSurfaceProbeMolecule = ProbeMolecule(adsorptionSurfaceProbeMolecule);
 
   if(versionNumber >= 6) // introduced in version 6
   {
@@ -2450,6 +2402,12 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
 
   structure->atomsTreeController()->setTags();
   structure->bondSetController()->setTags();
+
+  if(versionNumber >= 9)
+  {
+    std::shared_ptr<Object> object = std::static_pointer_cast<Object>(structure);
+    stream >> object;
+  }
 
   return stream;
 }

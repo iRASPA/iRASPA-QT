@@ -35,14 +35,14 @@
 class AtomTreeViewFindPrimitiveCommand : public QUndoCommand
 {
 public:
-  AtomTreeViewFindPrimitiveCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAStructure> iraspaStructure,
+  AtomTreeViewFindPrimitiveCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAObject> iraspaStructure,
                          AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection,
                          QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
   MainWindow *_mainWindow;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<Structure> _structure;
   AtomSelectionIndexPaths _atomSelection;
   BondSelectionNodesAndIndexSet _bondSelection;

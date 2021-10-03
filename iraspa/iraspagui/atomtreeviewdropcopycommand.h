@@ -33,14 +33,14 @@
 class AtomTreeViewDropCopyCommand : public QUndoCommand
 {
 public:
-  AtomTreeViewDropCopyCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure,
+  AtomTreeViewDropCopyCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAObject> iraspaStructure,
                               std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> moves, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
 private:
   MainWindow *_mainWindow;
   AtomTreeViewModel *_model;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<Structure> _structure;
   std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> _moves;
   std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> _reverseMoves;

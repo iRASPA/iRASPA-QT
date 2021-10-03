@@ -21,7 +21,7 @@
 
 #include "scenetreeviewstyleditemdelegate.h"
 #include <qtreeview.h>
-#include "iraspastructure.h"
+#include "iraspaobject.h"
 #include "scenetreeview.h"
 #include "scenetreeviewmodel.h"
 

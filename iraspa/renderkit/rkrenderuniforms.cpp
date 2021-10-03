@@ -23,11 +23,11 @@
 #include "rkrenderkitprotocols.h"
 #include "mathkit.h"
 
-RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double4x4 axesProjectionMatrix, double4x4 axesModelViewMatrix, double bloomLevel, double bloomPulse, int multiSampling)
+RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double4x4 modelMatrix, double4x4 viewMatrix, double4x4 axesProjectionMatrix, double4x4 axesModelViewMatrix, bool isOrthographic, double bloomLevel, double bloomPulse, int multiSampling)
 {
     double4x4 currentMvpMatrix = projectionMatrix * modelViewMatrix;
     this->projectionMatrix = float4x4(projectionMatrix);
-    this->viewMatrix = float4x4(modelViewMatrix);
+    this->modelViewMatrix = float4x4(modelViewMatrix);
     this->mvpMatrix = float4x4(currentMvpMatrix);
     this->shadowMatrix = float4x4(currentMvpMatrix);
 
@@ -37,6 +37,14 @@ RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, d
     this->axesProjectionMatrix = float4x4(axesProjectionMatrix);
     this->axesViewMatrix = float4x4(axesModelViewMatrix);
     this->axesMvpMatrix = float4x4(axesProjectionMatrix * axesModelViewMatrix);
+
+    double4x4 modifiedCameraViewMatrix = viewMatrix;
+    if(isOrthographic)
+    {
+      modifiedCameraViewMatrix.wz = -10000.0;
+    }
+    double4 camera_position = double4x4::inverse(modifiedCameraViewMatrix * modelMatrix) * double4(0.0, 0.0, 0.0, 1.0);
+    this->cameraPosition = float4(camera_position);
 
     double3x3 currentNormalMatrix = double3x3::transpose(double3x3::inverse(double3x3(modelViewMatrix)));
     this->normalMatrix = float4x4(double4x4(currentNormalMatrix));
@@ -48,151 +56,33 @@ RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, d
 
 RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure)
 {
-  SKBoundingBox boundingbox = structure->cell()->boundingBox();
-  double3 centerOfRotation = boundingbox.center();
-
-  double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(structure->orientation()),centerOfRotation, structure->origin());
-
-  this->sceneIdentifier = int32_t(sceneIdentifier);
-  this->MovieIdentifier = int32_t(movieIdentifier);
-
-
-  this->colorAtomsWithBondColor = structure->colorAtomsWithBondColor();
-  this->atomScaleFactor = float(structure->atomScaleFactor());
-  this->modelMatrix = float4x4(currentModelMatrix);
-  this->atomHue = float(structure->atomHue());
-  this->atomSaturation = float(structure->atomSaturation());
-  this->atomValue = float(structure->atomValue());
-
-  this->ambientOcclusion = structure->atomAmbientOcclusion();
-  this->ambientOcclusionPatchNumber = int32_t(structure->atomAmbientOcclusionPatchNumber());
-  this->ambientOcclusionPatchSize = float(structure->atomAmbientOcclusionPatchSize());
-  this->ambientOcclusionInverseTextureSize = float(1.0/double(structure->atomAmbientOcclusionTextureSize()));
-
-
-  this->atomAmbient = float(structure->atomAmbientIntensity()) * float4(structure->atomAmbientColor().redF(),structure->atomAmbientColor().greenF(),
-                                                                        structure->atomAmbientColor().blueF(),structure->atomAmbientColor().alphaF());
-  this->atomDiffuse = float(structure->atomDiffuseIntensity()) * float4(structure->atomDiffuseColor().redF(),structure->atomDiffuseColor().greenF(),
-                                                                        structure->atomDiffuseColor().blueF(),structure->atomDiffuseColor().alphaF());
-  this->atomSpecular = float(structure->atomSpecularIntensity()) * float4(structure->atomSpecularColor().redF(),structure->atomSpecularColor().greenF(),
-                                                                          structure->atomSpecularColor().blueF(),structure->atomSpecularColor().alphaF());
-  this->atomShininess = float(structure->atomShininess());
-
-
-  this->bondScaling = float(structure->bondScaleFactor());
-  this->bondColorMode = int32_t(structure->bondColorMode());
-
-  this->unitCellScaling =  float(structure->unitCellScaleFactor());
-  this->unitCellDiffuseColor = float(structure->unitCellDiffuseIntensity()) * float4(structure->unitCellDiffuseColor().redF(),structure->unitCellDiffuseColor().greenF(),
-                                                                                     structure->unitCellDiffuseColor().blueF(),structure->unitCellDiffuseColor().alphaF());
-
-  this->atomHDR = structure->atomHDR();
-  this->atomHDRExposure = float(structure->atomHDRExposure());
-  this->atomSelectionIntensity = float(structure->atomSelectionIntensity());
-  this->clipAtomsAtUnitCell = structure->clipAtomsAtUnitCell();
-
-  this->bondHDR = structure->bondHDR();
-  this->bondHDRExposure = float(structure->bondHDRExposure());
-  this->bondSelectionIntensity = float(structure->bondSelectionIntensity());
-  this->clipBondsAtUnitCell = structure->clipBondsAtUnitCell();
-
-  this->bondHue = float(structure->bondHue());
-  this->bondSaturation = float(structure->bondSaturation());
-  this->bondValue = float(structure->bondValue());
-
-  this->bondAmbientColor = float(structure->bondAmbientIntensity()) * float4(structure->bondAmbientColor().redF(),structure->bondAmbientColor().greenF(),
-                                                                             structure->bondAmbientColor().blueF(),structure->bondAmbientColor().alphaF());
-  this->bondDiffuseColor = float(structure->bondDiffuseIntensity()) * float4(structure->bondDiffuseColor().redF(),structure->bondDiffuseColor().greenF(),
-                                                                             structure->bondDiffuseColor().blueF(),structure->bondDiffuseColor().alphaF());
-  this->bondSpecularColor = float(structure->bondSpecularIntensity()) * float4(structure->bondSpecularColor().redF(),structure->bondSpecularColor().greenF(),
-                                                                               structure->bondSpecularColor().blueF(),structure->bondSpecularColor().alphaF());
-  this->bondShininess = float(structure->bondShininess());
-
-  this->bondSelectionStripesDensity = float(structure->bondSelectionStripesDensity());
-  this->bondSelectionStripesFrequency = float(structure->bondSelectionStripesFrequency());
-  this->bondSelectionWorleyNoise3DFrequency = float(structure->bondSelectionWorleyNoise3DFrequency());
-  this->bondSelectionWorleyNoise3DJitter = float(structure->bondSelectionWorleyNoise3DJitter());
-  this->bondSelectionIntensity = float(structure->bondSelectionIntensity());
-  this->bondSelectionScaling = float(std::max(1.001,structure->bondSelectionScaling())); // avoid artifacts
-
-  double3x3 unitCell = structure->cell()->unitCell();
-  double3x3 box = structure->cell()->box();
-  double3 corner = unitCell * double3(double(structure->cell()->minimumReplicas().x), double(structure->cell()->minimumReplicas().y), double(structure->cell()->minimumReplicas().z));
-  double3 corner2 = unitCell * double3(double(structure->cell()->maximumReplicas().x)+1.0, double(structure->cell()->maximumReplicas().y)+1.0, double(structure->cell()->maximumReplicas().z)+1.0);
-
-  this->boxMatrix = float4x4(box);
-  double3 shift = structure->cell()->unitCell() * double3(structure->cell()->minimumReplicas());
-  this->boxMatrix[3][0] = float(shift.x);
-  this->boxMatrix[3][1] = float(shift.y);
-  this->boxMatrix[3][2] = float(shift.z);
-
-
-  this->atomSelectionScaling = float(std::max(1.001,structure->atomSelectionScaling())); // avoid artifacts
-  this->atomSelectionStripesDensity = float(structure->atomSelectionStripesDensity());
-  this->atomSelectionStripesFrequency = float(structure->atomSelectionStripesFrequency());
-  this->atomSelectionWorleyNoise3DFrequency = float(structure->atomSelectionWorleyNoise3DFrequency());
-  this->atomSelectionWorleyNoise3DJitter = float(structure->atomSelectionWorleyNoise3DJitter());
-
-  this->atomAnnotationTextColor = float4(structure->renderTextColor().redF(),structure->renderTextColor().greenF(),
-                                         structure->renderTextColor().blueF(),structure->renderTextColor().alphaF());
-  this->atomAnnotationTextScaling = float(structure->renderTextScaling());
-  this->atomAnnotationTextDisplacement = float4(float(structure->renderTextOffset().x),
-                                               float(structure->renderTextOffset().y),
-                                               float(structure->renderTextOffset().z),
-                                               0.0);
-
-  // clipping planes are in object space
-  double3 u_plane0 = double3::normalize(double3::cross(box[0],box[1]));
-  double3 u_plane1 = double3::normalize(double3::cross(box[2],box[0]));
-  double3 u_plane2 = double3::normalize(double3::cross(box[1],box[2]));
-  this->clipPlaneBack = float4(u_plane0.x, u_plane0.y, u_plane0.z, -double3::dot(u_plane0,corner));
-  this->clipPlaneBottom = float4(u_plane1.x, u_plane1.y, u_plane1.z, -double3::dot(u_plane1,corner));
-  this->clipPlaneLeft = float4(u_plane2.x, u_plane2.y, u_plane2.z, -double3::dot(u_plane2,corner));
-  this->clipPlaneFront = float4(-u_plane0.x, -u_plane0.y, -u_plane0.z, double3::dot(u_plane0,corner2));
-  this->clipPlaneTop = float4(-u_plane1.x, -u_plane1.y, -u_plane1.z, double3::dot(u_plane1,corner2));
-  this->clipPlaneRight = float4(-u_plane2.x, -u_plane2.y, -u_plane2.z, double3::dot(u_plane2,corner2));
-
-  if(RKRenderPrimitiveObjectsSource *source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(structure.get()))
+  if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
   {
-    float4x4 primitiveModelMatrix = float4x4(double4x4(source->primitiveOrientation()));
-    float4x4 primitiveNormalMatrix = float4x4(double3x3(source->primitiveOrientation()).inverse().transpose());  // tranpose
+    SKBoundingBox boundingbox = renderStructure->cell()->boundingBox();
+    double3 centerOfRotation = boundingbox.center();
 
-    this->transformationMatrix = primitiveModelMatrix * float4x4(source->primitiveTransformationMatrix());
-    this->transformationNormalMatrix = primitiveNormalMatrix * float4x4(source->primitiveTransformationMatrix().inverse().transpose()); // tranpose
+    double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(renderStructure->orientation()),centerOfRotation, renderStructure->origin());
 
-    this->primitiveOpacity = source->primitiveOpacity();
+    this->modelMatrix = float4x4(currentModelMatrix);
+    this->inverseModelMatrix = float4x4(double3x3::inverse(currentModelMatrix));
 
-    this->primitiveSelectionStripesDensity = float(source->primitiveSelectionStripesDensity());
-    this->primitiveSelectionStripesFrequency = float(source->primitiveSelectionStripesFrequency());
-    this->primitiveSelectionWorleyNoise3DFrequency = float(source->primitiveSelectionWorleyNoise3DFrequency());
-    this->primitiveSelectionWorleyNoise3DJitter = float(source->primitiveSelectionWorleyNoise3DJitter());
-    this->primitiveSelectionIntensity = float(source->primitiveSelectionIntensity());
-    this->primitiveSelectionScaling = float(std::max(1.001,source->primitiveSelectionScaling())); // avoid artifacts
+    this->unitCellScaling =  float(renderStructure->unitCellScaleFactor());
+    this->unitCellDiffuseColor = float(renderStructure->unitCellDiffuseIntensity()) * float4(renderStructure->unitCellDiffuseColor().redF(),renderStructure->unitCellDiffuseColor().greenF(),
+                                                                                             renderStructure->unitCellDiffuseColor().blueF(),renderStructure->unitCellDiffuseColor().alphaF());
 
-    this->primitiveHue = float(source->primitiveHue());
-    this->primitiveSaturation = float(source->primitiveSaturation());
-    this->primitiveValue = float(source->primitiveValue());
 
-    this->primitiveFrontSideHDR = source->primitiveFrontSideHDR();
-    this->primitiveFrontSideHDRExposure = float(source->primitiveFrontSideHDRExposure());
-    this->primitiveAmbientFrontSide = float(source->primitiveFrontSideAmbientIntensity()) * float4(source->primitiveFrontSideAmbientColor(), source->primitiveOpacity());
-    this->primitiveDiffuseFrontSide = float(source->primitiveFrontSideDiffuseIntensity()) * float4(source->primitiveFrontSideDiffuseColor(), source->primitiveOpacity());
-    this->primitiveSpecularFrontSide = float(source->primitiveFrontSideSpecularIntensity()) * float4(source->primitiveFrontSideSpecularColor(), source->primitiveOpacity());
-    this->primitiveShininessFrontSide = float(source->primitiveFrontSideShininess());
+    double3 offset = renderStructure->renderLocalAxes().offset();
+    double3x3 box = renderStructure->cell()->box();
+    double3 boxAspectRatio = boundingbox.aspectRatio();
+    this->aspectRatio = float4(boxAspectRatio.x,boxAspectRatio.y,boxAspectRatio.z, 1.0);
 
-    this->primitiveBackSideHDR = source->primitiveBackSideHDR();
-    this->primitiveBackSideHDRExposure = float(source->primitiveBackSideHDRExposure());
-    this->primitiveAmbientBackSide = float(source->primitiveBackSideAmbientIntensity()) * float4(source->primitiveBackSideAmbientColor(), source->primitiveOpacity());
-    this->primitiveDiffuseBackSide = float(source->primitiveBackSideDiffuseIntensity()) * float4(source->primitiveBackSideDiffuseColor(), source->primitiveOpacity());
-    this->primitiveSpecularBackSide = float(source->primitiveBackSideSpecularIntensity()) * float4(source->primitiveBackSideSpecularColor(), source->primitiveOpacity());
-    this->primitiveShininessBackSide = float(source->primitiveBackSideShininess());
-  }
+    this->boxMatrix = float4x4(box);
+    double3 shift = renderStructure->cell()->unitCell() * double3(renderStructure->cell()->minimumReplicas());
+    this->boxMatrix[3][0] = float(shift.x);
+    this->boxMatrix[3][1] = float(shift.y);
+    this->boxMatrix[3][2] = float(shift.z);
 
-  if(RKRenderLocalAxesStructure *source = dynamic_cast<RKRenderLocalAxesStructure*>(structure.get()))
-  {
-    double3 offset = source->renderLocalAxes().offset();
-
-    switch(source->renderLocalAxes().position())
+    switch(renderStructure->renderLocalAxes().position())
     {
     case RKLocalAxes::Position::none:
       this->localAxisPosition = float4(0.0,0.0,0.0,1.0) + float4(offset.x,offset.y,offset.z,0.0);
@@ -201,7 +91,7 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       this->localAxisPosition = float4(0.0,0.0,0.0,1.0) + float4(offset.x,offset.y,offset.z,0.0);
       break;
     case RKLocalAxes::Position::center:
-        this->localAxisPosition =  box * float4(0.5,0.5,0.5,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+      this->localAxisPosition =  box * float4(0.5,0.5,0.5,1.0) + float4(offset.x,offset.y,offset.z,0.0);
       break;
     case RKLocalAxes::Position::originBoundingBox:
       this->localAxisPosition = float4(boundingbox.minimum().x,boundingbox.minimum().y,boundingbox.minimum().z,1.0) + float4(offset.x,offset.y,offset.z,0.0);
@@ -212,115 +102,257 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     default:
       break;
     }
+
+    if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
+    {
+      this->sceneIdentifier = int32_t(sceneIdentifier);
+      this->MovieIdentifier = int32_t(movieIdentifier);
+
+
+      this->colorAtomsWithBondColor = source->colorAtomsWithBondColor();
+      this->atomScaleFactor = float(source->atomScaleFactor());
+
+      this->atomHue = float(source->atomHue());
+      this->atomSaturation = float(source->atomSaturation());
+      this->atomValue = float(source->atomValue());
+
+      this->ambientOcclusion = source->atomAmbientOcclusion();
+      this->ambientOcclusionPatchNumber = int32_t(source->atomAmbientOcclusionPatchNumber());
+      this->ambientOcclusionPatchSize = float(source->atomAmbientOcclusionPatchSize());
+      this->ambientOcclusionInverseTextureSize = float(1.0/double(source->atomAmbientOcclusionTextureSize()));
+
+
+      this->atomAmbient = float(source->atomAmbientIntensity()) * float4(source->atomAmbientColor().redF(),source->atomAmbientColor().greenF(),
+                                                                            source->atomAmbientColor().blueF(),source->atomAmbientColor().alphaF());
+      this->atomDiffuse = float(source->atomDiffuseIntensity()) * float4(source->atomDiffuseColor().redF(),source->atomDiffuseColor().greenF(),
+                                                                            source->atomDiffuseColor().blueF(),source->atomDiffuseColor().alphaF());
+      this->atomSpecular = float(source->atomSpecularIntensity()) * float4(source->atomSpecularColor().redF(),source->atomSpecularColor().greenF(),
+                                                                              source->atomSpecularColor().blueF(),source->atomSpecularColor().alphaF());
+      this->atomShininess = float(source->atomShininess());
+
+
+      this->bondScaling = float(source->bondScaleFactor());
+      this->bondColorMode = int32_t(source->bondColorMode());
+
+
+      this->atomHDR = source->atomHDR();
+      this->atomHDRExposure = float(source->atomHDRExposure());
+      this->atomSelectionIntensity = float(source->atomSelectionIntensity());
+      this->clipAtomsAtUnitCell = source->clipAtomsAtUnitCell();
+
+      this->bondHDR = source->bondHDR();
+      this->bondHDRExposure = float(source->bondHDRExposure());
+      this->bondSelectionIntensity = float(source->bondSelectionIntensity());
+      this->clipBondsAtUnitCell = source->clipBondsAtUnitCell();
+
+      this->bondHue = float(source->bondHue());
+      this->bondSaturation = float(source->bondSaturation());
+      this->bondValue = float(source->bondValue());
+
+      this->bondAmbientColor = float(source->bondAmbientIntensity()) * float4(source->bondAmbientColor().redF(),source->bondAmbientColor().greenF(),
+                                                                              source->bondAmbientColor().blueF(),source->bondAmbientColor().alphaF());
+      this->bondDiffuseColor = float(source->bondDiffuseIntensity()) * float4(source->bondDiffuseColor().redF(),source->bondDiffuseColor().greenF(),
+                                                                              source->bondDiffuseColor().blueF(),source->bondDiffuseColor().alphaF());
+      this->bondSpecularColor = float(source->bondSpecularIntensity()) * float4(source->bondSpecularColor().redF(),source->bondSpecularColor().greenF(),
+                                                                                source->bondSpecularColor().blueF(),source->bondSpecularColor().alphaF());
+      this->bondShininess = float(source->bondShininess());
+
+      this->bondSelectionStripesDensity = float(source->bondSelectionStripesDensity());
+      this->bondSelectionStripesFrequency = float(source->bondSelectionStripesFrequency());
+      this->bondSelectionWorleyNoise3DFrequency = float(source->bondSelectionWorleyNoise3DFrequency());
+      this->bondSelectionWorleyNoise3DJitter = float(source->bondSelectionWorleyNoise3DJitter());
+      this->bondSelectionIntensity = float(source->bondSelectionIntensity());
+      this->bondSelectionScaling = float(std::max(1.001,source->bondSelectionScaling())); // avoid artifacts
+
+      double3x3 unitCell = renderStructure->cell()->unitCell();
+      double3 corner = unitCell * double3(double(renderStructure->cell()->minimumReplicas().x), double(renderStructure->cell()->minimumReplicas().y), double(renderStructure->cell()->minimumReplicas().z));
+      double3 corner2 = unitCell * double3(double(renderStructure->cell()->maximumReplicas().x)+1.0, double(renderStructure->cell()->maximumReplicas().y)+1.0, double(renderStructure->cell()->maximumReplicas().z)+1.0);
+
+      //this->boxMatrix = float4x4(box);
+      //double3 shift = renderStructure->cell()->unitCell() * double3(renderStructure->cell()->minimumReplicas());
+      //this->boxMatrix[3][0] = float(shift.x);
+      //this->boxMatrix[3][1] = float(shift.y);
+      //this->boxMatrix[3][2] = float(shift.z);
+
+
+      this->atomSelectionScaling = float(std::max(1.001,source->atomSelectionScaling())); // avoid artifacts
+      this->atomSelectionStripesDensity = float(source->atomSelectionStripesDensity());
+      this->atomSelectionStripesFrequency = float(source->atomSelectionStripesFrequency());
+      this->atomSelectionWorleyNoise3DFrequency = float(source->atomSelectionWorleyNoise3DFrequency());
+      this->atomSelectionWorleyNoise3DJitter = float(source->atomSelectionWorleyNoise3DJitter());
+
+      this->atomAnnotationTextColor = float4(source->renderTextColor().redF(),source->renderTextColor().greenF(),
+                                             source->renderTextColor().blueF(),source->renderTextColor().alphaF());
+      this->atomAnnotationTextScaling = float(source->renderTextScaling());
+      this->atomAnnotationTextDisplacement = float4(float(source->renderTextOffset().x),
+                                                   float(source->renderTextOffset().y),
+                                                   float(source->renderTextOffset().z),
+                                                   0.0);
+
+      // clipping planes are in object space
+      double3 u_plane0 = double3::normalize(double3::cross(box[0],box[1]));
+      double3 u_plane1 = double3::normalize(double3::cross(box[2],box[0]));
+      double3 u_plane2 = double3::normalize(double3::cross(box[1],box[2]));
+      this->clipPlaneBack = float4(u_plane0.x, u_plane0.y, u_plane0.z, -double3::dot(u_plane0,corner));
+      this->clipPlaneBottom = float4(u_plane1.x, u_plane1.y, u_plane1.z, -double3::dot(u_plane1,corner));
+      this->clipPlaneLeft = float4(u_plane2.x, u_plane2.y, u_plane2.z, -double3::dot(u_plane2,corner));
+      this->clipPlaneFront = float4(-u_plane0.x, -u_plane0.y, -u_plane0.z, double3::dot(u_plane0,corner2));
+      this->clipPlaneTop = float4(-u_plane1.x, -u_plane1.y, -u_plane1.z, double3::dot(u_plane1,corner2));
+      this->clipPlaneRight = float4(-u_plane2.x, -u_plane2.y, -u_plane2.z, double3::dot(u_plane2,corner2));
+    }
+
+    if(RKRenderPrimitiveObjectsSource *source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(structure.get()))
+    {
+      float4x4 primitiveModelMatrix = float4x4(double4x4(source->primitiveOrientation()));
+      float4x4 primitiveNormalMatrix = float4x4(double3x3(source->primitiveOrientation()).inverse().transpose());  // tranpose
+
+      this->transformationMatrix = primitiveModelMatrix * float4x4(source->primitiveTransformationMatrix());
+      this->transformationNormalMatrix = primitiveNormalMatrix * float4x4(source->primitiveTransformationMatrix().inverse().transpose()); // tranpose
+
+      this->primitiveOpacity = source->primitiveOpacity();
+
+      this->primitiveSelectionStripesDensity = float(source->primitiveSelectionStripesDensity());
+      this->primitiveSelectionStripesFrequency = float(source->primitiveSelectionStripesFrequency());
+      this->primitiveSelectionWorleyNoise3DFrequency = float(source->primitiveSelectionWorleyNoise3DFrequency());
+      this->primitiveSelectionWorleyNoise3DJitter = float(source->primitiveSelectionWorleyNoise3DJitter());
+      this->primitiveSelectionIntensity = float(source->primitiveSelectionIntensity());
+      this->primitiveSelectionScaling = float(std::max(1.001,source->primitiveSelectionScaling())); // avoid artifacts
+
+      this->primitiveHue = float(source->primitiveHue());
+      this->primitiveSaturation = float(source->primitiveSaturation());
+      this->primitiveValue = float(source->primitiveValue());
+
+      this->primitiveFrontSideHDR = source->primitiveFrontSideHDR();
+      this->primitiveFrontSideHDRExposure = float(source->primitiveFrontSideHDRExposure());
+      this->primitiveAmbientFrontSide = float(source->primitiveFrontSideAmbientIntensity()) * float4(source->primitiveFrontSideAmbientColor(), source->primitiveOpacity());
+      this->primitiveDiffuseFrontSide = float(source->primitiveFrontSideDiffuseIntensity()) * float4(source->primitiveFrontSideDiffuseColor(), source->primitiveOpacity());
+      this->primitiveSpecularFrontSide = float(source->primitiveFrontSideSpecularIntensity()) * float4(source->primitiveFrontSideSpecularColor(), source->primitiveOpacity());
+      this->primitiveShininessFrontSide = float(source->primitiveFrontSideShininess());
+
+      this->primitiveBackSideHDR = source->primitiveBackSideHDR();
+      this->primitiveBackSideHDRExposure = float(source->primitiveBackSideHDRExposure());
+      this->primitiveAmbientBackSide = float(source->primitiveBackSideAmbientIntensity()) * float4(source->primitiveBackSideAmbientColor(), source->primitiveOpacity());
+      this->primitiveDiffuseBackSide = float(source->primitiveBackSideDiffuseIntensity()) * float4(source->primitiveBackSideDiffuseColor(), source->primitiveOpacity());
+      this->primitiveSpecularBackSide = float(source->primitiveBackSideSpecularIntensity()) * float4(source->primitiveBackSideSpecularColor(), source->primitiveOpacity());
+      this->primitiveShininessBackSide = float(source->primitiveBackSideShininess());
+    }
   }
 }
 
 RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure, double4x4 inverseModelMatrix)
 {
-    SKBoundingBox boundingbox = structure->cell()->boundingBox();
-    double3 centerOfRotation = boundingbox.center();
+  if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
+  {
+    this->unitCellScaling =  float(renderStructure->unitCellScaleFactor());
+    this->unitCellDiffuseColor = float(renderStructure->unitCellDiffuseIntensity()) * float4(renderStructure->unitCellDiffuseColor().redF(),renderStructure->unitCellDiffuseColor().greenF(),
+                                                                                             renderStructure->unitCellDiffuseColor().blueF(),renderStructure->unitCellDiffuseColor().alphaF());
 
-    // difference
-    double4x4 modelMatrix2 = inverseModelMatrix * double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(structure->orientation()),centerOfRotation, structure->origin());
-    this->modelMatrix = float4x4(modelMatrix2);
+    if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
+    {
+      SKBoundingBox boundingbox = renderStructure->cell()->boundingBox();
+      double3 centerOfRotation = boundingbox.center();
 
-    this->sceneIdentifier = int32_t(sceneIdentifier);
-    this->MovieIdentifier = int32_t(movieIdentifier);
+      // difference
+      double4x4 modelMatrix2 = inverseModelMatrix * double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(renderStructure->orientation()),centerOfRotation, renderStructure->origin());
+      this->modelMatrix = float4x4(modelMatrix2);
+      this->inverseModelMatrix = float4x4(double3x3::inverse(modelMatrix2));
 
-    this->colorAtomsWithBondColor = structure->colorAtomsWithBondColor();
-    this->atomScaleFactor = float(structure->atomScaleFactor());
-    this->modelMatrix = float4x4(modelMatrix);
-    this->atomHue = structure->atomHue();
-    this->atomSaturation = structure->atomSaturation();
-    this->atomValue = structure->atomValue();
+      this->sceneIdentifier = int32_t(sceneIdentifier);
+      this->MovieIdentifier = int32_t(movieIdentifier);
 
-    this->ambientOcclusion = structure->atomAmbientOcclusion();
-    this->ambientOcclusionPatchNumber = int32_t(structure->atomAmbientOcclusionPatchNumber());
-    this->ambientOcclusionPatchSize = float(structure->atomAmbientOcclusionPatchSize());
-    this->ambientOcclusionInverseTextureSize = float(1.0/double(structure->atomAmbientOcclusionTextureSize()));
+      this->colorAtomsWithBondColor = source->colorAtomsWithBondColor();
+      this->atomScaleFactor = float(source->atomScaleFactor());
+      this->modelMatrix = float4x4(modelMatrix);
+      this->atomHue = source->atomHue();
+      this->atomSaturation = source->atomSaturation();
+      this->atomValue = source->atomValue();
 
-    this->atomAmbient = float(structure->atomAmbientIntensity()) * float4(structure->atomAmbientColor().redF(),structure->atomAmbientColor().greenF(),
-                                                                          structure->atomAmbientColor().blueF(),structure->atomAmbientColor().alphaF());
-    this->atomDiffuse = float(structure->atomDiffuseIntensity()) * float4(structure->atomDiffuseColor().redF(),structure->atomDiffuseColor().greenF(),
-                                                                          structure->atomDiffuseColor().blueF(),structure->atomDiffuseColor().alphaF());
-    this->atomSpecular = float(structure->atomSpecularIntensity()) * float4(structure->atomSpecularColor().redF(),structure->atomSpecularColor().greenF(),
-                                                                            structure->atomSpecularColor().blueF(),structure->atomSpecularColor().alphaF());
-    this->atomShininess = float(structure->atomShininess());
+      this->ambientOcclusion = source->atomAmbientOcclusion();
+      this->ambientOcclusionPatchNumber = int32_t(source->atomAmbientOcclusionPatchNumber());
+      this->ambientOcclusionPatchSize = float(source->atomAmbientOcclusionPatchSize());
+      this->ambientOcclusionInverseTextureSize = float(1.0/double(source->atomAmbientOcclusionTextureSize()));
 
-
-    this->bondScaling = float(structure->bondScaleFactor());
-    this->bondColorMode = int32_t(structure->bondColorMode());
-
-    this->unitCellScaling =  float(structure->unitCellScaleFactor());
-    this->unitCellDiffuseColor = float(structure->unitCellDiffuseIntensity()) * float4(structure->unitCellDiffuseColor().redF(),structure->unitCellDiffuseColor().greenF(),
-                                                                                       structure->unitCellDiffuseColor().blueF(),structure->unitCellDiffuseColor().alphaF());
-
-    this->atomHDR = structure->atomHDR();
-    this->atomHDRExposure = float(structure->atomHDRExposure());
-    this->atomSelectionIntensity = float(structure->atomSelectionIntensity());
-    this->clipAtomsAtUnitCell = structure->clipAtomsAtUnitCell();
-
-    this->bondHDR = structure->bondHDR();
-    this->bondHDRExposure = float(structure->bondHDRExposure());
-    this->clipBondsAtUnitCell = structure->clipBondsAtUnitCell();
-
-    this->bondHue = float(structure->bondHue());
-    this->bondSaturation = float(structure->bondSaturation());
-    this->bondValue = float(structure->bondValue());
-
-    this->bondAmbientColor = float(structure->bondAmbientIntensity()) * float4(structure->bondAmbientColor().redF(),structure->bondAmbientColor().greenF(),
-                                                                               structure->bondAmbientColor().blueF(),structure->bondAmbientColor().alphaF());
-    this->bondDiffuseColor = float(structure->bondDiffuseIntensity()) * float4(structure->bondDiffuseColor().redF(),structure->bondDiffuseColor().greenF(),
-                                                                               structure->bondDiffuseColor().blueF(),structure->bondDiffuseColor().alphaF());
-    this->bondSpecularColor = float(structure->bondSpecularIntensity()) * float4(structure->bondSpecularColor().redF(),structure->bondSpecularColor().greenF(),
-                                                                                 structure->bondSpecularColor().blueF(),structure->bondSpecularColor().alphaF());
-    this->bondShininess = float(structure->bondShininess());
-
-    double3x3 unitCell = structure->cell()->unitCell();
-    double3x3 box = structure->cell()->box();
-    double3 corner = unitCell * double3(double(structure->cell()->minimumReplicas().x), double(structure->cell()->minimumReplicas().y), double(structure->cell()->minimumReplicas().z));
-    double3 corner2 = unitCell * double3(double(structure->cell()->maximumReplicas().x)+1.0, double(structure->cell()->maximumReplicas().y)+1.0, double(structure->cell()->maximumReplicas().z)+1.0);
-
-    this->boxMatrix = float4x4(box);
-    double3 shift = structure->cell()->unitCell() * double3(structure->cell()->minimumReplicas());
-    this->boxMatrix[3][0] = float(shift.x);
-    this->boxMatrix[3][1] = float(shift.y);
-    this->boxMatrix[3][2] = float(shift.z);
+      this->atomAmbient = float(source->atomAmbientIntensity()) * float4(source->atomAmbientColor().redF(),source->atomAmbientColor().greenF(),
+                                                                         source->atomAmbientColor().blueF(),source->atomAmbientColor().alphaF());
+      this->atomDiffuse = float(source->atomDiffuseIntensity()) * float4(source->atomDiffuseColor().redF(),source->atomDiffuseColor().greenF(),
+                                                                         source->atomDiffuseColor().blueF(),source->atomDiffuseColor().alphaF());
+      this->atomSpecular = float(source->atomSpecularIntensity()) * float4(source->atomSpecularColor().redF(),source->atomSpecularColor().greenF(),
+                                                                           source->atomSpecularColor().blueF(),source->atomSpecularColor().alphaF());
+      this->atomShininess = float(source->atomShininess());
 
 
-    this->atomSelectionStripesDensity = float(structure->atomSelectionStripesDensity());
-    this->atomSelectionStripesFrequency = float(structure->atomSelectionStripesFrequency());
-    this->atomSelectionWorleyNoise3DFrequency = float(structure->atomSelectionWorleyNoise3DFrequency());
-    this->atomSelectionWorleyNoise3DJitter = float(structure->atomSelectionWorleyNoise3DJitter());
-    this->atomSelectionScaling = float(std::max(1.001,structure->atomSelectionScaling())); // avoid artifacts
-    this->atomSelectionIntensity = float(structure->atomSelectionIntensity());
-
-    this->atomAnnotationTextColor = float4(structure->renderTextColor().redF(),structure->renderTextColor().greenF(),
-                                           structure->renderTextColor().blueF(),structure->renderTextColor().alphaF());
-    this->atomAnnotationTextScaling = float(structure->renderTextScaling());
-    this->atomAnnotationTextDisplacement = float4(float(structure->renderTextOffset().x),
-                                                 float(structure->renderTextOffset().y),
-                                                 float(structure->renderTextOffset().z),
-                                                 0.0);
-
-    this->bondSelectionStripesDensity = float(structure->bondSelectionStripesDensity());
-    this->bondSelectionStripesFrequency = float(structure->bondSelectionStripesFrequency());
-    this->bondSelectionWorleyNoise3DFrequency = float(structure->bondSelectionWorleyNoise3DFrequency());
-    this->bondSelectionWorleyNoise3DJitter = float(structure->bondSelectionWorleyNoise3DJitter());
-    this->bondSelectionScaling = float(std::max(1.001,structure->bondSelectionScaling())); // avoid artifacts
-    this->bondSelectionIntensity = float(structure->bondSelectionIntensity());
+      this->bondScaling = float(source->bondScaleFactor());
+      this->bondColorMode = int32_t(source->bondColorMode());
 
 
-    // clipping planes are in object space
-    double3 u_plane0 = double3::normalize(double3::cross(box[0],box[1]));
-    double3 u_plane1 = double3::normalize(double3::cross(box[2],box[0]));
-    double3 u_plane2 = double3::normalize(double3::cross(box[1],box[2]));
-    this->clipPlaneBack = float4(u_plane0.x, u_plane0.y, u_plane0.z, -double3::dot(u_plane0,corner));
-    this->clipPlaneBottom = float4(u_plane1.x, u_plane1.y, u_plane1.z, -double3::dot(u_plane1,corner));
-    this->clipPlaneLeft = float4(u_plane2.x, u_plane2.y, u_plane2.z, -double3::dot(u_plane2,corner));
-    this->clipPlaneFront = float4(-u_plane0.x, -u_plane0.y, -u_plane0.z, double3::dot(u_plane0,corner2));
-    this->clipPlaneTop = float4(-u_plane1.x, -u_plane1.y, -u_plane1.z, double3::dot(u_plane1,corner2));
-    this->clipPlaneRight = float4(-u_plane2.x, -u_plane2.y, -u_plane2.z, double3::dot(u_plane2,corner2));
+      this->atomHDR = source->atomHDR();
+      this->atomHDRExposure = float(source->atomHDRExposure());
+      this->atomSelectionIntensity = float(source->atomSelectionIntensity());
+      this->clipAtomsAtUnitCell = source->clipAtomsAtUnitCell();
+
+      this->bondHDR = source->bondHDR();
+      this->bondHDRExposure = float(source->bondHDRExposure());
+      this->clipBondsAtUnitCell = source->clipBondsAtUnitCell();
+
+      this->bondHue = float(source->bondHue());
+      this->bondSaturation = float(source->bondSaturation());
+      this->bondValue = float(source->bondValue());
+
+      this->bondAmbientColor = float(source->bondAmbientIntensity()) * float4(source->bondAmbientColor().redF(),source->bondAmbientColor().greenF(),
+                                                                              source->bondAmbientColor().blueF(),source->bondAmbientColor().alphaF());
+      this->bondDiffuseColor = float(source->bondDiffuseIntensity()) * float4(source->bondDiffuseColor().redF(),source->bondDiffuseColor().greenF(),
+                                                                              source->bondDiffuseColor().blueF(),source->bondDiffuseColor().alphaF());
+      this->bondSpecularColor = float(source->bondSpecularIntensity()) * float4(source->bondSpecularColor().redF(),source->bondSpecularColor().greenF(),
+                                                                                source->bondSpecularColor().blueF(),source->bondSpecularColor().alphaF());
+      this->bondShininess = float(source->bondShininess());
+
+      double3x3 unitCell = renderStructure->cell()->unitCell();
+      double3x3 box = renderStructure->cell()->box();
+      double3 corner = unitCell * double3(double(renderStructure->cell()->minimumReplicas().x), double(renderStructure->cell()->minimumReplicas().y), double(renderStructure->cell()->minimumReplicas().z));
+      double3 corner2 = unitCell * double3(double(renderStructure->cell()->maximumReplicas().x)+1.0, double(renderStructure->cell()->maximumReplicas().y)+1.0, double(renderStructure->cell()->maximumReplicas().z)+1.0);
+
+      this->boxMatrix = float4x4(box);
+      double3 shift = renderStructure->cell()->unitCell() * double3(renderStructure->cell()->minimumReplicas());
+      this->boxMatrix[3][0] = float(shift.x);
+      this->boxMatrix[3][1] = float(shift.y);
+      this->boxMatrix[3][2] = float(shift.z);
+
+
+      this->atomSelectionStripesDensity = float(source->atomSelectionStripesDensity());
+      this->atomSelectionStripesFrequency = float(source->atomSelectionStripesFrequency());
+      this->atomSelectionWorleyNoise3DFrequency = float(source->atomSelectionWorleyNoise3DFrequency());
+      this->atomSelectionWorleyNoise3DJitter = float(source->atomSelectionWorleyNoise3DJitter());
+      this->atomSelectionScaling = float(std::max(1.001,source->atomSelectionScaling())); // avoid artifacts
+      this->atomSelectionIntensity = float(source->atomSelectionIntensity());
+
+      this->atomAnnotationTextColor = float4(source->renderTextColor().redF(),source->renderTextColor().greenF(),
+                                             source->renderTextColor().blueF(),source->renderTextColor().alphaF());
+      this->atomAnnotationTextScaling = float(source->renderTextScaling());
+      this->atomAnnotationTextDisplacement = float4(float(source->renderTextOffset().x),
+                                                   float(source->renderTextOffset().y),
+                                                   float(source->renderTextOffset().z),
+                                                   0.0);
+
+      this->bondSelectionStripesDensity = float(source->bondSelectionStripesDensity());
+      this->bondSelectionStripesFrequency = float(source->bondSelectionStripesFrequency());
+      this->bondSelectionWorleyNoise3DFrequency = float(source->bondSelectionWorleyNoise3DFrequency());
+      this->bondSelectionWorleyNoise3DJitter = float(source->bondSelectionWorleyNoise3DJitter());
+      this->bondSelectionScaling = float(std::max(1.001,source->bondSelectionScaling())); // avoid artifacts
+      this->bondSelectionIntensity = float(source->bondSelectionIntensity());
+
+
+      // clipping planes are in object space
+      double3 u_plane0 = double3::normalize(double3::cross(box[0],box[1]));
+      double3 u_plane1 = double3::normalize(double3::cross(box[2],box[0]));
+      double3 u_plane2 = double3::normalize(double3::cross(box[1],box[2]));
+      this->clipPlaneBack = float4(u_plane0.x, u_plane0.y, u_plane0.z, -double3::dot(u_plane0,corner));
+      this->clipPlaneBottom = float4(u_plane1.x, u_plane1.y, u_plane1.z, -double3::dot(u_plane1,corner));
+      this->clipPlaneLeft = float4(u_plane2.x, u_plane2.y, u_plane2.z, -double3::dot(u_plane2,corner));
+      this->clipPlaneFront = float4(-u_plane0.x, -u_plane0.y, -u_plane0.z, double3::dot(u_plane0,corner2));
+      this->clipPlaneTop = float4(-u_plane1.x, -u_plane1.y, -u_plane1.z, double3::dot(u_plane1,corner2));
+      this->clipPlaneRight = float4(-u_plane2.x, -u_plane2.y, -u_plane2.z, double3::dot(u_plane2,corner2));
+    }
+  }
 }
 
 
@@ -343,45 +375,51 @@ RKIsosurfaceUniforms::RKIsosurfaceUniforms()
 
 RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderStructure> structure)
 {
-  double3x3 currentUnitCellMatrix = structure->cell()->unitCell();
-  this->unitCellMatrix = float4x4(currentUnitCellMatrix);
-  this->unitCellNormalMatrix = float4x4(double3x3::transpose(double3x3::inverse(currentUnitCellMatrix)));
+  if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
+  {
+    if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
+    {
+      double3x3 currentUnitCellMatrix = renderStructure->cell()->unitCell();
+      this->unitCellMatrix = float4x4(currentUnitCellMatrix);
+      this->unitCellNormalMatrix = float4x4(double3x3::transpose(double3x3::inverse(currentUnitCellMatrix)));
 
-  this->hue = float(structure->adsorptionSurfaceHue());
-  this->saturation = float(structure->adsorptionSurfaceSaturation());
-  this->value = float(structure->adsorptionSurfaceValue());
+      this->hue = float(source->adsorptionSurfaceHue());
+      this->saturation = float(source->adsorptionSurfaceSaturation());
+      this->value = float(source->adsorptionSurfaceValue());
 
-  this->frontHDR = structure->adsorptionSurfaceFrontSideHDR() ? 1 : 0;
-  this->frontHDRExposure = float(structure->adsorptionSurfaceFrontSideHDRExposure());
-  this->ambientBackSide = float(structure->adsorptionSurfaceBackSideAmbientIntensity()) * float4(structure->adsorptionSurfaceBackSideAmbientColor().redF(),
-                                                                                                 structure->adsorptionSurfaceBackSideAmbientColor().greenF(),
-                                                                                                 structure->adsorptionSurfaceBackSideAmbientColor().blueF(),
-                                                                                                 structure->adsorptionSurfaceOpacity());
-  this->diffuseBackSide = float(structure->adsorptionSurfaceBackSideDiffuseIntensity()) * float4(structure->adsorptionSurfaceBackSideDiffuseColor().redF(),
-                                                                                                 structure->adsorptionSurfaceBackSideDiffuseColor().greenF(),
-                                                                                                 structure->adsorptionSurfaceBackSideDiffuseColor().blueF(),
-                                                                                                 structure->adsorptionSurfaceOpacity());
-  this->specularBackSide = float(structure->adsorptionSurfaceBackSideSpecularIntensity()) * float4(structure->adsorptionSurfaceBackSideSpecularColor().redF(),
-                                                                                                   structure->adsorptionSurfaceBackSideSpecularColor().greenF(),
-                                                                                                   structure->adsorptionSurfaceBackSideSpecularColor().blueF(),
-                                                                                                   structure->adsorptionSurfaceOpacity());
-  this->shininessBackSide = float(structure->adsorptionSurfaceBackSideShininess());
+      this->frontHDR = source->adsorptionSurfaceFrontSideHDR() ? 1 : 0;
+      this->frontHDRExposure = float(source->adsorptionSurfaceFrontSideHDRExposure());
+      this->ambientBackSide = float(source->adsorptionSurfaceBackSideAmbientIntensity()) * float4(source->adsorptionSurfaceBackSideAmbientColor().redF(),
+                                                                                                  source->adsorptionSurfaceBackSideAmbientColor().greenF(),
+                                                                                                  source->adsorptionSurfaceBackSideAmbientColor().blueF(),
+                                                                                                  source->adsorptionSurfaceOpacity());
+      this->diffuseBackSide = float(source->adsorptionSurfaceBackSideDiffuseIntensity()) * float4(source->adsorptionSurfaceBackSideDiffuseColor().redF(),
+                                                                                                  source->adsorptionSurfaceBackSideDiffuseColor().greenF(),
+                                                                                                  source->adsorptionSurfaceBackSideDiffuseColor().blueF(),
+                                                                                                  source->adsorptionSurfaceOpacity());
+      this->specularBackSide = float(source->adsorptionSurfaceBackSideSpecularIntensity()) * float4(source->adsorptionSurfaceBackSideSpecularColor().redF(),
+                                                                                                    source->adsorptionSurfaceBackSideSpecularColor().greenF(),
+                                                                                                    source->adsorptionSurfaceBackSideSpecularColor().blueF(),
+                                                                                                    source->adsorptionSurfaceOpacity());
+      this->shininessBackSide = float(source->adsorptionSurfaceBackSideShininess());
 
-  this->backHDR = structure->adsorptionSurfaceBackSideHDR() ? 1 : 0;
-  this->backHDRExposure = float(structure->adsorptionSurfaceBackSideHDRExposure());
-  this->ambientFrontSide = float(structure->adsorptionSurfaceFrontSideAmbientIntensity()) * float4(structure->adsorptionSurfaceFrontSideAmbientColor().redF(),
-                                                                                                   structure->adsorptionSurfaceFrontSideAmbientColor().greenF(),
-                                                                                                   structure->adsorptionSurfaceFrontSideAmbientColor().blueF(),
-                                                                                                   structure->adsorptionSurfaceOpacity());
-  this->diffuseFrontSide = float(structure->adsorptionSurfaceFrontSideDiffuseIntensity()) * float4(structure->adsorptionSurfaceFrontSideDiffuseColor().redF(),
-                                                                                                   structure->adsorptionSurfaceFrontSideDiffuseColor().greenF(),
-                                                                                                   structure->adsorptionSurfaceFrontSideDiffuseColor().blueF(),
-                                                                                                   structure->adsorptionSurfaceOpacity());
-  this->specularFrontSide = float(structure->adsorptionSurfaceFrontSideSpecularIntensity()) * float4(structure->adsorptionSurfaceFrontSideSpecularColor().redF(),
-                                                                                                     structure->adsorptionSurfaceFrontSideSpecularColor().greenF(),
-                                                                                                     structure->adsorptionSurfaceFrontSideSpecularColor().blueF(),
-                                                                                                     structure->adsorptionSurfaceOpacity());
-  this->shininessFrontSide = float(structure->adsorptionSurfaceFrontSideShininess());
+      this->backHDR = source->adsorptionSurfaceBackSideHDR() ? 1 : 0;
+      this->backHDRExposure = float(source->adsorptionSurfaceBackSideHDRExposure());
+      this->ambientFrontSide = float(source->adsorptionSurfaceFrontSideAmbientIntensity()) * float4(source->adsorptionSurfaceFrontSideAmbientColor().redF(),
+                                                                                                    source->adsorptionSurfaceFrontSideAmbientColor().greenF(),
+                                                                                                    source->adsorptionSurfaceFrontSideAmbientColor().blueF(),
+                                                                                                    source->adsorptionSurfaceOpacity());
+      this->diffuseFrontSide = float(source->adsorptionSurfaceFrontSideDiffuseIntensity()) * float4(source->adsorptionSurfaceFrontSideDiffuseColor().redF(),
+                                                                                                    source->adsorptionSurfaceFrontSideDiffuseColor().greenF(),
+                                                                                                    source->adsorptionSurfaceFrontSideDiffuseColor().blueF(),
+                                                                                                    source->adsorptionSurfaceOpacity());
+      this->specularFrontSide = float(source->adsorptionSurfaceFrontSideSpecularIntensity()) * float4(source->adsorptionSurfaceFrontSideSpecularColor().redF(),
+                                                                                                      source->adsorptionSurfaceFrontSideSpecularColor().greenF(),
+                                                                                                      source->adsorptionSurfaceFrontSideSpecularColor().blueF(),
+                                                                                                      source->adsorptionSurfaceOpacity());
+      this->shininessFrontSide = float(source->adsorptionSurfaceFrontSideShininess());
+    }
+  }
 };
 
 

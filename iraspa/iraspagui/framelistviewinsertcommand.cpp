@@ -42,7 +42,7 @@ FrameListViewInsertCommand::FrameListViewInsertCommand(MainWindow *mainWindow, S
 
 void FrameListViewInsertCommand::redo()
 {
-  std::shared_ptr<iRASPAStructure> newStructure = iRASPAStructure::create(_movie->movieType());
+  std::shared_ptr<iRASPAObject> newStructure = iRASPAObject::create(_movie->movieType());
 
   if(FrameListViewModel* model = qobject_cast<FrameListViewModel*>(_frameListView->model()))
   {

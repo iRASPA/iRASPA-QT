@@ -23,8 +23,9 @@
 
 #include <vector>
 #include <unordered_set>
-#include "iraspastructure.h"
+#include "iraspaobject.h"
 #include "iraspakitprotocols.h"
+#include "displayable.h"
 
 class Scene;
 
@@ -32,7 +33,7 @@ using FrameSelectionIndexSet = std::set<size_t>;
 
 struct frame_index_compare_less
 {
-  bool operator() (const std::pair<std::shared_ptr<iRASPAStructure>, size_t>& lhs, const std::pair<std::shared_ptr<iRASPAStructure>, size_t>& rhs) const
+  bool operator() (const std::pair<std::shared_ptr<iRASPAObject>, size_t>& lhs, const std::pair<std::shared_ptr<iRASPAObject>, size_t>& rhs) const
   {
     return lhs.second < rhs.second;
   }
@@ -40,14 +41,14 @@ struct frame_index_compare_less
 
 struct frame_index_compare_greater_than
 {
-  bool operator() (const std::pair<std::shared_ptr<iRASPAStructure>, size_t>& lhs, const std::pair<std::shared_ptr<iRASPAStructure>, size_t>& rhs) const
+  bool operator() (const std::pair<std::shared_ptr<iRASPAObject>, size_t>& lhs, const std::pair<std::shared_ptr<iRASPAObject>, size_t>& rhs) const
   {
     return lhs.second > rhs.second;
   }
 };
 
-using FrameSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<iRASPAStructure>, size_t>, frame_index_compare_less>;
-using ReversedFrameSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<iRASPAStructure>, size_t>, frame_index_compare_greater_than>;
+using FrameSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<iRASPAObject>, size_t>, frame_index_compare_less>;
+using ReversedFrameSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<iRASPAObject>, size_t>, frame_index_compare_greater_than>;
 
 class Movie: public std::enable_shared_from_this<Movie>, public DisplayableProtocol
 {
@@ -57,51 +58,51 @@ public:
 
   Movie();
 
-  static std::shared_ptr<Movie> create(std::shared_ptr<iRASPAStructure> structure);
-  static std::shared_ptr<Movie> create(QString displayName, std::vector<std::shared_ptr<iRASPAStructure>> iraspaStructures);
+  static std::shared_ptr<Movie> create(std::shared_ptr<iRASPAObject> structure);
+  static std::shared_ptr<Movie> create(QString displayName, std::vector<std::shared_ptr<iRASPAObject>> iraspaStructures);
   virtual ~Movie() {}
   std::shared_ptr<Movie> shallowClone();
 
-  void append(std::shared_ptr<iRASPAStructure> structure);
-  bool insertChild(size_t row, std::shared_ptr<iRASPAStructure> child);
-  const std::vector<std::shared_ptr<iRASPAStructure>> &frames() const {return _frames;}
+  void append(std::shared_ptr<iRASPAObject> structure);
+  bool insertChild(size_t row, std::shared_ptr<iRASPAObject> child);
+  const std::vector<std::shared_ptr<iRASPAObject>> &frames() const {return _frames;}
   QString displayName() const override final;
-  void setDisplayName(QString name) {_displayName = name;}
+  void setDisplayName(QString name) override final {_displayName = name;}
   bool isVisible() {return _isVisible;}
   void setVisibility(bool visibility);
 
   void clearSelection();
 
-  std::vector<std::shared_ptr<iRASPAStructure>> selectedFrames();
+  std::vector<std::shared_ptr<iRASPAObject>> selectedFrames();
   void addSelectedFrameIndex(size_t value);
   FrameSelectionIndexSet selectedFramesIndexSet();
   FrameSelectionNodesAndIndexSet selectedFramesNodesAndIndexSet();
   void setSelection(FrameSelectionIndexSet selection);
   void setSelection(FrameSelectionNodesAndIndexSet selection);
 
-  std::vector<std::shared_ptr<iRASPAStructure>> selectedFramesiRASPAStructures() const;
+  std::vector<std::shared_ptr<iRASPAObject>> selectedFramesiRASPAStructures() const;
 
   bool removeChildren(size_t position, size_t count);
   void setParent(std::weak_ptr<Scene> parent) {_parent = parent;}
   std::weak_ptr<Scene> parent() {return _parent;}
-  iRASPAStructureType movieType() {return _movieType;}
-  std::shared_ptr<iRASPAStructure> frameAtIndex(size_t index);
+  ObjectType movieType() {return _movieType;}
+  std::shared_ptr<iRASPAObject> frameAtIndex(size_t index);
   void selectedFrameIndex(size_t index);
 private:
-  iRASPAStructureType _movieType;
-  Movie(std::shared_ptr<iRASPAStructure> structure);
-  Movie(std::vector<std::shared_ptr<iRASPAStructure>> structures);
+  ObjectType _movieType;
+  Movie(std::shared_ptr<iRASPAObject> structure);
+  Movie(std::vector<std::shared_ptr<iRASPAObject>> structures);
   qint64 _versionNumber{1};
   bool _isVisible = true;
   [[maybe_unused]] bool _isLoading = false;
   QString _displayName = QString("Movie");
 
   std::weak_ptr<Scene> _parent{};
-  std::vector<std::shared_ptr<iRASPAStructure>> _frames{};
+  std::vector<std::shared_ptr<iRASPAObject>> _frames{};
   FrameSelectionIndexSet _selectedFramesIndexSet;
 
-  friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<iRASPAStructure>>& val);
-  friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<iRASPAStructure>>& val);
+  friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<iRASPAObject>>& val);
+  friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<iRASPAObject>>& val);
 
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Movie> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Movie> &);

@@ -24,13 +24,13 @@
 #include <algorithm>
 
 AtomTreeViewChangeUniqueForceFieldNameCommand::AtomTreeViewChangeUniqueForceFieldNameCommand(MainWindow *mainWindow, AtomTreeViewModel *model,
-                                                                   std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                                                   std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                    std::shared_ptr<SKAtomTreeNode> atomTreeNode, QString newValue, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
   _model(model),
   _iraspaStructure(iraspaStructure),
-  _structure(iraspaStructure->structure()),
+  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
   _atomTreeNode(atomTreeNode),
   _newValue(newValue),
   _structures()

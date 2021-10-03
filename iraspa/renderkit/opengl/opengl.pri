@@ -3,6 +3,7 @@ INCLUDEPATH += $$PWD
 include(geometry/geometry.pri)
 
 SOURCES += \
+    $$PWD/opengldensityvolumeshader.cpp \
     $$PWD/opengllocalaxesshader.cpp \
     $$PWD/openglwindow.cpp \
     $$PWD/openglglobalaxesbackgroundshader.cpp \
@@ -93,6 +94,7 @@ SOURCES += \
 
 
 HEADERS += \
+    $$PWD/opengldensityvolumeshader.h \
     $$PWD/opengllocalaxesshader.h \
     $$PWD/openglwindow.h \
     $$PWD/openglglobalaxesbackgroundshader.h \

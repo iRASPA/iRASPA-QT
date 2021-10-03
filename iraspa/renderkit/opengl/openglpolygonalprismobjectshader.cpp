@@ -50,9 +50,9 @@ void OpenGLPolygonalPrismObjectShader::paintGLOpaque(GLuint structureUniformBuff
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderPrimitivePolygonalPrimsObjectsSource* object = dynamic_cast<RKRenderPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
-        if(object->primitiveOpacity()>0.99999 && _renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
+        if(source->primitiveOpacity()>0.99999 && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
         {
           glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
 
@@ -87,9 +87,9 @@ void OpenGLPolygonalPrismObjectShader::paintGLTransparent(GLuint structureUnifor
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderPrimitivePolygonalPrimsObjectsSource* object = dynamic_cast<RKRenderPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
-        if(object->primitiveOpacity()<=0.99999 && _renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
+        if(source->primitiveOpacity()<=0.99999 && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
         {
           glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
 
@@ -188,8 +188,10 @@ void OpenGLPolygonalPrismObjectShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderPrimitivePolygonalPrimsObjectsSource* object = dynamic_cast<RKRenderPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* object = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
+          if (RKRenderPrimitivePolygonalPrimsObjectsSource* source = dynamic_cast<RKRenderPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))
+          {
         glBindVertexArray(_vertexArrayObject[i][j]);
         check_gl_error();
 
@@ -252,7 +254,7 @@ void OpenGLPolygonalPrismObjectShader::initializeVertexArrayObject()
            check_gl_error();
         }
 
-        std::vector<RKInPerInstanceAttributesAtoms> atomData = object->renderPrimitivePolygonalPrismObjects();
+        std::vector<RKInPerInstanceAttributesAtoms> atomData = source->renderPrimitivePolygonalPrismObjects();
         _numberOfDrawnAtoms[i][j] = atomData.size();
 
         glBindBuffer(GL_ARRAY_BUFFER, _instancePositionBuffer[i][j]);
@@ -275,6 +277,7 @@ void OpenGLPolygonalPrismObjectShader::initializeVertexArrayObject()
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+          }
       }
     }
   }

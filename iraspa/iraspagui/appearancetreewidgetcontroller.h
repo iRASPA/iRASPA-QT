@@ -51,7 +51,7 @@ public:
   AppearanceTreeWidgetController(QWidget* parent = nullptr);
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override final;
   void setMainWindow(MainWindow *mainWindow) override final {_mainWindow = mainWindow;}
-  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures);
+  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures);
   void resetData();
 private:
   AppearancePrimitiveForm* _appearancePrimitiveForm;
@@ -73,7 +73,7 @@ private:
   MainWindow *_mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
   std::shared_ptr<ProjectStructure> _projectStructure;
-  std::vector<std::shared_ptr<iRASPAStructure>> _iraspa_structures{};
+  std::vector<std::shared_ptr<iRASPAObject>> _iraspa_structures{};
   void reloadData() override final;
   void reloadSelection() override final;
 
@@ -110,7 +110,7 @@ private:
   void reloadBackPrimitiveSpecularLight();
   void reloadBackPrimitiveShininess();
 
-  std::optional<double> rotationAngle();
+  std::optional<std::unordered_set<double> > rotationAngle();
   void setRotationAngle(double angle);
   void rotateYawPlus();
   void rotateYawMinus();
@@ -120,97 +120,97 @@ private:
   void rotateRollMinus();
 
   void setEulerAngleX(double angle);
-  std::optional<double> EulerAngleX();
+  std::optional<std::unordered_set<double>> EulerAngleX();
   void setEulerAngleY(double angle);
-  std::optional<double> EulerAngleY();
+  std::optional<std::unordered_set<double>> EulerAngleY();
   void setEulerAngleZ(double angle);
-  std::optional<double> EulerAngleZ();
+  std::optional<std::unordered_set<double>> EulerAngleZ();
 
 
-  std::optional<double> transformationMatrixAX();
+  std::optional<std::unordered_set<double>> transformationMatrixAX();
   void setTransformationMatrixAX(double value);
-  std::optional<double> transformationMatrixAY();
+  std::optional<std::unordered_set<double>> transformationMatrixAY();
   void setTransformationMatrixAY(double value);
-  std::optional<double> transformationMatrixAZ();
+  std::optional<std::unordered_set<double>> transformationMatrixAZ();
   void setTransformationMatrixAZ(double value);
 
-  std::optional<double> transformationMatrixBX();
+  std::optional<std::unordered_set<double>> transformationMatrixBX();
   void setTransformationMatrixBX(double value);
-  std::optional<double> transformationMatrixBY();
+  std::optional<std::unordered_set<double>> transformationMatrixBY();
   void setTransformationMatrixBY(double value);
-  std::optional<double> transformationMatrixBZ();
+  std::optional<std::unordered_set<double>> transformationMatrixBZ();
   void setTransformationMatrixBZ(double value);
 
-  std::optional<double> transformationMatrixCX();
+  std::optional<std::unordered_set<double>> transformationMatrixCX();
   void setTransformationMatrixCX(double value);
-  std::optional<double> transformationMatrixCY();
+  std::optional<std::unordered_set<double>> transformationMatrixCY();
   void setTransformationMatrixCY(double value);
-  std::optional<double> transformationMatrixCZ();
+  std::optional<std::unordered_set<double>> transformationMatrixCZ();
   void setTransformationMatrixCZ(double value);
 
-  std::optional<double> primitiveOpacity();
+  std::optional<std::unordered_set<double>> primitiveOpacity();
   void setPrimitiveOpacity(double opacity);
-  std::optional<int> primitiveNumberOfSides();
+  std::optional<std::unordered_set<int> > primitiveNumberOfSides();
   void setPrimitiveNumberOfSides(int numberOfSides);
 
-  std::optional<bool> primitiveIsCapped();
+  std::optional<std::unordered_set<bool>> primitiveIsCapped();
   void setPrimitiveIsCapped(bool capped);
 
   void setPrimitiveHue(double value);
-  std::optional<double> primitiveHue();
+  std::optional<std::unordered_set<double> > primitiveHue();
   void setPrimitiveSaturation(double value);
-  std::optional<double> primitiveSaturation();
+  std::optional<std::unordered_set<double> > primitiveSaturation();
   void setPrimitiveValue(double value);
-  std::optional<double> primitiveValue();
+  std::optional<std::unordered_set<double> > primitiveValue();
 
   void setPrimitiveSelectionStyle(int value);
-  std::optional<RKSelectionStyle> primitiveSelectionStyle();
+  std::optional<std::unordered_set<RKSelectionStyle, enum_hash> > primitiveSelectionStyle();
   void setPrimitiveSelectionStyleNu(double value);
-  std::optional<double> primitiveSelectionStyleNu();
+  std::optional<std::unordered_set<double>> primitiveSelectionStyleNu();
   void setPrimitiveSelectionStyleRho(double value);
-  std::optional<double> primitiveSelectionStyleRho();
+  std::optional<std::unordered_set<double> > primitiveSelectionStyleRho();
   void setPrimitiveSelectionIntensity(double value);
-  std::optional<double> primitiveSelectionIntensity();
+  std::optional<std::unordered_set<double> > primitiveSelectionIntensity();
   void setPrimitiveSelectionScaling(double value);
-  std::optional<double> primitiveSelectionScaling();
+  std::optional<std::unordered_set<double> > primitiveSelectionScaling();
 
   void setFrontPrimitiveHighDynamicRange(int value);
-  std::optional<bool> frontPrimitiveHighDynamicRange();
+  std::optional<std::unordered_set<bool> > frontPrimitiveHighDynamicRange();
   void setFrontPrimitiveHDRExposure(double value);
-  std::optional<double> frontPrimitiveHDRExposure();
+  std::optional<std::unordered_set<double> > frontPrimitiveHDRExposure();
   void setFrontPrimitiveAmbientLightIntensity(double value);
-  std::optional<double> frontPrimitiveAmbientLightIntensity();
+  std::optional<std::unordered_set<double> > frontPrimitiveAmbientLightIntensity();
   void setFrontPrimitiveAmbientLightColor();
-  std::optional<QColor> frontPrimitiveAmbientLightColor();
+  std::optional<std::unordered_set<QColor> > frontPrimitiveAmbientLightColor();
   void setFrontPrimitiveDiffuseLightIntensity(double value);
-  std::optional<double> frontPrimitiveDiffuseLightIntensity();
+  std::optional<std::unordered_set<double> > frontPrimitiveDiffuseLightIntensity();
   void setFrontPrimitiveDiffuseLightColor();
-  std::optional<QColor> frontPrimitiveDiffuseLightColor();
+  std::optional<std::unordered_set<QColor> > frontPrimitiveDiffuseLightColor();
   void setFrontPrimitiveSpecularLightIntensity(double value);
-  std::optional<double> frontPrimitiveSpecularLightIntensity();
+  std::optional<std::unordered_set<double> > frontPrimitiveSpecularLightIntensity();
   void setFrontPrimitiveSpecularLightColor();
-  std::optional<QColor> frontPrimitiveSpecularLightColor();
+  std::optional<std::unordered_set<QColor>> frontPrimitiveSpecularLightColor();
   void setFrontPrimitiveShininess(double value);
-  std::optional<double> frontPrimitiveShininess();
+  std::optional<std::unordered_set<double> > frontPrimitiveShininess();
 
   void setBackPrimitiveHighDynamicRange(int value);
-  std::optional<bool> backPrimitiveHighDynamicRange();
+  std::optional<std::unordered_set<bool> > backPrimitiveHighDynamicRange();
   void setBackPrimitiveHDRExposure(double value);
-  std::optional<double> backPrimitiveHDRExposure();
+  std::optional<std::unordered_set<double> > backPrimitiveHDRExposure();
   void setBackPrimitiveAmbientLightIntensity(double value);
-  std::optional<double> backPrimitiveAmbientLightIntensity();
+  std::optional<std::unordered_set<double> > backPrimitiveAmbientLightIntensity();
   void setBackPrimitiveAmbientLightColor();
-  std::optional<QColor> backPrimitiveAmbientLightColor();
+  std::optional<std::unordered_set<QColor> > backPrimitiveAmbientLightColor();
   void setBackPrimitiveDiffuseLightIntensity(double value);
-  std::optional<double> backPrimitiveDiffuseLightIntensity();
+  std::optional<std::unordered_set<double> > backPrimitiveDiffuseLightIntensity();
   void setBackPrimitiveDiffuseLightColor();
-  std::optional<QColor> backPrimitiveDiffuseLightColor();
+  std::optional<std::unordered_set<QColor> > backPrimitiveDiffuseLightColor();
   void setBackPrimitiveSpecularLightIntensity(double value);
-  std::optional<double> backPrimitiveSpecularLightIntensity();
+  std::optional<std::unordered_set<double> > backPrimitiveSpecularLightIntensity();
   void setBackPrimitiveSpecularLightColor();
-  std::optional<QColor> backPrimitiveSpecularLightColor();
+  std::optional<std::unordered_set<QColor>> backPrimitiveSpecularLightColor();
   void setBackPrimitiveShininess(double value);
-  std::optional<double> backPrimitiveShininess();
+  std::optional<std::unordered_set<double>> backPrimitiveShininess();
 
   // atom properties
 
@@ -238,60 +238,60 @@ private:
   void reloadAtomShininess();
 
   void setRepresentationType(int value);
-  std::optional<Structure::RepresentationType> representationType();
+  std::optional<std::unordered_set<AtomVisualAppearanceViewer::RepresentationType, enum_hash> > representationType();
   void setRepresentationStyle(int value);
-  std::optional<Structure::RepresentationStyle> representationStyle();
+  std::optional<std::unordered_set<AtomVisualAppearanceViewer::RepresentationStyle, enum_hash> > representationStyle();
   void setColorSchemeComboBoxIndex(int value);
-  std::optional<QString> colorSchemeIdentifier();
+  std::optional<std::set<QString> > colorSchemeIdentifier();
   void setColorSchemeOrder(int value);
-  std::optional<SKColorSet::ColorSchemeOrder> colorSchemeOrder();
+  std::optional<std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash> > colorSchemeOrder();
   void setForcefieldSchemeComboBoxIndex(int value);
-  std::optional<QString> forceFieldSchemeIdentifier();
+  std::optional<std::set<QString> > forceFieldSchemeIdentifier();
   void setForceFieldSchemeOrder(int value);
-  std::optional<ForceFieldSet::ForceFieldSchemeOrder> forceFieldSchemeOrder();
+  std::optional<std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash> > forceFieldSchemeOrder();
   void setAtomSelectionStyle(int value);
-  std::optional<RKSelectionStyle> atomSelectionStyle();
+  std::optional<std::unordered_set<RKSelectionStyle, enum_hash> > atomSelectionStyle();
   void setAtomSelectionStyleNu(double value);
-  std::optional<double> atomSelectionStyleNu();
+  std::optional<std::unordered_set<double> > atomSelectionStyleNu();
   void setAtomSelectionStyleRho(double value);
-  std::optional<double> atomSelectionStyleRho();
+  std::optional<std::unordered_set<double> > atomSelectionStyleRho();
   void setAtomSelectionIntensity(double value);
-  std::optional<double> atomSelectionIntensity();
+  std::optional<std::unordered_set<double> > atomSelectionIntensity();
   void setAtomSelectionScaling(double value);
-  std::optional<double> atomSelectionScaling();
+  std::optional<std::unordered_set<double> > atomSelectionScaling();
   void setAtomDrawAtoms(int state);
-  std::optional<bool> atomDrawAtoms();
+  std::optional<std::unordered_set<bool>> atomDrawAtoms();
   void setAtomSizeScalingDoubleSpinBox(double size);
   void setAtomSizeScalingDoubleSliderBegin();
   void setAtomSizeScalingDoubleSliderIntermediate(double size);
   void setAtomSizeScalingDoubleSliderFinal();
-  std::optional<double> atomSizeScaling();
+  std::optional<std::unordered_set<double> > atomSizeScaling();
   void setAtomHighDynamicRange(int value);
-  std::optional<bool> atomHighDynamicRange();
+  std::optional<std::unordered_set<bool> > atomHighDynamicRange();
   void setAtomHDRExposure(double value);
-  std::optional<double> atomHDRExposure();
+  std::optional<std::unordered_set<double> > atomHDRExposure();
   void setAtomHue(double value);
-  std::optional<double> atomHue();
+  std::optional<std::unordered_set<double> > atomHue();
   void setAtomSaturation(double value);
-  std::optional<double> atomSaturation();
+  std::optional<std::unordered_set<double> > atomSaturation();
   void setAtomValue(double value);
-  std::optional<double> atomValue();
+  std::optional<std::unordered_set<double> > atomValue();
   void setAtomAmbientOcclusion(int value);
-  std::optional<bool> atomAmbientOcclusion();
+  std::optional<std::unordered_set<bool> > atomAmbientOcclusion();
   void setAtomAmbientLightIntensity(double value);
-  std::optional<double> atomAmbientLightIntensity();
+  std::optional<std::unordered_set<double> > atomAmbientLightIntensity();
   void setAtomAmbientLightColor();
-  std::optional<QColor> atomAmbientLightColor();
+  std::optional<std::unordered_set<QColor> > atomAmbientLightColor();
   void setAtomDiffuseLightIntensity(double value);
-  std::optional<double> atomDiffuseLightIntensity();
+  std::optional<std::unordered_set<double> > atomDiffuseLightIntensity();
   void setAtomDiffuseLightColor();
-  std::optional<QColor> atomDiffuseLightColor();
+  std::optional<std::unordered_set<QColor> > atomDiffuseLightColor();
   void setAtomSpecularLightIntensity(double value);
-  std::optional<double> atomSpecularLightIntensity();
+  std::optional<std::unordered_set<double> > atomSpecularLightIntensity();
   void setAtomSpecularLightColor();
-  std::optional<QColor> atomSpecularLightColor();
+  std::optional<std::unordered_set<QColor> > atomSpecularLightColor();
   void setAtomShininess(double value);
-  std::optional<double> atomShininess();
+  std::optional<std::unordered_set<double> > atomShininess();
 
   // bond properties
 
@@ -313,50 +313,49 @@ private:
   void reloadBondShininess();
 
   void setBondDrawBonds(int state);
-  std::optional<bool> bondDrawBonds();
+  std::optional<std::unordered_set<bool> > bondDrawBonds();
   void setBondSizeScaling(double size);
-  std::optional<double> bondSizeScaling();
+  std::optional<std::unordered_set<double> > bondSizeScaling();
   void setBondColorMode(int value);
-  std::optional<RKBondColorMode> bondColorMode();
+  std::optional<std::unordered_set<RKBondColorMode, enum_hash> > bondColorMode();
   void setBondSelectionStyle(int value);
-  std::optional<RKSelectionStyle> bondSelectionStyle();
+  std::optional<std::unordered_set<RKSelectionStyle, enum_hash> > bondSelectionStyle();
   void setBondSelectionStyleNu(double value);
-  std::optional<double> bondSelectionStyleNu();
+  std::optional<std::unordered_set<double> > bondSelectionStyleNu();
   void setBondSelectionStyleRho(double value);
-  std::optional<double> bondSelectionStyleRho();
+  std::optional<std::unordered_set<double> > bondSelectionStyleRho();
   void setBondSelectionIntensity(double value);
-  std::optional<double> bondSelectionIntensity();
+  std::optional<std::unordered_set<double> > bondSelectionIntensity();
   void setBondSelectionScaling(double value);
-  std::optional<double> bondSelectionScaling();
+  std::optional<std::unordered_set<double> > bondSelectionScaling();
   void setBondHighDynamicRange(int value);
-  std::optional<bool> bondHighDynamicRange();
+  std::optional<std::unordered_set<bool> > bondHighDynamicRange();
   void setBondHDRExposure(double value);
-  std::optional<double> bondHDRExposure();
+  std::optional<std::unordered_set<double> > bondHDRExposure();
   void setBondHue(double value);
-  std::optional<double> bondHue();
+  std::optional<std::unordered_set<double> > bondHue();
   void setBondSaturation(double value);
-  std::optional<double> bondSaturation();
+  std::optional<std::unordered_set<double>> bondSaturation();
   void setBondValue(double value);
-  std::optional<double> bondValue();
+  std::optional<std::unordered_set<double> > bondValue();
   void setBondAmbientOcclusion(int value);
-  std::optional<bool> bondAmbientOcclusion();
+  std::optional<std::unordered_set<bool> > bondAmbientOcclusion();
   void setBondAmbientLightIntensity(double value);
-  std::optional<double> bondAmbientLightIntensity();
+  std::optional<std::unordered_set<double> > bondAmbientLightIntensity();
   void setBondAmbientLightColor();
-  std::optional<QColor> bondAmbientLightColor();
+  std::optional<std::unordered_set<QColor> > bondAmbientLightColor();
   void setBondDiffuseLightIntensity(double value);
-  std::optional<double> bondDiffuseLightIntensity();
+  std::optional<std::unordered_set<double> > bondDiffuseLightIntensity();
   void setBondDiffuseLightColor();
-  std::optional<QColor> bondDiffuseLightColor();
+  std::optional<std::unordered_set<QColor> > bondDiffuseLightColor();
   void setBondSpecularLightIntensity(double value);
-  std::optional<double> bondSpecularLightIntensity();
+  std::optional<std::unordered_set<double> > bondSpecularLightIntensity();
   void setBondSpecularLightColor();
-  std::optional<QColor> bondSpecularLightColor();
+  std::optional<std::unordered_set<QColor> > bondSpecularLightColor();
   void setBondShininess(double value);
-  std::optional<double> bondShininessy();
+  std::optional<std::unordered_set<double> > bondShininessy();
 
   // unit cell properties
-
   void reloadDrawUnitCell();
   void reloadUnitCellSizeScaling();
   void reloadUnitCellDiffuseLight();
@@ -380,22 +379,22 @@ private:
   void reloadLocalAxesWidth();
   void reloadLocalAxesOffset();
 
-  std::optional<RKLocalAxes::Position> localAxesPosition();
+  std::optional<std::unordered_set<RKLocalAxes::Position, enum_hash> > localAxesPosition();
   void setLocalAxesPosition(int value);
-  std::optional<RKLocalAxes::Style> localAxesStyle();
+  std::optional<std::unordered_set<RKLocalAxes::Style, enum_hash> > localAxesStyle();
   void setLocalAxesStyle(int value);
-  std::optional<RKLocalAxes::ScalingType> localAxesScalingType();
+  std::optional<std::unordered_set<RKLocalAxes::ScalingType, enum_hash> > localAxesScalingType();
   void setLocalAxesScalingType(int value);
 
-  std::optional<double> localAxesLength();
+  std::optional<std::unordered_set<double> > localAxesLength();
   void setLocalAxesLength(double value);
-  std::optional<double> localAxesWidth();
+  std::optional<std::unordered_set<double> > localAxesWidth();
   void setLocalAxesWidth(double value);
-  std::optional<double> localAxesOffsetX();
+  std::optional<std::unordered_set<double> > localAxesOffsetX();
   void setLocalAxesOffsetX(double value);
-  std::optional<double> localAxesOffsetY();
+  std::optional<std::unordered_set<double>> localAxesOffsetY();
   void setLocalAxesOffsetY(double value);
-  std::optional<double> localAxesOffsetZ();
+  std::optional<std::unordered_set<double>> localAxesOffsetZ();
   void setLocalAxesOffsetZ(double value);
 
 
@@ -422,59 +421,59 @@ private:
   void reloadAdsorptionSurfaceOutsideShininess();
 
   void setDrawAdsorptionSurface(int state);
-  std::optional<bool> drawAdsorptionSurface();
+  std::optional<std::unordered_set<bool>> drawAdsorptionSurface();
   void setAdsorptionSurfaceProbeMolecule(int value);
-  std::optional<Structure::ProbeMolecule> adsorptionSurfaceProbeMolecule();
+  std::optional<std::unordered_set<ProbeMolecule, enum_hash> > adsorptionSurfaceProbeMolecule();
   void setAdsorptionSurfaceIsovalue(double value);
-  std::optional<double> adsorptionSurfaceIsovalue();
-  std::optional<double> adsorptionSurfaceMinimumValue();
+  std::optional<std::unordered_set<double>> adsorptionSurfaceIsovalue();
+  std::optional<std::unordered_set<double>> adsorptionSurfaceMinimumValue();
   void setAdsorptionSurfaceOpacity(double value);
-  std::optional<double> adsorptionSurfaceOpacity();
+  std::optional<std::unordered_set<double>> adsorptionSurfaceOpacity();
 
   void setAdsorptionSurfaceHue(double value);
-  std::optional<double> adsorptionSurfaceHue();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceHue();
   void setAdsorptionSurfaceSaturation(double value);
-  std::optional<double> adsorptionSurfaceSaturation();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceSaturation();
   void setAdsorptionSurfaceValue(double value);
-  std::optional<double> adsorptionSurfaceValue();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceValue();
 
   void setAdsorptionSurfaceInsideHighDynamicRange(int value);
-  std::optional<bool> adsorptionSurfaceInsideHighDynamicRange();
+  std::optional<std::unordered_set<bool> > adsorptionSurfaceInsideHighDynamicRange();
   void setAdsorptionSurfaceInsideHDRExposure(double value);
-  std::optional<double> adsorptionSurfaceInsideHDRExposure();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceInsideHDRExposure();
   void setAdsorptionSurfaceInsideAmbientLightIntensity(double value);
-  std::optional<double> adsorptionSurfaceInsideAmbientLightIntensity();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceInsideAmbientLightIntensity();
   void setAdsorptionSurfaceInsideAmbientLightColor();
-  std::optional<QColor> adsorptionSurfaceInsideAmbientLightColor();
+  std::optional<std::unordered_set<QColor> > adsorptionSurfaceInsideAmbientLightColor();
   void setAdsorptionSurfaceInsideDiffuseLightIntensity(double value);
-  std::optional<double> adsorptionSurfaceInsideDiffuseLightIntensity();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceInsideDiffuseLightIntensity();
   void setAdsorptionSurfaceInsideDiffuseLightColor();
-  std::optional<QColor> adsorptionSurfaceInsideDiffuseLightColor();
+  std::optional<std::unordered_set<QColor> > adsorptionSurfaceInsideDiffuseLightColor();
   void setAdsorptionSurfaceInsideSpecularLightIntensity(double value);
-  std::optional<double> adsorptionSurfaceInsideSpecularLightIntensity();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceInsideSpecularLightIntensity();
   void setAdsorptionSurfaceInsideSpecularLightColor();
-  std::optional<QColor> adsorptionSurfaceInsideSpecularLightColor();
+  std::optional<std::unordered_set<QColor> > adsorptionSurfaceInsideSpecularLightColor();
   void setAdsorptionSurfaceInsideShininess(double value);
-  std::optional<double> adsorptionSurfaceInsideShininessy();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceInsideShininessy();
 
   void setAdsorptionSurfaceOutsideHighDynamicRange(int value);
-  std::optional<bool> adsorptionSurfaceOutsideHighDynamicRange();
+  std::optional<std::unordered_set<bool> > adsorptionSurfaceOutsideHighDynamicRange();
   void setAdsorptionSurfaceOutsideHDRExposure(double value);
-  std::optional<double> adsorptionSurfaceOutsideHDRExposure();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceOutsideHDRExposure();
   void setAdsorptionSurfaceOutsideAmbientLightIntensity(double value);
-  std::optional<double> adsorptionSurfaceOutsideAmbientLightIntensity();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceOutsideAmbientLightIntensity();
   void setAdsorptionSurfaceOutsideAmbientLightColor();
-  std::optional<QColor> adsorptionSurfaceOutsideAmbientLightColor();
+  std::optional<std::unordered_set<QColor> > adsorptionSurfaceOutsideAmbientLightColor();
   void setAdsorptionSurfaceOutsideDiffuseLightIntensity(double value);
-  std::optional<double> adsorptionSurfaceOutsideDiffuseLightIntensity();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceOutsideDiffuseLightIntensity();
   void setAdsorptionSurfaceOutsideDiffuseLightColor();
-  std::optional<QColor> adsorptionSurfaceOutsideDiffuseLightColor();
+  std::optional<std::unordered_set<QColor> > adsorptionSurfaceOutsideDiffuseLightColor();
   void setAdsorptionSurfaceOutsideSpecularLightIntensity(double value);
-  std::optional<double> adsorptionSurfaceOutsideSpecularLightIntensity();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceOutsideSpecularLightIntensity();
   void setAdsorptionSurfaceOutsideSpecularLightColor();
-  std::optional<QColor> adsorptionSurfaceOutsideSpecularLightColor();
+  std::optional<std::unordered_set<QColor> > adsorptionSurfaceOutsideSpecularLightColor();
   void setAdsorptionSurfaceOutsideShininess(double value);
-  std::optional<double> adsorptionSurfaceOutsideShininessy();
+  std::optional<std::unordered_set<double> > adsorptionSurfaceOutsideShininessy();
 
 
   void reloadAnnotationType();
@@ -485,24 +484,24 @@ private:
   void reloadAnnotationScaling();
   void reloadAnnotationOffset();
   void setAnnotationType(int value);
-  std::optional<RKTextType> annotationType();
+  std::optional<std::set<RKTextType> > annotationType();
   void setAnnotationFontFamily(QString value);
   void setAnnotationFontMember(QString value);
-  std::optional<QString> annotationFont();
+  std::optional<std::set<QString> > annotationFont();
   void setAnnotationTextColor();
-  std::optional<QColor> annotationTextColor();
+  std::optional<std::unordered_set<QColor> > annotationTextColor();
   void setAnnotationAlignment(int value);
-  std::optional<RKTextAlignment> annotationAlignment();
+  std::optional<std::set<RKTextAlignment> > annotationAlignment();
   void setAnnotationStyle(int value);
-  std::optional<RKTextStyle> annotationStyle();
+  std::optional<std::set<RKTextStyle> > annotationStyle();
   void setAnnotationScaling(double value);
-  std::optional<double> annotationScaling();
+  std::optional<std::unordered_set<double> > annotationScaling();
   void setAnnotationOffsetX(double value);
-  std::optional<double> annotationOffsetX();
+  std::optional<std::unordered_set<double>> annotationOffsetX();
   void setAnnotationOffsetY(double value);
-  std::optional<double> annotationOffsetY();
+  std::optional<std::unordered_set<double>> annotationOffsetY();
   void setAnnotationOffsetZ(double value);
-  std::optional<double> annotationOffsetZ();
+  std::optional<std::unordered_set<double> > annotationOffsetZ();
 
 private slots:
   void expandPrimitiveItem();
@@ -517,7 +516,7 @@ signals:
   void redrawRenderer();
   void redrawWithQuality(RKRenderQuality quality);
 
-  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
-  void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
+  void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };
 

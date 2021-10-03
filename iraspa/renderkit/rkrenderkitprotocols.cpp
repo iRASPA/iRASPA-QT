@@ -26,6 +26,11 @@ RKRenderStructure::~RKRenderStructure()
   // Compulsory virtual destructor definition
 }
 
+RKRenderAtomicStructureSource::~RKRenderAtomicStructureSource()
+{
+  // Compulsory virtual destructor definition
+}
+
 RKRenderPrimitiveObjectsSource::~RKRenderPrimitiveObjectsSource()
 {
   // Compulsory virtual destructor definition
@@ -61,7 +66,8 @@ RKRenderPrimitivePolygonalPrimsObjectsSource::~RKRenderPrimitivePolygonalPrimsOb
   // Compulsory virtual destructor definition
 }
 
-RKRenderLocalAxesStructure::~RKRenderLocalAxesStructure()
+
+RKRenderDensityVolumeSource::~RKRenderDensityVolumeSource()
 {
   // Compulsory virtual destructor definition
 }

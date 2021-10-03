@@ -37,6 +37,14 @@ float4x4::float4x4(const float4x4 &a)  // copy constructor
   m14=a.m14; m24=a.m24; m34=a.m34; m44=a.m44;
 }
 
+float4x4::float4x4(const float *v)
+{
+  for(int i=0;i<16;i++)
+  {
+    m[i] = v[i];
+  }
+}
+
 float4x4& float4x4::operator=(const float4x4& a)  //assignment operator
 {
   if (this != &a) // protect against self-assingment

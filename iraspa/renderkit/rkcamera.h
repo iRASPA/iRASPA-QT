@@ -52,6 +52,7 @@ public:
   simd_quatd referenceDirection();
   double3 EulerAngles();
   double4x4 modelMatrix();
+  double4x4 viewMatrix() {return _viewMatrix;}
   double4x4 modelViewMatrix();
   double3 myGluUnProject(double3 position, QRect viewPort);
   double3 myGluUnProject(double3 position, double4x4 modelMatrix, QRect viewPort);

@@ -51,5 +51,6 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<DocumentData>& data
   {
     throw InconsistentArchiveException(__FILE__, __LINE__, "DocumentData");
   }
+  qDebug() << "Magic number read correctly: " << magicNumber << static_cast<qint64>(0x6f6b6179);
   return stream;
 }

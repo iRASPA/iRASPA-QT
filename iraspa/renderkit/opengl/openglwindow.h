@@ -68,6 +68,7 @@
 #include "opengltextrenderingshader.h"
 #include "openglglobalaxesshader.h"
 #include "opengllocalaxesshader.h"
+#include "opengldensityvolumeshader.h"
 
 #ifdef Q_OS_MACOS
   #include <OpenCL/opencl.h>
@@ -191,6 +192,8 @@ private:
   OpenGLPickingShader _pickingShader;
 
   OpenGLTextRenderingShader _textShader;
+
+  OpenGLDensityVolumeShader _densityVolumeShader;
 
 #if defined (Q_OS_OSX)
   void initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue);

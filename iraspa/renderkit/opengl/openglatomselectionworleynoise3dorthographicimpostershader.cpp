@@ -91,15 +91,18 @@ void OpenGLAtomSelectionWorleyNoise3DOrthographicImposterShader::paintGL(GLuint 
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if(_renderStructures[i][j]->atomSelectionStyle() == RKSelectionStyle::WorleyNoise3D && _renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _atomSelectionShader._numberOfDrawnAtoms[i][j]>0)
+      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
       {
-        glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
-        glBindVertexArray(_vertexArrayObject[i][j]);
-        check_gl_error();
+        if(source->atomSelectionStyle() == RKSelectionStyle::WorleyNoise3D && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _atomSelectionShader._numberOfDrawnAtoms[i][j]>0)
+        {
+          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
+          glBindVertexArray(_vertexArrayObject[i][j]);
+          check_gl_error();
 
-        glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_atomSelectionShader._numberOfDrawnAtoms[i][j]));
-        check_gl_error();
-        glBindVertexArray(0);
+          glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_atomSelectionShader._numberOfDrawnAtoms[i][j]));
+          check_gl_error();
+          glBindVertexArray(0);
+        }
       }
       index++;
     }

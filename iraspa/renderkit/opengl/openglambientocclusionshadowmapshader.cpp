@@ -258,57 +258,60 @@ void OpenGLAmbientOcclusionShadowMapShader::adjustAmbientOcclusionTextureSize()
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxSize);
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      size_t numberOfAtoms = _renderStructures[i][j]->renderAtoms().size();
+      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      {
+        size_t numberOfAtoms = source->renderAtoms().size();
 
-      if(numberOfAtoms < 64)
-      {
-        _renderStructures[i][j]->setAtomAmbientOcclusionTextureSize(std::min(256,int(maxSize)));
-      }
-      else if (numberOfAtoms < 256)
-      {
-        _renderStructures[i][j]->setAtomAmbientOcclusionTextureSize(std::min(512,int(maxSize)));
-      }
-      else if (numberOfAtoms < 1024)
-      {
-        _renderStructures[i][j]->setAtomAmbientOcclusionTextureSize(std::min(1024,int(maxSize)));
-      }
-      else if (numberOfAtoms < 65536)
-      {
-        _renderStructures[i][j]->setAtomAmbientOcclusionTextureSize(std::min(2048,int(maxSize)));
-      }
-      else if (numberOfAtoms < 524288)
-      {
-        _renderStructures[i][j]->setAtomAmbientOcclusionTextureSize(std::min(4096,int(maxSize)));
-      }
-      else
-      {
-        _renderStructures[i][j]->setAtomAmbientOcclusionTextureSize(std::min(8192,int(maxSize)));
-      }
+        if(numberOfAtoms < 64)
+        {
+          source->setAtomAmbientOcclusionTextureSize(std::min(256,int(maxSize)));
+        }
+        else if (numberOfAtoms < 256)
+        {
+          source->setAtomAmbientOcclusionTextureSize(std::min(512,int(maxSize)));
+        }
+        else if (numberOfAtoms < 1024)
+        {
+          source->setAtomAmbientOcclusionTextureSize(std::min(1024,int(maxSize)));
+        }
+        else if (numberOfAtoms < 65536)
+        {
+          source->setAtomAmbientOcclusionTextureSize(std::min(2048,int(maxSize)));
+        }
+        else if (numberOfAtoms < 524288)
+        {
+          source->setAtomAmbientOcclusionTextureSize(std::min(4096,int(maxSize)));
+        }
+        else
+        {
+          source->setAtomAmbientOcclusionTextureSize(std::min(8192,int(maxSize)));
+        }
 
-      _renderStructures[i][j]->setAtomAmbientOcclusionPatchNumber(int(sqrt(double(numberOfAtoms)))+1);
-      _renderStructures[i][j]->setAtomAmbientOcclusionPatchSize(_renderStructures[i][j]->atomAmbientOcclusionTextureSize()/
-      _renderStructures[i][j]->atomAmbientOcclusionPatchNumber());
+        source->setAtomAmbientOcclusionPatchNumber(int(sqrt(double(numberOfAtoms)))+1);
+        source->setAtomAmbientOcclusionPatchSize(source->atomAmbientOcclusionTextureSize()/
+        source->atomAmbientOcclusionPatchNumber());
 
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _ambientOcclusionFrameBufferObject[i][j]);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _ambientOcclusionFrameBufferObject[i][j]);
 
-      glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-      glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
-      glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MAG_FILTER), GLint(GL_LINEAR));
-      glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MIN_FILTER), GLint(GL_LINEAR));
-      glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
-      glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_T), GLint(GL_CLAMP_TO_EDGE));
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, _renderStructures[i][j]->atomAmbientOcclusionTextureSize(), _renderStructures[i][j]->atomAmbientOcclusionTextureSize(), 0, GL_RED, GL_HALF_FLOAT, nullptr);
-      glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j], 0);
-      glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
+        glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MAG_FILTER), GLint(GL_LINEAR));
+        glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MIN_FILTER), GLint(GL_LINEAR));
+        glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
+        glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_T), GLint(GL_CLAMP_TO_EDGE));
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, source->atomAmbientOcclusionTextureSize(), source->atomAmbientOcclusionTextureSize(), 0, GL_RED, GL_HALF_FLOAT, nullptr);
+        glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j], 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-      // check framebuffer completeness
-      GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-      if (status != GL_FRAMEBUFFER_COMPLETE)
-      {
-        std::cout << "initializeAmbientOcclusionMapFrameBuffer fatal error: framebuffer incomplete" << std::endl;
+        // check framebuffer completeness
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE)
+        {
+          std::cout << "initializeAmbientOcclusionMapFrameBuffer fatal error: framebuffer incomplete" << std::endl;
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
       }
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
   }
 }
@@ -391,213 +394,216 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
     {
       for(size_t j=0;j<_renderStructures[i].size();j++)
       {
-        if(_renderStructures[i][j]->atomAmbientOcclusion() && _renderStructures[i][j]->isVisible())
+          if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
+        if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
         {
-          if(_cache.contains(_renderStructures[i][j].get())) // case cached
+          if(source->atomAmbientOcclusion() && _renderStructures[i][j]->isVisible())
           {
-             std::vector<uint16_t>* textureData = _cache.object(_renderStructures[i][j].get());
-             glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
-             check_gl_error();
-             glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, _renderStructures[i][j]->atomAmbientOcclusionTextureSize(),
-                          _renderStructures[i][j]->atomAmbientOcclusionTextureSize(), 0, GL_RED, GL_HALF_FLOAT, textureData->data());
-             check_gl_error();
-             glBindTexture(GLenum(GL_TEXTURE_2D), 0);
-             check_gl_error();
-          }
-          else
-          {
-            // create vector of structure-uniforms in advance
-
-            double4x4 modelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(_renderStructures[i][j]->orientation()), _renderStructures[i][j]->cell()->boundingBox().center(), _renderStructures[i][j]->origin());
-
-            std::vector<RKStructureUniforms> structureUniforms = std::vector<RKStructureUniforms>();
-            structureUniforms.reserve(_renderStructures[i].size());
-
-            for(size_t k=0; k < _renderStructures[i].size(); k++)
+            if(_cache.contains(_renderStructures[i][j].get())) // case cached
             {
-              RKStructureUniforms structureUniform = RKStructureUniforms(int(i), int(k), _renderStructures[i][k], double4x4::inverse(modelMatrix));
-              structureUniforms.push_back(structureUniform);
-            }
-
-            glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
-            check_gl_error();
-            if(_renderStructures[i].size()>0)
-            {
-              glBufferData(GL_UNIFORM_BUFFER, sizeof(RKStructureUniforms) * _renderStructures[i].size(), structureUniforms.data(), GL_DYNAMIC_DRAW);
-              check_gl_error();
-            }
-            glBindBuffer(GL_UNIFORM_BUFFER, 0);
-            check_gl_error();
-
-
-            SKBoundingBox boundingBox = dataSource->renderBoundingBox();
-            double largestRadius = boundingBox.boundingSphereRadius();
-            double3 centerOfScene = boundingBox.minimum() + (boundingBox.maximum() - boundingBox.minimum()) * 0.5;
-            double3 eye = double3(centerOfScene.x, centerOfScene.y, centerOfScene.z + largestRadius);
-
-            double boundingBoxAspectRatio = fabs(boundingBox.maximum().x - boundingBox.minimum().x) / abs(boundingBox.maximum().y - boundingBox.minimum().y);
-
-            double left,right,top,bottom;
-            if (boundingBoxAspectRatio < 1.0)
-            {
-              left =  -largestRadius/boundingBoxAspectRatio;
-              right = largestRadius/boundingBoxAspectRatio;
-              top = largestRadius/boundingBoxAspectRatio;
-              bottom = -largestRadius/boundingBoxAspectRatio;
+               std::vector<uint16_t>* textureData = _cache.object(_renderStructures[i][j].get());
+               glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
+               check_gl_error();
+               glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, source->atomAmbientOcclusionTextureSize(),
+                            source->atomAmbientOcclusionTextureSize(), 0, GL_RED, GL_HALF_FLOAT, textureData->data());
+               check_gl_error();
+               glBindTexture(GLenum(GL_TEXTURE_2D), 0);
+               check_gl_error();
             }
             else
             {
-              left = -largestRadius;
-              right = largestRadius;
-              top = largestRadius;
-              bottom = -largestRadius;
-            }
+              // create vector of structure-uniforms in advance
 
-            double near1 = 0.0;
-            double far1 = 2.0 * largestRadius;
+              double4x4 modelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(renderStructure->orientation()), renderStructure->cell()->boundingBox().center(), renderStructure->origin());
 
-            std::vector<RKShadowUniforms> shadowMapFrameUniforms = std::vector<RKShadowUniforms>();
+              std::vector<RKStructureUniforms> structureUniforms = std::vector<RKStructureUniforms>();
+              structureUniforms.reserve(_renderStructures[i].size());
 
-            int maxk=360;
-            const simd_quatd *directions;
-            const double *weights;
-            if(quality == RKRenderQuality::picture)
-            {
-              maxk = 1992;
-              directions = simd_quatd::data1992;
-              weights = simd_quatd::weights1992;
-              shadowMapFrameUniforms.reserve(maxk);
-            }
-            else
-            {
-              maxk=360;
-              directions = simd_quatd::data360;
-              weights = simd_quatd::weights360;
-              shadowMapFrameUniforms.reserve(maxk);
-            }
-
-            // fixed set of directions to avoid flickering, but a small random-component to avoid artificats
-            for(int k=0;k<maxk;k++)
-            {
-              simd_quatd smallChangeQ = simd_quatd::smallRandomQuaternion(0.5*10.0*M_PI/180.0);
-              simd_quatd q = smallChangeQ * directions[k];
-
-              double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(q), centerOfScene);
-
-              double4x4 viewMatrix = RKCamera::GluLookAt(eye,centerOfScene,double3(0, 1, 0));
-              double4x4 projectionMatrix = RKCamera::glFrustumfOrthographic(left, right, bottom, top, near1, far1);
-
-              RKShadowUniforms shadowMapFrameUniform = RKShadowUniforms(projectionMatrix, viewMatrix, currentModelMatrix);
-              shadowMapFrameUniforms.push_back(shadowMapFrameUniform);
-            }
-
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _ambientOcclusionFrameBufferObject[i][j]);
-            check_gl_error();
-
-            glBindBuffer(GL_UNIFORM_BUFFER, shadowMapFrameUniformBuffer);
-            check_gl_error();
-
-            glBufferData(GL_UNIFORM_BUFFER, sizeof(RKShadowUniforms) * maxk, shadowMapFrameUniforms.data(), GL_DYNAMIC_DRAW);
-            check_gl_error();
-
-            //glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
-            //check_gl_error();
-
-            //glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, i * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
-            //check_gl_error();
-
-            // clear the ambient-occlusion texture
-            int textureSize = _renderStructures[i][j]->atomAmbientOcclusionTextureSize();
-            qDebug() << "size: " << textureSize;
-            glViewport(0,0,textureSize,textureSize);
-            check_gl_error();
-
-            GLuint clearColor[4] = {0, 0, 0, 0};
-            glClearBufferuiv(GL_COLOR, 0, clearColor);
-            check_gl_error();
-
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
-            check_gl_error();
-
-            for(int k=0;k<maxk;k++)
-            {
-              // create shadow map for direction d_k
-              glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFrameBufferObject);
-
-              glEnable(GL_DEPTH_TEST);
-              glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-              glClear(GL_DEPTH_BUFFER_BIT);
-
-              glViewport(0,0,2048,2048);
-
-              glUseProgram(_shadowMapProgram);
-
-              for(size_t l=0;l<_renderStructures[i].size();l++)
+              for(size_t k=0; k < _renderStructures[i].size(); k++)
               {
-                if (_renderStructures[i][l]->isVisible() && _atomShader._numberOfDrawnAtoms[i][l] > 0)
+                RKStructureUniforms structureUniform = RKStructureUniforms(int(i), int(k), _renderStructures[i][k], double4x4::inverse(modelMatrix));
+                structureUniforms.push_back(structureUniform);
+              }
+
+              glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
+              check_gl_error();
+              if(_renderStructures[i].size()>0)
+              {
+                glBufferData(GL_UNIFORM_BUFFER, sizeof(RKStructureUniforms) * _renderStructures[i].size(), structureUniforms.data(), GL_DYNAMIC_DRAW);
+                check_gl_error();
+              }
+              glBindBuffer(GL_UNIFORM_BUFFER, 0);
+              check_gl_error();
+
+
+              SKBoundingBox boundingBox = dataSource->renderBoundingBox();
+              double largestRadius = boundingBox.boundingSphereRadius();
+              double3 centerOfScene = boundingBox.minimum() + (boundingBox.maximum() - boundingBox.minimum()) * 0.5;
+              double3 eye = double3(centerOfScene.x, centerOfScene.y, centerOfScene.z + largestRadius);
+
+              double boundingBoxAspectRatio = fabs(boundingBox.maximum().x - boundingBox.minimum().x) / abs(boundingBox.maximum().y - boundingBox.minimum().y);
+
+              double left,right,top,bottom;
+              if (boundingBoxAspectRatio < 1.0)
+              {
+                left =  -largestRadius/boundingBoxAspectRatio;
+                right = largestRadius/boundingBoxAspectRatio;
+                top = largestRadius/boundingBoxAspectRatio;
+                bottom = -largestRadius/boundingBoxAspectRatio;
+              }
+              else
+              {
+                left = -largestRadius;
+                right = largestRadius;
+                top = largestRadius;
+                bottom = -largestRadius;
+              }
+
+              double near1 = 0.0;
+              double far1 = 2.0 * largestRadius;
+
+              std::vector<RKShadowUniforms> shadowMapFrameUniforms = std::vector<RKShadowUniforms>();
+
+              int maxk=360;
+              const simd_quatd *directions;
+              const double *weights;
+              if(quality == RKRenderQuality::picture)
+              {
+                maxk = 1992;
+                directions = simd_quatd::data1992;
+                weights = simd_quatd::weights1992;
+                shadowMapFrameUniforms.reserve(maxk);
+              }
+              else
+              {
+                maxk=360;
+                directions = simd_quatd::data360;
+                weights = simd_quatd::weights360;
+                shadowMapFrameUniforms.reserve(maxk);
+              }
+
+              // fixed set of directions to avoid flickering, but a small random-component to avoid artificats
+              for(int k=0;k<maxk;k++)
+              {
+                simd_quatd smallChangeQ = simd_quatd::smallRandomQuaternion(0.5*10.0*M_PI/180.0);
+                simd_quatd q = smallChangeQ * directions[k];
+
+                double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(q), centerOfScene);
+
+                double4x4 viewMatrix = RKCamera::GluLookAt(eye,centerOfScene,double3(0, 1, 0));
+                double4x4 projectionMatrix = RKCamera::glFrustumfOrthographic(left, right, bottom, top, near1, far1);
+
+                RKShadowUniforms shadowMapFrameUniform = RKShadowUniforms(projectionMatrix, viewMatrix, currentModelMatrix);
+                shadowMapFrameUniforms.push_back(shadowMapFrameUniform);
+              }
+
+              glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _ambientOcclusionFrameBufferObject[i][j]);
+              check_gl_error();
+
+              glBindBuffer(GL_UNIFORM_BUFFER, shadowMapFrameUniformBuffer);
+              check_gl_error();
+
+              glBufferData(GL_UNIFORM_BUFFER, sizeof(RKShadowUniforms) * maxk, shadowMapFrameUniforms.data(), GL_DYNAMIC_DRAW);
+              check_gl_error();
+
+              //glBindBuffer(GL_UNIFORM_BUFFER, structureAmbientOcclusionUniformBuffer);
+              //check_gl_error();
+
+              //glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, i * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+              //check_gl_error();
+
+              // clear the ambient-occlusion texture
+              int textureSize = source->atomAmbientOcclusionTextureSize();
+              qDebug() << "size: " << textureSize;
+              glViewport(0,0,textureSize,textureSize);
+              check_gl_error();
+
+              GLuint clearColor[4] = {0, 0, 0, 0};
+              glClearBufferuiv(GL_COLOR, 0, clearColor);
+              check_gl_error();
+
+              glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
+              check_gl_error();
+
+              for(int k=0;k<maxk;k++)
+              {
+                // create shadow map for direction d_k
+                glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFrameBufferObject);
+
+                glEnable(GL_DEPTH_TEST);
+                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                glViewport(0,0,2048,2048);
+
+                glUseProgram(_shadowMapProgram);
+
+                for(size_t l=0;l<_renderStructures[i].size();l++)
                 {
-                  glBindVertexArray(_atomShadowMapVertexArrayObject[i][l]);
+                  if (_renderStructures[i][l]->isVisible() && _atomShader._numberOfDrawnAtoms[i][l] > 0)
+                  {
+                    glBindVertexArray(_atomShadowMapVertexArrayObject[i][l]);
+
+                    glBindBufferRange(GL_UNIFORM_BUFFER, 2, shadowMapFrameUniformBuffer, k * sizeof(RKShadowUniforms), sizeof(RKShadowUniforms));
+
+                    glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, l * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+
+                    glDrawElementsInstanced(GL_TRIANGLE_STRIP, GLsizei(4),GLenum(GL_UNSIGNED_SHORT), nullptr, static_cast<GLsizei>(_atomShader._numberOfDrawnAtoms[i][l]));
+
+                    glBindVertexArray(0);
+                  }
+                }
+
+                glUseProgram(0);
+                glBindFramebuffer(GLenum(GL_FRAMEBUFFER),0);
+
+                glViewport(0,0,textureSize,textureSize);
+
+
+                glBindFramebuffer(GL_FRAMEBUFFER, _ambientOcclusionFrameBufferObject[i][j]);
+                glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+                glDisable(GL_DEPTH_TEST);
+                glEnable(GL_BLEND);
+                glBlendEquation(GL_FUNC_ADD);
+                glBlendFunc(GL_ONE, GL_ONE);
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+                glUseProgram(_ambientOcclusionProgram);
+
+
+                if(_renderStructures[i][j]->isVisible() && _atomShader._numberOfDrawnAtoms[i][j] > 0)
+                {
+                  glBindVertexArray(_atomAmbientOcclusionMapVertexArrayObject[i][j]);
 
                   glBindBufferRange(GL_UNIFORM_BUFFER, 2, shadowMapFrameUniformBuffer, k * sizeof(RKShadowUniforms), sizeof(RKShadowUniforms));
 
-                  glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, l * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+                  glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, j * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
 
-                  glDrawElementsInstanced(GL_TRIANGLE_STRIP, GLsizei(4),GLenum(GL_UNSIGNED_SHORT), nullptr, static_cast<GLsizei>(_atomShader._numberOfDrawnAtoms[i][l]));
+
+                  glActiveTexture(GL_TEXTURE0);
+                  glBindTexture(GL_TEXTURE_2D, shadowMapDepthTexture);
+                  glUniform1i(_atomAmbientOcclusionMapUniformLocation, 0);
+                  glUniform1f(_atomAmbientOcclusionMapWeightUniformLocation, float(4.0*weights[k]/double(maxk)));
+
+                  glDrawElementsInstanced(GL_TRIANGLE_STRIP, 4,GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_atomShader._numberOfDrawnAtoms[i][j]));
 
                   glBindVertexArray(0);
                 }
+                glBindTexture(GLenum(GL_TEXTURE_2D), 0);
+
+                glUseProgram(0);
+
+                glDisable(GLenum(GL_BLEND));
+                glEnable(GLenum(GL_DEPTH_TEST));
               }
 
-              glUseProgram(0);
-              glBindFramebuffer(GLenum(GL_FRAMEBUFFER),0);
-
-              glViewport(0,0,textureSize,textureSize);
-
-
-              glBindFramebuffer(GL_FRAMEBUFFER, _ambientOcclusionFrameBufferObject[i][j]);
-              glDrawBuffer(GL_COLOR_ATTACHMENT0);
-
-              glDisable(GL_DEPTH_TEST);
-              glEnable(GL_BLEND);
-              glBlendEquation(GL_FUNC_ADD);
-              glBlendFunc(GL_ONE, GL_ONE);
-              glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-              glUseProgram(_ambientOcclusionProgram);
-
-
-              if(_renderStructures[i][j]->isVisible() && _atomShader._numberOfDrawnAtoms[i][j] > 0)
-              {
-                glBindVertexArray(_atomAmbientOcclusionMapVertexArrayObject[i][j]);
-
-                glBindBufferRange(GL_UNIFORM_BUFFER, 2, shadowMapFrameUniformBuffer, k * sizeof(RKShadowUniforms), sizeof(RKShadowUniforms));
-
-                glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureAmbientOcclusionUniformBuffer, j * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
-
-
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, shadowMapDepthTexture);
-                glUniform1i(_atomAmbientOcclusionMapUniformLocation, 0);
-                glUniform1f(_atomAmbientOcclusionMapWeightUniformLocation, float(4.0*weights[k]/double(maxk)));
-
-                glDrawElementsInstanced(GL_TRIANGLE_STRIP, 4,GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_atomShader._numberOfDrawnAtoms[i][j]));
-
-                glBindVertexArray(0);
-              }
-              glBindTexture(GLenum(GL_TEXTURE_2D), 0);
-
-              glUseProgram(0);
-
-              glDisable(GLenum(GL_BLEND));
-              glEnable(GLenum(GL_DEPTH_TEST));
+              glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
+              std::vector<uint16_t>* textureData = new std::vector<uint16_t>(textureSize * textureSize);
+              glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_HALF_FLOAT, textureData->data());
+              glBindTexture(GL_TEXTURE_2D, 0);
+              _cache.insert(_renderStructures[i][j].get(), textureData);
             }
-
-            glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
-            std::vector<uint16_t>* textureData = new std::vector<uint16_t>(textureSize * textureSize);
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_HALF_FLOAT, textureData->data());
-            glBindTexture(GL_TEXTURE_2D, 0);
-            _cache.insert(_renderStructures[i][j].get(), textureData);
-
           }
         }
       }

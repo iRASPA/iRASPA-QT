@@ -44,7 +44,7 @@ private:
   ElementsForm* _elementsForm;
   MainWindow *_mainWindow;
   std::shared_ptr<ProjectStructure> _projectStructure;
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _structures{};
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> _structures{};
   int _selectedColorSetIndex = 0;
   int _selectedForceFieldSetIndex = 0;
 
@@ -60,6 +60,6 @@ private:
   void setMass(double mass);
 signals:
   void rendererReloadData();
-  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
-  void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
+  void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };

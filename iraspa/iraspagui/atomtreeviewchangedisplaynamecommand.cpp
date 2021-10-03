@@ -23,7 +23,7 @@
 #include <QDebug>
 #include <algorithm>
 
-AtomTreeViewChangeDisplayNameCommand::AtomTreeViewChangeDisplayNameCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure,
+AtomTreeViewChangeDisplayNameCommand::AtomTreeViewChangeDisplayNameCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                            std::shared_ptr<SKAtomTreeNode> atomTreeNode, QString newValue, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),

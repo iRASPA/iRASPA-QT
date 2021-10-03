@@ -34,14 +34,14 @@
 class AtomTreeViewChangeDisplayNameCommand : public QUndoCommand
 {
 public:
-  AtomTreeViewChangeDisplayNameCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure,
+  AtomTreeViewChangeDisplayNameCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAObject> iraspaStructure,
                                        std::shared_ptr<SKAtomTreeNode> atom, QString newValue, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
 private:
   MainWindow *_mainWindow;
   AtomTreeViewModel *_model;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<SKAtomTreeNode> _atomTreeNode;
   QString _newValue;
   QString _oldValue;

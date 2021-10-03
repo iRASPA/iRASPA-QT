@@ -51,18 +51,21 @@ void OpenGLCrystalCylinderObjectShader::paintGLOpaque(GLuint structureUniformBuf
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderCrystalPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* object = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
-        if(object->primitiveOpacity()>0.99999 && _renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
+        if (RKRenderCrystalPrimitiveCylinderObjectsSource* source = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
         {
-          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
+          if(object->primitiveOpacity()>0.99999 && object->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
+          {
+            glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
 
-          glBindVertexArray(_vertexArrayObject[i][j]);
-          check_gl_error();
+            glBindVertexArray(_vertexArrayObject[i][j]);
+            check_gl_error();
 
-          glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfDrawnAtoms[i][j]));
-          check_gl_error();
-          glBindVertexArray(0);
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfDrawnAtoms[i][j]));
+            check_gl_error();
+            glBindVertexArray(0);
+          }
         }
       }
       index++;
@@ -87,24 +90,27 @@ void OpenGLCrystalCylinderObjectShader::paintGLTransparent(GLuint structureUnifo
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderCrystalPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
-        if(object->primitiveOpacity()<=0.99999 && _renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
+        if (RKRenderCrystalPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
         {
-          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
+          if(source->primitiveOpacity()<=0.99999 && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
+          {
+            glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
 
-          glBindVertexArray(_vertexArrayObject[i][j]);
-          check_gl_error();
+            glBindVertexArray(_vertexArrayObject[i][j]);
+            check_gl_error();
 
-          glCullFace(GL_FRONT);
-          glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfDrawnAtoms[i][j]));
-          check_gl_error();
+            glCullFace(GL_FRONT);
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfDrawnAtoms[i][j]));
+            check_gl_error();
 
-          glCullFace(GL_BACK);
-          glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfDrawnAtoms[i][j]));
-          check_gl_error();
+            glCullFace(GL_BACK);
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfDrawnAtoms[i][j]));
+            check_gl_error();
 
-          glBindVertexArray(0);
+            glBindVertexArray(0);
+          }
         }
       }
       index++;
@@ -187,6 +193,8 @@ void OpenGLCrystalCylinderObjectShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
+      if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
+      {
       if (RKRenderCrystalPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
       {
         glBindVertexArray(_vertexArrayObject[i][j]);
@@ -195,9 +203,9 @@ void OpenGLCrystalCylinderObjectShader::initializeVertexArrayObject()
         std::vector<RKInPerInstanceAttributesAtoms> atomData = object->renderCrystalPrimitiveCylinderObjects();
         _numberOfDrawnAtoms[i][j] = atomData.size();
 
-        int numberOfSides  = object->primitiveNumberOfSides();
+        int numberOfSides  = source->primitiveNumberOfSides();
 
-        if(object->primitiveIsCapped())
+        if(source->primitiveIsCapped())
         {
           CappedCylinderGeometry cylinder = CappedCylinderGeometry(1.0,numberOfSides);
           _numberOfIndices[i][j] = cylinder.indices().size();
@@ -271,6 +279,7 @@ void OpenGLCrystalCylinderObjectShader::initializeVertexArrayObject()
         check_gl_error();
 
         glBindVertexArray(0);
+      }
       }
     }
   }

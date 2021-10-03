@@ -25,7 +25,7 @@
 
 AtomTreeViewChangeSelectionCommand::AtomTreeViewChangeSelectionCommand(MainWindow *main_window,
                                                                        std::weak_ptr<AtomTreeViewModel> atomModel, std::weak_ptr<BondListViewModel> bondModel,
-                                                                       std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                                                       std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                        AtomSelectionIndexPaths atomSelection, AtomSelectionIndexPaths previousAtomSelection,
                                                                        BondSelectionIndexSet bondSelection, BondSelectionIndexSet previousBondSelection,
                                                                        QUndoCommand *parent):
@@ -33,7 +33,7 @@ AtomTreeViewChangeSelectionCommand::AtomTreeViewChangeSelectionCommand(MainWindo
   _atomModel(atomModel),
   _bondModel(bondModel),
   _iraspaStructure(iraspaStructure),
-  _structure(iraspaStructure->structure()),
+  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
   _atomSelection(atomSelection),
   _previousAtomSelection(previousAtomSelection),
   _bondSelection(bondSelection),

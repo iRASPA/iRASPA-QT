@@ -40,7 +40,7 @@ ProteinCrystal::ProteinCrystal(const ProteinCrystal &proteinCrystal): Structure(
 }
 
 
-ProteinCrystal::ProteinCrystal(std::shared_ptr<SKStructure> structure): Structure(structure)
+ProteinCrystal::ProteinCrystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
   expandSymmetry();
   _atomsTreeController->setTags();
@@ -1263,18 +1263,6 @@ std::pair<double3, double3> ProteinCrystal::computeChangedBondLength(std::shared
   return std::make_pair(pos1,pos2);
 }
 
-
-
-void ProteinCrystal::setSpaceGroupHallNumber(int HallNumber)
-{
-  _spaceGroup = SKSpaceGroup(HallNumber);
-
-  expandSymmetry();
-  _atomsTreeController->setTags();
-
-  computeBonds();
-}
-
 std::vector<RKInPerInstanceAttributesText> ProteinCrystal::atomTextData(RKFontAtlas *fontAtlas) const
 {
   int minimumReplicaX = _cell->minimumReplicaX();
@@ -1593,6 +1581,10 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> ProteinCrysta
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<ProteinCrystal> &proteinCrystal)
 {
   stream << proteinCrystal->_versionNumber;
+
+  // handle super class
+  stream << std::static_pointer_cast<Structure>(proteinCrystal);
+
   return stream;
 }
 
@@ -1604,5 +1596,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<ProteinCrystal> &pr
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "ProteinCrystal");
   }
+
+  std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(proteinCrystal);
+  stream >> structure;
+
   return stream;
 }

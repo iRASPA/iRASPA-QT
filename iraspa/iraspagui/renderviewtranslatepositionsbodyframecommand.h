@@ -36,13 +36,13 @@ class RenderViewTranslatePositionsBodyFrameCommand : public QUndoCommand
 {
 public:
   RenderViewTranslatePositionsBodyFrameCommand(MainWindow *mainWindow, std::shared_ptr<ProjectStructure> projectStructure,
-                                               std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> iraspaStructures,double3 translation, QUndoCommand *parent = nullptr);
+                                               std::vector<std::vector<std::shared_ptr<iRASPAObject>>> iraspaStructures,double3 translation, QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
   MainWindow *_mainWindow;
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _iraspaStructures;
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> _iraspaStructures;
   double3 _translation;
   std::vector<std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>>> _oldPositions;
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _structures;
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> _structures;
 };

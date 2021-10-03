@@ -28,7 +28,7 @@ AtomTreeViewMoveSelectionToNewMovieCommand::AtomTreeViewMoveSelectionToNewMovieC
                                                                                        BondListViewModel *bondListViewModel,
                                                                                        SceneTreeViewModel *sceneTreeViewModel,
                                                                                        std::shared_ptr<SceneList> sceneList,
-                                                                                       std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                                                                       std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                                        AtomSelectionNodesAndIndexPaths atomSelection,
                                                                                        BondSelectionNodesAndIndexSet bondSelection,
                                                                                        QUndoCommand *undoParent):
@@ -39,8 +39,8 @@ AtomTreeViewMoveSelectionToNewMovieCommand::AtomTreeViewMoveSelectionToNewMovieC
   _sceneTreeViewModel(sceneTreeViewModel),
   _sceneList(sceneList),
   _iraspaStructure(iraspaStructure),
-  _atomTreeController(iraspaStructure->structure()->atomsTreeController()),
-  _bondSetController(iraspaStructure->structure()->bondSetController()),
+  _atomTreeController(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->atomsTreeController()),
+  _bondSetController(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->bondSetController()),
   _atomSelection(atomSelection),
   _reversedAtomSelection({}),
   _bondSelection(bondSelection),
@@ -65,8 +65,8 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
     {
       _row = int(_scene->movies().size());
 
-      std::shared_ptr<iRASPAStructure> newiRASPAStructure = _iraspaStructure->clone();
-      newiRASPAStructure->structure()->setSpaceGroupHallNumber(_iraspaStructure->structure()->spaceGroup().spaceGroupSetting().HallNumber());
+      std::shared_ptr<iRASPAObject> newiRASPAStructure = _iraspaStructure->clone();
+      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->setSpaceGroupHallNumber(std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->spaceGroup().spaceGroupSetting().HallNumber());
       _newMovie = Movie::create(newiRASPAStructure);
 
       for(const auto &[atomNode, indexPath] : _atomSelection.second)
@@ -76,15 +76,15 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
         {
           std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
           std::shared_ptr<SKAtomTreeNode> newAtomTreeNode = std::make_shared<SKAtomTreeNode>(newAsymmetricAtom);
-          newiRASPAStructure->structure()->atomsTreeController()->appendToRootnodes(newAtomTreeNode);
+          std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->atomsTreeController()->appendToRootnodes(newAtomTreeNode);
         }
 
       }
-      newiRASPAStructure->structure()->expandSymmetry();
-      newiRASPAStructure->structure()->reComputeBoundingBox();
-      newiRASPAStructure->structure()->computeBonds();
-      newiRASPAStructure->structure()->atomsTreeController()->setTags();
-      newiRASPAStructure->structure()->bondSetController()->setTags();
+      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->expandSymmetry();
+      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->reComputeBoundingBox();
+      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->computeBonds();
+      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->atomsTreeController()->setTags();
+      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->bondSetController()->setTags();
 
       _sceneTreeViewModel->insertRow(_row, _scene, _newMovie);
       _sceneList->setSelection(_sceneSelection);
@@ -195,7 +195,7 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::undo()
   {
     for(const auto &[bondItem, row] : _bondSelection)
     {
-      _iraspaStructure->structure()->bondSetController()->insertBond(bondItem, row);
+      std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->insertBond(bondItem, row);
     }
   }
 

@@ -40,6 +40,7 @@ SOURCES += \
     $$PWD/skrotationaloccurancetable.cpp \
     $$PWD/sksymmetryoperationset.cpp \
     $$PWD/sktransformationmatrix.cpp \
+    $$PWD/skvtkparser.cpp \
     $$PWD/skxyzparser.cpp \
     $$PWD/skxyzwriter.cpp \
     $$PWD/symmetrykitprotocols.cpp
@@ -66,6 +67,7 @@ HEADERS += \
     $$PWD/sksymmetrycell.h \
     $$PWD/sksymmetryoperationset.h \
     $$PWD/sktransformationmatrix.h \
+    $$PWD/skvtkparser.h \
     $$PWD/skxyzparser.h \
     $$PWD/skxyzwriter.h \
     $$PWD/symmetrykit.h \

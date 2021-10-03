@@ -48,7 +48,7 @@ public:
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override final;
 
   // update the bondListView when (implicitely or explicitly) a new frame is selected in the Scene/Movie-ListView or frameListView
-  void setSelectedFrame(std::shared_ptr<iRASPAStructure> iraspastructure);
+  void setSelectedFrame(std::shared_ptr<iRASPAObject> iraspastructure);
 
   void resetData();
   void reloadSelection() override final;
@@ -58,7 +58,7 @@ public:
 private:
   MainWindow* _mainWindow;
   std::shared_ptr<BondListViewModel> _bondModel;
-  std::weak_ptr<iRASPAStructure> _iraspaStructure;
+  std::weak_ptr<iRASPAObject> _iraspaStructure;
   std::weak_ptr<ProjectTreeNode> _projectTreeNode;
   std::shared_ptr<iRASPAProject> _iRASPAProject;
 

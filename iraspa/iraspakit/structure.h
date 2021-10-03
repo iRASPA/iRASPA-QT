@@ -31,30 +31,34 @@
 #include <simulationkit.h>
 #include <renderkit.h>
 #include "iraspakitprotocols.h"
-
-enum class iRASPAStructureType : qint64
-{ 
-  none = 0, structure = 1, crystal = 2, molecularCrystal = 3, molecule = 4, protein = 5, proteinCrystal = 6,
-  proteinCrystalSolvent = 7, crystalSolvent = 8, molecularCrystalSolvent = 9,
-  crystalEllipsoidPrimitive = 10, crystalCylinderPrimitive = 11, crystalPolygonalPrismPrimitive = 12,
-  ellipsoidPrimitive = 13, cylinderPrimitive = 14, polygonalPrismPrimitive = 15
-};
-
+#include "displayable.h"
+#include "object.h"
+#include "infoviewer.h"
+#include "cellviewer.h"
+#include "atomviewer.h"
+#include "bondviewer.h"
+#include "primitivevisualappearanceviewer.h"
+#include "atomvisualappearanceviewer.h"
+#include "bondvisualappearanceviewer.h"
+#include "adsorptionsurfacevisualappearanceviewer.h"
+#include "atomtextvisualappearanceviewer.h"
 
 struct enum_hash
 {
-    template <typename T>
-    inline
-    typename std::enable_if<std::is_enum<T>::value, std::size_t>::type
-    operator ()(T const value) const
-    {
-        return static_cast<std::size_t>(value);
-    }
+  template <typename T>
+  inline
+  typename std::enable_if<std::is_enum<T>::value, std::size_t>::type
+  operator ()(T const value) const
+  {
+    return static_cast<std::size_t>(value);
+  }
 };
 
 
-
-class Structure: public RKRenderStructure, public RKRenderLocalAxesStructure, public DisplayableProtocol
+class Structure: public Object, public InfoViewer, public CellViewer, public AtomViewer, public BondViewer,
+                 public AtomVisualAppearanceViewer, public BondVisualAppearanceViewer,
+                 public AdsorptionSurfaceVisualAppearanceViewer, public AtomTextVisualAppearanceViewer,
+                 public RKRenderAtomicStructureSource
 {
 public:
   Structure();
@@ -64,7 +68,7 @@ public:
   Structure(const Structure &structure);
   virtual ~Structure() {}
 
-  virtual std::shared_ptr<Structure> clone() {return nullptr;}
+  virtual std::shared_ptr<Structure> clone() override {return nullptr;}
 
   virtual bool hasSymmetry() {return false;}
   virtual std::shared_ptr<Structure> superCell() const {return nullptr;}
@@ -81,55 +85,7 @@ public:
     framework = 0, adsorbate = 1, cation = 2, ionicLiquid = 3, solvent = 4
   };
 
-  enum class TemperatureScale: qint64
-  {
-    Kelvin = 0, Celsius = 1, multiple_values = 2
-  };
-
-  enum class PressureScale: qint64
-  {
-    Pascal = 0, bar = 1, multiple_values = 2
-  };
-
-  enum class CreationMethod: qint64
-  {
-    unknown = 0, simulation = 1, experimental = 2, multiple_values = 3
-  };
-
-  enum class UnitCellRelaxationMethod: qint64
-  {
-    unknown = 0, allFree = 1, fixedAnglesIsotropic = 2, fixedAnglesAnistropic = 3, betaAnglefixed = 4, fixedVolumeFreeAngles = 5, allFixed = 6, multiple_values = 7
-  };
-
-  enum class IonsRelaxationAlgorithm: qint64
-  {
-    unknown = 0, none = 1, simplex = 2, simulatedAnnealing = 3, geneticAlgorithm = 4, steepestDescent = 5, conjugateGradient = 6,
-    quasiNewton = 7, NewtonRaphson = 8, BakersMinimization = 9, multiple_values = 10
-  };
-
-  enum class IonsRelaxationCheck: qint64
-  {
-    unknown = 0, none = 1, allPositiveEigenvalues = 2, someSmallNegativeEigenvalues = 3, someSignificantNegativeEigenvalues = 4,
-    manyNegativeEigenvalues = 5, multiple_values = 6
-  };
-
-
-  enum class RepresentationType: qint64
-  {
-    sticks_and_balls = 0, vdw = 1, unity = 2, multiple_values = 3
-  };
-
-  enum class RepresentationStyle: qint64
-  {
-    custom = -1, defaultStyle = 0, fancy = 1, licorice = 2, objects = 3, multiple_values = 4
-  };
-
-  enum class ProbeMolecule: qint64
-  {
-    helium = 0, methane = 1, nitrogen = 2, hydrogen = 3, water = 4, co2 = 5, xenon = 6, krypton = 7, argon = 8, multiple_values = 9
-  };
-
-  virtual iRASPAStructureType structureType() {return iRASPAStructureType::structure;}
+  ObjectType structureType() override {return ObjectType::structure;}
 
   virtual std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions();
   virtual std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions();
@@ -138,12 +94,6 @@ public:
   virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToFractionalPositions();
   virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToCartesianPositions();
 
-
-  QString displayName() const override {return _displayName;}
-  void setDisplayName(QString name) {_displayName = name;}
-
-  bool isVisible() const  override {return _isVisible;}
-  void setVisibility(bool visibility) {_isVisible = visibility;}
   bool hasSelectedAtoms() const override final;
 
   std::vector<double3> atomPositions() const override {return std::vector<double3>();}
@@ -188,23 +138,7 @@ public:
   bool clipBondsAtUnitCell() const override {return false;}
   bool colorAtomsWithBondColor() const override;
 
-  std::vector<RKInPerInstanceAttributesText> renderTextData() const override {return std::vector<RKInPerInstanceAttributesText>();}
-  RKTextType renderTextType() const override {return _atomTextType;}
-  void setRenderTextType(RKTextType type) {_atomTextType = type;}
-  void setRenderTextFont(QString value) {_atomTextFont = value;}
-  QString renderTextFont() const override {return _atomTextFont;}
-  RKTextAlignment renderTextAlignment() const override {return _atomTextAlignment;}
-  void setRenderTextAlignment(RKTextAlignment alignment) {_atomTextAlignment = alignment;}
-  RKTextStyle renderTextStyle() const override {return _atomTextStyle;}
-  void setRenderTextStyle(RKTextStyle style) {_atomTextStyle = style;}
-  QColor renderTextColor() const override {return _atomTextColor;}
-  void setRenderTextColor(QColor color) {_atomTextColor = color;}
-  double renderTextScaling() const override {return _atomTextScaling;}
-  void setRenderTextScaling(double scaling)  {_atomTextScaling = scaling;}
-  double3 renderTextOffset() const override {return _atomTextOffset;}
-  void setRenderTextOffsetX(double value) {_atomTextOffset.x = value;}
-  void setRenderTextOffsetY(double value) {_atomTextOffset.y = value;}
-  void setRenderTextOffsetZ(double value) {_atomTextOffset.z = value;}
+
 
   void clearSelection();
   void setAtomSelection(int asymmetricAtomId);
@@ -216,26 +150,7 @@ public:
   void setAtomSelection(std::set<int>& atomIds);
   void addToAtomSelection(std::set<int>& atomIds);
 
-  RKSelectionStyle atomSelectionStyle() const override {return _atomSelectionStyle;}
-  void setAtomSelectionStyle(RKSelectionStyle style) {_atomSelectionStyle = style;}
-  double atomSelectionScaling() const override {return _atomSelectionScaling;}
-  void setAtomSelectionScaling(double scaling) {_atomSelectionScaling = scaling;}
-  double atomSelectionIntensity() const override {return _atomSelectionIntensity;}
-  void setSelectionIntensity(double scaling) {_atomSelectionIntensity = scaling;}
 
-  double atomSelectionStripesDensity() const override {return _atomSelectionStripesDensity;}
-  void setAtomSelectionStripesDensity(double value) {_atomSelectionStripesDensity = value;}
-  double atomSelectionStripesFrequency() const override {return _atomSelectionStripesFrequency;}
-  void setAtomSelectionStripesFrequency(double value) {_atomSelectionStripesFrequency = value;}
-  double atomSelectionWorleyNoise3DFrequency() const override {return _atomSelectionWorleyNoise3DFrequency;}
-  void setAtomSelectionWorleyNoise3DFrequency(double value) {_atomSelectionWorleyNoise3DFrequency = value;}
-  double atomSelectionWorleyNoise3DJitter() const override {return _atomSelectionWorleyNoise3DJitter;}
-  void setAtomSelectionWorleyNoise3DJitter(double value) {_atomSelectionWorleyNoise3DJitter = value;}
-
-  double atomSelectionFrequency() const override;
-  void setAtomSelectionFrequency(double value);
-  double atomSelectionDensity() const override;
-  void setAtomSelectionDensity(double value);
 
   virtual double3 CartesianPosition(double3 position, int3 replicaPosition) const {Q_UNUSED(position); Q_UNUSED(replicaPosition); return double(); }
   virtual double3 FractionalPosition(double3 position, int3 replicaPosition) const {Q_UNUSED(position); Q_UNUSED(replicaPosition); return double(); }
@@ -247,141 +162,138 @@ public:
   int numberOfExternalBonds() const override {return 0;}
 
   void setAtomTreeController(std::shared_ptr<SKAtomTreeController> controller) {_atomsTreeController = controller;}
-  std::shared_ptr<SKAtomTreeController> &atomsTreeController() {return _atomsTreeController;}
-  std::shared_ptr<SKBondSetController> bondSetController() {return _bondSetController;}
+  std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
+  std::shared_ptr<SKBondSetController> bondSetController() override final {return _bondSetController;}
 
-  bool drawUnitCell() const override {return _drawUnitCell;}
-  void setDrawUnitCell(bool state) {_drawUnitCell = state;}
-  bool drawAtoms() const override {return _drawAtoms;}
-  void setDrawAtoms(bool drawAtoms) {_drawAtoms = drawAtoms;}
-  bool drawBonds() const override {return _drawBonds;}
-  void setDrawBonds(bool drawBonds) {_drawBonds = drawBonds;}
-
-  double rotationDelta() {return _rotationDelta;}
-  void setRotationDelta(double angle) {_rotationDelta = angle;}
-  void setOrientation(simd_quatd orientation) {_orientation = orientation;}
-  simd_quatd orientation() const override final {return _orientation;}
-  double3 origin() const override final {return _origin;}
-  void setOrigin(double3 value) {_origin = value;}
-  void setOriginX(double value) {_origin.x = value;}
-  void setOriginY(double value) {_origin.y = value;}
-  void setOriginZ(double value) {_origin.z = value;}
 
   // primitive
-
-  simd_quatd primitiveOrientation() {return _primitiveOrientation;}
+  /*
+  simd_quatd primitiveOrientation() const {return _primitiveOrientation;}
   void setPrimitiveOrientation(simd_quatd orientation) {_primitiveOrientation = orientation;}
-  double primitiveRotationDelta() {return _primitiveRotationDelta;}
+  double primitiveRotationDelta() const {return _primitiveRotationDelta;}
   void setPrimitiveRotationDelta(double angle) {_primitiveRotationDelta = angle;}
-  double3x3 transformationMatrix() {return _primitiveTransformationMatrix;}
+  double3x3 transformationMatrix() const {return _primitiveTransformationMatrix;}
   void setTransformationMatrix(double3x3 matrix) {_primitiveTransformationMatrix = matrix;}
-  double primitiveOpacity() {return _primitiveOpacity;}
+  double primitiveOpacity() const  {return _primitiveOpacity;}
   void setPrimitiveOpacity(double opacity) {_primitiveOpacity = opacity;}
-  int primitiveNumberOfSides() {return _primitiveNumberOfSides;}
+  int primitiveNumberOfSides() const {return _primitiveNumberOfSides;}
   void setPrimitiveNumberOfSides(int numberOfSides) {_primitiveNumberOfSides = numberOfSides;}
-  bool primitiveIsCapped() {return _primitiveIsCapped;}
+  bool primitiveIsCapped() const {return _primitiveIsCapped;}
   void setPrimitiveIsCapped(bool isCapped) {_primitiveIsCapped = isCapped;}
 
   RKSelectionStyle primitiveSelectionStyle() const {return _primitiveSelectionStyle;}
   void setPrimitiveSelectionStyle(RKSelectionStyle style) {_primitiveSelectionStyle = style;}
-  double primitiveSelectionScaling() {return _primitiveSelectionScaling;}
+  double primitiveSelectionScaling() const {return _primitiveSelectionScaling;}
   void setPrimitiveSelectionScaling(double scaling) {_primitiveSelectionScaling = scaling;}
-  double primitiveSelectionIntensity()  {return _primitiveSelectionIntensity;}
-  void setPrimitiveSelectionIntensity(double value) {_primitiveSelectionIntensity = value;}
+  double primitiveSelectionIntensity() const {return _primitiveSelectionIntensity;}
+  void setPrimitiveSelectionIntensity(double value)  {_primitiveSelectionIntensity = value;}
 
-  double primitiveSelectionStripesDensity()  {return _primitiveSelectionStripesDensity;}
-  double primitiveSelectionStripesFrequency()   {return _primitiveSelectionStripesFrequency;}
-  double primitiveSelectionWorleyNoise3DFrequency()  {return _primitiveSelectionWorleyNoise3DFrequency;}
-  double primitiveSelectionWorleyNoise3DJitter()   {return _primitiveSelectionWorleyNoise3DJitter;}
+  double primitiveSelectionStripesDensity() const {return _primitiveSelectionStripesDensity;}
+  double primitiveSelectionStripesFrequency() const  {return _primitiveSelectionStripesFrequency;}
+  double primitiveSelectionWorleyNoise3DFrequency() const {return _primitiveSelectionWorleyNoise3DFrequency;}
+  double primitiveSelectionWorleyNoise3DJitter() const {return _primitiveSelectionWorleyNoise3DJitter;}
 
-  double primitiveSelectionFrequency() const;
-  void setPrimitiveSelectionFrequency(double value);
-  double primitiveSelectionDensity() const;
-  void setPrimitiveSelectionDensity(double value);
+  double primitiveSelectionFrequency() const ;
+  void setPrimitiveSelectionFrequency(double value) ;
+  double primitiveSelectionDensity() const ;
+  void setPrimitiveSelectionDensity(double value) ;
 
-  double primitiveHue() const {return _primitiveHue;}
-  void setPrimitiveHue(double value) {_primitiveHue = value;}
-  double primitiveSaturation() const {return _primitiveSaturation;}
-  void setPrimitiveSaturation(double value) {_primitiveSaturation = value;}
-  double primitiveValue() const {return _primitiveValue;}
-  void setPrimitiveValue(double value) {_primitiveValue = value;}
+  double primitiveHue() const  {return _primitiveHue;}
+  void setPrimitiveHue(double value)  {_primitiveHue = value;}
+  double primitiveSaturation() const  {return _primitiveSaturation;}
+  void setPrimitiveSaturation(double value)  {_primitiveSaturation = value;}
+  double primitiveValue() const  {return _primitiveValue;}
+  void setPrimitiveValue(double value)  {_primitiveValue = value;}
 
-  bool frontPrimitiveHDR() {return _primitiveFrontSideHDR;}
-  void setFrontPrimitiveHDR(bool isHDR) {_primitiveFrontSideHDR = isHDR;}
-  double frontPrimitiveHDRExposure() {return _primitiveFrontSideHDRExposure;}
-  void setFrontPrimitiveHDRExposure(double exposure) {_primitiveFrontSideHDRExposure = exposure;}
-  double frontPrimitiveAmbientIntensity() {return _primitiveFrontSideAmbientIntensity;}
-  void setFrontPrimitiveAmbientIntensity(double intensity) {_primitiveFrontSideAmbientIntensity = intensity;}
-  double frontPrimitiveDiffuseIntensity() {return _primitiveFrontSideDiffuseIntensity;}
-  void setFrontPrimitiveDiffuseIntensity(double intensity) {_primitiveFrontSideDiffuseIntensity = intensity;}
-  double frontPrimitiveSpecularIntensity() {return _primitiveFrontSideSpecularIntensity;}
-  void setFrontPrimitiveSpecularIntensity(double intensity) {_primitiveFrontSideSpecularIntensity = intensity;}
-  QColor frontPrimitiveAmbientColor() {return _primitiveFrontSideAmbientColor;}
-  void setFrontPrimitiveAmbientColor(QColor color) {_primitiveFrontSideAmbientColor = color;}
-  QColor frontPrimitiveDiffuseColor() {return _primitiveFrontSideDiffuseColor;}
-  void setFrontPrimitiveDiffuseColor(QColor color) {_primitiveFrontSideDiffuseColor = color;}
-  QColor frontPrimitiveSpecularColor() {return _primitiveFrontSideSpecularColor;}
-  void setFrontPrimitiveSpecularColor(QColor color) {_primitiveFrontSideSpecularColor = color;}
-  double frontPrimitiveShininess() {return _primitiveFrontSideShininess;}
-  void setFrontPrimitiveShininess(double value) {_primitiveFrontSideShininess = value;}
+  bool frontPrimitiveHDR() const  {return _primitiveFrontSideHDR;}
+  void setFrontPrimitiveHDR(bool isHDR)  {_primitiveFrontSideHDR = isHDR;}
+  double frontPrimitiveHDRExposure() const  {return _primitiveFrontSideHDRExposure;}
+  void setFrontPrimitiveHDRExposure(double exposure)  {_primitiveFrontSideHDRExposure = exposure;}
+  double frontPrimitiveAmbientIntensity() const  {return _primitiveFrontSideAmbientIntensity;}
+  void setFrontPrimitiveAmbientIntensity(double intensity)  {_primitiveFrontSideAmbientIntensity = intensity;}
+  double frontPrimitiveDiffuseIntensity() const  {return _primitiveFrontSideDiffuseIntensity;}
+  void setFrontPrimitiveDiffuseIntensity(double intensity)  {_primitiveFrontSideDiffuseIntensity = intensity;}
+  double frontPrimitiveSpecularIntensity() const  {return _primitiveFrontSideSpecularIntensity;}
+  void setFrontPrimitiveSpecularIntensity(double intensity)  {_primitiveFrontSideSpecularIntensity = intensity;}
+  QColor frontPrimitiveAmbientColor() const  {return _primitiveFrontSideAmbientColor;}
+  void setFrontPrimitiveAmbientColor(QColor color)  {_primitiveFrontSideAmbientColor = color;}
+  QColor frontPrimitiveDiffuseColor() const  {return _primitiveFrontSideDiffuseColor;}
+  void setFrontPrimitiveDiffuseColor(QColor color)  {_primitiveFrontSideDiffuseColor = color;}
+  QColor frontPrimitiveSpecularColor() const  {return _primitiveFrontSideSpecularColor;}
+  void setFrontPrimitiveSpecularColor(QColor color)  {_primitiveFrontSideSpecularColor = color;}
+  double frontPrimitiveShininess() const  {return _primitiveFrontSideShininess;}
+  void setFrontPrimitiveShininess(double value)  {_primitiveFrontSideShininess = value;}
 
-  bool backPrimitiveHDR() {return _primitiveBackSideHDR;}
-  void setBackPrimitiveHDR(bool isHDR) {_primitiveBackSideHDR = isHDR;}
-  double backPrimitiveHDRExposure() {return _primitiveBackSideHDRExposure;}
-  void setBackPrimitiveHDRExposure(double exposure) {_primitiveBackSideHDRExposure = exposure;}
-  double backPrimitiveAmbientIntensity() {return _primitiveBackSideAmbientIntensity;}
-  void setBackPrimitiveAmbientIntensity(double intensity) {_primitiveBackSideAmbientIntensity = intensity;}
-  double backPrimitiveDiffuseIntensity() {return _primitiveBackSideDiffuseIntensity;}
-  void setBackPrimitiveDiffuseIntensity(double intensity) {_primitiveBackSideDiffuseIntensity = intensity;}
-  double backPrimitiveSpecularIntensity() {return _primitiveBackSideSpecularIntensity;}
-  void setBackPrimitiveSpecularIntensity(double intensity) {_primitiveBackSideSpecularIntensity = intensity;}
-  QColor backPrimitiveAmbientColor() {return _primitiveBackSideAmbientColor;}
-  void setBackPrimitiveAmbientColor(QColor color) {_primitiveBackSideAmbientColor = color;}
-  QColor backPrimitiveDiffuseColor() {return _primitiveBackSideDiffuseColor;}
-  void setBackPrimitiveDiffuseColor(QColor color) {_primitiveBackSideDiffuseColor = color;}
-  QColor backPrimitiveSpecularColor() {return _primitiveBackSideSpecularColor;}
-  void setBackPrimitiveSpecularColor(QColor color) {_primitiveBackSideSpecularColor = color;}
-  double backPrimitiveShininess() {return _primitiveBackSideShininess;}
-  void setBackPrimitiveShininess(double value) {_primitiveBackSideShininess = value;}
+  bool backPrimitiveHDR() const  {return _primitiveBackSideHDR;}
+  void setBackPrimitiveHDR(bool isHDR)  {_primitiveBackSideHDR = isHDR;}
+  double backPrimitiveHDRExposure() const  {return _primitiveBackSideHDRExposure;}
+  void setBackPrimitiveHDRExposure(double exposure)  {_primitiveBackSideHDRExposure = exposure;}
+  double backPrimitiveAmbientIntensity() const  {return _primitiveBackSideAmbientIntensity;}
+  void setBackPrimitiveAmbientIntensity(double intensity)  {_primitiveBackSideAmbientIntensity = intensity;}
+  double backPrimitiveDiffuseIntensity() const  {return _primitiveBackSideDiffuseIntensity;}
+  void setBackPrimitiveDiffuseIntensity(double intensity)  {_primitiveBackSideDiffuseIntensity = intensity;}
+  double backPrimitiveSpecularIntensity() const  {return _primitiveBackSideSpecularIntensity;}
+  void setBackPrimitiveSpecularIntensity(double intensity)  {_primitiveBackSideSpecularIntensity = intensity;}
+  QColor backPrimitiveAmbientColor() const  {return _primitiveBackSideAmbientColor;}
+  void setBackPrimitiveAmbientColor(QColor color)  {_primitiveBackSideAmbientColor = color;}
+  QColor backPrimitiveDiffuseColor() const  {return _primitiveBackSideDiffuseColor;}
+  void setBackPrimitiveDiffuseColor(QColor color)  {_primitiveBackSideDiffuseColor = color;}
+  QColor backPrimitiveSpecularColor() const  {return _primitiveBackSideSpecularColor;}
+  void setBackPrimitiveSpecularColor(QColor color)  {_primitiveBackSideSpecularColor = color;}
+  double backPrimitiveShininess() const  {return _primitiveBackSideShininess;}
+  void setBackPrimitiveShininess(double value)  {_primitiveBackSideShininess = value;}
+*/
+  // atoms
+  bool drawAtoms() const override {return _drawAtoms;}
+  void setDrawAtoms(bool drawAtoms) override {_drawAtoms = drawAtoms;}
 
+  void setRepresentationType(RepresentationType) override final;
+  RepresentationType atomRepresentationType() override {return _atomRepresentationType;}
+  void setRepresentationStyle(RepresentationStyle style) override;
+  void setRepresentationStyle(RepresentationStyle style, const SKColorSets &colorSets) override;
+  RepresentationStyle atomRepresentationStyle() override {return _atomRepresentationStyle;}
+  bool isUnity() const override final {return _atomRepresentationType == RepresentationType::unity;}
+  void recheckRepresentationStyle() override;
 
-  // material properties
+  void setRepresentationColorSchemeIdentifier(const QString colorSchemeName, const SKColorSets &colorSets) override;
+  QString atomColorSchemeIdentifier() override {return _atomColorSchemeIdentifier;}
+  void setColorSchemeOrder(SKColorSet::ColorSchemeOrder order) override {_atomColorSchemeOrder = order;}
+  SKColorSet::ColorSchemeOrder colorSchemeOrder() override {return _atomColorSchemeOrder;}
+
+  QString atomForceFieldIdentifier() override {return _atomForceFieldIdentifier;}
+  void setAtomForceFieldIdentifier(QString identifier, ForceFieldSets &forceFieldSets) override;
+  void updateForceField(ForceFieldSets &forceFieldSets) override;
+  void setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder order) override {_atomForceFieldOrder = order;}
+  ForceFieldSet::ForceFieldSchemeOrder forceFieldSchemeOrder() override {return _atomForceFieldOrder;}
+
   QColor atomAmbientColor() const override {return _atomAmbientColor;}
-  void setAtomAmbientColor(QColor color) {_atomAmbientColor = color;}
+  void setAtomAmbientColor(QColor color) override {_atomAmbientColor = color;}
   QColor atomDiffuseColor() const override {return _atomDiffuseColor;}
-  void setAtomDiffuseColor(QColor color) {_atomDiffuseColor = color;}
+  void setAtomDiffuseColor(QColor color) override {_atomDiffuseColor = color;}
   QColor atomSpecularColor() const override {return _atomSpecularColor;}
-  void setAtomSpecularColor(QColor color) {_atomSpecularColor = color;}
+  void setAtomSpecularColor(QColor color) override {_atomSpecularColor = color;}
 
   double atomAmbientIntensity() const override {return _atomAmbientIntensity;}
-  void setAtomAmbientIntensity(double value) {_atomAmbientIntensity = value;}
+  void setAtomAmbientIntensity(double value) override {_atomAmbientIntensity = value;}
   double atomDiffuseIntensity() const override {return _atomDiffuseIntensity;}
-  void setAtomDiffuseIntensity(double value) {_atomDiffuseIntensity = value;}
+  void setAtomDiffuseIntensity(double value) override {_atomDiffuseIntensity = value;}
   double atomSpecularIntensity() const override {return _atomSpecularIntensity;}
-  void setAtomSpecularIntensity(double value) {_atomSpecularIntensity = value;}
+  void setAtomSpecularIntensity(double value) override {_atomSpecularIntensity = value;}
   double atomShininess() const override {return _atomShininess;}
-  void setAtomShininess(double value) {_atomShininess = value;}
-
-
-  void setCell(std::shared_ptr<SKCell> cell) {_cell = cell;}
-  std::shared_ptr<SKCell> cell() const override {return _cell;}
-
-  //virtual atomCacheAmbientOcclusionTexture: [CUnsignedChar] {get set}
-
-  bool hasExternalBonds() const override {return true;}
+  void setAtomShininess(double value) override {_atomShininess = value;}
 
   double atomHue() const override {return _atomHue;}
-  void setAtomHue(double value) {_atomHue = value;}
+  void setAtomHue(double value) override {_atomHue = value;}
   double atomSaturation() const override {return _atomSaturation;}
-  void setAtomSaturation(double value) {_atomSaturation = value;}
+  void setAtomSaturation(double value) override {_atomSaturation = value;}
   double atomValue() const override {return _atomValue;}
-  void setAtomValue(double value) {_atomValue = value;}
+  void setAtomValue(double value) override {_atomValue = value;}
 
   double atomScaleFactor() const override {return _atomScaleFactor;}
-  void setAtomScaleFactor(double size);
+  void setAtomScaleFactor(double size) override;
 
   bool atomAmbientOcclusion() const override {return _atomAmbientOcclusion;}
-  void setAtomAmbientOcclusion(bool value) {_atomAmbientOcclusion = value;}
+  void setAtomAmbientOcclusion(bool value) override {_atomAmbientOcclusion = value;}
   int atomAmbientOcclusionPatchNumber() const override {return _atomAmbientOcclusionPatchNumber;}
   void setAtomAmbientOcclusionPatchNumber(int patchNumber) override {_atomAmbientOcclusionPatchNumber=patchNumber;}
   int atomAmbientOcclusionPatchSize() const override {return _atomAmbientOcclusionPatchSize;}
@@ -390,44 +302,69 @@ public:
   void setAtomAmbientOcclusionTextureSize(int size) override {_atomAmbientOcclusionTextureSize=size;}
 
   bool atomHDR() const  override{return _atomHDR;}
-  void setAtomHDR(bool value) {_atomHDR = value;}
+  void setAtomHDR(bool value) override {_atomHDR = value;}
   double atomHDRExposure() const override {return _atomHDRExposure;}
-  void setAtomHDRExposure(double value) {_atomHDRExposure = value;}
+  void setAtomHDRExposure(double value) override {_atomHDRExposure = value;}
 
+  RKSelectionStyle atomSelectionStyle() const override {return _atomSelectionStyle;}
+  void setAtomSelectionStyle(RKSelectionStyle style) override {_atomSelectionStyle = style;}
+  double atomSelectionScaling() const override {return _atomSelectionScaling;}
+  void setAtomSelectionScaling(double scaling) override {_atomSelectionScaling = scaling;}
+  double atomSelectionIntensity() const override {return _atomSelectionIntensity;}
+  void setSelectionIntensity(double scaling) override {_atomSelectionIntensity = scaling;}
+
+  double atomSelectionStripesDensity() const override {return _atomSelectionStripesDensity;}
+  void setAtomSelectionStripesDensity(double value) override {_atomSelectionStripesDensity = value;}
+  double atomSelectionStripesFrequency() const override {return _atomSelectionStripesFrequency;}
+  void setAtomSelectionStripesFrequency(double value) override {_atomSelectionStripesFrequency = value;}
+  double atomSelectionWorleyNoise3DFrequency() const override {return _atomSelectionWorleyNoise3DFrequency;}
+  void setAtomSelectionWorleyNoise3DFrequency(double value) override {_atomSelectionWorleyNoise3DFrequency = value;}
+  double atomSelectionWorleyNoise3DJitter() const override {return _atomSelectionWorleyNoise3DJitter;}
+  void setAtomSelectionWorleyNoise3DJitter(double value) override {_atomSelectionWorleyNoise3DJitter = value;}
+
+  double atomSelectionFrequency() const override;
+  void setAtomSelectionFrequency(double value) override;
+  double atomSelectionDensity() const override;
+  void setAtomSelectionDensity(double value) override;
+
+  // bonds
+  bool hasExternalBonds() const override {return true;}
+  bool drawBonds() const override {return _drawBonds;}
+  void setDrawBonds(bool drawBonds) override {_drawBonds = drawBonds;}
 
   bool bondAmbientOcclusion() const override {return _bondAmbientOcclusion;}
-  void setBondAmbientOcclusion(bool state) {_bondAmbientOcclusion = state;}
+  void setBondAmbientOcclusion(bool state) override {_bondAmbientOcclusion = state;}
   QColor bondAmbientColor() const override {return _bondAmbientColor;}
-  void setBondAmbientColor(QColor color) {_bondAmbientColor = color;}
+  void setBondAmbientColor(QColor color) override {_bondAmbientColor = color;}
   QColor bondDiffuseColor() const override {return _bondDiffuseColor;}
-  void setBondDiffuseColor(QColor color) {_bondDiffuseColor = color;}
+  void setBondDiffuseColor(QColor color) override {_bondDiffuseColor = color;}
   QColor bondSpecularColor() const override {return _bondSpecularColor;}
-  void setBondSpecularColor(QColor color) {_bondSpecularColor = color;}
+  void setBondSpecularColor(QColor color) override {_bondSpecularColor = color;}
   double bondAmbientIntensity() const override {return _bondAmbientIntensity;}
-  void setBondAmbientIntensity(double value) {_bondAmbientIntensity = value;}
+  void setBondAmbientIntensity(double value) override {_bondAmbientIntensity = value;}
   double bondDiffuseIntensity() const override {return _bondDiffuseIntensity;}
-  void setBondDiffuseIntensity(double value) {_bondDiffuseIntensity = value;}
+  void setBondDiffuseIntensity(double value) override {_bondDiffuseIntensity = value;}
   double bondSpecularIntensity() const override {return _bondSpecularIntensity;}
-  void setBondSpecularIntensity(double value) {_bondSpecularIntensity = value;}
+  void setBondSpecularIntensity(double value) override {_bondSpecularIntensity = value;}
   double bondShininess() const override {return _bondShininess;}
-  void setBondShininess(double value) {_bondShininess = value;}
+  void setBondShininess(double value) override {_bondShininess = value;}
 
   double bondScaleFactor() const override {return _bondScaleFactor;}
-  void setBondScaleFactor(double value);
+  void setBondScaleFactor(double value) override;
   RKBondColorMode bondColorMode() const override {return _bondColorMode;}
-  void setBondColorMode(RKBondColorMode value) {_bondColorMode = value;}
+  void setBondColorMode(RKBondColorMode value) override {_bondColorMode = value;}
 
   bool bondHDR() const override {return _bondHDR;}
-  void setBondHDR(bool value) {_bondHDR = value;}
+  void setBondHDR(bool value) override {_bondHDR = value;}
   double bondHDRExposure() const override {return _bondHDRExposure;}
-  void setBondHDRExposure(double value) {_bondHDRExposure = value;}
+  void setBondHDRExposure(double value) override {_bondHDRExposure = value;}
 
   RKSelectionStyle bondSelectionStyle() const override {return _bondSelectionStyle;}
-  void setBondSelectionStyle(RKSelectionStyle style) {_bondSelectionStyle = style;}
+  void setBondSelectionStyle(RKSelectionStyle style) override {_bondSelectionStyle = style;}
   double bondSelectionScaling() const override {return _bondSelectionScaling;}
-  void setBondSelectionScaling(double scaling) {_bondSelectionScaling = scaling;}
+  void setBondSelectionScaling(double scaling) override {_bondSelectionScaling = scaling;}
   double bondSelectionIntensity() const override {return _bondSelectionIntensity;}
-  void setBondSelectionIntensity(double value) {_bondSelectionIntensity = value;}
+  void setBondSelectionIntensity(double value) override {_bondSelectionIntensity = value;}
 
   double bondSelectionStripesDensity() const override {return _bondSelectionStripesDensity;}
   double bondSelectionStripesFrequency() const override  {return _bondSelectionStripesFrequency;}
@@ -435,268 +372,263 @@ public:
   double bondSelectionWorleyNoise3DJitter() const override  {return _bondSelectionWorleyNoise3DJitter;}
 
   double bondSelectionFrequency() const override;
-  void setBondSelectionFrequency(double value);
+  void setBondSelectionFrequency(double value) override;
   double bondSelectionDensity() const override;
-  void setBondSelectionDensity(double value);
+  void setBondSelectionDensity(double value) override;
 
   double bondHue() const override {return _bondHue;}
-  void setBondHue(double value) {_bondHue = value;}
+  void setBondHue(double value) override {_bondHue = value;}
   double bondSaturation() const override {return _bondSaturation;}
-  void setBondSaturation(double value) {_bondSaturation = value;}
+  void setBondSaturation(double value) override {_bondSaturation = value;}
   double bondValue() const override {return _bondValue;}
-  void setBondValue(double value) {_bondValue = value;}
+  void setBondValue(double value) override {_bondValue = value;}
 
-  // unit cell
-  double unitCellScaleFactor() const override {return _unitCellScaleFactor;}
-  void setUnitCellScaleFactor(double value) {_unitCellScaleFactor = value;}
-  QColor unitCellDiffuseColor() const override {return _unitCellDiffuseColor;}
-  void setUnitCellDiffuseColor(QColor color) {_unitCellDiffuseColor = color;}
-  double unitCellDiffuseIntensity() const override {return _unitCellDiffuseIntensity;}
-  void setUnitCellDiffuseIntensity(double value) {_unitCellDiffuseIntensity = value;}
 
-  // local axes
-  RKLocalAxes &renderLocalAxes() override {return _localAxes;}
 
   // adsorption surface
   std::vector<double3> atomUnitCellPositions() const override {return std::vector<double3>();}
   bool drawAdsorptionSurface() const override {return _drawAdsorptionSurface;}
-  void setDrawAdsorptionSurface(bool state) {_drawAdsorptionSurface = state;}
+  void setDrawAdsorptionSurface(bool state) override {_drawAdsorptionSurface = state;}
   double adsorptionSurfaceOpacity() const override {return _adsorptionSurfaceOpacity;}
-  void setAdsorptionSurfaceOpacity(double value) {_adsorptionSurfaceOpacity = value;}
+  void setAdsorptionSurfaceOpacity(double value) override {_adsorptionSurfaceOpacity = value;}
   double adsorptionSurfaceIsoValue() const override {return _adsorptionSurfaceIsoValue;}
-  void setAdsorptionSurfaceIsoValue(double value)  {_adsorptionSurfaceIsoValue = value;}
+  void setAdsorptionSurfaceIsoValue(double value)  override {_adsorptionSurfaceIsoValue = value;}
   double adsorptionSurfaceMinimumValue() const override {return _adsorptionSurfaceMinimumValue;}
   void setAdsorptionSurfaceMinimumValue(double value) override {_adsorptionSurfaceMinimumValue = value;}
 
   int adsorptionSurfaceSize() const override {return _adsorptionSurfaceSize;}
   double2 adsorptionSurfaceProbeParameters() const override final;
- // int adsorptionSurfaceNumberOfTriangles() const override {return 1;}
 
-  ProbeMolecule adsorptionSurfaceProbeMolecule() const {return _adsorptionSurfaceProbeMolecule;}
-  void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) {_adsorptionSurfaceProbeMolecule = value;}
+  ProbeMolecule adsorptionSurfaceProbeMolecule() const override {return _adsorptionSurfaceProbeMolecule;}
+  void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) override {_adsorptionSurfaceProbeMolecule = value;}
 
   bool adsorptionSurfaceFrontSideHDR() const override {return _adsorptionSurfaceFrontSideHDR;}
-  void setAdsorptionSurfaceFrontSideHDR(bool state) {_adsorptionSurfaceFrontSideHDR = state;}
+  void setAdsorptionSurfaceFrontSideHDR(bool state) override {_adsorptionSurfaceFrontSideHDR = state;}
   double adsorptionSurfaceFrontSideHDRExposure() const override {return _adsorptionSurfaceFrontSideHDRExposure;}
-  void setAdsorptionSurfaceFrontSideHDRExposure(double value) {_adsorptionSurfaceFrontSideHDRExposure = value;}
+  void setAdsorptionSurfaceFrontSideHDRExposure(double value) override {_adsorptionSurfaceFrontSideHDRExposure = value;}
   QColor adsorptionSurfaceFrontSideAmbientColor() const override {return _adsorptionSurfaceFrontSideAmbientColor;}
-  void setAdsorptionSurfaceFrontSideAmbientColor(QColor color) {_adsorptionSurfaceFrontSideAmbientColor = color;}
+  void setAdsorptionSurfaceFrontSideAmbientColor(QColor color) override {_adsorptionSurfaceFrontSideAmbientColor = color;}
   QColor adsorptionSurfaceFrontSideDiffuseColor() const override {return _adsorptionSurfaceFrontSideDiffuseColor;}
-  void setAdsorptionSurfaceFrontSideDiffuseColor(QColor color) {_adsorptionSurfaceFrontSideDiffuseColor = color;}
+  void setAdsorptionSurfaceFrontSideDiffuseColor(QColor color) override {_adsorptionSurfaceFrontSideDiffuseColor = color;}
   QColor adsorptionSurfaceFrontSideSpecularColor() const override {return _adsorptionSurfaceFrontSideSpecularColor;}
-  void setAdsorptionSurfaceFrontSideSpecularColor(QColor color) {_adsorptionSurfaceFrontSideSpecularColor = color;}
+  void setAdsorptionSurfaceFrontSideSpecularColor(QColor color) override {_adsorptionSurfaceFrontSideSpecularColor = color;}
   double adsorptionSurfaceFrontSideDiffuseIntensity() const override {return _adsorptionSurfaceFrontSideDiffuseIntensity;}
-  void setAdsorptionSurfaceFrontSideDiffuseIntensity(double value) {_adsorptionSurfaceFrontSideDiffuseIntensity = value;}
+  void setAdsorptionSurfaceFrontSideDiffuseIntensity(double value) override {_adsorptionSurfaceFrontSideDiffuseIntensity = value;}
   double adsorptionSurfaceFrontSideAmbientIntensity() const override {return _adsorptionSurfaceFrontSideAmbientIntensity;}
-  void setAdsorptionSurfaceFrontSideAmbientIntensity(double value) {_adsorptionSurfaceFrontSideAmbientIntensity = value;}
+  void setAdsorptionSurfaceFrontSideAmbientIntensity(double value) override {_adsorptionSurfaceFrontSideAmbientIntensity = value;}
   double adsorptionSurfaceFrontSideSpecularIntensity() const override {return _adsorptionSurfaceFrontSideSpecularIntensity;}
-  void setAdsorptionSurfaceFrontSideSpecularIntensity(double value) {_adsorptionSurfaceFrontSideSpecularIntensity = value;}
+  void setAdsorptionSurfaceFrontSideSpecularIntensity(double value) override {_adsorptionSurfaceFrontSideSpecularIntensity = value;}
   double adsorptionSurfaceFrontSideShininess() const override {return _adsorptionSurfaceFrontSideShininess;}
-  void setAdsorptionSurfaceFrontSideShininess(double value) {_adsorptionSurfaceFrontSideShininess = value;}
+  void setAdsorptionSurfaceFrontSideShininess(double value) override {_adsorptionSurfaceFrontSideShininess = value;}
 
   double adsorptionSurfaceHue() const override {return _adsorptionSurfaceHue;}
-  void setAdsorptionSurfaceHue(double value) {_adsorptionSurfaceHue = value;}
+  void setAdsorptionSurfaceHue(double value) override {_adsorptionSurfaceHue = value;}
   double adsorptionSurfaceSaturation() const override {return _adsorptionSurfaceSaturation;}
-  void setAdsorptionSurfaceSaturation(double value) {_adsorptionSurfaceSaturation = value;}
+  void setAdsorptionSurfaceSaturation(double value) override {_adsorptionSurfaceSaturation = value;}
   double adsorptionSurfaceValue() const override {return _adsorptionSurfaceValue;}
-  void setAdsorptionSurfaceValue(double value) {_adsorptionSurfaceValue = value;}
+  void setAdsorptionSurfaceValue(double value) override {_adsorptionSurfaceValue = value;}
 
   bool adsorptionSurfaceBackSideHDR() const override {return _adsorptionSurfaceBackSideHDR;}
-  void setAdsorptionSurfaceBackSideHDR(bool state) {_adsorptionSurfaceBackSideHDR = state;}
+  void setAdsorptionSurfaceBackSideHDR(bool state) override {_adsorptionSurfaceBackSideHDR = state;}
   double adsorptionSurfaceBackSideHDRExposure() const override {return _adsorptionSurfaceBackSideHDRExposure;}
-  void setAdsorptionSurfaceBackSideHDRExposure(double value) {_adsorptionSurfaceBackSideHDRExposure = value;}
+  void setAdsorptionSurfaceBackSideHDRExposure(double value) override {_adsorptionSurfaceBackSideHDRExposure = value;}
   QColor adsorptionSurfaceBackSideAmbientColor() const override {return _adsorptionSurfaceBackSideAmbientColor;}
-  void setAdsorptionSurfaceBackSideAmbientColor(QColor color) {_adsorptionSurfaceBackSideAmbientColor = color;}
+  void setAdsorptionSurfaceBackSideAmbientColor(QColor color) override {_adsorptionSurfaceBackSideAmbientColor = color;}
   QColor adsorptionSurfaceBackSideDiffuseColor() const override {return _adsorptionSurfaceBackSideDiffuseColor;}
-  void setAdsorptionSurfaceBackSideDiffuseColor(QColor color) {_adsorptionSurfaceBackSideDiffuseColor = color;}
+  void setAdsorptionSurfaceBackSideDiffuseColor(QColor color) override {_adsorptionSurfaceBackSideDiffuseColor = color;}
   QColor adsorptionSurfaceBackSideSpecularColor() const override {return _adsorptionSurfaceBackSideSpecularColor;}
-  void setAdsorptionSurfaceBackSideSpecularColor(QColor color) {_adsorptionSurfaceBackSideSpecularColor = color;}
+  void setAdsorptionSurfaceBackSideSpecularColor(QColor color) override {_adsorptionSurfaceBackSideSpecularColor = color;}
   double adsorptionSurfaceBackSideDiffuseIntensity() const override {return _adsorptionSurfaceBackSideDiffuseIntensity;}
-  void setAdsorptionSurfaceBackSideDiffuseIntensity(double value) {_adsorptionSurfaceBackSideDiffuseIntensity = value;}
+  void setAdsorptionSurfaceBackSideDiffuseIntensity(double value) override {_adsorptionSurfaceBackSideDiffuseIntensity = value;}
   double adsorptionSurfaceBackSideAmbientIntensity() const override {return _adsorptionSurfaceBackSideAmbientIntensity;}
-  void setAdsorptionSurfaceBackSideAmbientIntensity(double value) {_adsorptionSurfaceBackSideAmbientIntensity = value;}
+  void setAdsorptionSurfaceBackSideAmbientIntensity(double value) override {_adsorptionSurfaceBackSideAmbientIntensity = value;}
   double adsorptionSurfaceBackSideSpecularIntensity() const override {return _adsorptionSurfaceBackSideSpecularIntensity;}
-  void setAdsorptionSurfaceBackSideSpecularIntensity(double value) {_adsorptionSurfaceBackSideSpecularIntensity = value;}
+  void setAdsorptionSurfaceBackSideSpecularIntensity(double value) override {_adsorptionSurfaceBackSideSpecularIntensity = value;}
   double adsorptionSurfaceBackSideShininess() const override {return _adsorptionSurfaceBackSideShininess;}
-  void setAdsorptionSurfaceBackSideShininess(double value) {_adsorptionSurfaceBackSideShininess = value;}
+  void setAdsorptionSurfaceBackSideShininess(double value) override{_adsorptionSurfaceBackSideShininess = value;}
 
-  void setRepresentationStyle(RepresentationStyle style);
-  void setRepresentationStyle(RepresentationStyle style, const SKColorSets &colorSets);
-  RepresentationStyle atomRepresentationStyle() {return _atomRepresentationStyle;}
-  void setRepresentationType(RepresentationType);
-  RepresentationType atomRepresentationType() {return _atomRepresentationType;}
-  bool isUnity() const override final {return _atomRepresentationType == RepresentationType::unity;}
-  void recheckRepresentationStyle();
+ // text
+  std::vector<RKInPerInstanceAttributesText> renderTextData() const override {return std::vector<RKInPerInstanceAttributesText>();}
+  RKTextType renderTextType() const override {return _atomTextType;}
+  void setRenderTextType(RKTextType type) override {_atomTextType = type;}
+  void setRenderTextFont(QString value) override {_atomTextFont = value;}
+  QString renderTextFont() const override {return _atomTextFont;}
+  RKTextAlignment renderTextAlignment() const override {return _atomTextAlignment;}
+  void setRenderTextAlignment(RKTextAlignment alignment) override {_atomTextAlignment = alignment;}
+  RKTextStyle renderTextStyle() const override {return _atomTextStyle;}
+  void setRenderTextStyle(RKTextStyle style) override {_atomTextStyle = style;}
+  QColor renderTextColor() const override {return _atomTextColor;}
+  void setRenderTextColor(QColor color) override {_atomTextColor = color;}
+  double renderTextScaling() const override {return _atomTextScaling;}
+  void setRenderTextScaling(double scaling) override {_atomTextScaling = scaling;}
+  double3 renderTextOffset() const override {return _atomTextOffset;}
+  void setRenderTextOffsetX(double value) override {_atomTextOffset.x = value;}
+  void setRenderTextOffsetY(double value) override {_atomTextOffset.y = value;}
+  void setRenderTextOffsetZ(double value) override {_atomTextOffset.z = value;}
 
-  void setRepresentationColorSchemeIdentifier(const QString colorSchemeName, const SKColorSets &colorSets);
-  QString atomColorSchemeIdentifier() {return _atomColorSchemeIdentifier;}
-  void setColorSchemeOrder(SKColorSet::ColorSchemeOrder order) {_atomColorSchemeOrder = order;}
-  SKColorSet::ColorSchemeOrder colorSchemeOrder() {return _atomColorSchemeOrder;}
+  // info
+  QString authorFirstName() override final {return _authorFirstName;}
+  void setAuthorFirstName(QString name) override final {_authorFirstName = name;}
+  QString authorMiddleName() override final {return _authorMiddleName;}
+  void setAuthorMiddleName(QString name) override final {_authorMiddleName = name;}
+  QString authorLastName() override final {return _authorLastName;}
+  void setAuthorLastName(QString name) override final  {_authorLastName = name;}
+  QString authorOrchidID() override final {return _authorOrchidID;}
+  void setAuthorOrchidID(QString name) override final {_authorOrchidID = name;}
+  QString authorResearcherID() override final {return _authorResearcherID;}
+  void setAuthorResearcherID(QString name) override final {_authorResearcherID = name;}
+  QString authorAffiliationUniversityName() override final {return _authorAffiliationUniversityName;}
+  void setAuthorAffiliationUniversityName(QString name) override final {_authorAffiliationUniversityName = name;}
+  QString authorAffiliationFacultyName() override final {return _authorAffiliationFacultyName;}
+  void setAuthorAffiliationFacultyName(QString name) override final {_authorAffiliationFacultyName = name;}
+  QString authorAffiliationInstituteName() override final {return _authorAffiliationInstituteName;}
+  void setAuthorAffiliationInstituteName(QString name) override final {_authorAffiliationInstituteName = name;}
+  QString authorAffiliationCityName() override final {return _authorAffiliationCityName;}
+  void setAuthorAffiliationCityName(QString name) override final {_authorAffiliationCityName = name;}
+  QString authorAffiliationCountryName() override final {return _authorAffiliationCountryName;}
+  void setAuthorAffiliationCountryName(QString name) override final {_authorAffiliationCountryName = name;}
 
-  QString atomForceFieldIdentifier() {return _atomForceFieldIdentifier;}
-  void setAtomForceFieldIdentifier(QString identifier, ForceFieldSets &forceFieldSets);
-  void updateForceField(ForceFieldSets &forceFieldSets);
-  void setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder order) {_atomForceFieldOrder = order;}
-  ForceFieldSet::ForceFieldSchemeOrder forceFieldSchemeOrder() {return _atomForceFieldOrder;}
+  QDate creationDate() override final {return _creationDate;}
+  void setCreationDate(QDate date) override final {_creationDate = date;}
+  QString creationTemperature() override final {return _creationTemperature;}
+  void setCreationTemperature(QString name) override final {_creationTemperature = name;}
+  TemperatureScale creationTemperatureScale() override final {return _creationTemperatureScale;}
+  void setCreationTemperatureScale(TemperatureScale scale) override final {_creationTemperatureScale = scale;}
+  QString creationPressure() override final {return _creationPressure;}
+  void setCreationPressure(QString pressure) override final {_creationPressure = pressure;}
+  PressureScale creationPressureScale() override final {return _creationPressureScale;}
+  void setCreationPressureScale(PressureScale scale) override final {_creationPressureScale = scale;}
+  CreationMethod creationMethod() override final {return _creationMethod;}
+  void setCreationMethod(CreationMethod method) override final {_creationMethod = method;}
+  UnitCellRelaxationMethod creationUnitCellRelaxationMethod() override final {return _creationUnitCellRelaxationMethod;}
+  void setCreationUnitCellRelaxationMethod(UnitCellRelaxationMethod method) override final {_creationUnitCellRelaxationMethod = method;}
+  QString creationAtomicPositionsSoftwarePackage() override final {return _creationAtomicPositionsSoftwarePackage;}
+  void setCreationAtomicPositionsSoftwarePackage(QString name) override final {_creationAtomicPositionsSoftwarePackage = name;}
+  IonsRelaxationAlgorithm creationAtomicPositionsIonsRelaxationAlgorithm() override final {return _creationAtomicPositionsIonsRelaxationAlgorithm;}
+  void setCreationAtomicPositionsIonsRelaxationAlgorithm(IonsRelaxationAlgorithm algorithm) override final {_creationAtomicPositionsIonsRelaxationAlgorithm = algorithm;}
+  IonsRelaxationCheck creationAtomicPositionsIonsRelaxationCheck() override final {return _creationAtomicPositionsIonsRelaxationCheck;}
+  void setCreationAtomicPositionsIonsRelaxationCheck(IonsRelaxationCheck check) override final {_creationAtomicPositionsIonsRelaxationCheck = check;}
+  QString creationAtomicPositionsForcefield() override final {return _creationAtomicPositionsForcefield;}
+  void setCreationAtomicPositionsForcefield(QString name) override final {_creationAtomicPositionsForcefield = name;}
+  QString creationAtomicPositionsForcefieldDetails() override final {return _creationAtomicPositionsForcefieldDetails;}
+  void setCreationAtomicPositionsForcefieldDetails(QString name) override final {_creationAtomicPositionsForcefieldDetails = name;}
+  QString creationAtomicChargesSoftwarePackage() override final {return _creationAtomicChargesSoftwarePackage;}
+  void setCreationAtomicChargesSoftwarePackage(QString name) override final {_creationAtomicChargesSoftwarePackage = name;}
+  QString creationAtomicChargesAlgorithms() override final {return _creationAtomicChargesAlgorithms;}
+  void setCreationAtomicChargesAlgorithms(QString name) override final {_creationAtomicChargesAlgorithms = name;}
+  QString creationAtomicChargesForcefield() override final {return _creationAtomicChargesForcefield;}
+  void setCreationAtomicChargesForcefield(QString name) override final {_creationAtomicChargesForcefield = name;}
+  QString creationAtomicChargesForcefieldDetails() override final {return _creationAtomicChargesForcefieldDetails;}
+  void setCreationAtomicChargesForcefieldDetails(QString name) override final {_creationAtomicChargesForcefieldDetails = name;}
 
-  QString authorFirstName() {return _authorFirstName;}
-  void setAuthorFirstName(QString name) {_authorFirstName = name;}
-  QString authorMiddleName() {return _authorMiddleName;}
-  void setAuthorMiddleName(QString name) {_authorMiddleName = name;}
-  QString authorLastName() {return _authorLastName;}
-  void setAuthorLastName(QString name) {_authorLastName = name;}
-  QString authorOrchidID() {return _authorOrchidID;}
-  void setAuthorOrchidID(QString name) {_authorOrchidID = name;}
-  QString authorResearcherID() {return _authorResearcherID;}
-  void setAuthorResearcherID(QString name) {_authorResearcherID = name;}
-  QString authorAffiliationUniversityName() {return _authorAffiliationUniversityName;}
-  void setAuthorAffiliationUniversityName(QString name) {_authorAffiliationUniversityName = name;}
-  QString authorAffiliationFacultyName() {return _authorAffiliationFacultyName;}
-  void setAuthorAffiliationFacultyName(QString name) {_authorAffiliationFacultyName = name;}
-  QString authorAffiliationInstituteName() {return _authorAffiliationInstituteName;}
-  void setAuthorAffiliationInstituteName(QString name) {_authorAffiliationInstituteName = name;}
-  QString authorAffiliationCityName() {return _authorAffiliationCityName;}
-  void setAuthorAffiliationCityName(QString name) {_authorAffiliationCityName = name;}
-  QString authorAffiliationCountryName() {return _authorAffiliationCountryName;}
-  void setAuthorAffiliationCountryName(QString name) {_authorAffiliationCountryName = name;}
+  QString experimentalMeasurementRadiation() override final {return _experimentalMeasurementRadiation;}
+  void setExperimentalMeasurementRadiation(QString name) override final {_experimentalMeasurementRadiation = name;}
+  QString experimentalMeasurementWaveLength() override final {return _experimentalMeasurementWaveLength;}
+  void setExperimentalMeasurementWaveLength(QString name) override final {_experimentalMeasurementWaveLength = name;}
+  QString experimentalMeasurementThetaMin() override final {return _experimentalMeasurementThetaMin;}
+  void setExperimentalMeasurementThetaMin(QString name) override final {_experimentalMeasurementThetaMin = name;}
+  QString experimentalMeasurementThetaMax() override final {return _experimentalMeasurementThetaMax;}
+  void setExperimentalMeasurementThetaMax(QString name) override final {_experimentalMeasurementThetaMax = name;}
+  QString experimentalMeasurementIndexLimitsHmin() override final {return _experimentalMeasurementIndexLimitsHmin;}
+  void setExperimentalMeasurementIndexLimitsHmin(QString name) override final {_experimentalMeasurementIndexLimitsHmin = name;}
+  QString experimentalMeasurementIndexLimitsHmax() override final {return _experimentalMeasurementIndexLimitsHmax;}
+  void setExperimentalMeasurementIndexLimitsHmax(QString name) override final {_experimentalMeasurementIndexLimitsHmax = name;}
+  QString experimentalMeasurementIndexLimitsKmin() override final {return _experimentalMeasurementIndexLimitsKmin;}
+  void setExperimentalMeasurementIndexLimitsKmin(QString name) override final {_experimentalMeasurementIndexLimitsKmin = name;}
+  QString experimentalMeasurementIndexLimitsKmax() override final {return _experimentalMeasurementIndexLimitsKmax;}
+  void setExperimentalMeasurementIndexLimitsKmax(QString name) override final {_experimentalMeasurementIndexLimitsKmax = name;}
+  QString experimentalMeasurementIndexLimitsLmin() override final {return _experimentalMeasurementIndexLimitsLmin;}
+  void setExperimentalMeasurementIndexLimitsLmin(QString name) override final {_experimentalMeasurementIndexLimitsLmin = name;}
+  QString experimentalMeasurementIndexLimitsLmax() override final {return _experimentalMeasurementIndexLimitsLmax;}
+  void setExperimentalMeasurementIndexLimitsLmax(QString name) override final {_experimentalMeasurementIndexLimitsLmax = name;}
+  QString experimentalMeasurementNumberOfSymmetryIndependentReflections() override final {return _experimentalMeasurementNumberOfSymmetryIndependentReflections;}
+  void setExperimentalMeasurementNumberOfSymmetryIndependentReflections(QString name) override final {_experimentalMeasurementNumberOfSymmetryIndependentReflections = name;}
+  QString experimentalMeasurementSoftware() override final {return _experimentalMeasurementSoftware;}
+  void setExperimentalMeasurementSoftware(QString name) override final {_experimentalMeasurementSoftware = name;}
+  QString experimentalMeasurementRefinementDetails() override final {return _experimentalMeasurementRefinementDetails;}
+  void setExperimentalMeasurementGoodnessOfFit(QString goodness) override final {_experimentalMeasurementGoodnessOfFit = goodness;}
+  QString experimentalMeasurementGoodnessOfFit() override final {return _experimentalMeasurementGoodnessOfFit;}
+  void setExperimentalMeasurementRefinementDetails(QString name) override final {_experimentalMeasurementGoodnessOfFit = name;}
+  QString experimentalMeasurementRFactorGt() override final {return _experimentalMeasurementRFactorGt;}
+  void setExperimentalMeasurementRFactorGt(QString name) override final {_experimentalMeasurementRFactorGt = name;}
+  QString experimentalMeasurementRFactorAll() override final {return _experimentalMeasurementRFactorAll;}
+  void setExperimentalMeasurementRFactorAll(QString name) override final {_experimentalMeasurementRFactorAll = name;}
 
-  QDate creationDate() {return _creationDate;}
-  void setCreationDate(QDate date) {_creationDate = date;}
-  QString creationTemperature() {return _creationTemperature;}
-  void setCreationTemperature(QString name) {_creationTemperature = name;}
-  TemperatureScale creationTemperatureScale() {return _creationTemperatureScale;}
-  void setCreationTemperatureScale(TemperatureScale scale) {_creationTemperatureScale = scale;}
-  QString creationPressure() {return _creationPressure;}
-  void setCreationPressure(QString pressure) {_creationPressure = pressure;}
-  PressureScale creationPressureScale() {return _creationPressureScale;}
-  void setCreationPressureScale(PressureScale scale) {_creationPressureScale = scale;}
-  CreationMethod creationMethod() {return _creationMethod;}
-  void setCreationMethod(CreationMethod method) {_creationMethod = method;}
-  UnitCellRelaxationMethod creationUnitCellRelaxationMethod() {return _creationUnitCellRelaxationMethod;}
-  void setCreationUnitCellRelaxationMethod(UnitCellRelaxationMethod method) {_creationUnitCellRelaxationMethod = method;}
-  QString creationAtomicPositionsSoftwarePackage() {return _creationAtomicPositionsSoftwarePackage;}
-  void setCreationAtomicPositionsSoftwarePackage(QString name) {_creationAtomicPositionsSoftwarePackage = name;}
-  IonsRelaxationAlgorithm creationAtomicPositionsIonsRelaxationAlgorithm() {return _creationAtomicPositionsIonsRelaxationAlgorithm;}
-  void setCreationAtomicPositionsIonsRelaxationAlgorithm(IonsRelaxationAlgorithm algorithm) {_creationAtomicPositionsIonsRelaxationAlgorithm = algorithm;}
-  IonsRelaxationCheck creationAtomicPositionsIonsRelaxationCheck() {return _creationAtomicPositionsIonsRelaxationCheck;}
-  void setCreationAtomicPositionsIonsRelaxationCheck(IonsRelaxationCheck check) {_creationAtomicPositionsIonsRelaxationCheck = check;}
-  QString creationAtomicPositionsForcefield() {return _creationAtomicPositionsForcefield;}
-  void setCreationAtomicPositionsForcefield(QString name) {_creationAtomicPositionsForcefield = name;}
-  QString creationAtomicPositionsForcefieldDetails() {return _creationAtomicPositionsForcefieldDetails;}
-  void setCreationAtomicPositionsForcefieldDetails(QString name) {_creationAtomicPositionsForcefieldDetails = name;}
-  QString creationAtomicChargesSoftwarePackage() {return _creationAtomicChargesSoftwarePackage;}
-  void setCreationAtomicChargesSoftwarePackage(QString name) {_creationAtomicChargesSoftwarePackage = name;}
-  QString creationAtomicChargesAlgorithms() {return _creationAtomicChargesAlgorithms;}
-  void setCreationAtomicChargesAlgorithms(QString name) {_creationAtomicChargesAlgorithms = name;}
-  QString creationAtomicChargesForcefield() {return _creationAtomicChargesForcefield;}
-  void setCreationAtomicChargesForcefield(QString name) {_creationAtomicChargesForcefield = name;}
-  QString creationAtomicChargesForcefieldDetails() {return _creationAtomicChargesForcefieldDetails;}
-  void setCreationAtomicChargesForcefieldDetails(QString name) {_creationAtomicChargesForcefieldDetails = name;}
+  QString chemicalFormulaMoiety() override final {return _chemicalFormulaMoiety;}
+  void setChemicalFormulaMoiety(QString name) override final {_chemicalFormulaMoiety = name;}
+  QString chemicalFormulaSum() override final {return _chemicalFormulaSum;}
+  void setChemicalFormulaSum(QString name) override final {_chemicalFormulaSum = name;}
+  QString chemicalNameSystematic() override final {return _chemicalNameSystematic;}
+  void setChemicalNameSystematic(QString name) override final {_chemicalNameSystematic = name;}
 
-  QString experimentalMeasurementRadiation() {return _experimentalMeasurementRadiation;}
-  void setExperimentalMeasurementRadiation(QString name) {_experimentalMeasurementRadiation = name;}
-  QString experimentalMeasurementWaveLength() {return _experimentalMeasurementWaveLength;}
-  void setExperimentalMeasurementWaveLength(QString name) {_experimentalMeasurementWaveLength = name;}
-  QString experimentalMeasurementThetaMin() {return _experimentalMeasurementThetaMin;}
-  void setExperimentalMeasurementThetaMin(QString name) {_experimentalMeasurementThetaMin = name;}
-  QString experimentalMeasurementThetaMax() {return _experimentalMeasurementThetaMax;}
-  void setExperimentalMeasurementThetaMax(QString name) {_experimentalMeasurementThetaMax = name;}
-  QString experimentalMeasurementIndexLimitsHmin() {return _experimentalMeasurementIndexLimitsHmin;}
-  void setExperimentalMeasurementIndexLimitsHmin(QString name) {_experimentalMeasurementIndexLimitsHmin = name;}
-  QString experimentalMeasurementIndexLimitsHmax() {return _experimentalMeasurementIndexLimitsHmax;}
-  void setExperimentalMeasurementIndexLimitsHmax(QString name) {_experimentalMeasurementIndexLimitsHmax = name;}
-  QString experimentalMeasurementIndexLimitsKmin() {return _experimentalMeasurementIndexLimitsKmin;}
-  void setExperimentalMeasurementIndexLimitsKmin(QString name) {_experimentalMeasurementIndexLimitsKmin = name;}
-  QString experimentalMeasurementIndexLimitsKmax() {return _experimentalMeasurementIndexLimitsKmax;}
-  void setExperimentalMeasurementIndexLimitsKmax(QString name) {_experimentalMeasurementIndexLimitsKmax = name;}
-  QString experimentalMeasurementIndexLimitsLmin() {return _experimentalMeasurementIndexLimitsLmin;}
-  void setExperimentalMeasurementIndexLimitsLmin(QString name) {_experimentalMeasurementIndexLimitsLmin = name;}
-  QString experimentalMeasurementIndexLimitsLmax() {return _experimentalMeasurementIndexLimitsLmax;}
-  void setExperimentalMeasurementIndexLimitsLmax(QString name) {_experimentalMeasurementIndexLimitsLmax = name;}
-  QString experimentalMeasurementNumberOfSymmetryIndependentReflections() {return _experimentalMeasurementNumberOfSymmetryIndependentReflections;}
-  void setExperimentalMeasurementNumberOfSymmetryIndependentReflections(QString name) {_experimentalMeasurementNumberOfSymmetryIndependentReflections = name;}
-  QString experimentalMeasurementSoftware() {return _experimentalMeasurementSoftware;}
-  void setExperimentalMeasurementSoftware(QString name) {_experimentalMeasurementSoftware = name;}
-  QString experimentalMeasurementRefinementDetails() {return _experimentalMeasurementRefinementDetails;}
-  void setExperimentalMeasurementGoodnessOfFit(QString goodness) {_experimentalMeasurementGoodnessOfFit = goodness;}
-  QString experimentalMeasurementGoodnessOfFit() {return _experimentalMeasurementGoodnessOfFit;}
-  void setExperimentalMeasurementRefinementDetails(QString name) {_experimentalMeasurementGoodnessOfFit = name;}
-  QString experimentalMeasurementRFactorGt() {return _experimentalMeasurementRFactorGt;}
-  void setExperimentalMeasurementRFactorGt(QString name) {_experimentalMeasurementRFactorGt = name;}
-  QString experimentalMeasurementRFactorAll() {return _experimentalMeasurementRFactorAll;}
-  void setExperimentalMeasurementRFactorAll(QString name) {_experimentalMeasurementRFactorAll = name;}
+  QString citationArticleTitle() override final {return _citationArticleTitle;}
+  void setCitationArticleTitle(QString name) override final {_citationArticleTitle = name;}
+  QString citationJournalTitle() override final {return _citationJournalTitle;}
+  void setCitationJournalTitle(QString name) override final {_citationJournalTitle = name;}
+  QString citationAuthors() override final {return _citationAuthors;}
+  void setCitationAuthors(QString name) override final {_citationAuthors = name;}
+  QString citationJournalVolume() override final {return _citationJournalVolume;}
+  void setCitationJournalVolume(QString name) override final {_citationJournalVolume = name;}
+  QString citationJournalNumber() override final {return _citationJournalNumber;}
+  void setCitationJournalNumber(QString name) override final {_citationJournalNumber = name;}
+  QString citationJournalPageNumbers() override final {return _citationJournalPageNumbers;}
+  void setCitationJournalPageNumbers(QString name) override final {_citationJournalPageNumbers = name;}
+  QString citationDOI() override final {return _citationDOI;}
+  void setCitationDOI(QString name) override final {_citationDOI = name;}
+  QDate citationPublicationDate() override final {return _citationPublicationDate;}
+  void setCitationPublicationDate(QDate date) override final {_citationPublicationDate = date;}
+  QString citationDatebaseCodes() override final {return _citationDatebaseCodes;}
+  void setCitationDatebaseCodes(QString name) override final {_citationDatebaseCodes = name;}
 
-  QString chemicalFormulaMoiety() {return _chemicalFormulaMoiety;}
-  void setChemicalFormulaMoiety(QString name) {_chemicalFormulaMoiety = name;}
-  QString chemicalFormulaSum() {return _chemicalFormulaSum;}
-  void setChemicalFormulaSum(QString name) {_chemicalFormulaSum = name;}
-  QString chemicalNameSystematic() {return _chemicalNameSystematic;}
-  void setChemicalNameSystematic(QString name) {_chemicalNameSystematic = name;}
+  ProbeMolecule frameworkProbeMolecule() const override final  {return _frameworkProbeMolecule;}
+  void setFrameworkProbeMolecule(ProbeMolecule value) override final {_frameworkProbeMolecule = value;}
 
-  QString citationArticleTitle() {return _citationArticleTitle;}
-  void setCitationArticleTitle(QString name) {_citationArticleTitle = name;}
-  QString citationJournalTitle() {return _citationJournalTitle;}
-  void setCitationJournalTitle(QString name) {_citationJournalTitle = name;}
-  QString citationAuthors() {return _citationAuthors;}
-  void setCitationAuthors(QString name) {_citationAuthors = name;}
-  QString citationJournalVolume() {return _citationJournalVolume;}
-  void setCitationJournalVolume(QString name) {_citationJournalVolume = name;}
-  QString citationJournalNumber() {return _citationJournalNumber;}
-  void setCitationJournalNumber(QString name) {_citationJournalNumber = name;}
-  QString citationJournalPageNumbers() {return _citationJournalPageNumbers;}
-  void setCitationJournalPageNumbers(QString name) {_citationJournalPageNumbers = name;}
-  QString citationDOI() {return _citationDOI;}
-  void setCitationDOI(QString name) {_citationDOI = name;}
-  QDate citationPublicationDate() {return _citationPublicationDate;}
-  void setCitationPublicationDate(QDate date) {_citationPublicationDate = date;}
-  QString citationDatebaseCodes() {return _citationDatebaseCodes;}
-  void setCitationDatebaseCodes(QString name) {_citationDatebaseCodes = name;}
-
-  ProbeMolecule frameworkProbeMolecule() const {return _frameworkProbeMolecule;}
-  void setFrameworkProbeMolecule(ProbeMolecule value) {_frameworkProbeMolecule = value;}
   void recomputeDensityProperties() override;
-  QString structureMaterialType() {return _structureMaterialType;}
-  double structureMass() {return _structureMass;}
-  double structureDensity() {return _structureDensity;}
-  double structureHeliumVoidFraction() {return _structureHeliumVoidFraction;}
+  QString structureMaterialType() override {return _structureMaterialType;}
+  double structureMass() override final {return _structureMass;}
+  double structureDensity() override final {return _structureDensity;}
+  double structureHeliumVoidFraction() override final {return _structureHeliumVoidFraction;}
   void setStructureHeliumVoidFraction(double value) override final {_structureHeliumVoidFraction = value;}
   void setStructureNitrogenSurfaceArea(double value) override final;
   double2 frameworkProbeParameters() const override final;
-  double structureSpecificVolume() {return _structureSpecificVolume;}
-  double structureAccessiblePoreVolume () {return _structureAccessiblePoreVolume;}
-  double structureVolumetricNitrogenSurfaceArea() {return _structureVolumetricNitrogenSurfaceArea;}
-  double structureGravimetricNitrogenSurfaceArea() {return _structureGravimetricNitrogenSurfaceArea;}
-  int structureNumberOfChannelSystems() {return _structureNumberOfChannelSystems;}
-  void setStructureNumberOfChannelSystems(int value) {_structureNumberOfChannelSystems = value;}
-  int structureNumberOfInaccessiblePockets() {return _structureNumberOfInaccessiblePockets;}
-  void setStructureNumberOfInaccessiblePockets(int value) {_structureNumberOfInaccessiblePockets = value;}
-  int structureDimensionalityOfPoreSystem() {return _structureDimensionalityOfPoreSystem;}
-  void setStructureDimensionalityOfPoreSystem(int value) {_structureDimensionalityOfPoreSystem = value;}
-  double structureLargestCavityDiameter() {return _structureLargestCavityDiameter;}
-  void setStructureLargestCavityDiameter(double value) {_structureLargestCavityDiameter = value;}
-  double structureRestrictingPoreLimitingDiameter() {return _structureRestrictingPoreLimitingDiameter;}
-  void setStructureRestrictingPoreLimitingDiameter(double value) {_structureRestrictingPoreLimitingDiameter = value;}
-  double structureLargestCavityDiameterAlongAviablePath() {return _structureLargestCavityDiameterAlongAViablePath;}
-  void setStructureLargestCavityDiameterAlongAviablePath(double value) {_structureLargestCavityDiameterAlongAViablePath = value;}
+  double structureSpecificVolume() override final {return _structureSpecificVolume;}
+  double structureAccessiblePoreVolume () override final {return _structureAccessiblePoreVolume;}
+  double structureVolumetricNitrogenSurfaceArea() override final {return _structureVolumetricNitrogenSurfaceArea;}
+  double structureGravimetricNitrogenSurfaceArea() override final {return _structureGravimetricNitrogenSurfaceArea;}
+  int structureNumberOfChannelSystems() override final {return _structureNumberOfChannelSystems;}
+  void setStructureNumberOfChannelSystems(int value) override final {_structureNumberOfChannelSystems = value;}
+  int structureNumberOfInaccessiblePockets()  override final {return _structureNumberOfInaccessiblePockets;}
+  void setStructureNumberOfInaccessiblePockets(int value)  override final {_structureNumberOfInaccessiblePockets = value;}
+  int structureDimensionalityOfPoreSystem() override final {return _structureDimensionalityOfPoreSystem;}
+  void setStructureDimensionalityOfPoreSystem(int value) override final {_structureDimensionalityOfPoreSystem = value;}
+  double structureLargestCavityDiameter() override final {return _structureLargestCavityDiameter;}
+  void setStructureLargestCavityDiameter(double value) override final {_structureLargestCavityDiameter = value;}
+  double structureRestrictingPoreLimitingDiameter() override final {return _structureRestrictingPoreLimitingDiameter;}
+  void setStructureRestrictingPoreLimitingDiameter(double value) override final {_structureRestrictingPoreLimitingDiameter = value;}
+  double structureLargestCavityDiameterAlongAviablePath() override final {return _structureLargestCavityDiameterAlongAViablePath;}
+  void setStructureLargestCavityDiameterAlongAviablePath(double value) override final {_structureLargestCavityDiameterAlongAViablePath = value;}
 
-  virtual void setSpaceGroupHallNumber(int HallNumber)  {_spaceGroup = SKSpaceGroup(HallNumber); std::cout << "BASECLASS" << std::endl;}
-  SKSpaceGroup& spaceGroup()  {return _spaceGroup;}
+  // spacegroup
+  void setSpaceGroupHallNumber(int HallNumber)  {_spaceGroup = SKSpaceGroup(HallNumber);}
+  SKSpaceGroup& spaceGroup() {return _spaceGroup;}
 
   void computeBonds() override {;}
+
+  friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Structure> &);
+  friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Structure> &);
 protected:
-  qint64 _versionNumber{8};
-  QString _displayName = QString("test123");
+  qint64 _versionNumber{9};
 
   std::shared_ptr<SKAtomTreeController> _atomsTreeController;
   std::shared_ptr<SKBondSetController> _bondSetController;
 
   SKSpaceGroup _spaceGroup;
-  std::shared_ptr<SKCell> _cell;
+  //std::shared_ptr<SKCell> _cell;
 
-  double3 _origin = double3(0.0, 0.0, 0.0);
-  double3 _scaling = double3(1.0, 1.0, 1.0);
-  simd_quatd _orientation = simd_quatd(1.0, double3(0.0, 0.0, 0.0));
-  double _rotationDelta = 5.0;
+  //double3 _origin = double3(0.0, 0.0, 0.0);
+  //double3 _scaling = double3(1.0, 1.0, 1.0);
+  //simd_quatd _orientation = simd_quatd(1.0, double3(0.0, 0.0, 0.0));
+  //double _rotationDelta = 5.0;
 
   double3x3 _primitiveTransformationMatrix = double3x3(1.0,0.0,0.0, 0.0,1.0,0.0, 0.0,0.0,1.0);
   simd_quatd _primitiveOrientation = simd_quatd(0.0,0.0,0.0,1.0);
@@ -742,8 +674,6 @@ protected:
   double _primitiveBackSideSpecularIntensity = 0.2;
   double _primitiveBackSideShininess = 4.0;
 
-  bool _periodic = false;
-  bool _isVisible = true;
 
   double _minimumGridEnergyValue = 0.0f;
 
@@ -829,12 +759,6 @@ protected:
   RKTextAlignment _atomTextAlignment = RKTextAlignment::center;
   double3 _atomTextOffset = double3();
 
-  bool _drawUnitCell = true;
-  double _unitCellScaleFactor = 1.0;
-  QColor _unitCellDiffuseColor = QColor(255, 255, 255, 255);
-  double _unitCellDiffuseIntensity = 1.0;
-
-  RKLocalAxes _localAxes;
 
   bool _drawAdsorptionSurface = false;
   double _adsorptionSurfaceOpacity = 1.0;
@@ -951,8 +875,7 @@ protected:
   QDate _citationPublicationDate = QDate().currentDate();
   QString _citationDatebaseCodes = QString();
 
-  friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Structure> &);
-  friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Structure> &);
+
 };
 
 struct FrameConsumer

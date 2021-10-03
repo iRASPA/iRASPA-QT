@@ -176,7 +176,7 @@ struct RKInPerInstanceAttributesBonds
 struct RKTransformationUniforms
 {
   float4x4 projectionMatrix = float4x4(1.0);
-  float4x4 viewMatrix = float4x4(1.0);
+  float4x4 modelViewMatrix = float4x4(1.0);
   float4x4 mvpMatrix = float4x4();
   float4x4 shadowMatrix = float4x4();
   float4x4 projectionMatrixInverse = float4x4();
@@ -189,6 +189,8 @@ struct RKTransformationUniforms
   float4x4 padMatrix = float4x4();
 
   // moved 'numberOfMultiSamplePoints' to here (for downsampling when no structures are present)
+  float4 cameraPosition = float4();
+  float4 padvector4 = float4();
   float numberOfMultiSamplePoints = 8.0;
   float intPad1;
   float intPad2;
@@ -197,11 +199,9 @@ struct RKTransformationUniforms
   float bloomPulse = 1.0;
   float padFloat1 = 0.0;
   float padFloat2 = 0.0;
-  float4 padVector3 = float4();
-  float4 padvector4 = float4();
 
   RKTransformationUniforms() {};
-  RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double4x4 axesProjectionMatrix, double4x4 axesModelViewMatrix, double bloomLevel, double bloomPulse, int multiSampling);
+  RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double4x4 modelMatrix, double4x4 viewMatrix, double4x4 axesProjectionMatrix, double4x4 axesModelViewMatrix, bool isOrthographic, double bloomLevel, double bloomPulse, int multiSampling);
 };
 
 const std::string  OpenGLFrameUniformBlockStringLiteral = R"foo(
@@ -220,6 +220,8 @@ layout (std140) uniform FrameUniformBlock
   mat4 axesMvpMatrix;
   mat4 padMatrix;
 
+  vec4 cameraPosition;
+  vec4 padvector4;
   float numberOfMultiSamplePoints;
   float padInt1;
   float padInt2;
@@ -228,8 +230,7 @@ layout (std140) uniform FrameUniformBlock
   float bloomPulse;
   float padFloat1;
   float padFloat2;
-  vec4 padvector3;
-  vec4 padvector4;
+
 } frameUniforms;
 )foo";
 
@@ -296,7 +297,7 @@ struct RKStructureUniforms
   float4 clipPlaneFront = float4(1.0, 1.0, 1.0, 1.0);
   float4 clipPlaneBack = float4(1.0, 1.0, 1.0, 1.0);
 
-  float4x4 modelMatrix = float4x4(double4x4());
+  float4x4 pad14 = float4x4(0.0f);
 
   //----------------------------------------  384 bytes boundary
 
@@ -359,9 +360,9 @@ struct RKStructureUniforms
   float4 localAxisPosition = float4(0.0f,0.0f,0.0f,0.0f);
   float4 pad11 = float4(0.0f,0.0f,0.0f,0.0f);
   float4 pad12 = float4(0.0f,0.0f,0.0f,0.0f);
-  float4 pad13 = float4(0.0f,0.0f,0.0f,0.0f);
-  float4x4 pad14 = 0.0f;
-  float4x4 pad15 = 0.0f;
+  float4 aspectRatio = float4(0.0f,0.0f,0.0f,0.0f);
+  float4x4 modelMatrix = float4x4(double4x4());
+  float4x4 inverseModelMatrix = float4x4(double4x4());
 
   RKStructureUniforms() {}
   RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure);
@@ -371,128 +372,129 @@ struct RKStructureUniforms
 const std::string  OpenGLStructureUniformBlockStringLiteral = R"foo(
 layout (std140) uniform StructureUniformBlock
 {
-    int sceneIdentifier;
-    int MovieIdentifier;
-    float atomScaleFactor;
-    int numberOfMultiSamplePoints;
+  int sceneIdentifier;
+  int MovieIdentifier;
+  float atomScaleFactor;
+  int numberOfMultiSamplePoints;
 
-    bool ambientOcclusion;
-    int ambientOcclusionPatchNumber;
-    float ambientOcclusionPatchSize;
-    float ambientOcclusionInverseTextureSize;
+  bool ambientOcclusion;
+  int ambientOcclusionPatchNumber;
+  float ambientOcclusionPatchSize;
+  float ambientOcclusionInverseTextureSize;
 
-    float atomHue;
-    float atomSaturation;
-    float atomValue;
-    float pad111;
+  float atomHue;
+  float atomSaturation;
+  float atomValue;
+  float pad111;
 
-    bool atomHDR;
-    float atomHDRExposure;
-    float atomSelectionIntensity;
-    bool clipAtomsAtUnitCell;
+  bool atomHDR;
+  float atomHDRExposure;
+  float atomSelectionIntensity;
+  bool clipAtomsAtUnitCell;
 
-    vec4 atomAmbientColor;
-    vec4 atomDiffuseColor;
-    vec4 atomSpecularColor;
-    float atomShininess;
+  vec4 atomAmbientColor;
+  vec4 atomDiffuseColor;
+  vec4 atomSpecularColor;
+  float atomShininess;
 
-    float bondHue;
-    float bondSaturation;
-    float bondValue;
+  float bondHue;
+  float bondSaturation;
+  float bondValue;
 
-    //----------------------------------------  128 bytes boundary
+  //----------------------------------------  128 bytes boundary
 
-    bool bondHDR;
-    float bondHDRExposure;
-    float bondSelectionIntensity;
-    bool clipBondsAtUnitCell;
+  bool bondHDR;
+  float bondHDRExposure;
+  float bondSelectionIntensity;
+  bool clipBondsAtUnitCell;
 
-    vec4 bondAmbientColor;
-    vec4 bondDiffuseColor;
-    vec4 bondSpecularColor;
+  vec4 bondAmbientColor;
+  vec4 bondDiffuseColor;
+  vec4 bondSpecularColor;
 
-    float bondShininess;
-    float bondScaling;
-    int bondColorMode;
-    float unitCellScaling;
-    vec4 unitCellColor;
+  float bondShininess;
+  float bondScaling;
+  int bondColorMode;
+  float unitCellScaling;
+  vec4 unitCellColor;
 
-    vec4 clipPlaneLeft;
-    vec4 clipPlaneRight;
+  vec4 clipPlaneLeft;
+  vec4 clipPlaneRight;
 
-    //----------------------------------------  256 bytes boundary
+  //----------------------------------------  256 bytes boundary
 
-    vec4 clipPlaneTop;
-    vec4 clipPlaneBottom;
-    vec4 clipPlaneFront;
-    vec4 clipPlaneBack;
+  vec4 clipPlaneTop;
+  vec4 clipPlaneBottom;
+  vec4 clipPlaneFront;
+  vec4 clipPlaneBack;
 
-    mat4 modelMatrix;
+  mat4 pad13;
 
-    //----------------------------------------  384 bytes boundary
+  //----------------------------------------  384 bytes boundary
 
-    mat4 boxMatrix;
-    float atomSelectionStripesDensity;
-    float atomSelectionStripesFrequency;
-    float atomSelectionWorleyNoise3DFrequency;
-    float atomSelectionWorleyNoise3DJitter;
+  mat4 boxMatrix;
+  float atomSelectionStripesDensity;
+  float atomSelectionStripesFrequency;
+  float atomSelectionWorleyNoise3DFrequency;
+  float atomSelectionWorleyNoise3DJitter;
 
-    vec4 atomAnnotationTextDisplacement;
-    vec4 atomAnnotationTextColor;
-    float atomAnnotationTextScaling;
-    float atomSelectionScaling;
-    float bondSelectionScaling;
-    bool colorAtomsWithBondColor;
+  vec4 atomAnnotationTextDisplacement;
+  vec4 atomAnnotationTextColor;
+  float atomAnnotationTextScaling;
+  float atomSelectionScaling;
+  float bondSelectionScaling;
+  bool colorAtomsWithBondColor;
 
-    //----------------------------------------  512 bytes boundary
+  //----------------------------------------  512 bytes boundary
 
-    mat4 transformationMatrix;
-    mat4 transformationNormalMatrix;
+  mat4 transformationMatrix;
+  mat4 transformationNormalMatrix;
 
-    vec4 primitiveAmbientFrontSide;
-    vec4 primitiveDiffuseFrontSide;
-    vec4 primitiveSpecularFrontSide;
-    bool primitiveFrontSideHDR;
-    float primitiveFrontSideHDRExposure;
-    float primitiveOpacity;
-    float primitiveShininessFrontSide;
+  vec4 primitiveAmbientFrontSide;
+  vec4 primitiveDiffuseFrontSide;
+  vec4 primitiveSpecularFrontSide;
+  bool primitiveFrontSideHDR;
+  float primitiveFrontSideHDRExposure;
+  float primitiveOpacity;
+  float primitiveShininessFrontSide;
 
-    vec4 primitiveAmbientBackSide;
-    vec4 primitiveDiffuseBackSide;
-    vec4 primitiveSpecularBackSide;
-    bool primitiveBackSideHDR;
-    float primitiveBackSideHDRExposure;
-    float pad6;
-    float primitiveShininessBackSide;
+  vec4 primitiveAmbientBackSide;
+  vec4 primitiveDiffuseBackSide;
+  vec4 primitiveSpecularBackSide;
+  bool primitiveBackSideHDR;
+  float primitiveBackSideHDRExposure;
+  float pad6;
+  float primitiveShininessBackSide;
 
-    //----------------------------------------  768 bytes boundary
+  //----------------------------------------  768 bytes boundary
 
-    float bondSelectionStripesDensity;
-    float bondSelectionStripesFrequency;
-    float bondSelectionWorleyNoise3DFrequency;
-    float bondSelectionWorleyNoise3DJitter;
+  float bondSelectionStripesDensity;
+  float bondSelectionStripesFrequency;
+  float bondSelectionWorleyNoise3DFrequency;
+  float bondSelectionWorleyNoise3DJitter;
 
-    float primitiveSelectionStripesDensity;
-    float primitiveSelectionStripesFrequency;
-    float primitiveSelectionWorleyNoise3DFrequency;
-    float primitiveSelectionWorleyNoise3DJitter;
+  float primitiveSelectionStripesDensity;
+  float primitiveSelectionStripesFrequency;
+  float primitiveSelectionWorleyNoise3DFrequency;
+  float primitiveSelectionWorleyNoise3DJitter;
 
-    float primitiveSelectionScaling;
-    float primitiveSelectionIntensity;
-    float pad7;
-    float pad8;
+  float primitiveSelectionScaling;
+  float primitiveSelectionIntensity;
+  float pad7;
+  float pad8;
 
-    float primitiveHue;
-    float primitiveSaturation;
-    float primitiveValue;
-    float pad9;
+  float primitiveHue;
+  float primitiveSaturation;
+  float primitiveValue;
+  float pad9;
 
-    vec4 localAxisPosition;
-    vec4 pad10;
-    vec4 pad11;
-    vec4 pad12;
-    mat4 pad13;
-    mat4 pad14;
+  vec4 localAxisPosition;
+  vec4 pad10;
+  vec4 pad11;
+  vec4 aspectRatio;
+
+  mat4 modelMatrix;
+  mat4 inverseModelMatrix;
 } structureUniforms;
 )foo";
 

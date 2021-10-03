@@ -62,9 +62,12 @@ void OpenGLAtomShader::setRenderStructures(std::vector<std::vector<std::shared_p
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if(_renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible())
+      if (RKRenderAtomicStructureSource* object = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
       {
-         _numberOfAtoms += _renderStructures[i][j]->renderAtoms().size();
+        if(object->drawAtoms() && _renderStructures[i][j]->isVisible())
+        {
+          _numberOfAtoms += object->renderAtoms().size();
+        }
       }
     }
   }
@@ -109,9 +112,12 @@ void OpenGLAtomShader::reloadData()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if(_renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible())
+      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
       {
-         _numberOfAtoms += _renderStructures[i][j]->renderAtoms().size();
+        if(source->drawAtoms() && _renderStructures[i][j]->isVisible())
+        {
+           _numberOfAtoms += source->renderAtoms().size();
+        }
       }
     }
   }

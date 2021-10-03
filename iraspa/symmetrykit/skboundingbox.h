@@ -37,6 +37,8 @@ public:
   double3 center();
   double volume();
   double shortestEdge();
+  double longestEdge();
+  double3 aspectRatio();
   double boundingSphereRadius();
   double3 maximum() const {return _maximum;}
   double3 minimum() const {return _minimum;}
@@ -49,6 +51,7 @@ private:
   double3 _minimum = double3(0.0, 0.0, 0.0);
   double3 _maximum = double3(0.0, 0.0, 0.0);
 
+  friend QDebug operator<<(QDebug debug, const SKBoundingBox &box);
   friend QDataStream &operator<<(QDataStream &, const SKBoundingBox &);
   friend QDataStream &operator>>(QDataStream &, SKBoundingBox &);
 };

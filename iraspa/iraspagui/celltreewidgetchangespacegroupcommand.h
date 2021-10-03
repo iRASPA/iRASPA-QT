@@ -35,14 +35,14 @@ class CellTreeWidgetController;
 class CellTreeWidgetChangeSpaceGroupCommand : public QUndoCommand
 {
 public:
-  CellTreeWidgetChangeSpaceGroupCommand(MainWindow *mainWindow, CellTreeWidgetController *controller, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures, int value, QUndoCommand *undoParent = nullptr);
+  CellTreeWidgetChangeSpaceGroupCommand(MainWindow *mainWindow, CellTreeWidgetController *controller, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures, int value, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
 private:
   MainWindow *_mainWindow;
   CellTreeWidgetController *_controller;
   std::shared_ptr<ProjectStructure> _projectStructure;
-  std::vector<std::shared_ptr<iRASPAStructure> > _iraspa_structures;
-  std::vector<std::pair<std::shared_ptr<iRASPAStructure>, std::shared_ptr<Structure>>> _old_iraspa_structures;
+  std::vector<std::shared_ptr<iRASPAObject> > _iraspa_structures;
+  std::vector<std::pair<std::shared_ptr<iRASPAObject>, std::shared_ptr<Structure>>> _old_iraspa_structures;
   int _value;
 };

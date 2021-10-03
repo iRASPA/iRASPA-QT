@@ -21,7 +21,7 @@
 
 #include "projecttreeviewstyleditemdelegate.h"
 #include <qtreeview.h>
-#include "iraspastructure.h"
+#include "iraspaobject.h"
 #include "projecttreeview.h"
 #include "projecttreeviewmodel.h"
 

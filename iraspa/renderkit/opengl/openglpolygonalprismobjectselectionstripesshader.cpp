@@ -56,20 +56,23 @@ void OpenGLPolygonalPrismObjectSelectionStripesShader::paintGL(GLuint structureU
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderPrimitivePolygonalPrimsObjectsSource* object = dynamic_cast<RKRenderPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))
+      if (std::shared_ptr<RKRenderPrimitiveObjectsSource> source = std::dynamic_pointer_cast<RKRenderPrimitiveObjectsSource>(_renderStructures[i][j]))
       {
-        if(object->primitiveSelectionStyle() == RKSelectionStyle::striped)
+        if (std::shared_ptr<RKRenderPrimitivePolygonalPrimsObjectsSource> object = std::dynamic_pointer_cast<RKRenderPrimitivePolygonalPrimsObjectsSource>(_renderStructures[i][j]))
         {
-          if(_renderStructures[i][j]->isVisible() && _polygonalPrismShader._numberOfIndices[i][j]>0 && _instanceShader._numberOfDrawnAtoms[i][j]>0)
+          if(source->primitiveSelectionStyle() == RKSelectionStyle::striped)
           {
-            glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
+            if(_renderStructures[i][j]->isVisible() && _polygonalPrismShader._numberOfIndices[i][j]>0 && _instanceShader._numberOfDrawnAtoms[i][j]>0)
+            {
+              glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
 
-            glBindVertexArray(_vertexArrayObject[i][j]);
-            check_gl_error();
+              glBindVertexArray(_vertexArrayObject[i][j]);
+              check_gl_error();
 
-            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_polygonalPrismShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDrawnAtoms[i][j]));
-            check_gl_error();
-            glBindVertexArray(0);
+              glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_polygonalPrismShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDrawnAtoms[i][j]));
+              check_gl_error();
+              glBindVertexArray(0);
+            }
           }
         }
       }

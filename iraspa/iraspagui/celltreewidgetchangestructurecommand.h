@@ -29,7 +29,7 @@
 #include "symmetrykit.h"
 #include "mathkit.h"
 #include "mainwindow.h"
-#include "iraspastructure.h"
+#include "iraspaobject.h"
 #include "skatomtreecontroller.h"
 #include "skbondsetcontroller.h"
 #include "renderstackedwidget.h"
@@ -37,13 +37,13 @@
 class CellTreeWidgetChangeStructureCommand : public QUndoCommand
 {
 public:
-  CellTreeWidgetChangeStructureCommand(MainWindow *mainWindow, std::shared_ptr<ProjectTreeNode> projectTreeNode, std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures, int value, QUndoCommand *parent = nullptr);
+  CellTreeWidgetChangeStructureCommand(MainWindow *mainWindow, std::shared_ptr<ProjectTreeNode> projectTreeNode, std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures, int value, QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
   MainWindow *_mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
-  std::vector<std::shared_ptr<iRASPAStructure>> _old_iraspa_structures;
-  std::vector<std::tuple<std::shared_ptr<iRASPAStructure>, std::shared_ptr<Structure>, iRASPAStructureType>> _old_structures;
+  std::vector<std::shared_ptr<iRASPAObject>> _old_iraspa_structures;
+  std::vector<std::tuple<std::shared_ptr<iRASPAObject>, std::shared_ptr<Structure>, ObjectType>> _old_structures;
   int _value;
 };

@@ -25,22 +25,22 @@
 
 // Note: The iRASPAStructure is not modified, but the structure it contains is replaced.
 
-AtomTreeViewMakeSuperCellCommand::AtomTreeViewMakeSuperCellCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspa_structure,
+AtomTreeViewMakeSuperCellCommand::AtomTreeViewMakeSuperCellCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAObject> iraspa_structure,
                                      QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
   _model(model),
   _iraspa_structure(iraspa_structure),
-  _structure(iraspa_structure->structure())
+  _structure(std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
 {
   setText(QString("Make super cell"));
 }
 
 void AtomTreeViewMakeSuperCellCommand::redo()
 {
-  std::shared_ptr<Structure> structure = _iraspa_structure->structure()->superCell();
+  std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structure->object())->superCell();
 
-  _iraspa_structure->setStructure(structure);
+  _iraspa_structure->setObject(structure);
 
   _mainWindow->resetData();
 
@@ -49,7 +49,7 @@ void AtomTreeViewMakeSuperCellCommand::redo()
 
 void AtomTreeViewMakeSuperCellCommand::undo()
 {
-  _iraspa_structure->setStructure(_structure);
+  _iraspa_structure->setObject(_structure);
 
   _mainWindow->resetData();
 

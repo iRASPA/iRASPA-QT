@@ -65,6 +65,7 @@ OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGL
     _selectionShader(_atomShader, _bondShader, _objectShader),
     _pickingShader(_atomShader, _bondShader, _objectShader),
     _textShader(),
+    _densityVolumeShader(),
     _timer(new QTimer(parent))
 {
   connect(_timer, &QTimer::timeout, this, &OpenGLWindow::timeoutEventHandler);
@@ -152,7 +153,7 @@ void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<R
   _pickingShader.setRenderStructures(structures);
 
   _textShader.setRenderStructures(structures);
-
+  _densityVolumeShader.setRenderStructures(structures);
 }
 
 
@@ -224,6 +225,7 @@ void OpenGLWindow::initializeGL()
   _pickingShader.initializeEmbeddedOpenGLFunctions();
 
   _textShader.initializeOpenGLFunctions();
+  _densityVolumeShader.initializeOpenGLFunctions();
 
   if(_logReporter)
   {
@@ -475,6 +477,7 @@ void OpenGLWindow::initializeGL()
   _selectionShader.loadShader();
   _pickingShader.loadShader();
   _textShader.loadShader();
+  _densityVolumeShader.loadShader();
 
   _energySurfaceShader.generateBuffers();
   _boundingBoxShader.generateBuffers();
@@ -498,6 +501,7 @@ void OpenGLWindow::initializeGL()
   _selectionShader.initializeVertexArrayObject();
   _pickingShader.initializeVertexArrayObject();
   _textShader.initializeVertexArrayObject();
+  _densityVolumeShader.initializeVertexArrayObject();
 
   initializeTransformUniforms();
   check_gl_error();
@@ -1527,9 +1531,13 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int hei
     _bondShader.paintGL(_structureUniformBuffer);
      check_gl_error();
 
+
+
     _objectShader.paintGL(_structureUniformBuffer);
     _unitCellShader.paintGL(_structureUniformBuffer);
     _localAxesShader.paintGL(_structureUniformBuffer);
+
+
 
     _boundingBoxShader.paintGL();
     _energySurfaceShader.paintGLOpaque(_structureUniformBuffer,_isosurfaceUniformBuffer);
@@ -1539,6 +1547,8 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int hei
     _energySurfaceShader.paintGLTransparent(_structureUniformBuffer,_isosurfaceUniformBuffer);
 
     _selectionShader.paintGL(camera, _quality, _structureUniformBuffer);
+
+    _densityVolumeShader.paintGL(_structureUniformBuffer);
 
     _textShader.paintGL(_structureUniformBuffer);
 
@@ -1767,6 +1777,8 @@ void OpenGLWindow::initializeTransformUniforms()
   check_gl_error();
   _textShader.initializeTransformUniforms();
   check_gl_error();
+  _densityVolumeShader.initializeTransformUniforms();
+  check_gl_error();
 
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
   check_gl_error();
@@ -1776,16 +1788,22 @@ void OpenGLWindow::updateTransformUniforms()
 {
   makeCurrent();
   double4x4 projectionMatrix = double4x4();
+  double4x4 modelViewMatrix = double4x4();
+  double4x4 modelMatrix = double4x4();
   double4x4 viewMatrix = double4x4();
   double4x4 axesProjectionMatrix = double4x4();
   double4x4 axesModelViewMatrix = double4x4();
   double bloomLevel = 1.0;;
   double bloomPulse = 1.0;
+  bool isOrthographic = true;
 
   if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
     projectionMatrix = camera->projectionMatrix();
-    viewMatrix = camera->modelViewMatrix();
+    modelViewMatrix = camera->modelViewMatrix();
+    modelMatrix = camera->modelMatrix();
+    viewMatrix = camera->viewMatrix();
+    isOrthographic = camera->isOrthographic();
 
     if(_dataSource)
     {
@@ -1800,7 +1818,7 @@ void OpenGLWindow::updateTransformUniforms()
 
   glBindBuffer(GL_UNIFORM_BUFFER, _frameUniformBuffer);
   check_gl_error();
-  RKTransformationUniforms transformationUniforms = RKTransformationUniforms(projectionMatrix, viewMatrix, axesProjectionMatrix, axesModelViewMatrix, bloomLevel, bloomPulse, _multiSampling);
+  RKTransformationUniforms transformationUniforms = RKTransformationUniforms(projectionMatrix, modelViewMatrix, modelMatrix, viewMatrix, axesProjectionMatrix, axesModelViewMatrix, isOrthographic, bloomLevel, bloomPulse, _multiSampling);
   glBufferData (GL_UNIFORM_BUFFER, sizeof(RKTransformationUniforms), &transformationUniforms, GL_DYNAMIC_DRAW);
   check_gl_error();
   glBindBuffer(GL_UNIFORM_BUFFER,0);
@@ -1826,6 +1844,7 @@ void OpenGLWindow::initializeStructureUniforms()
   _selectionShader.initializeStructureUniforms();
   _pickingShader.initializeStructureUniforms();
   _textShader.initializeStructureUniforms();
+  _densityVolumeShader.initializeStructureUniforms();
 
   check_gl_error();
   std::vector<RKStructureUniforms> structureUniforms{RKStructureUniforms()};
@@ -1920,6 +1939,7 @@ void OpenGLWindow::initializeLightUniforms()
   _unitCellShader.initializeLightUniforms();
   _localAxesShader.initializeLightUniforms();
   _selectionShader.initializeLightUniforms();
+  _densityVolumeShader.initializeLightUniforms();
 
   std::vector<RKLightsUniforms> lightUniforms{RKLightsUniforms()};
   glBufferData(GL_UNIFORM_BUFFER, sizeof(RKLightsUniforms) * lightUniforms.size(), lightUniforms.data(), GL_DYNAMIC_DRAW);
@@ -1992,6 +2012,7 @@ void OpenGLWindow::reloadData()
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();
+  _densityVolumeShader.reloadData();
 
   update();
 
@@ -2015,6 +2036,7 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();
+  _densityVolumeShader.reloadData();
 
   update();
 
@@ -2042,6 +2064,7 @@ void OpenGLWindow::reloadRenderData()
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();
+  _densityVolumeShader.reloadData();
 
   update();
 }

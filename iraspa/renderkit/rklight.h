@@ -59,7 +59,7 @@ public:
   double spotExponent() const {return _spotExponent;}
   void setSpotExponent(double exponent) {_spotExponent = exponent;}
 private:
-  [[maybe_unused]] int _versionNumber = 1;
+  [[maybe_unused]] qint64 _versionNumber = 1;
   double4 _position = double4(0, 0, 100.0, 0.0);
   QColor _ambientColor = QColor(255, 255, 255, 255);
   QColor _diffuseColor = QColor(255, 255, 255, 255);

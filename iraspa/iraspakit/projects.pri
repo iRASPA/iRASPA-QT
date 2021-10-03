@@ -10,7 +10,6 @@ SOURCES += \
     $$PWD/scenelist.cpp \
     $$PWD/scene.cpp \
     $$PWD/movie.cpp \
-    $$PWD/iraspastructure.cpp \
     $$PWD/documentdata.cpp
 
 HEADERS += \
@@ -23,5 +22,4 @@ HEADERS += \
     $$PWD/scenelist.h \
     $$PWD/scene.h \
     $$PWD/movie.h \
-    $$PWD/iraspastructure.h \
     $$PWD/documentdata.h

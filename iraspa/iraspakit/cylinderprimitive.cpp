@@ -36,11 +36,11 @@ CylinderPrimitive::CylinderPrimitive()
 
 }
 
-CylinderPrimitive::CylinderPrimitive(const CylinderPrimitive &cylinderPrimitive): Structure(cylinderPrimitive)
+CylinderPrimitive::CylinderPrimitive(const CylinderPrimitive &cylinderPrimitive): Primitive(cylinderPrimitive)
 {
 }
 
-CylinderPrimitive::CylinderPrimitive(std::shared_ptr<Structure> s): Structure(s)
+CylinderPrimitive::CylinderPrimitive(std::shared_ptr<Structure> s): Primitive(s)
 {
   _cell = std::make_shared<SKCell>(*s->cell());
 
@@ -554,6 +554,10 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> CylinderPrimi
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<CylinderPrimitive> &primitive)
 {
   stream << primitive->_versionNumber;
+
+  // handle super class
+  stream << std::static_pointer_cast<Structure>(primitive);
+
   return stream;
 }
 
@@ -565,5 +569,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<CylinderPrimitive> 
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "CylinderPrimitive");
   }
+
+  std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(primitive);
+  stream >> structure;
+
   return stream;
 }

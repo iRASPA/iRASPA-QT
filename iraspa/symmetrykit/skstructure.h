@@ -33,6 +33,8 @@
 class SKStructure
 {
 public:
+  enum class DataType {Uint8, Int8, Uint16, Int16, Uint32, Int32, Uint64, Int64, Float, Double};
+
   SKStructure(): cell(std::make_shared<SKCell>()) {};
 
   enum class Kind: qint64
@@ -41,7 +43,8 @@ public:
     crystal = 2, molecularCrystal = 3, molecule = 4, protein = 5, proteinCrystal = 6,
     proteinCrystalSolvent = 7, crystalSolvent = 8, molecularCrystalSolvent = 9,
     crystalEllipsoidPrimitive = 10, crystalCylinderPrimitive = 11, crystalPolygonalPrismPrimitive = 12,
-    ellipsoidPrimitive = 13, cylinderPrimitive = 14, polygonalPrismPrimitive = 15
+    ellipsoidPrimitive = 13, cylinderPrimitive = 14, polygonalPrismPrimitive = 15,
+    densityVolume = 16
   };
 
   Kind kind = Kind::crystal;
@@ -66,4 +69,10 @@ public:
   std::optional<double> Di;
   std::optional<double> Df;
   std::optional<double> Dif;
+
+  int3 dimensions;
+  double3 origin;
+  double3 spacing;
+  DataType dataType;
+  QByteArray byteData;
 };

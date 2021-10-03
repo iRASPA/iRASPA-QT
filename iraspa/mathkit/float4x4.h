@@ -66,6 +66,7 @@ union float4x4
   float4x4(const float3x3 &);
   float4x4(const double3x3 &);
   float4x4(const double4x4 &);
+  float4x4(const float *v);
 
   inline bool operator==(const float4x4& b) const
   {

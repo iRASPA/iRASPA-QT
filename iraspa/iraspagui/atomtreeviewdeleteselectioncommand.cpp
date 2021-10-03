@@ -24,14 +24,14 @@
 #include <algorithm>
 
 AtomTreeViewDeleteSelectionCommand::AtomTreeViewDeleteSelectionCommand(MainWindow *mainWindow, AtomTreeViewModel *atomModel, BondListViewModel *bondModel,
-                                                                       std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                                                       std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                        AtomSelectionNodesAndIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection, QUndoCommand *parent):
   QUndoCommand(parent),
   _mainWindow(mainWindow),
   _atomModel(atomModel),
   _bondModel(bondModel),
   _iraspaStructure(iraspaStructure),
-  _structure(iraspaStructure->structure()),
+  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
   _atomSelection(atomSelection),
   _bondSelection(bondSelection),
   _reverseBondSelection({})
@@ -69,7 +69,7 @@ void AtomTreeViewDeleteSelectionCommand::redo()
   {
     for(const auto &[bondItem, row] : _reverseBondSelection)
     {
-      _iraspaStructure->structure()->bondSetController()->removeBond(row);
+      std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->removeBond(row);
     }
   }
 
@@ -153,7 +153,7 @@ void AtomTreeViewDeleteSelectionCommand::undo()
   {
     for(const auto &[bondItem, row] : _bondSelection)
     {
-      _iraspaStructure->structure()->bondSetController()->insertBond(bondItem, row);
+      std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->insertBond(bondItem, row);
     }
   }
 

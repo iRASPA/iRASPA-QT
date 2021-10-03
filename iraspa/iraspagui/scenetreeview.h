@@ -79,14 +79,14 @@ public slots:
   void newEllipsoid();
   void newCylinder();
   void newPolygonalPrism();
-  void insertMovie(std::shared_ptr<iRASPAStructure> iraspaStructure);
+  void insertMovie(std::shared_ptr<iRASPAObject> iraspaStructure);
   void deleteSelection();
 signals:
   void updateRenderer();
-  void setSelectedFrame(std::shared_ptr<iRASPAStructure> structure);
+  void setSelectedFrame(std::shared_ptr<iRASPAObject> structure);
   void setSelectedMovie(std::shared_ptr<Movie> movie);
-  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAStructure>> structures);
-  void setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> structures);
+  void setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
   void rendererReloadData();
-  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };

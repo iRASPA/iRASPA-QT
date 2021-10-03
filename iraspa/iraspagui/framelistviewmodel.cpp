@@ -115,9 +115,9 @@ QVariant FrameListViewModel::data(const QModelIndex &index, int role) const
   if (role != Qt::DisplayRole)
    return QVariant();
 
-  if(iRASPAStructure* iraspaStructure = static_cast<iRASPAStructure*>(index.internalPointer()))
+  if(iRASPAObject* iraspaStructure = static_cast<iRASPAObject*>(index.internalPointer()))
   {
-    return QString(iraspaStructure->structure()->displayName());
+    return QString(iraspaStructure->object()->displayName());
   }
   return QString("Unknown");
 }
@@ -127,7 +127,7 @@ bool FrameListViewModel::setData(const QModelIndex &index, const QVariant &value
   if (role != Qt::EditRole)
     return false;
 
-  if(iRASPAStructure* iraspaStructure = static_cast<iRASPAStructure*>(index.internalPointer()))
+  if(iRASPAObject* iraspaStructure = static_cast<iRASPAObject*>(index.internalPointer()))
   {
     QString newValue = value.toString();
     if(!newValue.isEmpty())
@@ -140,7 +140,7 @@ bool FrameListViewModel::setData(const QModelIndex &index, const QVariant &value
   return false;
 }
 
-bool FrameListViewModel::insertRow(int position, std::shared_ptr<Movie> parent, std::shared_ptr<iRASPAStructure> iraspaStructure)
+bool FrameListViewModel::insertRow(int position, std::shared_ptr<Movie> parent, std::shared_ptr<iRASPAObject> iraspaStructure)
 {
   if(parent)
   {
@@ -153,7 +153,7 @@ bool FrameListViewModel::insertRow(int position, std::shared_ptr<Movie> parent, 
   return false;
 }
 
-bool FrameListViewModel::insertRow(int position, std::shared_ptr<iRASPAStructure> iraspaStructure)
+bool FrameListViewModel::insertRow(int position, std::shared_ptr<iRASPAObject> iraspaStructure)
 {
   if(_movie)
   {
@@ -199,15 +199,15 @@ Qt::ItemFlags FrameListViewModel::flags(const QModelIndex &index) const
 }
 
 // Helper functions
-QModelIndex FrameListViewModel::indexForNode(iRASPAStructure *node, int column) const
+QModelIndex FrameListViewModel::indexForNode(iRASPAObject *node, int column) const
 {
   int row = int(node->row());
   return createIndex(row, column, node);
 }
 
-iRASPAStructure *FrameListViewModel::nodeForIndex(const QModelIndex &index) const
+iRASPAObject *FrameListViewModel::nodeForIndex(const QModelIndex &index) const
 {
-  iRASPAStructure *projectTreeNode = static_cast<iRASPAStructure *>(index.internalPointer());
+  iRASPAObject *projectTreeNode = static_cast<iRASPAObject *>(index.internalPointer());
   if(projectTreeNode)
     return projectTreeNode;
   else
@@ -247,7 +247,7 @@ QMimeData* FrameListViewModel::mimeDataLazy(const QModelIndexList &indexes) cons
   {
     if(index.isValid())
     {
-      if(iRASPAStructure *item = static_cast<iRASPAStructure *>(index.internalPointer()))
+      if(iRASPAObject *item = static_cast<iRASPAObject *>(index.internalPointer()))
       {
         qulonglong itemPtrval(reinterpret_cast<qulonglong>(item));
         stream << itemPtrval;
@@ -255,7 +255,7 @@ QMimeData* FrameListViewModel::mimeDataLazy(const QModelIndexList &indexes) cons
     }
   }
   QMimeData *mimeData = new QMimeData();
-  mimeData->setData(iRASPAStructure::mimeType, encodedData);
+  mimeData->setData(iRASPAObject::mimeType, encodedData);
 
   return mimeData;
 }
@@ -281,12 +281,12 @@ bool FrameListViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
   {
     return true;
   }
-  if(!data->hasFormat(iRASPAStructure::mimeType))
+  if(!data->hasFormat(iRASPAObject::mimeType))
   {
     return false;
   }
 
-  QByteArray ddata = data->data(iRASPAStructure::mimeType);
+  QByteArray ddata = data->data(iRASPAObject::mimeType);
   QDataStream stream(&ddata, QIODevice::ReadOnly);
 
   // read application id
@@ -310,14 +310,14 @@ bool FrameListViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
 
   if(action == Qt::DropAction::CopyAction || (senderProjectTreeViewId != sourceProjectTreeViewId))
   {
-    std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes{};
+    std::vector<std::pair<std::shared_ptr<iRASPAObject>, size_t>> nodes{};
 
     while (!stream.atEnd())
     {
       qlonglong nodePtr;
       stream >> nodePtr;
-      iRASPAStructure *item = reinterpret_cast<iRASPAStructure *>(nodePtr);
-      std::shared_ptr<iRASPAStructure> node = item->clone();
+      iRASPAObject *item = reinterpret_cast<iRASPAObject *>(nodePtr);
+      std::shared_ptr<iRASPAObject> node = item->clone();
       nodes.push_back(std::make_pair(node, beginRow));
 
       beginRow += 1;
@@ -329,13 +329,13 @@ bool FrameListViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
   }
   else if(action == Qt::DropAction::MoveAction && (senderProjectTreeViewId == sourceProjectTreeViewId))
   {
-    std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes{};
+    std::vector<std::pair<std::shared_ptr<iRASPAObject>, size_t>> nodes{};
 
     while (!stream.atEnd())
     {
       qlonglong nodePtr;
       stream >> nodePtr;
-      iRASPAStructure *node = reinterpret_cast<iRASPAStructure *>(nodePtr);
+      iRASPAObject *node = reinterpret_cast<iRASPAObject *>(nodePtr);
 
       if (static_cast<int>(node->row()) < beginRow)
       {
@@ -371,14 +371,14 @@ QMimeData* FrameListViewModel::mimeData(const QModelIndexList &indexes) const
   {
     if(index.isValid())
     {
-      if(iRASPAStructure *item = static_cast<iRASPAStructure *>(index.internalPointer()))
+      if(iRASPAObject *item = static_cast<iRASPAObject *>(index.internalPointer()))
       {
         stream << item->shared_from_this();
       }
     }
   }
   QMimeData *mimeData = new QMimeData();
-  mimeData->setData(iRASPAStructure::mimeType, encodedData);
+  mimeData->setData(iRASPAObject::mimeType, encodedData);
 
   return mimeData;
 }
@@ -388,13 +388,13 @@ bool FrameListViewModel::pasteMimeData(const QMimeData *data, int row, int colum
   Q_UNUSED(column);
   Q_UNUSED(parent);
 
-  if(!data->hasFormat(iRASPAStructure::mimeType))
+  if(!data->hasFormat(iRASPAObject::mimeType))
   {
     return false;
   }
 
 
-  QByteArray ddata = data->data(iRASPAStructure::mimeType);
+  QByteArray ddata = data->data(iRASPAObject::mimeType);
   QDataStream stream(&ddata, QIODevice::ReadOnly);
 
   // read application id
@@ -408,11 +408,11 @@ bool FrameListViewModel::pasteMimeData(const QMimeData *data, int row, int colum
   // determine insertion point
   int beginRow = row;
 
-  std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes{};
+  std::vector<std::pair<std::shared_ptr<iRASPAObject>, size_t>> nodes{};
 
   while (!stream.atEnd())
   {
-    std::shared_ptr<iRASPAStructure> node = std::make_shared<iRASPAStructure>();
+    std::shared_ptr<iRASPAObject> node = std::make_shared<iRASPAObject>();
     stream >> node;
 
     nodes.push_back(std::make_pair(node, beginRow));

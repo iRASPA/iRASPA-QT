@@ -45,11 +45,34 @@ class RKRenderStructure
 {
 public:
   virtual ~RKRenderStructure() = 0;
-  virtual void computeBonds() = 0;
-
   virtual QString displayName() const = 0;
+  virtual std::shared_ptr<SKCell> cell() const = 0;
+  virtual  simd_quatd orientation() const = 0;
+  virtual  double3 origin() const = 0;
 
   virtual bool isVisible() const = 0;
+
+  virtual bool drawUnitCell() const = 0;
+
+  // unit cell
+  virtual double unitCellScaleFactor() const = 0;
+  virtual QColor unitCellDiffuseColor() const = 0;
+  virtual double unitCellDiffuseIntensity() const = 0;
+
+  virtual RKLocalAxes &renderLocalAxes() = 0;
+  virtual SKBoundingBox boundingBox() const = 0;
+  virtual SKBoundingBox transformedBoundingBox() const = 0;
+
+  virtual std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const = 0;
+  virtual std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const = 0;
+};
+
+class RKRenderAtomicStructureSource
+{
+public:
+  virtual ~RKRenderAtomicStructureSource() = 0;
+  virtual void computeBonds() = 0;
+
   virtual bool hasSelectedAtoms() const = 0;
 
   virtual std::vector<double3> atomPositions() const = 0;
@@ -87,19 +110,15 @@ public:
   virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedInternalBonds() const = 0;
   virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedExternalBonds() const = 0;
 
-  virtual std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const = 0;
-  virtual std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const = 0;
+
 
   virtual int numberOfAtoms() const = 0;
   virtual int numberOfInternalBonds() const = 0;
   virtual int numberOfExternalBonds() const = 0;
 
-  virtual bool drawUnitCell() const = 0;
+
   virtual bool drawAtoms() const = 0;
   virtual bool drawBonds() const = 0;
-
-  virtual simd_quatd orientation() const = 0;
-  virtual double3 origin() const = 0;
 
   // material properties
   virtual QColor atomAmbientColor() const = 0;
@@ -110,13 +129,8 @@ public:
   virtual double atomSpecularIntensity() const = 0;
   virtual double atomShininess() const = 0;
 
-  virtual std::shared_ptr<SKCell> cell() const = 0;
-  virtual SKBoundingBox boundingBox() const = 0;
-  virtual SKBoundingBox transformedBoundingBox() const = 0;
   virtual void expandSymmetry() = 0;
   virtual void reComputeBoundingBox() = 0;
-
-  //virtual atomCacheAmbientOcclusionTexture: [CUnsignedChar] {get set}
 
   virtual bool hasExternalBonds() const = 0;
 
@@ -168,12 +182,6 @@ public:
   virtual double bondSelectionWorleyNoise3DFrequency() const = 0;
   virtual double bondSelectionWorleyNoise3DJitter() const = 0;
 
-  // unit cell
-  virtual double unitCellScaleFactor() const = 0;
-  virtual QColor unitCellDiffuseColor() const = 0;
-  virtual double unitCellDiffuseIntensity() const = 0;
-
-
   // adsorption surface
   virtual std::vector<double3> atomUnitCellPositions() const = 0;
   virtual bool drawAdsorptionSurface() const = 0;
@@ -220,6 +228,9 @@ class RKRenderPrimitiveObjectsSource
 {
 public:
   virtual ~RKRenderPrimitiveObjectsSource() = 0;
+
+  virtual bool drawAtoms() const = 0;
+
   virtual simd_quatd primitiveOrientation() const = 0;
   virtual double3x3 primitiveTransformationMatrix() const = 0;
 
@@ -262,7 +273,7 @@ public:
   virtual double primitiveBackSideShininess() const = 0;
 };
 
-class RKRenderCrystalPrimitiveEllipsoidObjectsSource: public RKRenderPrimitiveObjectsSource
+class RKRenderCrystalPrimitiveEllipsoidObjectsSource //: public RKRenderPrimitiveObjectsSource
 {
 public:
   virtual ~RKRenderCrystalPrimitiveEllipsoidObjectsSource() = 0;
@@ -270,7 +281,7 @@ public:
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitiveEllipsoidObjects() const = 0;
 };
 
-class RKRenderCrystalPrimitiveCylinderObjectsSource: public RKRenderPrimitiveObjectsSource
+class RKRenderCrystalPrimitiveCylinderObjectsSource //: public RKRenderPrimitiveObjectsSource
 {
 public:
   virtual ~RKRenderCrystalPrimitiveCylinderObjectsSource() = 0;
@@ -278,7 +289,7 @@ public:
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitiveCylinderObjects() const = 0;
 };
 
-class RKRenderCrystalPrimitivePolygonalPrimsObjectsSource: public RKRenderPrimitiveObjectsSource
+class RKRenderCrystalPrimitivePolygonalPrimsObjectsSource //: public RKRenderPrimitiveObjectsSource
 {
 public:
   virtual ~RKRenderCrystalPrimitivePolygonalPrimsObjectsSource() = 0;
@@ -286,7 +297,7 @@ public:
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitivePolygonalPrismObjects() const = 0;
 };
 
-class RKRenderPrimitiveEllipsoidObjectsSource: public RKRenderPrimitiveObjectsSource
+class RKRenderPrimitiveEllipsoidObjectsSource //: public RKRenderPrimitiveObjectsSource
 {
 public:
   virtual ~RKRenderPrimitiveEllipsoidObjectsSource() = 0;
@@ -294,7 +305,7 @@ public:
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitiveEllipsoidObjects() const = 0;
 };
 
-class RKRenderPrimitiveCylinderObjectsSource: public RKRenderPrimitiveObjectsSource
+class RKRenderPrimitiveCylinderObjectsSource // : public RKRenderPrimitiveObjectsSource
 {
 public:
   virtual ~RKRenderPrimitiveCylinderObjectsSource() = 0;
@@ -302,7 +313,7 @@ public:
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitiveCylinderObjects() const = 0;
 };
 
-class RKRenderPrimitivePolygonalPrimsObjectsSource: public RKRenderPrimitiveObjectsSource
+class RKRenderPrimitivePolygonalPrimsObjectsSource  //: public RKRenderPrimitiveObjectsSource
 {
 public:
   virtual ~RKRenderPrimitivePolygonalPrimsObjectsSource() = 0;
@@ -310,11 +321,15 @@ public:
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitivePolygonalPrismObjects() const = 0;
 };
 
-class RKRenderLocalAxesStructure
+class RKRenderDensityVolumeSource
 {
 public:
-  virtual ~RKRenderLocalAxesStructure() = 0;
-  virtual RKLocalAxes &renderLocalAxes() = 0;
+  virtual ~RKRenderDensityVolumeSource() = 0;
+  virtual std::vector<float4> data() = 0;
+  virtual int3 dimension() = 0;  
+  virtual double3 spacing() = 0;
+  virtual double3 aspectRatio() = 0;
+  virtual std::pair<double, double> range() = 0;
 };
 
 class RKRenderDataSource

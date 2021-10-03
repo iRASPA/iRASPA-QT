@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QString>
+#include <QUrl>
 #include <string>
 #include <vector>
 #include <map>
@@ -38,7 +39,7 @@
 class SKXYZParser: public SKParser
 {
 public:
-  SKXYZParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
+  SKXYZParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
   bool startParsing() override final;
 private:
   Scanner _scanner;

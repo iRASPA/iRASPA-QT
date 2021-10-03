@@ -103,16 +103,19 @@ void OpenGLAtomSelectionStripesShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if(_renderStructures[i][j]->atomSelectionStyle() == RKSelectionStyle::striped && _renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
+      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
       {
-        glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
+        if(source->atomSelectionStyle() == RKSelectionStyle::striped && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
+        {
+          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
 
-        glBindVertexArray(_vertexArrayObject[i][j]);
-        check_gl_error();
+          glBindVertexArray(_vertexArrayObject[i][j]);
+          check_gl_error();
 
-        glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfDrawnAtoms[i][j]));
-        check_gl_error();
-        glBindVertexArray(0);
+          glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfDrawnAtoms[i][j]));
+          check_gl_error();
+          glBindVertexArray(0);
+        }
       }
       index++;
     }
@@ -136,51 +139,54 @@ void OpenGLAtomSelectionStripesShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      std::vector<RKInPerInstanceAttributesAtoms> atomData = _renderStructures[i][j]->renderSelectedAtoms();
-      _numberOfDrawnAtoms[i][j] = atomData.size();
-      _numberOfIndices[i][j] = sphere.indices().size();
-
-      glBindVertexArray(_vertexArrayObject[i][j]);
-
-      // each crystal can have a different number of sphere-slices
-      glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
-
-      if(sphere.vertices().size()>0)
+      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
       {
-        glBufferData(GL_ARRAY_BUFFER, sphere.vertices().size() * sizeof(RKVertex), sphere.vertices().data(), GL_DYNAMIC_DRAW);
-        check_gl_error();
+        std::vector<RKInPerInstanceAttributesAtoms> atomData = source->renderSelectedAtoms();
+        _numberOfDrawnAtoms[i][j] = atomData.size();
+        _numberOfIndices[i][j] = sphere.indices().size();
+
+        glBindVertexArray(_vertexArrayObject[i][j]);
+
+        // each crystal can have a different number of sphere-slices
+        glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
+
+        if(sphere.vertices().size()>0)
+        {
+          glBufferData(GL_ARRAY_BUFFER, sphere.vertices().size() * sizeof(RKVertex), sphere.vertices().data(), GL_DYNAMIC_DRAW);
+          check_gl_error();
+        }
+
+        glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid*>(offsetof(RKVertex,position)));
+        glVertexAttribPointer(_vertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid*>(offsetof(RKVertex,normal)));
+
+        glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), _indexBuffer[i][j]);
+        if(sphere.indices().size()>0)
+        {
+          glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices().size() * sizeof(GLshort), sphere.indices().data(), GL_DYNAMIC_DRAW);
+          check_gl_error();
+        }
+
+        glBindBuffer(GLenum(GL_ARRAY_BUFFER), _instancePositionBuffer[i][j]);
+        if(_numberOfDrawnAtoms[i][j]>0)
+        {
+          glBufferData(GL_ARRAY_BUFFER, _numberOfDrawnAtoms[i][j]*sizeof(RKInPerInstanceAttributesAtoms), atomData.data(), GL_DYNAMIC_DRAW);
+          check_gl_error();
+        }
+
+        glVertexAttribPointer(_instancePositionAttributeLocation, 4, GL_FLOAT, GLboolean(GL_FALSE), sizeof(RKInPerInstanceAttributesAtoms), reinterpret_cast<GLvoid*>(offsetof(RKInPerInstanceAttributesAtoms,position)));
+        glVertexAttribDivisor(_instancePositionAttributeLocation, 1);
+
+        glVertexAttribPointer(_scaleAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesAtoms), reinterpret_cast<GLvoid*>(offsetof(RKInPerInstanceAttributesAtoms,scale)));
+        glVertexAttribDivisor(_scaleAttributeLocation, 1);
+
+        glEnableVertexAttribArray(_vertexPositionAttributeLocation);
+        glEnableVertexAttribArray(_vertexNormalAttributeLocation);
+        glEnableVertexAttribArray(_instancePositionAttributeLocation);
+        glEnableVertexAttribArray(_scaleAttributeLocation);
+
+        glBindBuffer(GLenum(GL_ARRAY_BUFFER), 0);
+        glBindVertexArray(0);
       }
-
-      glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid*>(offsetof(RKVertex,position)));
-      glVertexAttribPointer(_vertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid*>(offsetof(RKVertex,normal)));
-
-      glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), _indexBuffer[i][j]);
-      if(sphere.indices().size()>0)
-      {
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices().size() * sizeof(GLshort), sphere.indices().data(), GL_DYNAMIC_DRAW);
-        check_gl_error();
-      }
-
-      glBindBuffer(GLenum(GL_ARRAY_BUFFER), _instancePositionBuffer[i][j]);
-      if(_numberOfDrawnAtoms[i][j]>0)
-      {
-        glBufferData(GL_ARRAY_BUFFER, _numberOfDrawnAtoms[i][j]*sizeof(RKInPerInstanceAttributesAtoms), atomData.data(), GL_DYNAMIC_DRAW);
-        check_gl_error();
-      }
-
-      glVertexAttribPointer(_instancePositionAttributeLocation, 4, GL_FLOAT, GLboolean(GL_FALSE), sizeof(RKInPerInstanceAttributesAtoms), reinterpret_cast<GLvoid*>(offsetof(RKInPerInstanceAttributesAtoms,position)));
-      glVertexAttribDivisor(_instancePositionAttributeLocation, 1);
-
-      glVertexAttribPointer(_scaleAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesAtoms), reinterpret_cast<GLvoid*>(offsetof(RKInPerInstanceAttributesAtoms,scale)));
-      glVertexAttribDivisor(_scaleAttributeLocation, 1);
-
-      glEnableVertexAttribArray(_vertexPositionAttributeLocation);
-      glEnableVertexAttribArray(_vertexNormalAttributeLocation);
-      glEnableVertexAttribArray(_instancePositionAttributeLocation);
-      glEnableVertexAttribArray(_scaleAttributeLocation);
-
-      glBindBuffer(GLenum(GL_ARRAY_BUFFER), 0);
-      glBindVertexArray(0);
     }
   }
 }

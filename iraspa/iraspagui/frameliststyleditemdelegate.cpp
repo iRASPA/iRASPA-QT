@@ -21,7 +21,7 @@
 
 #include "frameliststyleditemdelegate.h"
 #include <qtreeview.h>
-#include "iraspastructure.h"
+#include "iraspaobject.h"
 #include "framelistview.h"
 #include "framelistviewmodel.h"
 
@@ -38,7 +38,7 @@ void FrameListViewStyledItemDelegate::paint(QPainter *painter, const QStyleOptio
 
   QStyledItemDelegate::paint(painter, option, index);
 
-  if(iRASPAStructure *iraspa_structure = static_cast<iRASPAStructure*>(index.internalPointer()))
+  if(iRASPAObject *iraspa_structure = static_cast<iRASPAObject*>(index.internalPointer()))
   {
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);

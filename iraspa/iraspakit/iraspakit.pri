@@ -1,7 +1,8 @@
 INCLUDEPATH += $$PWD
 
 include(projects.pri)
-include(structures.pri)
+include(objects.pri)
+include(interfaces.pri)
 
 SOURCES += \
     $$PWD/iraspakitprotocols.cpp

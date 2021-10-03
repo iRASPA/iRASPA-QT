@@ -55,7 +55,7 @@ void OpenGLCrystalCylinderObjectSelectionStripesShader::paintGL(GLuint structure
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderCrystalPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* object = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
         if(object->primitiveSelectionStyle() == RKSelectionStyle::striped)
         {

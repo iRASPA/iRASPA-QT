@@ -67,8 +67,8 @@ private slots:
 signals:
   void updateRenderer();
   void rendererReloadData();
-  void setSelectedFrame(std::shared_ptr<iRASPAStructure> structure);
-  void setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
-  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAStructure>> structures);
-  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void setSelectedFrame(std::shared_ptr<iRASPAObject> structure);
+  void setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
+  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> structures);
+  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };

@@ -27,7 +27,7 @@ AtomTreeViewCopySelectionToNewMovieCommand::AtomTreeViewCopySelectionToNewMovieC
                                                                                        AtomTreeViewModel* atomTreeViewModel,
                                                                                        SceneTreeViewModel* sceneTreeViewModel,
                                                                                        std::shared_ptr<SceneList> sceneList,
-                                                                                       std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                                                                       std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                                        AtomSelectionIndexPaths atomSelection,
                                                                                        BondSelectionIndexSet bondSelection,
                                                                                        QUndoCommand *undoParent):
@@ -48,42 +48,48 @@ AtomTreeViewCopySelectionToNewMovieCommand::AtomTreeViewCopySelectionToNewMovieC
 
 void AtomTreeViewCopySelectionToNewMovieCommand::redo()
 {
-  if(std::shared_ptr<Movie> movie = _iraspaStructure->parent().lock())
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
   {
-    if((_scene = movie->parent().lock()))
+    if(std::shared_ptr<Movie> movie = _iraspaStructure->parent().lock())
     {
-      _row = int(_scene->movies().size());
-
-      std::shared_ptr<iRASPAStructure> newiRASPAStructure = _iraspaStructure->clone();
-      newiRASPAStructure->structure()->setSpaceGroupHallNumber(_iraspaStructure->structure()->spaceGroup().spaceGroupSetting().HallNumber());
-      _newMovie = Movie::create(newiRASPAStructure);
-
-      for(const IndexPath &indexPath : _atomSelection.second)
+      if((_scene = movie->parent().lock()))
       {
-        const std::shared_ptr<SKAtomTreeNode> atomTreeNode = _iraspaStructure->structure()->atomsTreeController()->nodeAtIndexPath(indexPath);
-        if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = atomTreeNode->representedObject())
+        _row = int(_scene->movies().size());
+
+        std::shared_ptr<iRASPAObject> newiRASPAStructure = _iraspaStructure->clone();
+        if(std::shared_ptr<Structure> newStructure = std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object()))
         {
-          std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
-          std::shared_ptr<SKAtomTreeNode> newAtomTreeNode = std::make_shared<SKAtomTreeNode>(newAsymmetricAtom);
-          newiRASPAStructure->structure()->atomsTreeController()->appendToRootnodes(newAtomTreeNode);
+          newStructure->setSpaceGroupHallNumber(structure->spaceGroup().spaceGroupSetting().HallNumber());
+          _newMovie = Movie::create(newiRASPAStructure);
+
+          for(const IndexPath &indexPath : _atomSelection.second)
+          {
+            const std::shared_ptr<SKAtomTreeNode> atomTreeNode = structure->atomsTreeController()->nodeAtIndexPath(indexPath);
+            if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = atomTreeNode->representedObject())
+            {
+              std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
+              std::shared_ptr<SKAtomTreeNode> newAtomTreeNode = std::make_shared<SKAtomTreeNode>(newAsymmetricAtom);
+              newStructure->atomsTreeController()->appendToRootnodes(newAtomTreeNode);
+            }
+
+          }
+          newStructure->expandSymmetry();
+          newStructure->reComputeBoundingBox();
+          newStructure->computeBonds();
+          newStructure->atomsTreeController()->setTags();
+          newStructure->bondSetController()->setTags();
+
+          _sceneTreeViewModel->insertRow(_row, _scene, _newMovie);
+
+          structure->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
+          structure->bondSetController()->setSelectionIndexSet(_bondSelection);
         }
-
       }
-      newiRASPAStructure->structure()->expandSymmetry();
-      newiRASPAStructure->structure()->reComputeBoundingBox();
-      newiRASPAStructure->structure()->computeBonds();
-      newiRASPAStructure->structure()->atomsTreeController()->setTags();
-      newiRASPAStructure->structure()->bondSetController()->setTags();
 
-      _sceneTreeViewModel->insertRow(_row, _scene, _newMovie);
+      emit _sceneTreeViewModel->rendererReloadData();
 
-      _iraspaStructure->structure()->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
-      _iraspaStructure->structure()->bondSetController()->setSelectionIndexSet(_bondSelection);
+      _mainWindow->documentWasModified();
     }
-
-    emit _sceneTreeViewModel->rendererReloadData();
-
-    _mainWindow->documentWasModified();
   }
 }
 

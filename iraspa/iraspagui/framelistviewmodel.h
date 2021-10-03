@@ -47,8 +47,8 @@ public:
   bool setData(const QModelIndex &index, const QVariant &value, int role) override final;
   QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override final;
 
-  bool insertRow(int position, std::shared_ptr<Movie> parent, std::shared_ptr<iRASPAStructure> iraspaStructure);
-  bool insertRow(int position, std::shared_ptr<iRASPAStructure> iraspaStructure);
+  bool insertRow(int position, std::shared_ptr<Movie> parent, std::shared_ptr<iRASPAObject> iraspaStructure);
+  bool insertRow(int position, std::shared_ptr<iRASPAObject> iraspaStructure);
   bool removeRow(int position, std::shared_ptr<Movie> parent);
   bool removeRow(int position);
 
@@ -64,8 +64,8 @@ public:
   bool pasteMimeData(const QMimeData *data, int row, int column, const QModelIndex &parent);
 
   // Helper functions
-  QModelIndex indexForNode(iRASPAStructure *node, int column = 0) const;
-  iRASPAStructure *nodeForIndex(const QModelIndex &index) const;
+  QModelIndex indexForNode(iRASPAObject *node, int column = 0) const;
+  iRASPAObject *nodeForIndex(const QModelIndex &index) const;
 private:
   MainWindow* _mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
@@ -74,5 +74,5 @@ private:
 signals:
   void updateSelection();
   void rendererReloadData();
-  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };

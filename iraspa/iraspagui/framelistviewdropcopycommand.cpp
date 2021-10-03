@@ -25,7 +25,7 @@
 
 FrameListViewDropCopyCommand::FrameListViewDropCopyCommand(MainWindow *mainWindow, FrameListViewModel *frameListViewModel,
                                                            std::shared_ptr<SceneList> sceneList, std::shared_ptr<Movie> movie,
-                                                           std::vector<std::pair<std::shared_ptr<iRASPAStructure>, size_t>> nodes,
+                                                           std::vector<std::pair<std::shared_ptr<iRASPAObject>, size_t>> nodes,
                                                            FrameSelectionIndexSet selection, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),

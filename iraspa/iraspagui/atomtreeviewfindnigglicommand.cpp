@@ -24,34 +24,32 @@
 #include <algorithm>
 #include <set>
 
-AtomTreeViewFindNiggliCommand::AtomTreeViewFindNiggliCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAStructure> iraspaStructure,
+AtomTreeViewFindNiggliCommand::AtomTreeViewFindNiggliCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAObject> iraspaStructure,
                                      AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection, QUndoCommand *parent):
   _mainWindow(mainWindow),
   _iraspaStructure(iraspaStructure),
-  _structure(iraspaStructure->structure()),
+  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
   _atomSelection(atomSelection),
   _bondSelection(bondSelection)
 {
   Q_UNUSED(parent);
 
   setText(QString("Find and impose symmetry"));
-
-
 }
 
 void AtomTreeViewFindNiggliCommand::redo()
 {
-  const std::vector<std::tuple<double3,int,double>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
+  const std::vector<std::tuple<double3,int,double>> symmetryData = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomSymmetryData();
 
-  double3x3 unitCell = _iraspaStructure->structure()->cell()->unitCell();
-  double precision = _iraspaStructure->structure()->cell()->precision();
+  double3x3 unitCell = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->cell()->unitCell();
+  double precision = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->cell()->precision();
   std::optional<SKSpaceGroup::FoundNiggliCellInfo> foundSpaceGroup = SKSpaceGroup::findNiggliCell(unitCell,symmetryData,false,precision);
   if(foundSpaceGroup)
   {
     int HallNumber = foundSpaceGroup->HallNumber;
     double3x3 newUnitCell = foundSpaceGroup->cell.unitCell();
 
-    std::shared_ptr<Structure> structure = _iraspaStructure->structure()->clone();
+    std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->clone();
 
 
     std::vector<std::tuple<double3, int, double>> primitiveAtoms = foundSpaceGroup->atoms;
@@ -66,7 +64,10 @@ void AtomTreeViewFindNiggliCommand::redo()
     structure->updateForceField(_mainWindow->forceFieldSets());
 
     structure->setSpaceGroupHallNumber(HallNumber);
-    _iraspaStructure->setStructure(structure);
+    structure->expandSymmetry();
+    structure->atomsTreeController()->setTags();
+    structure->computeBonds();
+    _iraspaStructure->setObject(structure);
 
     // emit _controller->invalidateCachedAmbientOcclusionTexture(_projectStructure->sceneList()->allIRASPAStructures());
 
@@ -78,7 +79,7 @@ void AtomTreeViewFindNiggliCommand::redo()
 
 void AtomTreeViewFindNiggliCommand::undo()
 {
-  _iraspaStructure->setStructure(_structure);
+  _iraspaStructure->setObject(_structure);
 
   if(std::shared_ptr<Structure> structure = _structure)
   {

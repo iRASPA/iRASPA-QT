@@ -40,7 +40,7 @@ Protein::Protein(const Protein &protein): Structure(protein)
 {
 }
 
-Protein::Protein(std::shared_ptr<SKStructure> structure): Structure(structure)
+Protein::Protein(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
   expandSymmetry();
   _atomsTreeController->setTags();
@@ -977,6 +977,10 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Protein::rota
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Protein> &protein)
 {
   stream << protein->_versionNumber;
+
+  // handle super class
+  stream << std::static_pointer_cast<Structure>(protein);
+
   return stream;
 }
 
@@ -988,5 +992,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Protein> &protein)
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "Protein");
   }
+
+  std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(protein);
+  stream >> structure;
+
   return stream;
 }

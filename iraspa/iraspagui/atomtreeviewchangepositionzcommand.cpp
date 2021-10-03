@@ -23,67 +23,73 @@
 #include <QDebug>
 #include <algorithm>
 
-AtomTreeViewChangePositionZCommand::AtomTreeViewChangePositionZCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAStructure> iraspaStructure,
+AtomTreeViewChangePositionZCommand::AtomTreeViewChangePositionZCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                        std::shared_ptr<SKAtomTreeNode> atomTreeNode, double newValue, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
   _model(model),
   _iraspaStructure(iraspaStructure),
-  _structure(iraspaStructure->structure()),
+  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
   _atomTreeNode(atomTreeNode),
   _newValue(newValue)
-{
+{        
   setText(QString("Change atom position-z"));
   _structures = projectStructure->sceneList()->invalidatediRASPAStructures();
 }
 
 void AtomTreeViewChangePositionZCommand::redo()
 {
-  _oldValue = _atomTreeNode->representedObject()->position().z;
-  _atomTreeNode->representedObject()->setPositionZ(_newValue);
-  _structure->expandSymmetry();
-  _structure->computeBonds();
-
-  if(_model)
+  if(_structure)
   {
-    if(_model->isActive(_iraspaStructure))
+    _oldValue = _atomTreeNode->representedObject()->position().z;
+    _atomTreeNode->representedObject()->setPositionZ(_newValue);
+    _structure->expandSymmetry();
+    _structure->computeBonds();
+
+    if(_model)
     {
-      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),5);
-      emit _model->dataChanged(index,index);
+      if(_model->isActive(_iraspaStructure))
+      {
+        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),5);
+        emit _model->dataChanged(index,index);
+      }
     }
-  }
 
-  if(_mainWindow)
-  {
-    emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
-    emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
-    emit _mainWindow->rendererReloadData();
+    if(_mainWindow)
+    {
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
+      emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
+      emit _mainWindow->rendererReloadData();
 
-    _mainWindow->documentWasModified();
+      _mainWindow->documentWasModified();
+    }
   }
 }
 
 void AtomTreeViewChangePositionZCommand::undo()
 {
-  _atomTreeNode->representedObject()->setPositionZ(_oldValue);
-  _structure->expandSymmetry();
-  _structure->computeBonds();
-
-  if(_model)
+  if(_structure)
   {
-    if(_model->isActive(_iraspaStructure))
+    _atomTreeNode->representedObject()->setPositionZ(_oldValue);
+    _structure->expandSymmetry();
+    _structure->computeBonds();
+
+    if(_model)
     {
-      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),5);
-      emit _model->dataChanged(index,index);
+      if(_model->isActive(_iraspaStructure))
+      {
+        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),5);
+        emit _model->dataChanged(index,index);
+      }
     }
-  }
 
-  if(_mainWindow)
-  {
-    emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
-    emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
-    emit _mainWindow->rendererReloadData();
+    if(_mainWindow)
+    {
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
+      emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
+      emit _mainWindow->rendererReloadData();
 
-    _mainWindow->documentWasModified();
+      _mainWindow->documentWasModified();
+    }
   }
 }

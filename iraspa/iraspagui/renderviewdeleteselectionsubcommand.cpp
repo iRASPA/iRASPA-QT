@@ -24,7 +24,7 @@
 #include <algorithm>
 
 RenderViewDeleteSelectionSubCommand::RenderViewDeleteSelectionSubCommand(MainWindow *mainWindow, AtomTreeViewModel *atomModel, BondListViewModel *bondModel,
-                                                                       std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                                                       std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                        AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection, QUndoCommand *parent):
   QUndoCommand(parent),
   _mainWindow(mainWindow),
@@ -41,8 +41,8 @@ RenderViewDeleteSelectionSubCommand::RenderViewDeleteSelectionSubCommand(MainWin
 
   setText(QString("Delete selected atoms"));
 
-  _atomTreeController = iraspaStructure->structure()->atomsTreeController();
-  _bondListController = iraspaStructure->structure()->bondSetController();
+  _atomTreeController = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->atomsTreeController();
+  _bondListController = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->bondSetController();
 
   std::transform(atomSelection.second.begin(), atomSelection.second.end(), std::back_inserter(_selectedAtomNodes),
                  [this](IndexPath indexPath) -> std::tuple< std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>
@@ -69,7 +69,7 @@ void RenderViewDeleteSelectionSubCommand::redo()
   {
     for(const auto &[bondItem, row] : _reverseBondSelection)
     {
-      _iraspaStructure->structure()->bondSetController()->removeBond(row);
+      std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->removeBond(row);
     }
   }
 
@@ -129,7 +129,7 @@ void RenderViewDeleteSelectionSubCommand::undo()
   {
     for(const auto &[bondItem, row] : _bondSelection)
     {
-      _iraspaStructure->structure()->bondSetController()->insertBond(bondItem, row);
+      std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->insertBond(bondItem, row);
     }
   }
 

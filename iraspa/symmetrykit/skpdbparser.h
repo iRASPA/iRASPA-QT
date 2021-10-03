@@ -23,6 +23,7 @@
 
 #include <cmath>
 #include <QString>
+#include <QUrl>
 #include <string>
 #include <vector>
 #include <map>
@@ -41,7 +42,7 @@
 class SKPDBParser: public SKParser
 {
 public:
-  SKPDBParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
+  SKPDBParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
   bool startParsing() override final;
 private:
   Scanner _scanner;

@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QString>
+#include <QUrl>
 #include <string>
 #include <vector>
 //#include <string_view>
@@ -36,7 +37,7 @@
 class Scanner
 {
 public:
-  Scanner(QString &inputString, CharacterSet charactersToBeSkipped): _charactersToBeSkipped(charactersToBeSkipped), _string(inputString) {_scanLocation = _string.begin();}
+  Scanner(QUrl &url, CharacterSet charactersToBeSkipped);
   QString string() const {return _string;}
   QString::const_iterator scanLocation() const {return _scanLocation;}
   void setScanLocation(QString::const_iterator location) {_scanLocation = location;}
@@ -45,8 +46,10 @@ public:
   bool isAtEnd();
   bool scanDouble(double& value);
   bool scanInt(int& value);
+  const QString displayName() {return _displayName;}
 private:
   CharacterSet _charactersToBeSkipped;
+  QString _displayName;
   QString _string;
   QString::const_iterator _scanLocation;
 

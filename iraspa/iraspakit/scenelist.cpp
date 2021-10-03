@@ -29,11 +29,6 @@ SceneList::SceneList()
 
 }
 
-QString SceneList::displayName() const
-{
- return _displayName;
-}
-
 void SceneList::appendScene(std::shared_ptr<Scene> scene)
 {
   _scenes.push_back(scene);
@@ -123,16 +118,16 @@ std::optional<int> SceneList::selectedSceneIndex()
   return std::nullopt;
 }
 
-std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::allIRASPAStructures() const
+std::vector<std::vector<std::shared_ptr<iRASPAObject>>> SceneList::allIRASPAStructures() const
 {
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> sceneStructures = std::vector<std::vector<std::shared_ptr<iRASPAStructure>>>();
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> sceneStructures = std::vector<std::vector<std::shared_ptr<iRASPAObject>>>();
 
   for(const std::shared_ptr<Scene> &scene : _scenes)
   {
-    std::vector<std::shared_ptr<iRASPAStructure>> structures = std::vector<std::shared_ptr<iRASPAStructure>>();
+    std::vector<std::shared_ptr<iRASPAObject>> structures = std::vector<std::shared_ptr<iRASPAObject>>();
     for(const std::shared_ptr<Movie> &movie: scene->movies())
     {
-      for(const std::shared_ptr<iRASPAStructure> &frame: movie->frames())
+      for(const std::shared_ptr<iRASPAObject> &frame: movie->frames())
       {
         structures.push_back(frame);
       }
@@ -143,14 +138,14 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::allIRASPAS
 }
 
 
-std::vector<std::shared_ptr<iRASPAStructure>> SceneList::flattenedAllIRASPAStructures()
+std::vector<std::shared_ptr<iRASPAObject>> SceneList::flattenedAllIRASPAStructures()
 {
-  std::vector<std::shared_ptr<iRASPAStructure>> structures{};
+  std::vector<std::shared_ptr<iRASPAObject>> structures{};
   for(const std::shared_ptr<Scene> &scene: scenes())
   {
     for(const std::shared_ptr<Movie> &movie: scene->movies())
     {
-      for(const std::shared_ptr<iRASPAStructure> &frame: movie->frames())
+      for(const std::shared_ptr<iRASPAObject> &frame: movie->frames())
       {
         structures.push_back(frame);
       }
@@ -160,14 +155,14 @@ std::vector<std::shared_ptr<iRASPAStructure>> SceneList::flattenedAllIRASPAStruc
 }
 
 
-std::vector<std::shared_ptr<iRASPAStructure>> SceneList::selectedMoviesIRASPAStructures()
+std::vector<std::shared_ptr<iRASPAObject>> SceneList::selectedMoviesIRASPAStructures()
 {
-  std::vector<std::shared_ptr<iRASPAStructure>> structures{};
+  std::vector<std::shared_ptr<iRASPAObject>> structures{};
   for(std::shared_ptr<Scene> scene: scenes())
   {
     for(const std::shared_ptr<Movie> &movie: scene->selectedMovies())
     {
-      for(const std::shared_ptr<iRASPAStructure> &frame: movie->frames())
+      for(const std::shared_ptr<iRASPAObject> &frame: movie->frames())
       {
         structures.push_back(frame);
       }
@@ -177,9 +172,9 @@ std::vector<std::shared_ptr<iRASPAStructure>> SceneList::selectedMoviesIRASPAStr
 }
 
 // per scene, if a structure is selected than the corresponding structures of the other movies must be included too
-std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::invalidatediRASPAStructures() const
+std::vector<std::vector<std::shared_ptr<iRASPAObject>>> SceneList::invalidatediRASPAStructures() const
 {
-  std::vector<std::shared_ptr<iRASPAStructure>> invalidatedStructures{};
+  std::vector<std::shared_ptr<iRASPAObject>> invalidatedStructures{};
 
   std::vector<FrameSelectionIndexSet> sceneSelectedIndexes{};
   for(const std::shared_ptr<Scene> &scene : _scenes)
@@ -195,12 +190,12 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::invalidate
     sceneSelectedIndexes.push_back(selectedIndexes);
   }
 
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> sceneStructures{};
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> sceneStructures{};
   int sceneIndex=0;
   for(const std::shared_ptr<Scene> &scene : _scenes)
   {
     FrameSelectionIndexSet selectedIndexes = sceneSelectedIndexes[sceneIndex];
-    std::vector<std::shared_ptr<iRASPAStructure>> structures = std::vector<std::shared_ptr<iRASPAStructure>>();
+    std::vector<std::shared_ptr<iRASPAObject>> structures = std::vector<std::shared_ptr<iRASPAObject>>();
     for(std::shared_ptr<Movie> movie: scene->movies())
     {
       for(size_t index : selectedIndexes)
@@ -217,16 +212,16 @@ std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::invalidate
   return sceneStructures;
 }
 
-std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> SceneList::selectediRASPAStructures() const
+std::vector<std::vector<std::shared_ptr<iRASPAObject>>> SceneList::selectediRASPAStructures() const
 {
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> sceneStructures{};
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> sceneStructures{};
 
   for(const std::shared_ptr<Scene> &scene : _scenes)
   {
-    std::vector<std::shared_ptr<iRASPAStructure>> structures = std::vector<std::shared_ptr<iRASPAStructure>>();
+    std::vector<std::shared_ptr<iRASPAObject>> structures = std::vector<std::shared_ptr<iRASPAObject>>();
     for(std::shared_ptr<Movie> movie: scene->movies())
     {
-      for(const std::shared_ptr<iRASPAStructure> &selectedFrame: movie->selectedFrames())
+      for(const std::shared_ptr<iRASPAObject> &selectedFrame: movie->selectedFrames())
       {
         structures.push_back(selectedFrame);
       }
@@ -246,9 +241,9 @@ std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> SceneList::selected
     std::vector<std::shared_ptr<RKRenderStructure>> structures = std::vector<std::shared_ptr<RKRenderStructure>>();
     for(std::shared_ptr<Movie> movie: scene->movies())
     {
-      const std::vector<std::shared_ptr<iRASPAStructure>> selectedFrames = movie->selectedFrames();
+      const std::vector<std::shared_ptr<iRASPAObject>> selectedFrames = movie->selectedFrames();
       std::transform(selectedFrames.begin(),selectedFrames.end(),std::back_inserter(structures),
-                     [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                     [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
     }
     renderStructures.push_back(structures);
   }

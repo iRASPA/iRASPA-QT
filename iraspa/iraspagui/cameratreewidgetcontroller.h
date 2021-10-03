@@ -197,7 +197,7 @@ signals:
   void updateRenderer();
   void rendererCreatePicture(QUrl filenName, int width, int height);
   void rendererCreateMovie(QUrl filenName, int width, int height, MovieWriter::Type);
-  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };
 
 

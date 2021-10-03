@@ -23,13 +23,13 @@
 #include <QDebug>
 #include <algorithm>
 
-AtomTreeViewInsertAtomGroupCommand::AtomTreeViewInsertAtomGroupCommand(MainWindow *mainWindow, AtomTreeView *atomTreeView, std::shared_ptr<iRASPAStructure> iraspaStructure,
+AtomTreeViewInsertAtomGroupCommand::AtomTreeViewInsertAtomGroupCommand(MainWindow *mainWindow, AtomTreeView *atomTreeView, std::shared_ptr<iRASPAObject> iraspaStructure,
                                                                        std::shared_ptr<SKAtomTreeNode> parentTreeNode, int row,
                                                                        AtomSelectionNodesAndIndexPaths selection, QUndoCommand *parent):
   _mainWindow(mainWindow),
   _atomTreeView(atomTreeView),
   _iraspaStructure(iraspaStructure),
-  _structure(iraspaStructure->structure()),
+  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
   _parentTreeNode(parentTreeNode),
   _row(row),
   _selection(selection)

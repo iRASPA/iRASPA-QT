@@ -52,7 +52,7 @@ public:
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override final;
 
   // update the atomTreeView when (implicitely or explicitly) a new frame is selected in the Scene/Movie-ListView or frameListView
-  void setSelectedFrame(std::shared_ptr<iRASPAStructure> structure);
+  void setSelectedFrame(std::shared_ptr<iRASPAObject> structure);
 
   void resetData();
   void reloadData() override final;
@@ -73,7 +73,7 @@ private:
   std::shared_ptr<AtomTreeViewModel> _atomModel;
   std::shared_ptr<BondListViewModel> _bondModel;
   std::shared_ptr<SceneTreeViewModel> _sceneModel;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
   std::shared_ptr<iRASPAProject> _iRASPAProject;
   void paintDropIndicator(QPainter& painter);
@@ -112,5 +112,5 @@ public slots:
   void addAtomGroup();
 signals:
   void rendererReloadData();
-  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };

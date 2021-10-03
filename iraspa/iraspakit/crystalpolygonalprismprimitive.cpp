@@ -36,11 +36,11 @@ CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive()
 
 }
 
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const CrystalPolygonalPrismPrimitive &crystalPolygonalPrismPrimitive): Structure(crystalPolygonalPrismPrimitive)
+CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const CrystalPolygonalPrismPrimitive &crystalPolygonalPrismPrimitive): Primitive(crystalPolygonalPrismPrimitive)
 {
 }
 
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(std::shared_ptr<Structure> s): Structure(s)
+CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(std::shared_ptr<Structure> s): Primitive(s)
 {
   if(dynamic_cast<Molecule*>(s.get()) ||
      dynamic_cast<Protein*>(s.get()) ||
@@ -809,6 +809,10 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> CrystalPolygo
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<CrystalPolygonalPrismPrimitive> &primitive)
 {
   stream << primitive->_versionNumber;
+
+  // handle super class
+  stream << std::static_pointer_cast<Structure>(primitive);
+
   return stream;
 }
 
@@ -820,5 +824,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<CrystalPolygonalPri
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "CrystalPolygonalPrismPrimitive");
   }
+
+  std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(primitive);
+  stream >> structure;
+
   return stream;
 }

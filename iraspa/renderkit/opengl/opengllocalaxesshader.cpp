@@ -52,7 +52,7 @@ void OpenGLLocalAxesShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderLocalAxesStructure* axes = dynamic_cast<RKRenderLocalAxesStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderStructure* axes = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
       {
         if(_renderStructures[i][j]->isVisible() && axes->renderLocalAxes().position() != RKLocalAxes::Position::none)
         {
@@ -128,13 +128,13 @@ void OpenGLLocalAxesShader::initializeVertexArrayObject()
     {
       AxesSystemDefaultGeometry axesGeometry{};
 
-      if (RKRenderLocalAxesStructure* axes = dynamic_cast<RKRenderLocalAxesStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderStructure* axes = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
       {
         double length = axes->renderLocalAxes().length();
         double width = axes->renderLocalAxes().width();
 
-        SKBoundingBox boundingBox = _renderStructures[i][j]->boundingBox();
-        std::shared_ptr<SKCell> unitCell = _renderStructures[i][j]->cell();
+        SKBoundingBox boundingBox = axes->boundingBox();
+        std::shared_ptr<SKCell> unitCell = axes->cell();
 
         switch(axes->renderLocalAxes().scalingType())
         {

@@ -27,22 +27,22 @@ char Movie::mimeType[] = "application/x-qt-iraspa-movie-mime";
 // _movieType is to set the type of the movie based on the type of the first frame.
 // In this way, an empty movie (after deleting all its frames) can create a frame of the correct type.
 
-Movie::Movie(): _movieType(iRASPAStructureType::crystal), _displayName("movie"),  _frames{}
+Movie::Movie(): _movieType(ObjectType::crystal), _displayName("movie"),  _frames{}
 {
 
 }
 
 // private constructor, parent of structure needs to be set
-Movie::Movie(std::shared_ptr<iRASPAStructure> structure): _movieType(structure->type()), _frames{structure}
+Movie::Movie(std::shared_ptr<iRASPAObject> structure): _movieType(structure->type()), _frames{structure}
 {
 }
 
 // private constructor, parent of structure needs to be set
-Movie::Movie(std::vector<std::shared_ptr<iRASPAStructure>> structures): _frames{structures}
+Movie::Movie(std::vector<std::shared_ptr<iRASPAObject>> structures): _frames{structures}
 {
 }
 
-std::shared_ptr<Movie> Movie::create(std::shared_ptr<iRASPAStructure> structure)
+std::shared_ptr<Movie> Movie::create(std::shared_ptr<iRASPAObject> structure)
 {
   // std::make_shared can not call private constructor
   std::shared_ptr<Movie> movie =  std::shared_ptr<Movie>( new Movie( std::forward<Movie>(structure)));
@@ -52,7 +52,7 @@ std::shared_ptr<Movie> Movie::create(std::shared_ptr<iRASPAStructure> structure)
   return movie;
 }
 
-std::shared_ptr<Movie> Movie::create(QString displayName, std::vector<std::shared_ptr<iRASPAStructure>> iraspaStructures)
+std::shared_ptr<Movie> Movie::create(QString displayName, std::vector<std::shared_ptr<iRASPAObject>> iraspaStructures)
 {
   std::shared_ptr<Movie> movie =  std::shared_ptr<Movie>( new Movie( std::forward<Movie>(iraspaStructures)));
   movie->setDisplayName(displayName);
@@ -63,7 +63,7 @@ std::shared_ptr<Movie> Movie::create(QString displayName, std::vector<std::share
     movie->addSelectedFrameIndex(0);
   }
 
-  for(std::shared_ptr<iRASPAStructure> frame : movie->_frames)
+  for(std::shared_ptr<iRASPAObject> frame : movie->_frames)
   {
     frame->setParent(movie);
   }
@@ -71,13 +71,13 @@ std::shared_ptr<Movie> Movie::create(QString displayName, std::vector<std::share
   return movie;
 }
 
-void Movie::append(std::shared_ptr<iRASPAStructure> structure)
+void Movie::append(std::shared_ptr<iRASPAObject> structure)
 {
   _frames.push_back(structure);
   structure->setParent(this->shared_from_this());
 }
 
-bool Movie::insertChild(size_t row, std::shared_ptr<iRASPAStructure> child)
+bool Movie::insertChild(size_t row, std::shared_ptr<iRASPAObject> child)
 {
   if (row < 0 || row > _frames.size())
     return false;
@@ -103,16 +103,16 @@ std::shared_ptr<Movie> Movie::shallowClone()
 void Movie::setVisibility(bool visibility)
 {
   _isVisible = visibility;
-  for(const std::shared_ptr<iRASPAStructure> &frame : _frames)
+  for(const std::shared_ptr<iRASPAObject> &frame : _frames)
   {
-    frame->structure()->setVisibility(visibility);
+    frame->object()->setVisibility(visibility);
   }
 }
 
 
-std::vector<std::shared_ptr<iRASPAStructure>> Movie::selectedFramesiRASPAStructures() const
+std::vector<std::shared_ptr<iRASPAObject>> Movie::selectedFramesiRASPAStructures() const
 {
-  std::vector<std::shared_ptr<iRASPAStructure>> structures = std::vector<std::shared_ptr<iRASPAStructure>>();
+  std::vector<std::shared_ptr<iRASPAObject>> structures = std::vector<std::shared_ptr<iRASPAObject>>();
 
   for(size_t index: _selectedFramesIndexSet)
   {
@@ -130,14 +130,14 @@ bool Movie::removeChildren(size_t position, size_t count)
 {
   if (position < 0 || position + count > _frames.size())
     return false;
-  std::vector<std::shared_ptr<iRASPAStructure>>::iterator start = _frames.begin() + position;
-  std::vector<std::shared_ptr<iRASPAStructure>>::iterator end = _frames.begin() + position + count;
+  std::vector<std::shared_ptr<iRASPAObject>>::iterator start = _frames.begin() + position;
+  std::vector<std::shared_ptr<iRASPAObject>>::iterator end = _frames.begin() + position + count;
   _frames.erase(start, end);
 
   return true;
 }
 
-std::shared_ptr<iRASPAStructure> Movie::frameAtIndex(size_t index)
+std::shared_ptr<iRASPAObject> Movie::frameAtIndex(size_t index)
 {
   if(_frames.empty())
   {
@@ -153,9 +153,9 @@ void Movie::clearSelection()
 }
 
 
-std::vector<std::shared_ptr<iRASPAStructure>> Movie::selectedFrames()
+std::vector<std::shared_ptr<iRASPAObject>> Movie::selectedFrames()
 {
-  std::vector<std::shared_ptr<iRASPAStructure>> frames{};
+  std::vector<std::shared_ptr<iRASPAObject>> frames{};
   for(size_t index : _selectedFramesIndexSet)
   {
     frames.push_back(_frames[index]);
@@ -197,7 +197,7 @@ void Movie::setSelection(FrameSelectionNodesAndIndexSet selection)
   _selectedFramesIndexSet.clear();
 
   FrameSelectionIndexSet s{};
-  std::transform(selection.begin(), selection.end(), std::inserter(s, s.begin()), [](std::pair<std::shared_ptr<iRASPAStructure>, size_t> s) -> size_t {return s.second;});
+  std::transform(selection.begin(), selection.end(), std::inserter(s, s.begin()), [](std::pair<std::shared_ptr<iRASPAObject>, size_t> s) -> size_t {return s.second;});
   setSelection(s);
 }
 
@@ -210,15 +210,15 @@ void Movie::selectedFrameIndex(size_t index)
   }
 }
 
-QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<iRASPAStructure>>& val)
+QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<iRASPAObject>>& val)
 {
   stream << static_cast<int32_t>(val.size());
-  for(const std::shared_ptr<iRASPAStructure>& singleVal : val)
+  for(const std::shared_ptr<iRASPAObject>& singleVal : val)
     stream << singleVal;
   return stream;
 }
 
-QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<iRASPAStructure>>& val)
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<iRASPAObject>>& val)
 {
   int32_t vecSize;
   val.clear();
@@ -227,7 +227,7 @@ QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<iRASPAS
 
   while(vecSize--)
   {
-    std::shared_ptr<iRASPAStructure> tempVal = std::make_shared<iRASPAStructure>();
+    std::shared_ptr<iRASPAObject> tempVal = std::make_shared<iRASPAObject>();
     stream >> tempVal;
     val.push_back(tempVal);
   }
@@ -248,12 +248,15 @@ QDebug operator<< (QDebug dbg, const std::shared_ptr<Movie> & movie)
   QDebugStateSaver stateSaver(dbg);
   dbg.noquote() << "Movie displayname: " + movie->displayName() + "\n";
   dbg.noquote() << "Movie number of frames: " <<  QString::number(movie->frames().size()) + "\n";
-  for(std::shared_ptr<iRASPAStructure> frame: movie->frames())
+  for(std::shared_ptr<iRASPAObject> frame: movie->frames())
   {
-    dbg.noquote() << "\tFrame displayName: " <<  frame->structure()->displayName() << " nr atoms: "
-                  << QString::number(frame->structure()->atomsTreeController()->flattenedLeafNodes().size())
-                  << "Expired parent: " << frame->parent().expired() <<
-                     + "\n";
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(frame->object()))
+    {
+      dbg.noquote() << "\tFrame displayName: " <<  frame->object()->displayName() << " nr atoms: "
+                    << QString::number(structure->atomsTreeController()->flattenedLeafNodes().size())
+                    << "Expired parent: " << frame->parent().expired() <<
+                       + "\n";
+    }
   }
   return dbg;
 }
@@ -269,7 +272,7 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Movie> &movie)
   stream >> movie->_displayName;
   stream >> movie->_frames;
 
-  for(std::shared_ptr<iRASPAStructure> frame : movie->_frames)
+  for(std::shared_ptr<iRASPAObject> frame : movie->_frames)
   {
     frame->setParent(movie);
   }

@@ -36,7 +36,7 @@ class AtomTreeViewChangeSelectionCommand : public QUndoCommand
 {
 public:
   AtomTreeViewChangeSelectionCommand(MainWindow *main_window, std::weak_ptr<AtomTreeViewModel> atomModel, std::weak_ptr<BondListViewModel> bondModel,
-                                     std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                     std::shared_ptr<iRASPAObject> iraspaStructure,
                                      AtomSelectionIndexPaths atomSelection, AtomSelectionIndexPaths previousAtomSelection,
                                      BondSelectionIndexSet bondSelection, BondSelectionIndexSet previousBondSelection,
                                      QUndoCommand *parent = nullptr);
@@ -46,7 +46,7 @@ private:
   MainWindow *_main_window;
   std::weak_ptr<AtomTreeViewModel> _atomModel;
   std::weak_ptr<BondListViewModel> _bondModel;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<Structure> _structure;
   AtomSelectionIndexPaths _atomSelection;
   AtomSelectionIndexPaths _previousAtomSelection;

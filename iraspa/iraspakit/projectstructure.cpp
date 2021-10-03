@@ -74,6 +74,7 @@ ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets
   _backgroundImage = QImage(QSize(1024,1024), QImage::Format_ARGB32);
   _backgroundImage.fill(QColor(255,255,255,255));
 
+  qDebug() << "DONE Project reading";
 }
 
 ProjectStructure::~ProjectStructure()
@@ -137,14 +138,14 @@ std::vector<std::shared_ptr<RKRenderStructure>> ProjectStructure::renderStructur
     std::shared_ptr<Scene> scene = _sceneList->scenes()[i];
     for(std::shared_ptr<Movie> movie: scene->movies())
     {
-      std::shared_ptr<iRASPAStructure> selectedFrame = movie->frameAtIndex(*selectedFrameIndex);
+      std::shared_ptr<iRASPAObject> selectedFrame = movie->frameAtIndex(*selectedFrameIndex);
       if(selectedFrame)
       {
-        if(std::shared_ptr<Structure> structure = selectedFrame->structure())
+        if(std::shared_ptr<Object> object = selectedFrame->object())
         {
-          if(std::shared_ptr<RKRenderStructure> structure2 = std::dynamic_pointer_cast<RKRenderStructure>(structure))
+          if(std::shared_ptr<RKRenderStructure> structure = std::dynamic_pointer_cast<RKRenderStructure>(object))
           {
-            structures.push_back(structure2);
+            structures.push_back(structure);
           }
         }
       }
@@ -165,10 +166,10 @@ std::vector<RKRenderStructure> ProjectStructure::renderMeasurementStructure() co
 
 SKBoundingBox ProjectStructure::renderBoundingBox() const
 {
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures = _sceneList->selectediRASPAStructures();
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures = _sceneList->selectediRASPAStructures();
 
-  std::vector<std::shared_ptr<iRASPAStructure>> flattenedRenderStructures{};
-  for(const std::vector<std::shared_ptr<iRASPAStructure>> &v : structures)
+  std::vector<std::shared_ptr<iRASPAObject>> flattenedRenderStructures{};
+  for(const std::vector<std::shared_ptr<iRASPAObject>> &v : structures)
   {
     std::copy(v.begin(), v.end(), std::back_inserter(flattenedRenderStructures));
   }
@@ -181,10 +182,10 @@ SKBoundingBox ProjectStructure::renderBoundingBox() const
    double3 minimum = double3(DBL_MAX, DBL_MAX, DBL_MAX);
    double3 maximum = double3(-DBL_MAX, -DBL_MAX, -DBL_MAX);
 
-   for(const std::shared_ptr<iRASPAStructure> &frame: flattenedRenderStructures)
+   for(const std::shared_ptr<iRASPAObject> &frame: flattenedRenderStructures)
    {
      // for rendering the bounding-box is in the global coordinate space (adding the frame origin)
-     SKBoundingBox currentBoundingBox  = frame->structure()->transformedBoundingBox() + frame->structure()->origin();
+     SKBoundingBox currentBoundingBox  = frame->object()->transformedBoundingBox() + frame->object()->origin();
 
      SKBoundingBox transformedBoundingBox = currentBoundingBox;
 
@@ -201,13 +202,16 @@ SKBoundingBox ProjectStructure::renderBoundingBox() const
 
 bool ProjectStructure::hasSelectedObjects() const
 {
-  for (const std::vector<std::shared_ptr<iRASPAStructure>> &iraspa_structures: _sceneList->selectediRASPAStructures())
+  for (const std::vector<std::shared_ptr<iRASPAObject>> &iraspa_structures: _sceneList->selectediRASPAStructures())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: iraspa_structures)
     {
-      if(iraspa_structure->structure()->hasSelectedAtoms())
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
       {
-        return true;
+        if(structure->hasSelectedAtoms())
+        {
+         return true;
+        }
       }
     }
   }

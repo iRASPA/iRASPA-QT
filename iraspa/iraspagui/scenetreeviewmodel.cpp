@@ -305,7 +305,7 @@ bool SceneTreeViewModel::setData(const QModelIndex &index, const QVariant &value
       if (role == Qt::CheckStateRole)
       {
         std::shared_ptr<Scene> scene = parentForMovie(movie->shared_from_this());
-        std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures = _sceneList->selectediRASPAStructures();
+        std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures = _sceneList->selectediRASPAStructures();
         if ((Qt::CheckState)value.toInt() == Qt::Checked)
         {
           movie->setVisibility(true);

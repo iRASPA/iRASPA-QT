@@ -38,9 +38,8 @@
 #include "crystalcylinderprimitive.h"
 #include "crystalpolygonalprismprimitive.h"
 
-Crystal::Crystal(std::shared_ptr<SKStructure> structure): Structure(structure)
+Crystal::Crystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
-  qDebug() << "Crystal::Crystal(std::shared_ptr<SKStructure> structure)";
   expandSymmetry();
   _atomsTreeController->setTags();
 }
@@ -51,6 +50,7 @@ Crystal::Crystal(const Crystal &crystal): Structure(crystal)
 
 Crystal::Crystal(std::shared_ptr<Structure> s): Structure(s)
 {
+  qDebug() << "From Strcuture";
   if(dynamic_cast<Molecule*>(s.get()) ||
      dynamic_cast<Protein*>(s.get()) ||
      dynamic_cast<EllipsoidPrimitive*>(s.get()) ||
@@ -59,9 +59,11 @@ Crystal::Crystal(std::shared_ptr<Structure> s): Structure(s)
   {
     // create a periodic cell based on the bounding-box
     _cell = std::make_shared<SKCell>(s->boundingBox());
+    qDebug() << "Make cell 1";
   }
   else
   {
+    qDebug() << "Make cell 2";
     _cell = std::make_shared<SKCell>(*s->cell());
   }
 
@@ -1441,16 +1443,6 @@ bool Crystal::clipBondsAtUnitCell() const
   return true;
 }
 
-void Crystal::setSpaceGroupHallNumber(int HallNumber)
-{
-  _spaceGroup = SKSpaceGroup(HallNumber);
-
-  expandSymmetry();
-  _atomsTreeController->setTags();
-
-  computeBonds();
-}
-
 std::vector<RKInPerInstanceAttributesText> Crystal::atomTextData(RKFontAtlas *fontAtlas) const
 {
   int minimumReplicaX = _cell->minimumReplicaX();
@@ -1773,6 +1765,10 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Crystal::rota
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Crystal> &crystal)
 {
   stream << crystal->_versionNumber;
+
+  // handle super class
+  stream << std::static_pointer_cast<Structure>(crystal);
+
   return stream;
 }
 
@@ -1784,6 +1780,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Crystal> &crystal)
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "Crystal");
   }
+
+  std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(crystal);
+  stream >> structure;
 
   return stream;
 }

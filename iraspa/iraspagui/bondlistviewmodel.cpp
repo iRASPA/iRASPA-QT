@@ -22,7 +22,7 @@
 #include "bondlistviewmodel.h"
 #include "bondlistpushbuttonstyleditemdelegate.h"
 
-BondListViewModel::BondListViewModel(): _iraspaStructure(std::make_shared<iRASPAStructure>())
+BondListViewModel::BondListViewModel(): _iraspaStructure(std::make_shared<iRASPAObject>())
 {
   //this->setItemDelegateForColumn(2, new BondListPushButtonStyledItemDelegate() );
 }
@@ -40,7 +40,7 @@ QModelIndex BondListViewModel::index(int row, int column, const QModelIndex &par
 
   if(_iraspaStructure)
   {
-    const std::vector<std::shared_ptr<SKAsymmetricBond>> bonds = _iraspaStructure->structure()->bondSetController()->arrangedObjects();
+    const std::vector<std::shared_ptr<SKAsymmetricBond>> bonds = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->arrangedObjects();
     if(bonds.empty())
       return QModelIndex();
 
@@ -56,7 +56,7 @@ QModelIndex BondListViewModel::parent(const QModelIndex &index) const
   return QModelIndex();
 }
 
-void BondListViewModel::setFrame(std::shared_ptr<iRASPAStructure> frame)
+void BondListViewModel::setFrame(std::shared_ptr<iRASPAObject> frame)
 {
   if(_iraspaStructure != frame)
   {
@@ -79,7 +79,13 @@ int BondListViewModel::rowCount(const QModelIndex &parent) const
   Q_UNUSED(parent);
 
   if(_iraspaStructure)
-     return static_cast<int>(_iraspaStructure->structure()->bondSetController()->arrangedObjects().size());
+  {
+    if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspaStructure->object()))
+    {
+      return static_cast<int>(bondViewer->bondSetController()->arrangedObjects().size());
+    }
+    return 0;
+  }
   else
     return 0;
 }
@@ -132,7 +138,7 @@ QVariant BondListViewModel::data(const QModelIndex &index, int role) const
         std::shared_ptr<SKBond> bond = asymmetricBond->copies().front();
         if(_iraspaStructure)
         {
-          double bondLength = _iraspaStructure->structure()->bondLength(bond);
+          double bondLength = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondLength(bond);
           #if (QT_VERSION >= QT_VERSION_CHECK(5,5,0))
             return QString::asprintf("%5.4f", bondLength);
           #else
@@ -259,7 +265,7 @@ bool BondListViewModel::setData(const QModelIndex &index, const QVariant &value,
 bool BondListViewModel::insertRow(int position, std::shared_ptr<SKAsymmetricBond> bondNode)
 {
   beginInsertRows(QModelIndex(), position, position);
-  bool success = _iraspaStructure->structure()->bondSetController()->insertBond(bondNode, position);
+  bool success = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->insertBond(bondNode, position);
   endInsertRows();
   return success;
 }
@@ -267,7 +273,7 @@ bool BondListViewModel::insertRow(int position, std::shared_ptr<SKAsymmetricBond
 bool BondListViewModel::removeRow(int position)
 {
   beginRemoveRows(QModelIndex(), position, position);
-  bool success = _iraspaStructure->structure()->bondSetController()->removeBond(position);
+  bool success = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->removeBond(position);
   endRemoveRows();
   return success;
 }
@@ -277,11 +283,14 @@ QModelIndexList BondListViewModel::selectedIndexes()
   QModelIndexList list = QModelIndexList();
   if(_iraspaStructure)
   {
-    for(int localRow : _iraspaStructure->structure()->bondSetController()->selectionIndexSet())
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      std::shared_ptr<SKAsymmetricBond> node = _iraspaStructure->structure()->bondSetController()->arrangedObjects()[localRow];
-      QModelIndex index = createIndex(localRow,0,node.get());
-      list.push_back(index);
+      for(int localRow : structure->bondSetController()->selectionIndexSet())
+      {
+        std::shared_ptr<SKAsymmetricBond> node = structure->bondSetController()->arrangedObjects()[localRow];
+        QModelIndex index = createIndex(localRow,0,node.get());
+        list.push_back(index);
+      }
     }
   }
   return list;

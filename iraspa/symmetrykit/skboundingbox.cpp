@@ -100,6 +100,19 @@ double SKBoundingBox::shortestEdge()
   return std::min({edgeLengths.x, edgeLengths.y, edgeLengths.z});
 }
 
+double SKBoundingBox::longestEdge()
+{
+  double3 edgeLengths = _maximum - _minimum;
+  return std::max({edgeLengths.x, edgeLengths.y, edgeLengths.z});
+}
+
+double3 SKBoundingBox::aspectRatio()
+{
+  double3 edgeLengths = _maximum - _minimum;
+  double max = std::max({edgeLengths.x, edgeLengths.y, edgeLengths.z});
+  return edgeLengths/max;
+}
+
 double SKBoundingBox::boundingSphereRadius()
 {
   std::array<double3,8> corners = {{
@@ -247,6 +260,12 @@ SKBoundingBox operator+(const SKBoundingBox left, double3 right)
 SKBoundingBox operator-(const SKBoundingBox left, double3 right)
 {
   return SKBoundingBox(left._minimum - right, left._maximum - right);
+}
+
+QDebug operator<<(QDebug debug, const SKBoundingBox &box)
+{
+  debug << "boundingbox: (" << box.minimum() << ", " << box.maximum() << ")";
+  return debug;
 }
 
 QDataStream &operator<<(QDataStream &stream, const SKBoundingBox &box)

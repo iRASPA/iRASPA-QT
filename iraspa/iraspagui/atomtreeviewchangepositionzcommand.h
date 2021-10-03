@@ -34,17 +34,17 @@ class AtomTreeViewChangePositionZCommand : public QUndoCommand
 {
 public:
   AtomTreeViewChangePositionZCommand(MainWindow *mainWindow, AtomTreeViewModel *model,
-                                     std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                     std::shared_ptr<ProjectStructure> projectStructure, std::shared_ptr<iRASPAObject> iraspaStructure,
                                      std::shared_ptr<SKAtomTreeNode> atom, double newValue, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
 private:
   MainWindow *_mainWindow;
   AtomTreeViewModel *_model;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<Structure> _structure;
   std::shared_ptr<SKAtomTreeNode> _atomTreeNode;
   double _newValue;
   double _oldValue;
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _structures;
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> _structures;
 };

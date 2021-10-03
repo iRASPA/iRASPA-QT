@@ -30,7 +30,7 @@
 #include <symmetrykit.h>
 #include "project.h"
 #include "scenelist.h"
-#include "iraspastructure.h"
+#include "iraspaobject.h"
 
 class ProjectStructure: public Project, public RKRenderDataSource
 {

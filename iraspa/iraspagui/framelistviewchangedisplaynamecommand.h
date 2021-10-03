@@ -34,13 +34,13 @@
 class FrameListViewChangeDisplayNameCommand : public QUndoCommand
 {
 public:
-  FrameListViewChangeDisplayNameCommand(MainWindow *mainWindow, FrameListViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure, QString newValue, QUndoCommand *undoParent = nullptr);
+  FrameListViewChangeDisplayNameCommand(MainWindow *mainWindow, FrameListViewModel *model, std::shared_ptr<iRASPAObject> iraspaStructure, QString newValue, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
 private:
   MainWindow *_mainWindow;
   FrameListViewModel *_model;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   QString _newValue;
   QString _oldValue;
 };

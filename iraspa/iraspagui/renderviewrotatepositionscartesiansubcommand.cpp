@@ -23,7 +23,7 @@
 #include <QDebug>
 #include <algorithm>
 
-RenderViewRotatePositionsCartesianSubCommand::RenderViewRotatePositionsCartesianSubCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAStructure> iraspaStructure, simd_quatd rotation, QUndoCommand *parent):
+RenderViewRotatePositionsCartesianSubCommand::RenderViewRotatePositionsCartesianSubCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAObject> iraspaStructure, simd_quatd rotation, QUndoCommand *parent):
   QUndoCommand(parent),
   _mainWindow(mainWindow),
   _iraspaStructure(iraspaStructure),
@@ -34,7 +34,7 @@ RenderViewRotatePositionsCartesianSubCommand::RenderViewRotatePositionsCartesian
 
   setText(QString("Rotate atom selection"));
 
-  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = iraspaStructure->structure()->atomsTreeController()->selectedObjects();
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->atomsTreeController()->selectedObjects();
   std::transform(atoms.begin(), atoms.end(), std::back_inserter(_oldPositions),
                    [](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
                      {return std::make_pair(atom, atom->position());});
@@ -43,15 +43,15 @@ RenderViewRotatePositionsCartesianSubCommand::RenderViewRotatePositionsCartesian
 void RenderViewRotatePositionsCartesianSubCommand::redo()
 {
 
-  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = _iraspaStructure->structure()->atomsTreeController()->selectedObjects();
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions = _iraspaStructure->structure()->rotatedPositionsSelectionCartesian(atoms, _rotation);
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomsTreeController()->selectedObjects();
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->rotatedPositionsSelectionCartesian(atoms, _rotation);
 
   for(const auto &[atom, translatedPosition] : translatedPositions)
   {
     atom->setPosition(translatedPosition);
   }
-  _iraspaStructure->structure()->expandSymmetry();
-  _iraspaStructure->structure()->computeBonds();
+  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->expandSymmetry();
+  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->computeBonds();
 }
 
 void RenderViewRotatePositionsCartesianSubCommand::undo()
@@ -61,8 +61,8 @@ void RenderViewRotatePositionsCartesianSubCommand::undo()
   {
     atom->setPosition(translatedPosition);
   }
-  _iraspaStructure->structure()->expandSymmetry();
-  _iraspaStructure->structure()->computeBonds();
+  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->expandSymmetry();
+  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->computeBonds();
 
   emit _mainWindow->rendererReloadData();
 }

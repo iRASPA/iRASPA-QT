@@ -23,6 +23,7 @@
 
 #include <cmath>
 #include <QString>
+#include <QUrl>
 #include <string>
 #include <vector>
 #include <map>
@@ -41,7 +42,7 @@
 class SKPOSCARLegacyParser: public SKParser
 {
 public:
-  SKPOSCARLegacyParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
+  SKPOSCARLegacyParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
   bool startParsing() override final;
 private:
   Scanner _scanner;

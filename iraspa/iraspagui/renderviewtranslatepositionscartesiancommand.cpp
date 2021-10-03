@@ -25,7 +25,7 @@
 #include <QDebug>
 #include <algorithm>
 
-RenderViewTranslatePositionsCartesianCommand::RenderViewTranslatePositionsCartesianCommand(MainWindow *mainWindow, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> iraspaStructures, double3 translation, QUndoCommand *parent):
+RenderViewTranslatePositionsCartesianCommand::RenderViewTranslatePositionsCartesianCommand(MainWindow *mainWindow, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::vector<std::shared_ptr<iRASPAObject>>> iraspaStructures, double3 translation, QUndoCommand *parent):
   QUndoCommand(parent),
   _mainWindow(mainWindow),
   _iraspaStructures(iraspaStructures),
@@ -37,9 +37,9 @@ RenderViewTranslatePositionsCartesianCommand::RenderViewTranslatePositionsCartes
   setText(QString("Translate atom selection"));
   _structures = projectStructure->sceneList()->invalidatediRASPAStructures();
 
-  for(const std::vector<std::shared_ptr<iRASPAStructure>> &_iraspaSubStructures : _iraspaStructures)
+  for(const std::vector<std::shared_ptr<iRASPAObject>> &_iraspaSubStructures : _iraspaStructures)
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspaStructure : _iraspaSubStructures)
+    for(const std::shared_ptr<iRASPAObject> &iraspaStructure : _iraspaSubStructures)
     {
       new RenderViewTranslatePositionsCartesianSubCommand(_mainWindow, iraspaStructure, translation, this);
     }

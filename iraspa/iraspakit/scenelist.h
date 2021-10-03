@@ -44,17 +44,18 @@ public:
   void appendScene(std::shared_ptr<Scene> scene);
   const std::vector<std::shared_ptr<Scene>> &scenes() const {return _scenes;}
 
-  QString displayName() const override final;
+  QString displayName() const override final {return _displayName;}
+  void setDisplayName(QString name) override final {_displayName = name;}
   std::optional<int> findChildIndex(std::shared_ptr<Scene> scene);
   bool removeChild(size_t row);
   bool removeChildren(size_t position, size_t count);
   bool insertChild(size_t row, std::shared_ptr<Scene> child);
 
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatediRASPAStructures() const;
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> allIRASPAStructures() const;
-  std::vector<std::shared_ptr<iRASPAStructure>> flattenedAllIRASPAStructures();
-  std::vector<std::shared_ptr<iRASPAStructure>> selectedMoviesIRASPAStructures();
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> selectediRASPAStructures() const;
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatediRASPAStructures() const;
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> allIRASPAStructures() const;
+  std::vector<std::shared_ptr<iRASPAObject>> flattenedAllIRASPAStructures();
+  std::vector<std::shared_ptr<iRASPAObject>> selectedMoviesIRASPAStructures();
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> selectediRASPAStructures() const;
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> selectediRASPARenderStructures() const;
 
   std::shared_ptr<Scene> selectedScene();

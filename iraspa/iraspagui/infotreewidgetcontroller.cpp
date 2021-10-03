@@ -30,6 +30,7 @@
 #include <renderkit.h>
 #include <foundationkit.h>
 #include "textfield.h"
+#include "infoviewer.h"
 
 InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget(parent),
     _infoCreatorForm(new InfoCreatorForm),
@@ -37,7 +38,6 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
     _infoChemicalForm(new InfoChemicalForm),
     _infoCitationForm(new InfoCitationForm)
 {
-  //this->viewport()->setMouseTracking(true);
   this->setHeaderHidden(true);
   this->setRootIsDecorated(true);
   this->setFrameStyle(QFrame::NoFrame);
@@ -46,8 +46,6 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   this->setExpandsOnDoubleClick(false);
   this->setIndentation(0);
   this->setSelectionMode(QAbstractItemView::NoSelection);
-
-
 
   // Creator
   //==========================================================================================================
@@ -567,7 +565,7 @@ void InfoTreeWidgetController::setProject(std::shared_ptr<ProjectTreeNode> proje
 {
   _projectTreeNode = projectTreeNode;
   _projectStructure = nullptr;
-  _iraspa_structures = std::vector<std::shared_ptr<iRASPAStructure>>{};
+  _iraspa_structures = std::vector<std::shared_ptr<iRASPAObject>>{};
 
   if (projectTreeNode)
   {
@@ -587,7 +585,7 @@ void InfoTreeWidgetController::setProject(std::shared_ptr<ProjectTreeNode> proje
   reloadData();
 }
 
-void InfoTreeWidgetController::setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures)
+void InfoTreeWidgetController::setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures)
 {
   _iraspa_structures = iraspa_structures;
   reloadData();
@@ -695,16 +693,19 @@ void InfoTreeWidgetController::reloadAuthorFirstName()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->firstNameLineEdit->setEnabled(true);
-      _infoCreatorForm->firstNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorFirstName(); values)
+      {
+        _infoCreatorForm->firstNameLineEdit->setEnabled(true);
+        _infoCreatorForm->firstNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorFirstName())
-      {
-        whileBlocking(_infoCreatorForm->firstNameLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->firstNameLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->firstNameLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->firstNameLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -718,16 +719,19 @@ void InfoTreeWidgetController::reloadAuthorMiddleName()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->middleNameLineEdit->setEnabled(true);
-      _infoCreatorForm->middleNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorMiddleName(); values)
+      {
+        _infoCreatorForm->middleNameLineEdit->setEnabled(true);
+        _infoCreatorForm->middleNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorMiddleName())
-      {
-        whileBlocking(_infoCreatorForm->middleNameLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->middleNameLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->middleNameLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->middleNameLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -741,16 +745,19 @@ void InfoTreeWidgetController::reloadAuthorLastName()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->lastNameLineEdit->setEnabled(true);
-      _infoCreatorForm->lastNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorLastName(); values)
+      {
+        _infoCreatorForm->lastNameLineEdit->setEnabled(true);
+        _infoCreatorForm->lastNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorLastName())
-      {
-        whileBlocking(_infoCreatorForm->lastNameLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->lastNameLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->lastNameLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->lastNameLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -764,16 +771,19 @@ void InfoTreeWidgetController::reloadAuthorOrchidID()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->orchidLineEdit->setEnabled(true);
-      _infoCreatorForm->orchidLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorOrchidID(); values)
+      {
+        _infoCreatorForm->orchidLineEdit->setEnabled(true);
+        _infoCreatorForm->orchidLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorOrchidID())
-      {
-        whileBlocking(_infoCreatorForm->orchidLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->orchidLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->orchidLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->orchidLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -787,16 +797,19 @@ void InfoTreeWidgetController::reloadAuthorResearcherID()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->researcherIDLineEdit->setEnabled(true);
-      _infoCreatorForm->researcherIDLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorResearcherID(); values)
+      {
+        _infoCreatorForm->researcherIDLineEdit->setEnabled(true);
+        _infoCreatorForm->researcherIDLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorResearcherID())
-      {
-        whileBlocking(_infoCreatorForm->researcherIDLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->researcherIDLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->researcherIDLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->researcherIDLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -810,16 +823,19 @@ void InfoTreeWidgetController::reloadAuthorAffiliationUniversityName()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->universityNameLineEdit->setEnabled(true);
-      _infoCreatorForm->universityNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorAffiliationUniversityName(); values)
+      {
+        _infoCreatorForm->universityNameLineEdit->setEnabled(true);
+        _infoCreatorForm->universityNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorAffiliationUniversityName())
-      {
-        whileBlocking(_infoCreatorForm->universityNameLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->universityNameLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->universityNameLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->universityNameLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -833,16 +849,19 @@ void InfoTreeWidgetController::reloadAuthorAffiliationFacultyName()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->facultyNameLineEdit->setEnabled(true);
-      _infoCreatorForm->facultyNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorAffiliationFacultyName(); values)
+      {
+        _infoCreatorForm->facultyNameLineEdit->setEnabled(true);
+        _infoCreatorForm->facultyNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorAffiliationFacultyName())
-      {
-        whileBlocking(_infoCreatorForm->facultyNameLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->facultyNameLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->facultyNameLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->facultyNameLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -856,16 +875,19 @@ void InfoTreeWidgetController::reloadAuthorAffiliationInstituteName()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->instituteNameLineEdit->setEnabled(true);
-      _infoCreatorForm->instituteNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorAffiliationInstituteName(); values)
+      {
+        _infoCreatorForm->instituteNameLineEdit->setEnabled(true);
+        _infoCreatorForm->instituteNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorAffiliationInstituteName())
-      {
-        whileBlocking(_infoCreatorForm->instituteNameLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->instituteNameLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->instituteNameLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->instituteNameLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -879,16 +901,19 @@ void InfoTreeWidgetController::reloadAuthorAffiliationCityName()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->cityNameLineEdit->setEnabled(true);
-      _infoCreatorForm->cityNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorAffiliationCityName(); values)
+      {
+        _infoCreatorForm->cityNameLineEdit->setEnabled(true);
+        _infoCreatorForm->cityNameLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = authorAffiliationCityName())
-      {
-        whileBlocking(_infoCreatorForm->cityNameLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreatorForm->cityNameLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreatorForm->cityNameLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreatorForm->cityNameLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -902,323 +927,386 @@ void InfoTreeWidgetController::reloadAuthorAffiliationCountryName()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreatorForm->countryComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = authorAffiliationCountryName(); values)
+      {
+        _infoCreatorForm->countryComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> type = authorAffiliationCountryName())
-      {
-        if(int index = _infoCreatorForm->countryComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreatorForm->countryComboBox)->removeItem(index);
+          if(int index = _infoCreatorForm->countryComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreatorForm->countryComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreatorForm->countryComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_infoCreatorForm->countryComboBox)->setCurrentText(*type);
-      }
-      else
-      {
-        if(int index = _infoCreatorForm->countryComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreatorForm->countryComboBox)->addItem("Multiple values");
+          if(int index = _infoCreatorForm->countryComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreatorForm->countryComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreatorForm->countryComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreatorForm->countryComboBox)->setCurrentText("Multiple values");
       }
     }
   }
 }
 
-std::optional<QString> InfoTreeWidgetController::authorFirstName()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorFirstName()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorFirstName();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorFirstName();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorFirstName(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorFirstName(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorFirstName(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorMiddleName()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorMiddleName()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorMiddleName();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorMiddleName();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorMiddleName(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorMiddleName(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorMiddleName(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorLastName()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorLastName()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorLastName();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorLastName();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorLastName(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorLastName(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorLastName(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorOrchidID()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorOrchidID()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorOrchidID();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorOrchidID();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorOrchidID(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorOrchidID(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorOrchidID(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorResearcherID()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorResearcherID()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorResearcherID();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorResearcherID();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorResearcherID(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorResearcherID(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorResearcherID(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorAffiliationUniversityName()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationUniversityName()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorAffiliationUniversityName();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorAffiliationUniversityName();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorAffiliationUniversityName(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorAffiliationUniversityName(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorAffiliationUniversityName(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorAffiliationFacultyName()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationFacultyName()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorAffiliationFacultyName();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorAffiliationFacultyName();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorAffiliationFacultyName(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorAffiliationFacultyName(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorAffiliationFacultyName(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorAffiliationInstituteName()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationInstituteName()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorAffiliationInstituteName();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorAffiliationInstituteName();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorAffiliationInstituteName(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorAffiliationInstituteName(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorAffiliationInstituteName(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorAffiliationCityName()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationCityName()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorAffiliationCityName();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorAffiliationCityName();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorAffiliationCityName(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorAffiliationCityName(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorAffiliationCityName(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::authorAffiliationCountryName()
+std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationCountryName()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->authorAffiliationCountryName();
-    set.insert(value);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->authorAffiliationCountryName();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setAuthorAffiliationCountryName(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAuthorAffiliationCountryName(name);
+    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setAuthorAffiliationCountryName(name);
+    }
   }
 
   _mainWindow->documentWasModified();
@@ -1274,16 +1362,19 @@ void InfoTreeWidgetController::reloadCreationDate()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->creationDateEdit->setEnabled(true);
-      _infoCreationForm->creationDateEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QDate>> values = creationDate(); values)
+      {
+        _infoCreationForm->creationDateEdit->setEnabled(true);
+        _infoCreationForm->creationDateEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QDate> value = creationDate())
-      {
-        whileBlocking(_infoCreationForm->creationDateEdit)->setDate(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->creationDateEdit)->setDate(QDate());
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->creationDateEdit)->setDate(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->creationDateEdit)->setDate(QDate());
+        }
       }
     }
   }
@@ -1297,16 +1388,19 @@ void InfoTreeWidgetController::reloadCreationTemperature()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->temperatureLineEdit->setEnabled(true);
-      _infoCreationForm->temperatureLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationTemperature(); values)
+      {
+        _infoCreationForm->temperatureLineEdit->setEnabled(true);
+        _infoCreationForm->temperatureLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationTemperature())
-      {
-         whileBlocking(_infoCreationForm->temperatureLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->temperatureLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+           whileBlocking(_infoCreationForm->temperatureLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->temperatureLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1320,23 +1414,26 @@ void InfoTreeWidgetController::reloadCreationTemperatureUnit()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->temperatureComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<Structure::TemperatureScale>> values = creationTemperatureScale(); values)
+      {
+        _infoCreationForm->temperatureComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<Structure::TemperatureScale> value = creationTemperatureScale())
-      {
-        if(int index = _infoCreationForm->temperatureComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->temperatureComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->temperatureComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->temperatureComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->temperatureComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_infoCreationForm->temperatureComboBox)->setCurrentIndex(int(*value));
-      }
-      else
-      {
-        if(int index = _infoCreationForm->temperatureComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->temperatureComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->temperatureComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->temperatureComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->temperatureComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->temperatureComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1350,16 +1447,19 @@ void InfoTreeWidgetController::reloadCreationPressure()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->pressureLineEdit->setEnabled(true);
-      _infoCreationForm->pressureLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationPressure(); values)
+      {
+        _infoCreationForm->pressureLineEdit->setEnabled(true);
+        _infoCreationForm->pressureLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationPressure())
-      {
-        whileBlocking(_infoCreationForm->pressureLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->pressureLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->pressureLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->pressureLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1373,23 +1473,26 @@ void InfoTreeWidgetController::reloadCreationPressureUnit()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->pressureComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<Structure::PressureScale>> values = creationPressureScale(); values)
+      {
+        _infoCreationForm->pressureComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<Structure::PressureScale> value = creationPressureScale())
-      {
-        if(int index = _infoCreationForm->pressureComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->pressureComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->pressureComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->pressureComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->pressureComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_infoCreationForm->pressureComboBox)->setCurrentIndex(int(*value));
-      }
-      else
-      {
-        if(int index = _infoCreationForm->pressureComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->pressureComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->pressureComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->pressureComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->pressureComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->pressureComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1403,23 +1506,26 @@ void InfoTreeWidgetController::reloadCreationMethod()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->methodComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<Structure::CreationMethod>> values = creationMethod(); values)
+      {
+        _infoCreationForm->methodComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<Structure::CreationMethod> value = creationMethod())
-      {
-        if(int index = _infoCreationForm->methodComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->methodComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->methodComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->methodComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->methodComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_infoCreationForm->methodComboBox)->setCurrentIndex(int(*value));
-      }
-      else
-      {
-        if(int index = _infoCreationForm->methodComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->methodComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->methodComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->methodComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->methodComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->methodComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1433,23 +1539,26 @@ void InfoTreeWidgetController::reloadCreationRelaxUnitCell()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->relaxUnitCellComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<Structure::UnitCellRelaxationMethod>> values = creationRelaxUnitCell(); values)
+      {
+        _infoCreationForm->relaxUnitCellComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<Structure::UnitCellRelaxationMethod> value = creationRelaxUnitCell())
-      {
-        if(int index = _infoCreationForm->relaxUnitCellComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->relaxUnitCellComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->relaxUnitCellComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->relaxUnitCellComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->relaxUnitCellComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_infoCreationForm->relaxUnitCellComboBox)->setCurrentIndex(int(*value));
-      }
-      else
-      {
-        if(int index = _infoCreationForm->relaxUnitCellComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->relaxUnitCellComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->relaxUnitCellComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->relaxUnitCellComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->relaxUnitCellComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->relaxUnitCellComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1463,23 +1572,26 @@ void InfoTreeWidgetController::reloadCreationAtomicPositionsSoftwarePackage()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->positionsSoftwarePackageComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationAtomicPositionsSoftwarePackage(); values)
+      {
+        _infoCreationForm->positionsSoftwarePackageComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> value = creationAtomicPositionsSoftwarePackage())
-      {
-        if(int index = _infoCreationForm->positionsSoftwarePackageComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->positionsSoftwarePackageComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->positionsSoftwarePackageComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->positionsSoftwarePackageComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->positionsSoftwarePackageComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_infoCreationForm->positionsSoftwarePackageComboBox)->setCurrentText(*value);
-      }
-      else
-      {
-        if(int index = _infoCreationForm->positionsSoftwarePackageComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->positionsSoftwarePackageComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->positionsSoftwarePackageComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->positionsSoftwarePackageComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->positionsSoftwarePackageComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->positionsSoftwarePackageComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1493,23 +1605,26 @@ void InfoTreeWidgetController::reloadCreationAtomicPositionsAlgorithm()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->positionsAlgorithmComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<Structure::IonsRelaxationAlgorithm>> values = creationAtomicPositionsAlgorithm(); values)
+      {
+        _infoCreationForm->positionsAlgorithmComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<Structure::IonsRelaxationAlgorithm> value = creationAtomicPositionsAlgorithm())
-      {
-        if(int index = _infoCreationForm->positionsAlgorithmComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->positionsAlgorithmComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->positionsAlgorithmComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->positionsAlgorithmComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->positionsAlgorithmComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_infoCreationForm->positionsAlgorithmComboBox)->setCurrentIndex(int(*value));
-      }
-      else
-      {
-        if(int index = _infoCreationForm->positionsAlgorithmComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->positionsAlgorithmComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->positionsAlgorithmComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->positionsAlgorithmComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->positionsAlgorithmComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->positionsAlgorithmComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1523,23 +1638,26 @@ void InfoTreeWidgetController::reloadCreationAtomicPositionsEigenvalues()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->positionsEigenvaluesComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<Structure::IonsRelaxationCheck>> values = creationAtomicPositionsEigenvalues(); values)
+      {
+        _infoCreationForm->positionsEigenvaluesComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<Structure::IonsRelaxationCheck> value = creationAtomicPositionsEigenvalues())
-      {
-        if(int index = _infoCreationForm->positionsEigenvaluesComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->positionsEigenvaluesComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->positionsEigenvaluesComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->positionsEigenvaluesComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->positionsEigenvaluesComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_infoCreationForm->positionsEigenvaluesComboBox)->setCurrentIndex(int(*value));
-      }
-      else
-      {
-        if(int index = _infoCreationForm->positionsEigenvaluesComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->positionsEigenvaluesComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->positionsEigenvaluesComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->positionsEigenvaluesComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->positionsEigenvaluesComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->positionsEigenvaluesComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1553,23 +1671,26 @@ void InfoTreeWidgetController::reloadCreationAtomicPositionsForceField()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->positionsForceFieldComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationAtomicPositionsForceField(); values)
+      {
+        _infoCreationForm->positionsForceFieldComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> value = creationAtomicPositionsForceField())
-      {
-        if(int index = _infoCreationForm->positionsForceFieldComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->positionsForceFieldComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->positionsForceFieldComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->positionsForceFieldComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->positionsForceFieldComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_infoCreationForm->positionsForceFieldComboBox)->setCurrentText(*value);
-      }
-      else
-      {
-        if(int index = _infoCreationForm->positionsForceFieldComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->positionsForceFieldComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->positionsForceFieldComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->positionsForceFieldComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->positionsForceFieldComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->positionsForceFieldComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1583,23 +1704,26 @@ void InfoTreeWidgetController::reloadCreationAtomicPositionsForceFieldDetails()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->positionsForceFieldDetailsComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationAtomicPositionsForceFieldDetails(); values)
+      {
+        _infoCreationForm->positionsForceFieldDetailsComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> value = creationAtomicPositionsForceFieldDetails())
-      {
-        if(int index = _infoCreationForm->positionsForceFieldDetailsComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->positionsForceFieldDetailsComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->positionsForceFieldDetailsComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->positionsForceFieldDetailsComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->positionsForceFieldDetailsComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_infoCreationForm->positionsForceFieldDetailsComboBox)->setCurrentText(*value);
-      }
-      else
-      {
-        if(int index = _infoCreationForm->positionsForceFieldDetailsComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->positionsForceFieldDetailsComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->positionsForceFieldDetailsComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->positionsForceFieldDetailsComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->positionsForceFieldDetailsComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->positionsForceFieldDetailsComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1613,23 +1737,26 @@ void InfoTreeWidgetController::reloadCreationAtomicChargesSoftwarePackage()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->chargeSoftwarePackageComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationAtomicChargesSoftwarePackage(); values)
+      {
+        _infoCreationForm->chargeSoftwarePackageComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> value = creationAtomicChargesSoftwarePackage())
-      {
-        if(int index = _infoCreationForm->chargeSoftwarePackageComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->chargeSoftwarePackageComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->chargeSoftwarePackageComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->chargeSoftwarePackageComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->chargeSoftwarePackageComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_infoCreationForm->chargeSoftwarePackageComboBox)->setCurrentText(*value);
-      }
-      else
-      {
-        if(int index = _infoCreationForm->chargeSoftwarePackageComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->chargeSoftwarePackageComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->chargeSoftwarePackageComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->chargeSoftwarePackageComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->chargeSoftwarePackageComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->chargeSoftwarePackageComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1643,23 +1770,26 @@ void InfoTreeWidgetController::reloadCreationAtomicChargesAlgorithm()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->chargeAlgorithmComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationAtomicChargesAlgorithm(); values)
+      {
+        _infoCreationForm->chargeAlgorithmComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> value = creationAtomicChargesAlgorithm())
-      {
-        if(int index = _infoCreationForm->chargeAlgorithmComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->chargeAlgorithmComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->chargeAlgorithmComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->chargeAlgorithmComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->chargeAlgorithmComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_infoCreationForm->chargeAlgorithmComboBox)->setCurrentText(*value);
-      }
-      else
-      {
-        if(int index = _infoCreationForm->chargeAlgorithmComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->chargeAlgorithmComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->chargeAlgorithmComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->chargeAlgorithmComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->chargeAlgorithmComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->chargeAlgorithmComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1674,23 +1804,26 @@ void InfoTreeWidgetController::reloadCreationAtomicChargesForceField()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->chargeForceFieldComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationAtomicChargesForceField(); values)
+      {
+        _infoCreationForm->chargeForceFieldComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> value = creationAtomicChargesForceField())
-      {
-        if(int index = _infoCreationForm->chargeForceFieldComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->chargeForceFieldComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->chargeForceFieldComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->chargeForceFieldComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->chargeForceFieldComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_infoCreationForm->chargeForceFieldComboBox)->setCurrentText(*value);
-      }
-      else
-      {
-        if(int index = _infoCreationForm->chargeForceFieldComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->chargeForceFieldComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->chargeForceFieldComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->chargeForceFieldComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->chargeForceFieldComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->chargeForceFieldComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -1704,104 +1837,122 @@ void InfoTreeWidgetController::reloadCreationAtomicChargesForceFieldDetails()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->chargeForceFieldDetailsComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationAtomicChargesForceFieldDetails(); values)
+      {
+        _infoCreationForm->chargeForceFieldDetailsComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> value = creationAtomicChargesForceFieldDetails())
-      {
-        if(int index = _infoCreationForm->chargeForceFieldDetailsComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_infoCreationForm->chargeForceFieldDetailsComboBox)->removeItem(index);
+          if(int index = _infoCreationForm->chargeForceFieldDetailsComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_infoCreationForm->chargeForceFieldDetailsComboBox)->removeItem(index);
+          }
+          whileBlocking(_infoCreationForm->chargeForceFieldDetailsComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_infoCreationForm->chargeForceFieldDetailsComboBox)->setCurrentText(*value);
-      }
-      else
-      {
-        if(int index = _infoCreationForm->chargeForceFieldDetailsComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_infoCreationForm->chargeForceFieldDetailsComboBox)->addItem("Multiple values");
+          if(int index = _infoCreationForm->chargeForceFieldDetailsComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_infoCreationForm->chargeForceFieldDetailsComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_infoCreationForm->chargeForceFieldDetailsComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_infoCreationForm->chargeForceFieldDetailsComboBox)->setCurrentText("Multiple values");
       }
     }
   }
 }
 
-std::optional<QDate> InfoTreeWidgetController::creationDate()
+std::optional<std::set<QDate>> InfoTreeWidgetController::creationDate()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QDate> set = std::set<QDate>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QDate value = iraspa_structure->structure()->creationDate();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QDate value = infoViewer->creationDate();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationDate(const QDate &date)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationDate(date);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationDate(date);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationTemperature()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationTemperature()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationTemperature();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationTemperature();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationTemperature(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationTemperature(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationTemperature(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<Structure::TemperatureScale> InfoTreeWidgetController::creationTemperatureScale()
+std::optional<std::set<Structure::TemperatureScale>> InfoTreeWidgetController::creationTemperatureScale()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<Structure::TemperatureScale> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::TemperatureScale value = iraspa_structure->structure()->creationTemperatureScale();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      Structure::TemperatureScale value = infoViewer->creationTemperatureScale();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -1810,61 +1961,73 @@ void InfoTreeWidgetController::setCreationTemperatureScale(int value)
 {
   if(value>=0 && value<int(Structure::TemperatureScale::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setCreationTemperatureScale(Structure::TemperatureScale(value));
+      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      {
+        infoViewer->setCreationTemperatureScale(Structure::TemperatureScale(value));
+      }
     }
 
     _mainWindow->documentWasModified();
   }
 }
 
-std::optional<QString> InfoTreeWidgetController::creationPressure()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationPressure()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationPressure();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationPressure();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationPressure(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationPressure(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationPressure(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<Structure::PressureScale> InfoTreeWidgetController::creationPressureScale()
+std::optional<std::set<Structure::PressureScale>> InfoTreeWidgetController::creationPressureScale()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<Structure::PressureScale> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::PressureScale value = iraspa_structure->structure()->creationPressureScale();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      Structure::PressureScale value = infoViewer->creationPressureScale();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -1873,31 +2036,37 @@ void InfoTreeWidgetController::setCreationPressureScale(int value)
 {
   if(value>=0 && value<int(Structure::PressureScale::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setCreationPressureScale(Structure::PressureScale(value));
+      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      {
+        infoViewer->setCreationPressureScale(Structure::PressureScale(value));
+      }
     }
 
     _mainWindow->documentWasModified();
   }
 }
 
-std::optional<Structure::CreationMethod> InfoTreeWidgetController::creationMethod()
+std::optional<std::set<Structure::CreationMethod>> InfoTreeWidgetController::creationMethod()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<Structure::CreationMethod> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::CreationMethod value = iraspa_structure->structure()->creationMethod();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      Structure::CreationMethod value = infoViewer->creationMethod();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -1906,31 +2075,37 @@ void InfoTreeWidgetController::setCreationMethod(int value)
 {
   if(value>=0 && value<int(Structure::CreationMethod::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setCreationMethod(Structure::CreationMethod(value));
+      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      {
+        infoViewer->setCreationMethod(Structure::CreationMethod(value));
+      }
     }
 
     _mainWindow->documentWasModified();
   }
 }
 
-std::optional<Structure::UnitCellRelaxationMethod> InfoTreeWidgetController::creationRelaxUnitCell()
+std::optional<std::set<Structure::UnitCellRelaxationMethod>> InfoTreeWidgetController::creationRelaxUnitCell()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<Structure::UnitCellRelaxationMethod> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::UnitCellRelaxationMethod value = iraspa_structure->structure()->creationUnitCellRelaxationMethod();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      Structure::UnitCellRelaxationMethod value = infoViewer->creationUnitCellRelaxationMethod();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -1939,61 +2114,73 @@ void InfoTreeWidgetController::setCreationRelaxUnitCell(int value)
 {
   if(value>=0 && value<int(Structure::UnitCellRelaxationMethod::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setCreationUnitCellRelaxationMethod(Structure::UnitCellRelaxationMethod(value));
+      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      {
+        infoViewer->setCreationUnitCellRelaxationMethod(Structure::UnitCellRelaxationMethod(value));
+      }
     }
 
     _mainWindow->documentWasModified();
   }
 }
 
-std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsSoftwarePackage()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationAtomicPositionsSoftwarePackage()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationAtomicPositionsSoftwarePackage();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationAtomicPositionsSoftwarePackage();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationAtomicPositionsSoftwarePackage(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationAtomicPositionsSoftwarePackage(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationAtomicPositionsSoftwarePackage(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<Structure::IonsRelaxationAlgorithm> InfoTreeWidgetController::creationAtomicPositionsAlgorithm()
+std::optional<std::set<Structure::IonsRelaxationAlgorithm>> InfoTreeWidgetController::creationAtomicPositionsAlgorithm()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<Structure::IonsRelaxationAlgorithm> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::IonsRelaxationAlgorithm value = iraspa_structure->structure()->creationAtomicPositionsIonsRelaxationAlgorithm();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      Structure::IonsRelaxationAlgorithm value = infoViewer->creationAtomicPositionsIonsRelaxationAlgorithm();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -2002,31 +2189,37 @@ void InfoTreeWidgetController::setCreationAtomicPositionsAlgorithm(int value)
 {
   if(value>=0 && value<int(Structure::IonsRelaxationAlgorithm::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setCreationAtomicPositionsIonsRelaxationAlgorithm(Structure::IonsRelaxationAlgorithm(value));
+      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      {
+        infoViewer->setCreationAtomicPositionsIonsRelaxationAlgorithm(Structure::IonsRelaxationAlgorithm(value));
+      }
     }
 
     _mainWindow->documentWasModified();
   }
 }
 
-std::optional<Structure::IonsRelaxationCheck> InfoTreeWidgetController::creationAtomicPositionsEigenvalues()
+std::optional<std::set<Structure::IonsRelaxationCheck>> InfoTreeWidgetController::creationAtomicPositionsEigenvalues()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<Structure::IonsRelaxationCheck> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::IonsRelaxationCheck value = iraspa_structure->structure()->creationAtomicPositionsIonsRelaxationCheck();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      Structure::IonsRelaxationCheck value = infoViewer->creationAtomicPositionsIonsRelaxationCheck();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -2035,191 +2228,230 @@ void InfoTreeWidgetController::setCreationAtomicPositionsEigenvalues(int value)
 {
   if(value>=0 && value<int(Structure::IonsRelaxationCheck::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setCreationAtomicPositionsIonsRelaxationCheck(Structure::IonsRelaxationCheck(value));
+      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      {
+        infoViewer->setCreationAtomicPositionsIonsRelaxationCheck(Structure::IonsRelaxationCheck(value));
+      }
     }
 
     _mainWindow->documentWasModified();
   }
 }
 
-std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsForceField()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationAtomicPositionsForceField()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationAtomicPositionsForcefield();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationAtomicPositionsForcefield();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationAtomicPositionsForceField(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationAtomicPositionsForcefield(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationAtomicPositionsForcefield(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationAtomicPositionsForceFieldDetails()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationAtomicPositionsForceFieldDetails()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationAtomicPositionsForcefieldDetails();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationAtomicPositionsForcefieldDetails();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationAtomicPositionsForceFieldDetails(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationAtomicPositionsForcefieldDetails(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationAtomicPositionsForcefieldDetails(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationAtomicChargesSoftwarePackage()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationAtomicChargesSoftwarePackage()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationAtomicChargesSoftwarePackage();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationAtomicChargesSoftwarePackage();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationAtomicChargesSoftwarePackage(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationAtomicChargesSoftwarePackage(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationAtomicChargesSoftwarePackage(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationAtomicChargesAlgorithm()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationAtomicChargesAlgorithm()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationAtomicChargesAlgorithms();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationAtomicChargesAlgorithms();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationAtomicChargesAlgorithm(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationAtomicChargesAlgorithms(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationAtomicChargesAlgorithms(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
 
-std::optional<QString> InfoTreeWidgetController::creationAtomicChargesForceField()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationAtomicChargesForceField()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationAtomicChargesForcefield();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationAtomicChargesForcefield();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationAtomicChargesForceField(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationAtomicChargesForcefield(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationAtomicChargesForcefield(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationAtomicChargesForceFieldDetails()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationAtomicChargesForceFieldDetails()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->creationAtomicChargesForcefieldDetails();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->creationAtomicChargesForcefieldDetails();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationAtomicChargesForceFieldDetails(QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCreationAtomicChargesForcefieldDetails(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCreationAtomicChargesForcefieldDetails(name);
+    }
   }
 
   _mainWindow->documentWasModified();
@@ -2234,16 +2466,19 @@ void InfoTreeWidgetController::reloadExperimentalRadiationType()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalRadiationTypeLineEdit->setEnabled(true);
-      _infoCreationForm->experimentalRadiationTypeLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalRadiationType(); values)
+      {
+        _infoCreationForm->experimentalRadiationTypeLineEdit->setEnabled(true);
+        _infoCreationForm->experimentalRadiationTypeLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalRadiationType())
-      {
-        whileBlocking(_infoCreationForm->experimentalRadiationTypeLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalRadiationTypeLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalRadiationTypeLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalRadiationTypeLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2257,16 +2492,19 @@ void InfoTreeWidgetController::reloadExperimentalWaveLength()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalWaveLength(); values)
+      {
+        _infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalWaveLength())
-      {
-        whileBlocking(_infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalRadiationWavelengthDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2280,16 +2518,19 @@ void InfoTreeWidgetController::reloadExperimentalMeasuermentThetaMin()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalMeasuermentThetaMin(); values)
+      {
+        _infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalMeasuermentThetaMin())
-      {
-        whileBlocking(_infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalMeasurementThetaMinDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2303,16 +2544,19 @@ void InfoTreeWidgetController::reloadExperimentalMeasuermentThetaMax()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalMeasuermentThetaMax(); values)
+      {
+        _infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalMeasuermentThetaMax())
-      {
-        whileBlocking(_infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalMeasurementThetaMaxDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2326,16 +2570,19 @@ void InfoTreeWidgetController::reloadExperimentalMeasuermentHMin()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalhminDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalhminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalMeasuermentHMin(); values)
+      {
+        _infoCreationForm->experimentalhminDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalhminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalMeasuermentHMin())
-      {
-        whileBlocking(_infoCreationForm->experimentalhminDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalhminDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalhminDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalhminDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2349,16 +2596,19 @@ void InfoTreeWidgetController::reloadExperimentalMeasuermentHMax()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalhmaxDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalhmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalMeasuermentHMax(); values)
+      {
+        _infoCreationForm->experimentalhmaxDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalhmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalMeasuermentHMax())
-      {
-        whileBlocking(_infoCreationForm->experimentalhmaxDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalhmaxDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalhmaxDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalhmaxDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2372,16 +2622,19 @@ void InfoTreeWidgetController::reloadExperimentalMeasuermentKMin()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalkminDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalkminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalMeasuermentKMin(); values)
+      {
+        _infoCreationForm->experimentalkminDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalkminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalMeasuermentKMin())
-      {
-        whileBlocking(_infoCreationForm->experimentalkminDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalkminDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalkminDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalkminDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2395,16 +2648,19 @@ void InfoTreeWidgetController::reloadExperimentalMeasuermentKMax()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalkmaxDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalkmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalMeasuermentKMax(); values)
+      {
+        _infoCreationForm->experimentalkmaxDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalkmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalMeasuermentKMax())
-      {
-        whileBlocking(_infoCreationForm->experimentalkmaxDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalkmaxDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalkmaxDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalkmaxDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2418,16 +2674,19 @@ void InfoTreeWidgetController::reloadExperimentalMeasuermentLMin()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentallminDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentallminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalMeasuermentLMin(); values)
+      {
+        _infoCreationForm->experimentallminDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentallminDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalMeasuermentLMin())
-      {
-        whileBlocking(_infoCreationForm->experimentallminDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentallminDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentallminDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentallminDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2441,16 +2700,19 @@ void InfoTreeWidgetController::reloadExperimentalMeasuermentLMax()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentallmaxDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentallmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalMeasuermentLMax(); values)
+      {
+        _infoCreationForm->experimentallmaxDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentallmaxDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalMeasuermentLMax())
-      {
-        whileBlocking(_infoCreationForm->experimentallmaxDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentallmaxDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentallmaxDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentallmaxDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2464,16 +2726,19 @@ void InfoTreeWidgetController::reloadExperimentalNumberOfReflections()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalNumberOfReflectionsSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalNumberOfReflectionsSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalNumberOfReflections(); values)
+      {
+        _infoCreationForm->experimentalNumberOfReflectionsSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalNumberOfReflectionsSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalNumberOfReflections())
-      {
-        whileBlocking(_infoCreationForm->experimentalNumberOfReflectionsSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalNumberOfReflectionsSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalNumberOfReflectionsSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalNumberOfReflectionsSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2487,16 +2752,19 @@ void InfoTreeWidgetController::reloadExperimentalSoftware()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalSoftwareLineEdit->setEnabled(true);
-      _infoCreationForm->experimentalSoftwareLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalSoftware(); values)
+      {
+        _infoCreationForm->experimentalSoftwareLineEdit->setEnabled(true);
+        _infoCreationForm->experimentalSoftwareLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalSoftware())
-      {
-        whileBlocking(_infoCreationForm->experimentalSoftwareLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalSoftwareLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalSoftwareLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalSoftwareLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2510,16 +2778,19 @@ void InfoTreeWidgetController::reloadExperimentalDetails()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalDetailsTextEdit->setEnabled(true);
-      _infoCreationForm->experimentalDetailsTextEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalDetails(); values)
+      {
+        _infoCreationForm->experimentalDetailsTextEdit->setEnabled(true);
+        _infoCreationForm->experimentalDetailsTextEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalDetails())
-      {
-        whileBlocking(_infoCreationForm->experimentalDetailsTextEdit)->setPlainText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalDetailsTextEdit)->setPlainText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalDetailsTextEdit)->setPlainText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalDetailsTextEdit)->setPlainText("Mult. Val.");
+        }
       }
     }
   }
@@ -2533,16 +2804,19 @@ void InfoTreeWidgetController::reloadExperimentalGoodnessOfFit()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalGoodnessOfFit(); values)
+      {
+        _infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalGoodnessOfFit())
-      {
-        whileBlocking(_infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalGoodnessOfFitDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2556,16 +2830,19 @@ void InfoTreeWidgetController::reloadExperimentalFinalIndices()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalFinalIndicesDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalFinalIndicesDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalFinalIndices(); values)
+      {
+        _infoCreationForm->experimentalFinalIndicesDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalFinalIndicesDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalFinalIndices())
-      {
-        whileBlocking(_infoCreationForm->experimentalFinalIndicesDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalFinalIndicesDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalFinalIndicesDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalFinalIndicesDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -2579,98 +2856,116 @@ void InfoTreeWidgetController::reloadExperimentalRIndicest()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoCreationForm->experimentalRIndicesDoubleSpinBox->setEnabled(true);
-      _infoCreationForm->experimentalRIndicesDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = creationExperimentalRIndicest(); values)
+      {
+        _infoCreationForm->experimentalRIndicesDoubleSpinBox->setEnabled(true);
+        _infoCreationForm->experimentalRIndicesDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = creationExperimentalRIndicest())
-      {
-        whileBlocking(_infoCreationForm->experimentalRIndicesDoubleSpinBox)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoCreationForm->experimentalRIndicesDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCreationForm->experimentalRIndicesDoubleSpinBox)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCreationForm->experimentalRIndicesDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
 }
 
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalRadiationType()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalRadiationType()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementRadiation();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementRadiation();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalRadiationType(const QString& type)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementRadiation(type);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementRadiation(type);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalWaveLength()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalWaveLength()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementWaveLength();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementWaveLength();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalWaveLength(const QString& wavelength)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementWaveLength(wavelength);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementWaveLength(wavelength);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentThetaMin()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalMeasuermentThetaMin()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementThetaMin();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementThetaMin();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -2678,399 +2973,480 @@ std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuerment
 
 void InfoTreeWidgetController::setCreationExperimentalMeasuermentThetaMin(const QString& thetamin)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementThetaMin(thetamin);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementThetaMin(thetamin);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentThetaMax()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalMeasuermentThetaMax()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementThetaMax();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementThetaMax();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalMeasuermentThetaMax(const QString& thetamax)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementThetaMax(thetamax);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementThetaMax(thetamax);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentHMin()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalMeasuermentHMin()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsHmin();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementIndexLimitsHmin();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalMeasuermentHMin(const QString& hmin)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsHmin(hmin);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementIndexLimitsHmin(hmin);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentHMax()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalMeasuermentHMax()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsHmax();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementIndexLimitsHmax();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalMeasuermentHMax(const QString& hmax)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsHmax(hmax);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementIndexLimitsHmax(hmax);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentKMin()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalMeasuermentKMin()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsKmin();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementIndexLimitsKmin();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalMeasuermentKMin(const QString& kmin)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsKmin(kmin);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementIndexLimitsKmin(kmin);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentKMax()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalMeasuermentKMax()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsKmax();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementIndexLimitsKmax();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalMeasuermentKMax(const QString& kmax)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsKmax(kmax);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementIndexLimitsKmax(kmax);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentLMin()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalMeasuermentLMin()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsLmin();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementIndexLimitsLmin();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalMeasuermentLMin(const QString& lmin)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsLmin(lmin);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementIndexLimitsLmin(lmin);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalMeasuermentLMax()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalMeasuermentLMax()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementIndexLimitsLmax();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementIndexLimitsLmax();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalMeasuermentLMax(const QString& lmax)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementIndexLimitsLmax(lmax);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementIndexLimitsLmax(lmax);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalNumberOfReflections()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalNumberOfReflections()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementNumberOfSymmetryIndependentReflections();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementNumberOfSymmetryIndependentReflections();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalNumberOfReflections(const QString& reflections)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementNumberOfSymmetryIndependentReflections(reflections);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementNumberOfSymmetryIndependentReflections(reflections);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalSoftware()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalSoftware()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementSoftware();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementSoftware();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalSoftware(const QString& software)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementSoftware(software);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementSoftware(software);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalDetails()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalDetails()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementRefinementDetails();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementRefinementDetails();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalDetails(const QString& details)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementRefinementDetails(details);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementRefinementDetails(details);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalGoodnessOfFit()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalGoodnessOfFit()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementGoodnessOfFit();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementGoodnessOfFit();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalGoodnessOfFit(const QString& goodness)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementGoodnessOfFit(goodness);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementGoodnessOfFit(goodness);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalFinalIndices()
+std::optional<std::set<QString>> InfoTreeWidgetController::creationExperimentalFinalIndices()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementRFactorGt();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementRFactorGt();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalFinalIndices(const QString& indices)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementRFactorGt(indices);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementRFactorGt(indices);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::creationExperimentalRIndicest()
+std::optional< std::set<QString>> InfoTreeWidgetController::creationExperimentalRIndicest()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->experimentalMeasurementRFactorAll();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->experimentalMeasurementRFactorAll();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCreationExperimentalRIndicest(const QString& indices)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setExperimentalMeasurementRFactorAll(indices);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setExperimentalMeasurementRFactorAll(indices);
+    }
   }
 
   _mainWindow->documentWasModified();
@@ -3094,16 +3470,19 @@ void InfoTreeWidgetController::reloadChemicalFormulaMoiety()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoChemicalForm->moietyLineEdit->setEnabled(true);
-      _infoChemicalForm->moietyLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = chemicalFormulaMoiety(); values)
+      {
+        _infoChemicalForm->moietyLineEdit->setEnabled(true);
+        _infoChemicalForm->moietyLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = chemicalFormulaMoiety())
-      {
-        whileBlocking(_infoChemicalForm->moietyLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoChemicalForm->moietyLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoChemicalForm->moietyLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoChemicalForm->moietyLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3117,16 +3496,19 @@ void InfoTreeWidgetController::reloadChemicalFormulaSum()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoChemicalForm->sumLineEdit->setEnabled(true);
-      _infoChemicalForm->sumLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = chemicalFormulaSum(); values)
+      {
+        _infoChemicalForm->sumLineEdit->setEnabled(true);
+        _infoChemicalForm->sumLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = chemicalFormulaSum())
-      {
-        whileBlocking(_infoChemicalForm->sumLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoChemicalForm->sumLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoChemicalForm->sumLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoChemicalForm->sumLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3140,106 +3522,127 @@ void InfoTreeWidgetController::reloadChemicalNameSystematic()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _infoChemicalForm->sytematicLineEdit->setEnabled(true);
-      _infoChemicalForm->sytematicLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = chemicalNameSystematic(); values)
+      {
+        _infoChemicalForm->sytematicLineEdit->setEnabled(true);
+        _infoChemicalForm->sytematicLineEdit->setReadOnly(!_projectTreeNode->isEditable());
 
-      if ( std::optional<QString> value = chemicalNameSystematic())
-      {
-        whileBlocking(_infoChemicalForm->sytematicLineEdit)->setText(*value);
-      }
-      else
-      {
-        whileBlocking(_infoChemicalForm->sytematicLineEdit)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_infoChemicalForm->sytematicLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoChemicalForm->sytematicLineEdit)->setText("Mult. Val.");
+        }
       }
     }
   }
 }
 
-std::optional<QString> InfoTreeWidgetController::chemicalFormulaMoiety()
+std::optional<std::set<QString> > InfoTreeWidgetController::chemicalFormulaMoiety()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->chemicalFormulaMoiety();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->chemicalFormulaMoiety();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setChemicalFormulaMoiety(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setChemicalFormulaMoiety(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setChemicalFormulaMoiety(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::chemicalFormulaSum()
+std::optional<std::set<QString>> InfoTreeWidgetController::chemicalFormulaSum()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->chemicalFormulaSum();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->chemicalFormulaSum();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setChemicalFormulaSum(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setChemicalFormulaSum(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setChemicalFormulaSum(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::chemicalNameSystematic()
+std::optional<std::set<QString>> InfoTreeWidgetController::chemicalNameSystematic()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->chemicalNameSystematic();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->chemicalNameSystematic();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setChemicalNameSystematic(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setChemicalNameSystematic(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setChemicalNameSystematic(name);
+    }
   }
 
   _mainWindow->documentWasModified();
@@ -3261,105 +3664,121 @@ void InfoTreeWidgetController::reloadCitationData()
 
 void InfoTreeWidgetController::reloadCitationArticleTitle()
 {
-  _infoCitationForm->articleTitleTextEdit->setReadOnly(true);
+  _infoCitationForm->articleTitleTextEdit->setDisabled(true);
   if(_projectTreeNode)
   {
-    _infoCitationForm->articleTitleTextEdit->setReadOnly(!_projectTreeNode->isEditable());
-  }
-
-  if(!_iraspa_structures.empty())
-  {
-    if ( std::optional<QString> value = citationArticleTitle())
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      whileBlocking(_infoCitationForm->articleTitleTextEdit)->setPlainText(*value);
-    }
-    else
-    {
-      whileBlocking(_infoCitationForm->articleTitleTextEdit)->setPlainText("Mult. Val.");
+      if (std::optional<std::set<QString>> values = citationArticleTitle(); values)
+      {
+        _infoCitationForm->articleTitleTextEdit->setReadOnly(!_projectTreeNode->isEditable());
+        _infoCitationForm->articleTitleTextEdit->setEnabled(true);
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCitationForm->articleTitleTextEdit)->setPlainText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCitationForm->articleTitleTextEdit)->setPlainText("Mult. Val.");
+        }
+      }
     }
   }
 }
 
 void InfoTreeWidgetController::reloadCitationArticleAuthors()
 {
-  _infoCitationForm->articleAuthorsTextEdit->setReadOnly(true);
+  _infoCitationForm->articleAuthorsTextEdit->setDisabled(true);
+
   if(_projectTreeNode)
   {
-    _infoCitationForm->articleAuthorsTextEdit->setReadOnly(!_projectTreeNode->isEditable());
-  }
-
-  if(!_iraspa_structures.empty())
-  {
-    if ( std::optional<QString> value = citationArticleAuthors())
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      whileBlocking(_infoCitationForm->articleAuthorsTextEdit)->setPlainText(*value);
-    }
-    else
-    {
-      whileBlocking(_infoCitationForm->articleAuthorsTextEdit)->setPlainText("Mult. Val.");
+      if (std::optional<std::set<QString>> values = citationArticleAuthors(); values)
+      {
+        _infoCitationForm->articleAuthorsTextEdit->setReadOnly(!_projectTreeNode->isEditable());
+        _infoCitationForm->articleAuthorsTextEdit->setEnabled(true);
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCitationForm->articleAuthorsTextEdit)->setPlainText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCitationForm->articleAuthorsTextEdit)->setPlainText("Mult. Val.");
+        }
+      }
     }
   }
 }
 
 void InfoTreeWidgetController::reloadCitationJournalVolume()
 {
-  _infoCitationForm->journalVolumeLineEdit->setReadOnly(true);
+  _infoCitationForm->journalVolumeLineEdit->setDisabled(true);
   if(_projectTreeNode)
   {
-    _infoCitationForm->journalVolumeLineEdit->setReadOnly(!_projectTreeNode->isEditable());
-  }
-
-  if(!_iraspa_structures.empty())
-  {
-    if ( std::optional<QString> value = citationJournalVolume())
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      whileBlocking(_infoCitationForm->journalVolumeLineEdit)->setText(*value);
-    }
-    else
-    {
-      whileBlocking(_infoCitationForm->journalVolumeLineEdit)->setText("Mult. Val.");
+      if (std::optional<std::set<QString>> values = citationJournalVolume(); values)
+      {
+        _infoCitationForm->journalVolumeLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+        _infoCitationForm->journalVolumeLineEdit->setEnabled(true);
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCitationForm->journalVolumeLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCitationForm->journalVolumeLineEdit)->setText("Mult. Val.");
+        }
+      }
     }
   }
 }
 
 void InfoTreeWidgetController::reloadCitationJournalNumber()
 {
-  _infoCitationForm->journalNumberLineEdit->setReadOnly(true);
+  _infoCitationForm->journalNumberLineEdit->setDisabled(true);
   if(_projectTreeNode)
   {
-    _infoCitationForm->journalNumberLineEdit->setReadOnly(!_projectTreeNode->isEditable());
-  }
-
-  if(!_iraspa_structures.empty())
-  {
-    if ( std::optional<QString> value = citationJournalNumber())
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      whileBlocking(_infoCitationForm->journalNumberLineEdit)->setText(*value);
-    }
-    else
-    {
-      whileBlocking(_infoCitationForm->journalNumberLineEdit)->setText("Mult. Val.");
+      if (std::optional<std::set<QString>> values = citationJournalNumber(); values)
+      {
+        _infoCitationForm->journalNumberLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+        _infoCitationForm->journalNumberLineEdit->setEnabled(true);
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCitationForm->journalNumberLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCitationForm->journalNumberLineEdit)->setText("Mult. Val.");
+        }
+      }
     }
   }
 }
 
 void InfoTreeWidgetController::reloadCitationPublicationDate()
 {
-  _infoCitationForm->publicationDateEdit->setReadOnly(true);
+  _infoCitationForm->publicationDateEdit->setDisabled(true);
   if(_projectTreeNode)
   {
-    _infoCitationForm->publicationDateEdit->setReadOnly(!_projectTreeNode->isEditable());
-  }
-
-  if(!_iraspa_structures.empty())
-  {
-    if ( std::optional<QDate> value = citationPublicationDate())
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      whileBlocking(_infoCitationForm->publicationDateEdit)->setDate(*value);
-    }
-    else
-    {
-      whileBlocking(_infoCitationForm->publicationDateEdit)->setDate(QDate());
+      if (std::optional<std::set<QDate>> values = citationPublicationDate(); values)
+      {
+        _infoCitationForm->publicationDateEdit->setReadOnly(!_projectTreeNode->isEditable());
+        _infoCitationForm->publicationDateEdit->setEnabled(true);
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCitationForm->publicationDateEdit)->setDate(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCitationForm->publicationDateEdit)->setDate(QDate());
+        }
+      }
     }
   }
 }
@@ -3369,278 +3788,332 @@ void InfoTreeWidgetController::reloadCitationPublicationDOI()
   _infoCitationForm->publicationDOILineEdit->setReadOnly(true);
   if(_projectTreeNode)
   {
-    _infoCitationForm->publicationDOILineEdit->setReadOnly(!_projectTreeNode->isEditable());
-  }
-
-  if(!_iraspa_structures.empty())
-  {
-    if ( std::optional<QString> value = citationDOI())
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      whileBlocking(_infoCitationForm->publicationDOILineEdit)->setText(*value);
-    }
-    else
-    {
-      whileBlocking(_infoCitationForm->publicationDOILineEdit)->setText("Mult. Val.");
+      if (std::optional<std::set<QString>> values = citationDOI(); values)
+      {
+        _infoCitationForm->publicationDOILineEdit->setReadOnly(!_projectTreeNode->isEditable());
+        _infoCitationForm->publicationDOILineEdit->setEnabled(true);
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCitationForm->publicationDOILineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCitationForm->publicationDOILineEdit)->setText("Mult. Val.");
+        }
+      }
     }
   }
 }
 
 void InfoTreeWidgetController::reloadCitationPublicationDatabaseCodes()
 {
-  _infoCitationForm->publicationDatabaseCodeLineEdit->setReadOnly(true);
+  _infoCitationForm->publicationDatabaseCodeLineEdit->setDisabled(true);
   if(_projectTreeNode)
   {
-    _infoCitationForm->publicationDatabaseCodeLineEdit->setReadOnly(!_projectTreeNode->isEditable());
-  }
-
-  if(!_iraspa_structures.empty())
-  {
-    if ( std::optional<QString> value = citationDatabaseCodes())
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      whileBlocking(_infoCitationForm->publicationDatabaseCodeLineEdit)->setText(*value);
-    }
-    else
-    {
-      whileBlocking(_infoCitationForm->publicationDatabaseCodeLineEdit)->setText("Mult. Val.");
+      if (std::optional<std::set<QString>> values = citationDatabaseCodes(); values)
+      {
+        _infoCitationForm->publicationDatabaseCodeLineEdit->setReadOnly(!_projectTreeNode->isEditable());
+        _infoCitationForm->publicationDatabaseCodeLineEdit->setEnabled(true);
+        if(values->size()==1)
+        {
+          whileBlocking(_infoCitationForm->publicationDatabaseCodeLineEdit)->setText(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_infoCitationForm->publicationDatabaseCodeLineEdit)->setText("Mult. Val.");
+        }
+      }
     }
   }
 }
 
-std::optional<QString> InfoTreeWidgetController::citationArticleTitle()
+std::optional<std::set<QString>> InfoTreeWidgetController::citationArticleTitle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->citationArticleTitle();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->citationArticleTitle();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCitationArticleTitle(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCitationArticleTitle(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCitationArticleTitle(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::citationJournalTitle()
+std::optional<std::set<QString>> InfoTreeWidgetController::citationJournalTitle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->citationJournalTitle();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->citationJournalTitle();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCitationJournalTitle(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCitationJournalTitle(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCitationJournalTitle(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::citationArticleAuthors()
+std::optional<std::set<QString>> InfoTreeWidgetController::citationArticleAuthors()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->citationAuthors();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->citationAuthors();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCitationArticleAuthors(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCitationAuthors(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCitationAuthors(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::InfoTreeWidgetController::citationJournalVolume()
+std::optional<std::set<QString>> InfoTreeWidgetController::InfoTreeWidgetController::citationJournalVolume()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->citationJournalVolume();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->citationJournalVolume();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCitationJournalVolume(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCitationJournalVolume(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCitationJournalVolume(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::citationJournalNumber()
+std::optional<std::set<QString>> InfoTreeWidgetController::citationJournalNumber()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->citationJournalNumber();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->citationJournalNumber();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCitationJournalNumber(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCitationJournalNumber(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCitationJournalNumber(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QDate> InfoTreeWidgetController::citationPublicationDate()
+std::optional<std::set<QDate>> InfoTreeWidgetController::citationPublicationDate()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
    }
   std::set<QDate> set = std::set<QDate>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QDate value = iraspa_structure->structure()->citationPublicationDate();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QDate value = infoViewer->citationPublicationDate();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCitationPublicationDate(QDate date)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCitationPublicationDate(date);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCitationPublicationDate(date);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::citationDOI()
+std::optional<std::set<QString>> InfoTreeWidgetController::citationDOI()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->citationDOI();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->citationDOI();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCitationDOI(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCitationDOI(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCitationDOI(name);
+    }
   }
 
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> InfoTreeWidgetController::citationDatabaseCodes()
+std::optional<std::set<QString>> InfoTreeWidgetController::citationDatabaseCodes()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->citationDatebaseCodes();
-    set.insert(value);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      QString value = infoViewer->citationDatebaseCodes();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void InfoTreeWidgetController::setCitationDatabaseCodes(const QString name)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setCitationDatebaseCodes(name);
+    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    {
+      infoViewer->setCitationDatebaseCodes(name);
+    }
   }
 
   _mainWindow->documentWasModified();

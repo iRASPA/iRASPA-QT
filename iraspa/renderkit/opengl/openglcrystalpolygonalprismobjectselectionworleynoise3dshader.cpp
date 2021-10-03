@@ -56,21 +56,24 @@ void OpenGLCrystalPolygonalPrismObjectSelectionWorleyNoise3DShader::paintGL(GLui
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderCrystalPrimitivePolygonalPrimsObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* object = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
-        if(object->primitiveSelectionStyle() == RKSelectionStyle::WorleyNoise3D)
+        if (RKRenderCrystalPrimitivePolygonalPrimsObjectsSource* source = dynamic_cast<RKRenderCrystalPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))
         {
-          if(_renderStructures[i][j]->isVisible() && _crystalPolygonalPrismShader._numberOfIndices[i][j]>0 && _instanceShader._numberOfDrawnAtoms[i][j]>0)
+          if(object->primitiveSelectionStyle() == RKSelectionStyle::WorleyNoise3D)
           {
-            glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
+            if(_renderStructures[i][j]->isVisible() && _crystalPolygonalPrismShader._numberOfIndices[i][j]>0 && _instanceShader._numberOfDrawnAtoms[i][j]>0)
+            {
+              glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
 
-            glBindVertexArray(_vertexArrayObject[i][j]);
-            check_gl_error();
+              glBindVertexArray(_vertexArrayObject[i][j]);
+              check_gl_error();
 
-            // draw only the front-faces for the Worley-noise-3D style (looks better)
-            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_crystalPolygonalPrismShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDrawnAtoms[i][j]));
-            check_gl_error();
-            glBindVertexArray(0);
+              // draw only the front-faces for the Worley-noise-3D style (looks better)
+              glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_crystalPolygonalPrismShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDrawnAtoms[i][j]));
+              check_gl_error();
+              glBindVertexArray(0);
+            }
           }
         }
       }

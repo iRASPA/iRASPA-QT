@@ -72,20 +72,23 @@ void OpenGLCrystalCylinderObjectPickingShader::paintGL(GLuint structureUniformBu
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderCrystalPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
-        if(_renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _crystalCylinderShader._numberOfIndices[i][j]>0 && _crystalCylinderShader._numberOfDrawnAtoms[i][j]>0)
+        if (RKRenderCrystalPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
         {
-          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, index * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
-          check_gl_error();
+          if(source->drawAtoms() && _renderStructures[i][j]->isVisible() && _crystalCylinderShader._numberOfIndices[i][j]>0 && _crystalCylinderShader._numberOfDrawnAtoms[i][j]>0)
+          {
+            glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, index * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+            check_gl_error();
 
-          glBindVertexArray(_vertexArrayObject[i][j]);
-          check_gl_error();
+            glBindVertexArray(_vertexArrayObject[i][j]);
+            check_gl_error();
 
-          glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_crystalCylinderShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_crystalCylinderShader._numberOfDrawnAtoms[i][j]));
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_crystalCylinderShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_crystalCylinderShader._numberOfDrawnAtoms[i][j]));
 
-          check_gl_error();
-          glBindVertexArray(0);
+            check_gl_error();
+            glBindVertexArray(0);
+          }
         }
       }
       index++;

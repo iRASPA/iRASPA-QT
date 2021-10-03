@@ -32,10 +32,11 @@
 #include "skasymmetricatom.h"
 #include "skelement.h"
 
-SKPDBParser::SKPDBParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
-  _scanner(fileContent, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
+SKPDBParser::SKPDBParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
+  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
 {
   _frame->kind = SKStructure::Kind::molecule;
+  _frame->displayName = _scanner.displayName();
 }
 
 void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
@@ -70,6 +71,7 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
     _movies[currentMovie].push_back(_frame);
 
     _frame = std::make_shared<SKStructure>();
+    _frame->displayName = _scanner.displayName();
     _frame->kind = SKStructure::Kind::molecule;
     _numberOfAminoAcidAtoms=0;
     _numberOfAtoms=0;

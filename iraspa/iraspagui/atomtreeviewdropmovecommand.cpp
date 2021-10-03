@@ -23,7 +23,7 @@
 #include <QDebug>
 #include <algorithm>
 
-AtomTreeViewDropMoveCommand::AtomTreeViewDropMoveCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure,
+AtomTreeViewDropMoveCommand::AtomTreeViewDropMoveCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAObject> iraspaStructure,
                                                          std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> moves,
                                                          AtomSelectionIndexPaths oldSelection,
                                                          QUndoCommand *undoParent):
@@ -40,99 +40,105 @@ AtomTreeViewDropMoveCommand::AtomTreeViewDropMoveCommand(MainWindow *mainWindow,
 
 void AtomTreeViewDropMoveCommand::redo()
 {
-  _reverseMoves.clear();
-  _newSelection.second.clear();
-
-  if(_model->isActive(_iraspaStructure))
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
   {
-    emit _model->layoutAboutToBeChanged();
-    for(const auto &[atom, parentNode, insertionRow]  : _moves)
+    _reverseMoves.clear();
+    _newSelection.second.clear();
+
+    if(_model->isActive(_iraspaStructure))
     {
-      _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
-
-      whileBlocking(_model)->removeRow(atom->row(), atom->parent());
-
-      // workaround qt-bug (the branch is not shown for parents with no children unless it is explicitely set collapsed)
-      if(atom->parent()->childNodes().empty())
+      emit _model->layoutAboutToBeChanged();
+      for(const auto &[atom, parentNode, insertionRow]  : _moves)
       {
-        QModelIndex parentIndex = _model->indexForNode(atom->parent().get());
-        emit _model->collapse(parentIndex);
+        _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
+
+        whileBlocking(_model)->removeRow(atom->row(), atom->parent());
+
+        // workaround qt-bug (the branch is not shown for parents with no children unless it is explicitely set collapsed)
+        if(atom->parent()->childNodes().empty())
+        {
+          QModelIndex parentIndex = _model->indexForNode(atom->parent().get());
+          emit _model->collapse(parentIndex);
+        }
+
+        emit _model->expand(_model->indexForNode(parentNode.get()));
+
+        whileBlocking(_model)->insertRow(insertionRow, parentNode,atom);
+      }
+      structure->atomsTreeController()->setTags();
+      emit _model->layoutChanged();
+
+      // update selection of moved nodes _after_ all is moved
+      // (indexPaths have been changed, including the indexPath of the parentNode)
+      for(const auto &[projectTreeNode, parentNode, insertionRow] : _moves)
+      {
+        _newSelection.second.insert(projectTreeNode->indexPath());
       }
 
-      emit _model->expand(_model->indexForNode(parentNode.get()));
 
-      whileBlocking(_model)->insertRow(insertionRow, parentNode,atom);
+
+      structure->atomsTreeController()->setSelectionIndexPaths(_newSelection);
+      emit _model->updateSelection();
     }
-    _iraspaStructure->structure()->atomsTreeController()->setTags();
-    emit _model->layoutChanged();
-
-    // update selection of moved nodes _after_ all is moved
-    // (indexPaths have been changed, including the indexPath of the parentNode)
-    for(const auto &[projectTreeNode, parentNode, insertionRow] : _moves)
+    else
     {
-      _newSelection.second.insert(projectTreeNode->indexPath());
+      for(const auto &[atom, parentNode, insertionRow]  : _moves)
+      {
+        atom->parent()->removeChild(atom->row());
+        parentNode->insertChild(insertionRow, atom);
+      }
+      structure->atomsTreeController()->setTags();
+
+      // update selection of moved nodes _after_ all is moved
+      // (indexPaths have been changed, including the indexPath of the parentNode)
+      for(const auto &[projectTreeNode, parentNode, insertionRow] : _moves)
+      {
+        _newSelection.second.insert(projectTreeNode->indexPath());
+      }
+
+      structure->atomsTreeController()->setSelectionIndexPaths(_newSelection);
     }
 
-
-
-    _iraspaStructure->structure()->atomsTreeController()->setSelectionIndexPaths(_newSelection);
-    emit _model->updateSelection();
+    _mainWindow->documentWasModified();
   }
-  else
-  {
-    for(const auto &[atom, parentNode, insertionRow]  : _moves)
-    {
-      atom->parent()->removeChild(atom->row());
-      parentNode->insertChild(insertionRow, atom);
-    }
-    _iraspaStructure->structure()->atomsTreeController()->setTags();
-
-    // update selection of moved nodes _after_ all is moved
-    // (indexPaths have been changed, including the indexPath of the parentNode)
-    for(const auto &[projectTreeNode, parentNode, insertionRow] : _moves)
-    {
-      _newSelection.second.insert(projectTreeNode->indexPath());
-    }
-
-    _iraspaStructure->structure()->atomsTreeController()->setSelectionIndexPaths(_newSelection);
-  }
-
-  _mainWindow->documentWasModified();
 }
 
 void AtomTreeViewDropMoveCommand::undo()
 {
-  if(_model->isActive(_iraspaStructure))
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
   {
-    emit _model->layoutAboutToBeChanged();
-    for(const auto &[atom, parentNode, insertionRow]  : _reverseMoves)
+    if(_model->isActive(_iraspaStructure))
     {
-      whileBlocking(_model)->removeRow(atom->row(), atom->parent());
-
-      // workaround qt-bug (the branch is not shown for parents with no children unless it is explicitely set collapsed)
-      if(atom->parent()->childNodes().empty())
+      emit _model->layoutAboutToBeChanged();
+      for(const auto &[atom, parentNode, insertionRow]  : _reverseMoves)
       {
-        QModelIndex parentIndex = _model->indexForNode(atom->parent().get());
-        emit _model->collapse(parentIndex);
+        whileBlocking(_model)->removeRow(atom->row(), atom->parent());
+
+        // workaround qt-bug (the branch is not shown for parents with no children unless it is explicitely set collapsed)
+        if(atom->parent()->childNodes().empty())
+        {
+          QModelIndex parentIndex = _model->indexForNode(atom->parent().get());
+          emit _model->collapse(parentIndex);
+        }
+
+        whileBlocking(_model)->insertRow(insertionRow, parentNode, atom);
       }
+      structure->atomsTreeController()->setTags();
+      emit _model->layoutChanged();
 
-      whileBlocking(_model)->insertRow(insertionRow, parentNode, atom);
+      structure->atomsTreeController()->setSelectionIndexPaths(_oldSelection);
+      emit _model->updateSelection();
     }
-    _iraspaStructure->structure()->atomsTreeController()->setTags();
-    emit _model->layoutChanged();
-
-    _iraspaStructure->structure()->atomsTreeController()->setSelectionIndexPaths(_oldSelection);
-    emit _model->updateSelection();
-  }
-  else
-  {
-    for(const auto &[atom, parentNode, insertionRow]  : _reverseMoves)
+    else
     {
-      atom->parent()->removeChild(atom->row());
-      parentNode->insertChild(insertionRow, atom);
+      for(const auto &[atom, parentNode, insertionRow]  : _reverseMoves)
+      {
+        atom->parent()->removeChild(atom->row());
+        parentNode->insertChild(insertionRow, atom);
+      }
+      structure->atomsTreeController()->setTags();
     }
-    _iraspaStructure->structure()->atomsTreeController()->setTags();
-  }
 
-  _mainWindow->documentWasModified();
+    _mainWindow->documentWasModified();
+  }
 }

@@ -117,7 +117,7 @@ void FrameListView::TabItemWasSelected()
 
     if(_movie)
     {
-      std::shared_ptr<iRASPAStructure> iraspa_structure = _movie->frameAtIndex(selectedFrameIndex);
+      std::shared_ptr<iRASPAObject> iraspa_structure = _movie->frameAtIndex(selectedFrameIndex);
       emit setSelectedFrame(iraspa_structure);
     }
 
@@ -151,9 +151,9 @@ void FrameListView::reloadSelection()
     int selectedIndex = int(_sceneList->selectedFrameIndex());
     QModelIndex item = model()->index(selectedIndex, 0, QModelIndex());
 
-    if(iRASPAStructure* iraspa_structure = static_cast<iRASPAStructure*>(item.internalPointer()))
+    if(iRASPAObject* iraspa_structure = static_cast<iRASPAObject*>(item.internalPointer()))
     {
-      qDebug() << "CHECK: " << iraspa_structure->structure()->displayName();
+      qDebug() << "CHECK: " << iraspa_structure->object()->displayName();
     }
 
     whileBlocking(selectionModel())->select(item, QItemSelectionModel::Select);
@@ -203,7 +203,7 @@ void FrameListView::selectionChanged(const QItemSelection &selected, const QItem
     {
       QModelIndex current = selectedIndexes().front();
 
-      if(iRASPAStructure* iraspa_structure = static_cast<iRASPAStructure*>(current.internalPointer()))
+      if(iRASPAObject* iraspa_structure = static_cast<iRASPAObject*>(current.internalPointer()))
       {
         // set the overall frame-index (there is just one frame-index which is used for all movies)
         _sceneList->setSelectedFrameIndex(current.row());
@@ -333,7 +333,7 @@ void FrameListView::paste()
   qDebug() << "void FrameListView::paste()";
   if(FrameListViewModel* pModel = qobject_cast<FrameListViewModel*>(model()))
   {
-    if(qApp->clipboard()->mimeData()->hasFormat(iRASPAStructure::mimeType))
+    if(qApp->clipboard()->mimeData()->hasFormat(iRASPAObject::mimeType))
     {
       const QMimeData *mimeData = qApp->clipboard()->mimeData();
 
@@ -368,9 +368,9 @@ QPixmap FrameListView::selectionToPixmap()
 
     for(QModelIndex index: selectionIndexes)
     {
-      if(iRASPAStructure *item = static_cast<iRASPAStructure *>(index.internalPointer()))
+      if(iRASPAObject *item = static_cast<iRASPAObject *>(index.internalPointer()))
       {
-        QString text = item->structure()->displayName();
+        QString text = item->object()->displayName();
         QRect textBoundingRect = fontMetrics.boundingRect(text);
         if(textBoundingRect.width() > maxWidth) maxWidth = textBoundingRect.size().width();
         height += textBoundingRect.size().height();
@@ -389,9 +389,9 @@ QPixmap FrameListView::selectionToPixmap()
     int currentHeight=0;
     for(QModelIndex index: selectionIndexes)
     {
-      if(iRASPAStructure *item = static_cast<iRASPAStructure *>(index.internalPointer()))
+      if(iRASPAObject *item = static_cast<iRASPAObject *>(index.internalPointer()))
       {
-        QString text = item->structure()->displayName();
+        QString text = item->object()->displayName();
         QRect fontRect = fontMetrics.boundingRect(text);
         currentHeight += fontRect.size().height();
 
@@ -414,7 +414,7 @@ void FrameListView::startDrag(Qt::DropActions supportedActions)
   QModelIndex index = currentIndex();
 
   FrameListViewModel* pModel = qobject_cast<FrameListViewModel*>(model());
-  if(iRASPAStructure *item = static_cast<iRASPAStructure *>(index.internalPointer()))
+  if(iRASPAObject *item = static_cast<iRASPAObject *>(index.internalPointer()))
   {
     QModelIndexList selectionIndexes = selectionModel()->selectedRows();
     QMimeData* mimeData = pModel->mimeDataLazy(selectionIndexes);

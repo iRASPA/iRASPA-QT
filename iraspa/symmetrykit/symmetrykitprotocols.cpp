@@ -20,8 +20,3 @@
  ********************************************************************************************************************/
 
 #include "symmetrykitprotocols.h"
-
-DisplayableProtocol::~DisplayableProtocol()
-{
-  // Compulsory virtual destructor definition
-}

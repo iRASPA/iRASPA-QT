@@ -36,11 +36,11 @@ CrystalCylinderPrimitive::CrystalCylinderPrimitive()
 
 }
 
-CrystalCylinderPrimitive::CrystalCylinderPrimitive(const CrystalCylinderPrimitive &crystalCylinderPrimitive): Structure(crystalCylinderPrimitive)
+CrystalCylinderPrimitive::CrystalCylinderPrimitive(const CrystalCylinderPrimitive &crystalCylinderPrimitive): Primitive(crystalCylinderPrimitive)
 {
 }
 
-CrystalCylinderPrimitive::CrystalCylinderPrimitive(std::shared_ptr<Structure> s): Structure(s)
+CrystalCylinderPrimitive::CrystalCylinderPrimitive(std::shared_ptr<Structure> s): Primitive(s)
 {
   if(dynamic_cast<Molecule*>(s.get()) ||
      dynamic_cast<Protein*>(s.get()) ||
@@ -810,6 +810,11 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> CrystalCylind
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<CrystalCylinderPrimitive> &primitive)
 {
   stream << primitive->_versionNumber;
+
+
+  // handle super class
+  stream << std::static_pointer_cast<Structure>(primitive);
+
   return stream;
 }
 
@@ -821,5 +826,10 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<CrystalCylinderPrim
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "CrystalCylinderPrimitive");
   }
+
+
+  std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(primitive);
+  stream >> structure;
+
   return stream;
 }

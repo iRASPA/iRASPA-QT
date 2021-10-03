@@ -26,7 +26,7 @@
 
 // Note: The iRASPAStructure is not modified, but the structure it contains is replaced.
 
-CellTreeWidgetAppliedCellContentShiftCommand::CellTreeWidgetAppliedCellContentShiftCommand(MainWindow *mainWindow, CellTreeWidgetController *controller, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures,
+CellTreeWidgetAppliedCellContentShiftCommand::CellTreeWidgetAppliedCellContentShiftCommand(MainWindow *mainWindow, CellTreeWidgetController *controller, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures,
                                      QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
@@ -38,16 +38,16 @@ CellTreeWidgetAppliedCellContentShiftCommand::CellTreeWidgetAppliedCellContentSh
   setText(QString("Change space group"));
 
   std::transform(iraspa_structures.begin(), iraspa_structures.end(), std::back_inserter(_old_iraspa_structures),
-                 [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::pair<std::shared_ptr<iRASPAStructure>, std::shared_ptr<Structure>>
-                  {return std::make_pair(iraspastructure, iraspastructure->structure());});
+                 [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::pair<std::shared_ptr<iRASPAObject>, std::shared_ptr<Structure>>
+                  {return std::make_pair(iraspastructure, std::dynamic_pointer_cast<Structure>(iraspastructure->object()));});
 }
 
 void CellTreeWidgetAppliedCellContentShiftCommand::redo()
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(std::shared_ptr<iRASPAObject> iraspa_structure: _iraspa_structures)
   {
-    std::shared_ptr<Structure> structure = iraspa_structure->structure()->appliedCellContentShift();
-    iraspa_structure->setStructure(structure);
+    std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->appliedCellContentShift();
+    iraspa_structure->setObject(structure);
   }
 
   emit _controller->invalidateCachedAmbientOcclusionTextures(_projectStructure->sceneList()->allIRASPAStructures());
@@ -62,7 +62,7 @@ void CellTreeWidgetAppliedCellContentShiftCommand::undo()
 {
   for(const auto &[iraspa_structure, structure]: _old_iraspa_structures)
   {
-    iraspa_structure->setStructure(structure);
+    iraspa_structure->setObject(structure);
   }
 
   emit _controller->invalidateCachedAmbientOcclusionTextures(_projectStructure->sceneList()->allIRASPAStructures());

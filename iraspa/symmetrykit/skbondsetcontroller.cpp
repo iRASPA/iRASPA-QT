@@ -247,7 +247,7 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<SKBondSetCont
 
 QDataStream &operator>>(QDataStream &stream, std::shared_ptr<SKBondSetController>& controller)
 {
-  qint32 versionNumber;
+  qint64 versionNumber;
   stream >> versionNumber;
 
   if(versionNumber > controller->_versionNumber)
@@ -258,76 +258,21 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<SKBondSetController
   std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms = controller->_atomTreecontroller->flattenedObjects();
   std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = controller->_atomTreecontroller->allAtomCopies();
 
-  if(versionNumber==0)
+  stream >> controller->_arrangedObjects;
+
+  // fill in the atoms from the tags
+  for(std::shared_ptr<SKAsymmetricBond> &bond: controller->_arrangedObjects)
   {
-    qint32 versionNumber2;
-    stream >> versionNumber2;
+    int atom1Tag = bond->getTag1();
+    int atom2Tag = bond->getTag2();
+    bond->setAtom1(asymmetricAtoms[atom1Tag]);
+    bond->setAtom2(asymmetricAtoms[atom2Tag]);
 
-    if(versionNumber2 > 1)
+    for(std::shared_ptr<SKBond> &bondCopy: bond->copies())
     {
-      stream >> controller->_arrangedObjects;
-
-      // fill in the atoms from the tags
-      for(std::shared_ptr<SKAsymmetricBond> &bond: controller->_arrangedObjects)
-      {
-        int atom1Tag = bond->getTag1();
-        int atom2Tag = bond->getTag2();
-        bond->setAtom1(asymmetricAtoms[atom1Tag]);
-        bond->setAtom2(asymmetricAtoms[atom2Tag]);
-
-        for(std::shared_ptr<SKBond> &bondCopy: bond->copies())
-        {
-          int tag1 = bondCopy->getTag1();
-          int tag2 = bondCopy->getTag2();
-          bondCopy->setAtoms(atomCopies[tag1],atomCopies[tag2]);
-        }
-      }
-    }
-    else
-    {
-      qint64 index=0;
-      for(std::shared_ptr<SKAtomCopy> atom: atomCopies)
-      {
-        atom->setTag(index);
-        index++;
-      }
-
-      qint64 vecSize;
-      std::vector<std::shared_ptr<SKBond>> bonds;
-      stream >> vecSize;
-      qint64 atomtag1;
-      qint64 atomtag2;
-      qint64 type;
-      while(vecSize--)
-      {
-        stream >> atomtag1;
-        stream >> atomtag2;
-        qDebug() << "atomtags" << atomtag1 << ", " << atomtag2;
-        stream >> type;
-        std::shared_ptr<SKBond> bond = std::make_shared<SKBond>(atomCopies[atomtag1],atomCopies[atomtag2], SKBond::BoundaryType(type));
-        bonds.push_back(bond);
-      }
-      controller->setBonds(bonds);
-    }
-  }
-  else
-  {
-    stream >> controller->_arrangedObjects;
-
-    // fill in the atoms from the tags
-    for(std::shared_ptr<SKAsymmetricBond> &bond: controller->_arrangedObjects)
-    {
-      int atom1Tag = bond->getTag1();
-      int atom2Tag = bond->getTag2();
-      bond->setAtom1(asymmetricAtoms[atom1Tag]);
-      bond->setAtom2(asymmetricAtoms[atom2Tag]);
-
-      for(std::shared_ptr<SKBond> &bondCopy: bond->copies())
-      {
-        int tag1 = bondCopy->getTag1();
-        int tag2 = bondCopy->getTag2();
-        bondCopy->setAtoms(atomCopies[tag1],atomCopies[tag2]);
-      }
+      int tag1 = bondCopy->getTag1();
+      int tag2 = bondCopy->getTag2();
+      bondCopy->setAtoms(atomCopies[tag1],atomCopies[tag2]);
     }
   }
 

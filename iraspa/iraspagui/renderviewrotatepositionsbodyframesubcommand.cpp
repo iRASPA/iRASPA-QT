@@ -23,7 +23,7 @@
 #include <QDebug>
 #include <algorithm>
 
-RenderViewRotatePositionsBodyFrameSubCommand::RenderViewRotatePositionsBodyFrameSubCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAStructure> iraspaStructure, simd_quatd rotation, QUndoCommand *parent):
+RenderViewRotatePositionsBodyFrameSubCommand::RenderViewRotatePositionsBodyFrameSubCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAObject> iraspaStructure, simd_quatd rotation, QUndoCommand *parent):
   QUndoCommand(parent),
   _mainWindow(mainWindow),
   _iraspaStructure(iraspaStructure),
@@ -34,7 +34,7 @@ RenderViewRotatePositionsBodyFrameSubCommand::RenderViewRotatePositionsBodyFrame
 
   setText(QString("Rotate atom selection"));
 
-  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = iraspaStructure->structure()->atomsTreeController()->selectedObjects();
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->atomsTreeController()->selectedObjects();
   std::transform(atoms.begin(), atoms.end(), std::back_inserter(_oldPositions),
                    [](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
                      {return std::make_pair(atom, atom->position());});
@@ -43,15 +43,15 @@ RenderViewRotatePositionsBodyFrameSubCommand::RenderViewRotatePositionsBodyFrame
 void RenderViewRotatePositionsBodyFrameSubCommand::redo()
 {
 
-  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = _iraspaStructure->structure()->atomsTreeController()->selectedObjects();
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions = _iraspaStructure->structure()->rotatedPositionsSelectionBodyFrame(atoms, _rotation);
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomsTreeController()->selectedObjects();
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->rotatedPositionsSelectionBodyFrame(atoms, _rotation);
 
   for(const auto &[atom, translatedPosition] : translatedPositions)
   {
     atom->setPosition(translatedPosition);
   }
-  _iraspaStructure->structure()->expandSymmetry();
-  _iraspaStructure->structure()->computeBonds();
+  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->expandSymmetry();
+  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->computeBonds();
 }
 
 void RenderViewRotatePositionsBodyFrameSubCommand::undo()
@@ -61,8 +61,8 @@ void RenderViewRotatePositionsBodyFrameSubCommand::undo()
   {
     atom->setPosition(translatedPosition);
   }
-  _iraspaStructure->structure()->expandSymmetry();
-  _iraspaStructure->structure()->computeBonds();
+  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->expandSymmetry();
+  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->computeBonds();
 
   emit _mainWindow->rendererReloadData();
 }

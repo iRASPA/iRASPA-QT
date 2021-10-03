@@ -42,9 +42,9 @@ public:
   static char mimeType[];
 
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode);
-  void setFrame(std::shared_ptr<iRASPAStructure> frame);
-  bool isActive(std::shared_ptr<iRASPAStructure> iraspaStructure) {return (iraspaStructure == _iraspaStructure);}
-  std::shared_ptr<iRASPAStructure> frame() {return _iraspaStructure;}
+  void setFrame(std::shared_ptr<iRASPAObject> frame);
+  bool isActive(std::shared_ptr<iRASPAObject> iraspaStructure) {return (iraspaStructure == _iraspaStructure);}
+  std::shared_ptr<iRASPAObject> frame() {return _iraspaStructure;}
   void resetData();
 
   SKAtomTreeNode* getItem(const QModelIndex &index) const;
@@ -86,7 +86,7 @@ public:
 private:
   MainWindow* _mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<ProjectStructure> _projectStructure;
 signals:
   void updateSelection();

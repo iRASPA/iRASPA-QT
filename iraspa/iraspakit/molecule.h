@@ -28,13 +28,13 @@ class Molecule: public Structure
 public:
   Molecule();
   Molecule(const Molecule &molecule);
-  Molecule(std::shared_ptr<SKStructure> structure);
+  Molecule(std::shared_ptr<SKStructure> frame);
   Molecule(std::shared_ptr<Structure> s);
   ~Molecule() {}
 
   std::shared_ptr<Structure> clone() override final;
 
-	iRASPAStructureType structureType() override final { return iRASPAStructureType::molecule; }
+  ObjectType structureType() override final { return ObjectType::molecule; }
 
   std::shared_ptr<Structure> flattenHierarchy() const override final;
   std::shared_ptr<Structure> appliedCellContentShift() const override final;

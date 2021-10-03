@@ -179,8 +179,8 @@ void SceneTreeView::reloadSelection()
       _mainWindow->recheckRemovalButtons();
       emit setSelectedMovie(nullptr);
       emit setSelectedFrame(nullptr);
-      emit setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>>{});
-      emit setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAStructure>>{});
+      emit setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAObject>>>{});
+      emit setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>>{});
     }
   }
   update();
@@ -431,7 +431,7 @@ void SceneTreeView::newCrystal()
   crystal->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   crystal->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(crystal);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(crystal);
 
   insertMovie(iraspaStructure);
 }
@@ -447,7 +447,7 @@ void SceneTreeView::newMolecularCrystal()
   molecularCrystal->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   molecularCrystal->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(molecularCrystal);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(molecularCrystal);
 
   insertMovie(iraspaStructure);
 }
@@ -463,7 +463,7 @@ void SceneTreeView::newProteinCrystal()
   proteinCrystal->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   proteinCrystal->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(proteinCrystal);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(proteinCrystal);
 
   insertMovie(iraspaStructure);
 }
@@ -479,7 +479,7 @@ void SceneTreeView::newMolecule()
   molecule->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   molecule->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(molecule);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(molecule);
 
   insertMovie(iraspaStructure);
 }
@@ -496,7 +496,7 @@ void SceneTreeView::newProtein()
   protein->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   protein->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(protein);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(protein);
 
   insertMovie(iraspaStructure);
 }
@@ -512,7 +512,7 @@ void SceneTreeView::newCrystalEllipsoid()
   crystalEllipsoid->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   crystalEllipsoid->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(crystalEllipsoid);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(crystalEllipsoid);
 
   insertMovie(iraspaStructure);
 }
@@ -528,7 +528,7 @@ void SceneTreeView::newCrystalCylinder()
   crystalCylinder->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   crystalCylinder->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(crystalCylinder);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(crystalCylinder);
 
   insertMovie(iraspaStructure);
 }
@@ -544,7 +544,7 @@ void SceneTreeView::newCrystalPolygonalPrism()
   crystalPolygonalPrismPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   crystalPolygonalPrismPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(crystalPolygonalPrismPrimitive);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(crystalPolygonalPrismPrimitive);
 
   insertMovie(iraspaStructure);
 }
@@ -560,7 +560,7 @@ void SceneTreeView::newEllipsoid()
   ellipsoidPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   ellipsoidPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(ellipsoidPrimitive);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(ellipsoidPrimitive);
 
   insertMovie(iraspaStructure);
 }
@@ -576,7 +576,7 @@ void SceneTreeView::newCylinder()
   cylinderPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   cylinderPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(cylinderPrimitive);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(cylinderPrimitive);
 
   insertMovie(iraspaStructure);
 }
@@ -592,14 +592,14 @@ void SceneTreeView::newPolygonalPrism()
   polygonalPrismPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
   polygonalPrismPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
-  std::shared_ptr<iRASPAStructure> iraspaStructure = std::make_shared<iRASPAStructure>(polygonalPrismPrimitive);
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(polygonalPrismPrimitive);
 
   insertMovie(iraspaStructure);
 }
 
 
 
-void SceneTreeView::insertMovie(std::shared_ptr<iRASPAStructure> iraspaStructure)
+void SceneTreeView::insertMovie(std::shared_ptr<iRASPAObject> iraspaStructure)
 {
   static int number = 0;
   if(_sceneList)

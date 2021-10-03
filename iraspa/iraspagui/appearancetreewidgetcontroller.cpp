@@ -30,6 +30,10 @@
 #include "qdoubleslider.h"
 #include <foundationkit.h>
 #include <limits>
+#include "primitivevisualappearanceviewer.h"
+#include "atomvisualappearanceviewer.h"
+#include "adsorptionsurfacevisualappearanceviewer.h"
+#include "atomtextvisualappearanceviewer.h"
 
 AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent): QTreeWidget(parent),
     _appearancePrimitiveForm(new AppearancePrimitiveForm),
@@ -827,7 +831,7 @@ void AppearanceTreeWidgetController::setProject(std::shared_ptr<ProjectTreeNode>
 {
   _projectTreeNode = projectTreeNode;
   _projectStructure = nullptr;
-  _iraspa_structures = std::vector<std::shared_ptr<iRASPAStructure>>{};
+  _iraspa_structures = std::vector<std::shared_ptr<iRASPAObject>>{};
 
   if (projectTreeNode)
   {
@@ -847,7 +851,7 @@ void AppearanceTreeWidgetController::setProject(std::shared_ptr<ProjectTreeNode>
   reloadData();
 }
 
-void AppearanceTreeWidgetController::setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures)
+void AppearanceTreeWidgetController::setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures)
 {
   _iraspa_structures = iraspa_structures;
   reloadData();
@@ -958,30 +962,34 @@ void AppearanceTreeWidgetController::reloadRotationAngle()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-
-      if (std::optional<double> angle = rotationAngle())
+      if (std::optional<std::unordered_set<double>> values = rotationAngle(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->rotationAngleDoubleSpinBox)->setValue(*angle);
+        _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-        _appearancePrimitiveForm->rotatePlusXPushButton->setEnabled(_projectTreeNode->isEditable());
-        _appearancePrimitiveForm->rotatePlusYPushButton->setEnabled(_projectTreeNode->isEditable());
-        _appearancePrimitiveForm->rotatePlusZPushButton->setEnabled(_projectTreeNode->isEditable());
-        _appearancePrimitiveForm->rotateMinusXPushButton->setEnabled(_projectTreeNode->isEditable());
-        _appearancePrimitiveForm->rotateMinusYPushButton->setEnabled(_projectTreeNode->isEditable());
-        _appearancePrimitiveForm->rotateMinusZPushButton->setEnabled(_projectTreeNode->isEditable());
+        if(values->size()==1)
+        {
+          double angle = *(values->begin());
+          whileBlocking(_appearancePrimitiveForm->rotationAngleDoubleSpinBox)->setValue(angle);
 
-        _appearancePrimitiveForm->rotatePlusXPushButton->setText("Rotate +" + QString::number(*angle));
-        _appearancePrimitiveForm->rotatePlusYPushButton->setText("Rotate +" + QString::number(*angle));
-        _appearancePrimitiveForm->rotatePlusZPushButton->setText("Rotate +" + QString::number(*angle));
-        _appearancePrimitiveForm->rotateMinusXPushButton->setText("Rotate -" + QString::number(*angle));
-        _appearancePrimitiveForm->rotateMinusYPushButton->setText("Rotate -" + QString::number(*angle));
-        _appearancePrimitiveForm->rotateMinusZPushButton->setText("Rotate -" + QString::number(*angle));
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->rotationAngleDoubleSpinBox)->setText("Mult. Val.");
+          _appearancePrimitiveForm->rotatePlusXPushButton->setEnabled(_projectTreeNode->isEditable());
+          _appearancePrimitiveForm->rotatePlusYPushButton->setEnabled(_projectTreeNode->isEditable());
+          _appearancePrimitiveForm->rotatePlusZPushButton->setEnabled(_projectTreeNode->isEditable());
+          _appearancePrimitiveForm->rotateMinusXPushButton->setEnabled(_projectTreeNode->isEditable());
+          _appearancePrimitiveForm->rotateMinusYPushButton->setEnabled(_projectTreeNode->isEditable());
+          _appearancePrimitiveForm->rotateMinusZPushButton->setEnabled(_projectTreeNode->isEditable());
+
+          _appearancePrimitiveForm->rotatePlusXPushButton->setText("Rotate +" + QString::number(angle));
+          _appearancePrimitiveForm->rotatePlusYPushButton->setText("Rotate +" + QString::number(angle));
+          _appearancePrimitiveForm->rotatePlusZPushButton->setText("Rotate +" + QString::number(angle));
+          _appearancePrimitiveForm->rotateMinusXPushButton->setText("Rotate -" + QString::number(angle));
+          _appearancePrimitiveForm->rotateMinusYPushButton->setText("Rotate -" + QString::number(angle));
+          _appearancePrimitiveForm->rotateMinusZPushButton->setText("Rotate -" + QString::number(angle));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->rotationAngleDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -989,54 +997,69 @@ void AppearanceTreeWidgetController::reloadRotationAngle()
 
 void AppearanceTreeWidgetController::reloadEulerAngles()
 {
+  _appearancePrimitiveForm->EulerAngleXDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->EulerAngleXDial->setDisabled(true);
+  _appearancePrimitiveForm->EulerAngleYDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->EulerAngleYSlider->setDisabled(true);
+  _appearancePrimitiveForm->EulerAngleZDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->EulerAngleZDial->setDisabled(true);
 
   if(_projectTreeNode)
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->EulerAngleXDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->EulerAngleXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->EulerAngleXDial->setEnabled(_projectTreeNode->isEditable());
-
-      _appearancePrimitiveForm->EulerAngleYDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->EulerAngleYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->EulerAngleYSlider->setEnabled(_projectTreeNode->isEditable());
-
-      _appearancePrimitiveForm->EulerAngleZDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->EulerAngleZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->EulerAngleZDial->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<double> size = EulerAngleX())
+      if (std::optional<std::unordered_set<double>> values = EulerAngleX(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->EulerAngleXDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearancePrimitiveForm->EulerAngleXDial)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->EulerAngleXDoubleSpinBox)->setText("Mult. Val.");
+        _appearancePrimitiveForm->EulerAngleXDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->EulerAngleXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->EulerAngleXDial->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          double angle = *(values->begin());
+          whileBlocking(_appearancePrimitiveForm->EulerAngleXDoubleSpinBox)->setValue(angle);
+          whileBlocking(_appearancePrimitiveForm->EulerAngleXDial)->setDoubleValue(angle);
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->EulerAngleXDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<double> size = EulerAngleY())
+      if (std::optional<std::unordered_set<double>> values = EulerAngleY(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->EulerAngleYDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearancePrimitiveForm->EulerAngleYSlider)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->EulerAngleYDoubleSpinBox)->setText("Mult. Val.");
+        _appearancePrimitiveForm->EulerAngleYDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->EulerAngleYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->EulerAngleYSlider->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          double angle = *(values->begin());
+          whileBlocking(_appearancePrimitiveForm->EulerAngleYDoubleSpinBox)->setValue(angle);
+          whileBlocking(_appearancePrimitiveForm->EulerAngleYSlider)->setDoubleValue(angle);
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->EulerAngleYDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<double> size = EulerAngleZ())
+      if (std::optional<std::unordered_set<double>> values = EulerAngleZ(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->EulerAngleZDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearancePrimitiveForm->EulerAngleZDial)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->EulerAngleZDoubleSpinBox)->setText("Mult. Val.");
+        _appearancePrimitiveForm->EulerAngleZDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->EulerAngleZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->EulerAngleZDial->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          double angle = *(values->begin());
+          whileBlocking(_appearancePrimitiveForm->EulerAngleZDoubleSpinBox)->setValue(angle);
+          whileBlocking(_appearancePrimitiveForm->EulerAngleZDial)->setDoubleValue(angle);
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->EulerAngleZDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1059,109 +1082,132 @@ void AppearanceTreeWidgetController::reloadTransformationMatrix()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->transformationMatrixAXDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->transformationMatrixAYDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->transformationMatrixAZDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->transformationMatrixBXDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->transformationMatrixBYDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->transformationMatrixBZDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->transformationMatrixCXDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->transformationMatrixCYDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->transformationMatrixCZDoubleSpinBox->setEnabled(true);
-
-      _appearancePrimitiveForm->transformationMatrixAXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->transformationMatrixAYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->transformationMatrixAZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->transformationMatrixBXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->transformationMatrixBYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->transformationMatrixBZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->transformationMatrixCXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->transformationMatrixCYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->transformationMatrixCZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-
-      if(!_iraspa_structures.empty())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixAX(); values)
       {
-        if (std::optional<double> value = transformationMatrixAX())
+        _appearancePrimitiveForm->transformationMatrixAXDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixAXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixAXDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixAXDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixAXDoubleSpinBox)->setText("Mult. Val.");
         }
+      }
 
-        if (std::optional<double> value = transformationMatrixAY())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixAY(); values)
+      {
+        _appearancePrimitiveForm->transformationMatrixAYDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixAYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixAYDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixAYDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixAYDoubleSpinBox)->setText("Mult. Val.");
         }
+      }
 
-        if (std::optional<double> value = transformationMatrixAZ())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixAZ(); values)
+      {
+        _appearancePrimitiveForm->transformationMatrixAZDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixAZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixAZDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixAZDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixAZDoubleSpinBox)->setText("Mult. Val.");
         }
+      }
 
-        if (std::optional<double> value = transformationMatrixBX())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixBX(); values)
+      {
+        _appearancePrimitiveForm->transformationMatrixBXDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixBXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixBXDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixBXDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixBXDoubleSpinBox)->setText("Mult. Val.");
         }
+      }
 
-        if (std::optional<double> value = transformationMatrixBY())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixBY(); values)
+      {
+        _appearancePrimitiveForm->transformationMatrixBYDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixBYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixBYDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixBYDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixBYDoubleSpinBox)->setText("Mult. Val.");
         }
+      }
 
-        if (std::optional<double> value = transformationMatrixBZ())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixBZ(); values)
+      {
+        _appearancePrimitiveForm->transformationMatrixBZDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixBZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixBZDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixBZDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixBZDoubleSpinBox)->setText("Mult. Val.");
         }
+      }
 
-        if (std::optional<double> value = transformationMatrixCX())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixCX(); values)
+      {
+        _appearancePrimitiveForm->transformationMatrixCXDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixCXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixCXDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixCXDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixCXDoubleSpinBox)->setText("Mult. Val.");
         }
+      }
 
-        if (std::optional<double> value = transformationMatrixCY())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixCY(); values)
+      {
+        _appearancePrimitiveForm->transformationMatrixCYDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixCYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixCYDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixCYDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixCYDoubleSpinBox)->setText("Mult. Val.");
         }
+      }
 
-        if (std::optional<double> value = transformationMatrixCZ())
+      if (std::optional<std::unordered_set<double>> values = transformationMatrixCZ(); values)
+      {
+        _appearancePrimitiveForm->transformationMatrixCZDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->transformationMatrixCZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->transformationMatrixCZDoubleSpinBox)->setValue(*value);
+          whileBlocking(_appearancePrimitiveForm->transformationMatrixCZDoubleSpinBox)->setValue(*(values->begin()));
         }
         else
         {
           whileBlocking(_appearancePrimitiveForm->transformationMatrixCZDoubleSpinBox)->setText("Mult. Val.");
         }
       }
+
     }
   }
 }
@@ -1175,18 +1221,22 @@ void AppearanceTreeWidgetController::reloadOpacity()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveOpacityDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveOpacityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->primitiveOpacitySlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = primitiveOpacity(); values)
+      {
+        _appearancePrimitiveForm->primitiveOpacityDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveOpacityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->primitiveOpacitySlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = primitiveOpacity())
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveOpacityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->primitiveOpacitySlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveOpacityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          double opacity = *(values->begin());
+          whileBlocking(_appearancePrimitiveForm->primitiveOpacityDoubleSpinBox)->setValue(opacity);
+          whileBlocking(_appearancePrimitiveForm->primitiveOpacitySlider)->setDoubleValue(opacity);
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveOpacityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1201,18 +1251,22 @@ void AppearanceTreeWidgetController::reloadNumberOfSides()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveNumberOfSidesSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveNumberOfSidesSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->primitiveNumberOfSidesSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<int>> values = primitiveNumberOfSides(); values)
+      {
+        _appearancePrimitiveForm->primitiveNumberOfSidesSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveNumberOfSidesSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->primitiveNumberOfSidesSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<int> value = primitiveNumberOfSides())
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveNumberOfSidesSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->primitiveNumberOfSidesSlider)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveNumberOfSidesSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          int numberOfSides = *(values->begin());
+          whileBlocking(_appearancePrimitiveForm->primitiveNumberOfSidesSpinBox)->setValue(numberOfSides);
+          whileBlocking(_appearancePrimitiveForm->primitiveNumberOfSidesSlider)->setValue(numberOfSides);
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveNumberOfSidesSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1226,17 +1280,20 @@ void AppearanceTreeWidgetController::reloadIsCapped()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveCappedCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<int>> values = primitiveNumberOfSides(); values)
+      {
+        _appearancePrimitiveForm->primitiveCappedCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = primitiveIsCapped())
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveCappedCheckBox)->setTristate(false);
-        whileBlocking(_appearancePrimitiveForm->primitiveCappedCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveCappedCheckBox)->setTristate(true);
-        whileBlocking(_appearancePrimitiveForm->primitiveCappedCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveCappedCheckBox)->setTristate(false);
+          whileBlocking(_appearancePrimitiveForm->primitiveCappedCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveCappedCheckBox)->setTristate(true);
+          whileBlocking(_appearancePrimitiveForm->primitiveCappedCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -1252,46 +1309,56 @@ void AppearanceTreeWidgetController::reloadPrimitiveSelectionStyle()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveSelectionStyleComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      _appearancePrimitiveForm->primitiveSelectionStyleNuDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveSelectionStyleNuDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->primitiveSelectionStyleRhoDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveSelectionStyleRhoDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-
-      if (std::optional<RKSelectionStyle> type = primitiveSelectionStyle())
+      if (std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> types = primitiveSelectionStyle(); types)
       {
-        if(int index = _appearancePrimitiveForm->primitiveSelectionStyleComboBox->findText("Multiple values"); index>=0)
+        _appearancePrimitiveForm->primitiveSelectionStyleComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(types->size()==1)
         {
-          whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleComboBox)->removeItem(index);
+          if(int index = _appearancePrimitiveForm->primitiveSelectionStyleComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleComboBox)->setCurrentIndex(int(*(types->begin())));
         }
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearancePrimitiveForm->primitiveSelectionStyleComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleComboBox)->addItem("Multiple values");
+          if(int index = _appearancePrimitiveForm->primitiveSelectionStyleComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleComboBox)->setCurrentText("Multiple values");
       }
 
-      if (std::optional<double> size = primitiveSelectionStyleNu())
+      if (std::optional<std::unordered_set<double>> values = primitiveSelectionStyleNu(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleNuDoubleSpinBox)->setValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleNuDoubleSpinBox)->setText("Mult. Val.");
+        _appearancePrimitiveForm->primitiveSelectionStyleNuDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveSelectionStyleNuDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleNuDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleNuDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<double> size = primitiveSelectionStyleRho())
+      if (std::optional<std::unordered_set<double>> values = primitiveSelectionStyleNu(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleRhoDoubleSpinBox)->setValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleRhoDoubleSpinBox)->setText("Mult. Val.");
+        _appearancePrimitiveForm->primitiveSelectionStyleRhoDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveSelectionStyleRhoDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleRhoDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionStyleRhoDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1306,18 +1373,21 @@ void AppearanceTreeWidgetController::reloadPrimitiveSelectionIntensity()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveSelectionItensityDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveSelectionItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->primitiveSelectionItensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = primitiveSelectionIntensity(); values)
+      {
+        _appearancePrimitiveForm->primitiveSelectionItensityDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveSelectionItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->primitiveSelectionItensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> size = primitiveSelectionIntensity())
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionItensityDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionItensityDoubleSlider)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionItensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionItensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionItensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionItensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1332,18 +1402,21 @@ void AppearanceTreeWidgetController::reloadPrimitiveSelectionScaling()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveSelectionScalingDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveSelectionScalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->primitiveSelectionScalingDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = primitiveSelectionScaling(); values)
+      {
+        _appearancePrimitiveForm->primitiveSelectionScalingDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveSelectionScalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->primitiveSelectionScalingDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> size = primitiveSelectionScaling())
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionScalingDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionScalingDoubleSlider)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveSelectionScalingDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionScalingDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionScalingDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSelectionScalingDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1358,18 +1431,21 @@ void AppearanceTreeWidgetController::reloadPrimitiveHue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveHueDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveHueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->primitiveHueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = primitiveHue(); values)
+      {
+        _appearancePrimitiveForm->primitiveHueDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveHueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->primitiveHueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = primitiveHue())
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveHueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->primitiveHueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveHueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveHueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->primitiveHueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveHueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1384,18 +1460,21 @@ void AppearanceTreeWidgetController::reloadPrimitiveSaturation()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveSaturationDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveSaturationDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->primitiveSaturationDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = primitiveSaturation(); values)
+      {
+        _appearancePrimitiveForm->primitiveSaturationDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveSaturationDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->primitiveSaturationDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = primitiveSaturation())
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveSaturationDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->primitiveSaturationDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveSaturationDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSaturationDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->primitiveSaturationDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveSaturationDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1410,18 +1489,21 @@ void AppearanceTreeWidgetController::reloadPrimitiveValue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->primitiveValueDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->primitiveValueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->primitiveValueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = primitiveValue(); values)
+      {
+        _appearancePrimitiveForm->primitiveValueDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->primitiveValueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->primitiveValueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = primitiveValue())
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveValueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->primitiveValueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->primitiveValueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveValueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->primitiveValueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->primitiveValueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1435,17 +1517,20 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveHighDynamicRange()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->frontHDRCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = frontPrimitiveHighDynamicRange(); values)
+      {
+        _appearancePrimitiveForm->frontHDRCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = frontPrimitiveHighDynamicRange())
-      {
-        whileBlocking(_appearancePrimitiveForm->frontHDRCheckBox)->setTristate(false);
-        whileBlocking(_appearancePrimitiveForm->frontHDRCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontHDRCheckBox)->setTristate(true);
-        whileBlocking(_appearancePrimitiveForm->frontHDRCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontHDRCheckBox)->setTristate(false);
+          whileBlocking(_appearancePrimitiveForm->frontHDRCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontHDRCheckBox)->setTristate(true);
+          whileBlocking(_appearancePrimitiveForm->frontHDRCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -1460,18 +1545,21 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveHDRExposure()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->frontExposureDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->frontExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->frontExposureSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = frontPrimitiveHDRExposure(); values)
+      {
+        _appearancePrimitiveForm->frontExposureDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->frontExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->frontExposureSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = frontPrimitiveHDRExposure())
-      {
-        whileBlocking(_appearancePrimitiveForm->frontExposureDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->frontExposureSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontExposureDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontExposureDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->frontExposureSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontExposureDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1488,29 +1576,34 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveAmbientLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->frontAmbientIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = frontPrimitiveAmbientLightIntensity(); values)
+      {
+        _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->frontAmbientIntensitySlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = frontPrimitiveAmbientLightIntensity())
-      {
-        whileBlocking(_appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->frontAmbientIntensitySlider)->setDoubleValue(*value);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->frontAmbientIntensitySlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
-      else
+      if (std::optional<std::unordered_set<QColor>> values = frontPrimitiveAmbientLightColor(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox)->setText("Mult. Val.");
-      }
-
-      if (std::optional<QColor> value = frontPrimitiveAmbientLightColor())
-      {
-        whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearancePrimitiveForm->frontAmbientColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1525,29 +1618,35 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveDiffuseLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->frontDiffuseIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = frontPrimitiveDiffuseLightIntensity(); values)
+      {
+        _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->frontDiffuseIntensitySlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = frontPrimitiveDiffuseLightIntensity())
-      {
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseIntensitySlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->frontDiffuseIntensitySlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = frontPrimitiveDiffuseLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = frontPrimitiveDiffuseLightColor(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1562,29 +1661,35 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveSpecularLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->frontSpecularIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = frontPrimitiveSpecularLightIntensity(); values)
+      {
+        _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->frontSpecularIntensitySlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = frontPrimitiveSpecularLightIntensity())
-      {
-        whileBlocking(_appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->frontSpecularIntensitySlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->frontSpecularIntensitySlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = frontPrimitiveSpecularLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = frontPrimitiveSpecularLightColor(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearancePrimitiveForm->frontSpecularColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1599,18 +1704,21 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveShininess()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->frontShininessDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->frontShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->frontShininessSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = frontPrimitiveShininess(); values)
+      {
+        _appearancePrimitiveForm->frontShininessDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->frontShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->frontShininessSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = frontPrimitiveShininess())
-      {
-        whileBlocking(_appearancePrimitiveForm->frontShininessDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->frontShininessSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontShininessDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->frontShininessDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->frontShininessSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontShininessDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1624,17 +1732,20 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveHighDynamicRange()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->backHDRCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = backPrimitiveHighDynamicRange(); values)
+      {
+        _appearancePrimitiveForm->backHDRCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = backPrimitiveHighDynamicRange())
-      {
-        whileBlocking(_appearancePrimitiveForm->backHDRCheckBox)->setTristate(false);
-        whileBlocking(_appearancePrimitiveForm->backHDRCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->backHDRCheckBox)->setTristate(true);
-        whileBlocking(_appearancePrimitiveForm->backHDRCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backHDRCheckBox)->setTristate(false);
+          whileBlocking(_appearancePrimitiveForm->backHDRCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->backHDRCheckBox)->setTristate(true);
+          whileBlocking(_appearancePrimitiveForm->backHDRCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -1649,18 +1760,21 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveHDRExposure()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->backExposureDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->backExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->backExposureSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = backPrimitiveHDRExposure(); values)
+      {
+        _appearancePrimitiveForm->backExposureDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->backExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->backExposureSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = backPrimitiveHDRExposure())
-      {
-        whileBlocking(_appearancePrimitiveForm->backExposureDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->backExposureSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->backExposureDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backExposureDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->backExposureSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->backExposureDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1677,29 +1791,35 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveAmbientLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->backAmbientIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = backPrimitiveAmbientLightIntensity(); values)
+      {
+        _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->backAmbientIntensitySlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = backPrimitiveAmbientLightIntensity())
-      {
-        whileBlocking(_appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->backAmbientIntensitySlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->backAmbientIntensitySlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = backPrimitiveAmbientLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = backPrimitiveAmbientLightColor(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearancePrimitiveForm->backAmbientColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1714,29 +1834,35 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveDiffuseLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->backDiffuseIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = backPrimitiveDiffuseLightIntensity(); values)
+      {
+        _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->backDiffuseIntensitySlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = backPrimitiveDiffuseLightIntensity())
-      {
-        whileBlocking(_appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->backDiffuseIntensitySlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->backDiffuseIntensitySlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = backPrimitiveDiffuseLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = backPrimitiveDiffuseLightColor(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->frontDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearancePrimitiveForm->backDiffuseColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1751,29 +1877,35 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveSpecularLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->backSpecularIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = backPrimitiveSpecularLightIntensity(); values)
+      {
+        _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->backSpecularIntensitySlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = backPrimitiveSpecularLightIntensity())
-      {
-        whileBlocking(_appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->backSpecularIntensitySlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->backSpecularIntensitySlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = backPrimitiveSpecularLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = backPrimitiveSpecularLightColor(); values)
       {
-        whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearancePrimitiveForm->backSpecularColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1788,18 +1920,21 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveShininess()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearancePrimitiveForm->backShininessDoubleSpinBox->setEnabled(true);
-      _appearancePrimitiveForm->backShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->backShininessSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = backPrimitiveShininess(); values)
+      {
+        _appearancePrimitiveForm->backShininessDoubleSpinBox->setEnabled(true);
+        _appearancePrimitiveForm->backShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->backShininessSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = backPrimitiveShininess())
-      {
-        whileBlocking(_appearancePrimitiveForm->backShininessDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearancePrimitiveForm->backShininessSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearancePrimitiveForm->backShininessDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearancePrimitiveForm->backShininessDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearancePrimitiveForm->backShininessSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearancePrimitiveForm->backShininessDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -1811,9 +1946,12 @@ void AppearanceTreeWidgetController::setRotationAngle(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setPrimitiveRotationDelta(angle);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveRotationDelta(angle);
+      }
     }
     reloadRotationAngle();
 
@@ -1821,21 +1959,24 @@ void AppearanceTreeWidgetController::setRotationAngle(double angle)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::rotationAngle()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::rotationAngle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->primitiveRotationDelta());
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveRotationDelta());
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -1844,14 +1985,17 @@ void AppearanceTreeWidgetController::rotateYawPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      simd_quatd dq = simd_quatd::yaw(rotationDelta);
-      simd_quatd newOrientation = orientation *dq;
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double rotationDelta = primitiveViewer->primitiveRotationDelta();
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        simd_quatd dq = simd_quatd::yaw(rotationDelta);
+        simd_quatd newOrientation = orientation *dq;
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -1869,14 +2013,17 @@ void AppearanceTreeWidgetController::rotateYawMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      simd_quatd dq = simd_quatd::yaw(-rotationDelta);
-      simd_quatd newOrientation = orientation *dq;
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double rotationDelta = primitiveViewer->primitiveRotationDelta();
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        simd_quatd dq = simd_quatd::yaw(-rotationDelta);
+        simd_quatd newOrientation = orientation *dq;
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -1894,14 +2041,17 @@ void AppearanceTreeWidgetController::rotatePitchPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      simd_quatd dq = simd_quatd::pitch(rotationDelta);
-      simd_quatd newOrientation = orientation *dq;
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double rotationDelta = primitiveViewer->primitiveRotationDelta();
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        simd_quatd dq = simd_quatd::pitch(rotationDelta);
+        simd_quatd newOrientation = orientation *dq;
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -1919,14 +2069,17 @@ void AppearanceTreeWidgetController::rotatePitchMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      simd_quatd dq = simd_quatd::pitch(-rotationDelta);
-      simd_quatd newOrientation = orientation *dq;
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double rotationDelta = primitiveViewer->primitiveRotationDelta();
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        simd_quatd dq = simd_quatd::pitch(-rotationDelta);
+        simd_quatd newOrientation = orientation *dq;
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -1944,14 +2097,17 @@ void AppearanceTreeWidgetController::rotateRollPlus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      simd_quatd dq = simd_quatd::roll(rotationDelta);
-      simd_quatd newOrientation = orientation *dq;
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double rotationDelta = primitiveViewer->primitiveRotationDelta();
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        simd_quatd dq = simd_quatd::roll(rotationDelta);
+        simd_quatd newOrientation = orientation *dq;
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -1969,14 +2125,17 @@ void AppearanceTreeWidgetController::rotateRollMinus()
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double rotationDelta = iraspa_structure->structure()->primitiveRotationDelta();
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      simd_quatd dq = simd_quatd::roll(-rotationDelta);
-      simd_quatd newOrientation = orientation *dq;
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double rotationDelta = primitiveViewer->primitiveRotationDelta();
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        simd_quatd dq = simd_quatd::roll(-rotationDelta);
+        simd_quatd newOrientation = orientation *dq;
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -1994,14 +2153,17 @@ void AppearanceTreeWidgetController::setEulerAngleX(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      double3 EulerAngles = orientation.EulerAngles();
-      EulerAngles.x = angle * M_PI / 180.0;
-      simd_quatd newOrientation = simd_quatd(EulerAngles);
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        double3 EulerAngles = orientation.EulerAngles();
+        EulerAngles.x = angle * M_PI / 180.0;
+        simd_quatd newOrientation = simd_quatd(EulerAngles);
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2009,7 +2171,7 @@ void AppearanceTreeWidgetController::setEulerAngleX(double angle)
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2020,7 +2182,7 @@ void AppearanceTreeWidgetController::setEulerAngleX(double angle)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::EulerAngleX()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::EulerAngleX()
 {
   if(_iraspa_structures.empty())
   {
@@ -2028,16 +2190,19 @@ std::optional<double> AppearanceTreeWidgetController::EulerAngleX()
   }
 
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-    double3 EulerAngle = orientation.EulerAngles();
-    set.insert(EulerAngle.x  * 180.0 / M_PI);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      simd_quatd orientation = primitiveViewer->primitiveOrientation();
+      double3 EulerAngle = orientation.EulerAngles();
+      set.insert(EulerAngle.x  * 180.0 / M_PI);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2046,14 +2211,17 @@ void AppearanceTreeWidgetController::setEulerAngleY(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      double3 EulerAngles = orientation.EulerAngles();
-      EulerAngles.y = angle * M_PI / 180.0;
-      simd_quatd newOrientation = simd_quatd(EulerAngles);
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        double3 EulerAngles = orientation.EulerAngles();
+        EulerAngles.y = angle * M_PI / 180.0;
+        simd_quatd newOrientation = simd_quatd(EulerAngles);
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2061,11 +2229,11 @@ void AppearanceTreeWidgetController::setEulerAngleY(double angle)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2076,7 +2244,7 @@ void AppearanceTreeWidgetController::setEulerAngleY(double angle)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::EulerAngleY()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::EulerAngleY()
 {
   if(_iraspa_structures.empty())
   {
@@ -2084,16 +2252,19 @@ std::optional<double> AppearanceTreeWidgetController::EulerAngleY()
   }
 
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-    double3 EulerAngle = orientation.EulerAngles();
-    set.insert(EulerAngle.y * 180.0 / M_PI);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      simd_quatd orientation = primitiveViewer->primitiveOrientation();
+      double3 EulerAngle = orientation.EulerAngles();
+      set.insert(EulerAngle.y * 180.0 / M_PI);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2103,14 +2274,17 @@ void AppearanceTreeWidgetController::setEulerAngleZ(double angle)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-      double3 EulerAngles = orientation.EulerAngles();
-      EulerAngles.z = angle * M_PI / 180.0;
-      simd_quatd newOrientation = simd_quatd(EulerAngles);
-      iraspa_structure->structure()->setPrimitiveOrientation(newOrientation);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        simd_quatd orientation = primitiveViewer->primitiveOrientation();
+        double3 EulerAngles = orientation.EulerAngles();
+        EulerAngles.z = angle * M_PI / 180.0;
+        simd_quatd newOrientation = simd_quatd(EulerAngles);
+        primitiveViewer->setPrimitiveOrientation(newOrientation);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2118,11 +2292,11 @@ void AppearanceTreeWidgetController::setEulerAngleZ(double angle)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2133,7 +2307,7 @@ void AppearanceTreeWidgetController::setEulerAngleZ(double angle)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::EulerAngleZ()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::EulerAngleZ()
 {
   if(_iraspa_structures.empty())
   {
@@ -2141,35 +2315,41 @@ std::optional<double> AppearanceTreeWidgetController::EulerAngleZ()
   }
 
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    simd_quatd orientation = iraspa_structure->structure()->primitiveOrientation();
-    double3 EulerAngle = orientation.EulerAngles();
-    set.insert(EulerAngle.z * 180.0 / M_PI);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      simd_quatd orientation = primitiveViewer->primitiveOrientation();
+      double3 EulerAngle = orientation.EulerAngles();
+      set.insert(EulerAngle.z * 180.0 / M_PI);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixAX()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixAX()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().ax);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().ax);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2178,12 +2358,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixAX(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.ax = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.ax = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2191,11 +2374,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixAX(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2206,21 +2389,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixAX(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixAY()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixAY()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().ay);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().ay);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2229,12 +2415,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixAY(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.ay = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.ay = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2242,11 +2431,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixAY(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2257,21 +2446,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixAY(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixAZ()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixAZ()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().az);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().az);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2280,12 +2472,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixAZ(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.az = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.az = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2293,11 +2488,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixAZ(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2308,21 +2503,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixAZ(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixBX()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixBX()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().bx);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().bx);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2331,12 +2529,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixBX(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.bx = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.bx = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2344,11 +2545,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixBX(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2359,21 +2560,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixBX(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixBY()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixBY()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().by);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().by);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2382,12 +2586,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixBY(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.by = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.by = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2395,11 +2602,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixBY(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2410,21 +2617,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixBY(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixBZ()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixBZ()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().bz);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().bz);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2433,12 +2643,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixBZ(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.bz = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.bz = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2446,11 +2659,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixBZ(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2461,21 +2674,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixBZ(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixCX()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixCX()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().cx);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().cx);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2484,12 +2700,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixCX(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.cx = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.cx = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2497,11 +2716,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixCX(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2512,21 +2731,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixCX(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixCY()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixCY()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().cy);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().cy);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2535,12 +2757,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixCY(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.cy = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.cy = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2548,11 +2773,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixCY(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2563,21 +2788,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixCY(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::transformationMatrixCZ()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transformationMatrixCZ()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->transformationMatrix().cz);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveTransformationMatrix().cz);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2586,12 +2814,15 @@ void AppearanceTreeWidgetController::setTransformationMatrixCZ(double value)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      double3x3 matrix = iraspa_structure->structure()->transformationMatrix();
-      matrix.cz = value;
-      iraspa_structure->structure()->setTransformationMatrix(matrix);
-      iraspa_structure->structure()->reComputeBoundingBox();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
+        matrix.cz = value;
+        primitiveViewer->setPrimitiveTransformationMatrix(matrix);
+      }
+      iraspa_structure->object()->reComputeBoundingBox();
     }
 
     SKBoundingBox box = _projectStructure->renderBoundingBox();
@@ -2599,11 +2830,11 @@ void AppearanceTreeWidgetController::setTransformationMatrixCZ(double value)
 
     std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -2615,21 +2846,24 @@ void AppearanceTreeWidgetController::setTransformationMatrixCZ(double value)
 }
 
 
-std::optional<double> AppearanceTreeWidgetController::primitiveOpacity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primitiveOpacity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->primitiveOpacity());
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveOpacity());
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2638,9 +2872,12 @@ void AppearanceTreeWidgetController::setPrimitiveOpacity(double opacity)
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setPrimitiveOpacity(opacity);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveOpacity(opacity);
+      }
     }
 
     emit rendererReloadData();
@@ -2650,21 +2887,24 @@ void AppearanceTreeWidgetController::setPrimitiveOpacity(double opacity)
     _mainWindow->documentWasModified();
   }
 }
-std::optional<int> AppearanceTreeWidgetController::primitiveNumberOfSides()
+std::optional<std::unordered_set<int>> AppearanceTreeWidgetController::primitiveNumberOfSides()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<int> set = std::unordered_set<int>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    set.insert(iraspa_structure->structure()->primitiveNumberOfSides());
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      set.insert(primitiveViewer->primitiveNumberOfSides());
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *(set.begin());
+    return set;
   }
   return std::nullopt;
 }
@@ -2673,9 +2913,12 @@ void AppearanceTreeWidgetController::setPrimitiveNumberOfSides(int numberOfSides
 {
   if(!_iraspa_structures.empty())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setPrimitiveNumberOfSides(numberOfSides);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveNumberOfSides(numberOfSides);
+      }
     }
 
     emit rendererReloadData();
@@ -2689,30 +2932,36 @@ void AppearanceTreeWidgetController::setPrimitiveNumberOfSides(int numberOfSides
 
 
 
-std::optional<bool> AppearanceTreeWidgetController::primitiveIsCapped()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::primitiveIsCapped()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->primitiveIsCapped();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = primitiveViewer->primitiveIsCapped();
+      set.insert(value);
+    }
   }
-   if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setPrimitiveIsCapped(bool state)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setPrimitiveIsCapped(bool(state));
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveIsCapped(bool(state));
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -2725,10 +2974,12 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionStyle(int value)
 {
   if(value>=0 && value<int(RKSelectionStyle::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setPrimitiveSelectionStyle(RKSelectionStyle(value));
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveSelectionStyle(RKSelectionStyle(value));
+      }
     }
     reloadPrimitiveProperties();
     emit rendererReloadData();
@@ -2737,32 +2988,37 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionStyle(int value)
   }
 }
 
-std::optional<RKSelectionStyle> AppearanceTreeWidgetController::primitiveSelectionStyle()
+std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> AppearanceTreeWidgetController::primitiveSelectionStyle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKSelectionStyle value = iraspa_structure->structure()->primitiveSelectionStyle();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKSelectionStyle value = primitiveViewer->primitiveSelectionStyle();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setPrimitiveSelectionStyleNu(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setPrimitiveSelectionFrequency(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveSelectionFrequency(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -2770,32 +3026,37 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionStyleNu(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::primitiveSelectionStyleNu()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primitiveSelectionStyleNu()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->primitiveSelectionFrequency();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveSelectionFrequency();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setPrimitiveSelectionStyleRho(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setPrimitiveSelectionDensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveSelectionDensity(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -2803,32 +3064,37 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionStyleRho(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::primitiveSelectionStyleRho()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primitiveSelectionStyleRho()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->primitiveSelectionDensity();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveSelectionDensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setPrimitiveSelectionIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setPrimitiveSelectionIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveSelectionIntensity(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -2836,32 +3102,37 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionIntensity(double value
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::primitiveSelectionIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primitiveSelectionIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->primitiveSelectionIntensity();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveSelectionIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setPrimitiveSelectionScaling(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setPrimitiveSelectionScaling(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveSelectionScaling(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -2869,22 +3140,25 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionScaling(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::primitiveSelectionScaling()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primitiveSelectionScaling()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->primitiveSelectionScaling();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveSelectionScaling();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -2892,10 +3166,12 @@ std::optional<double> AppearanceTreeWidgetController::primitiveSelectionScaling(
 
 void AppearanceTreeWidgetController::setPrimitiveHue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setPrimitiveHue(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveHue(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -2903,32 +3179,37 @@ void AppearanceTreeWidgetController::setPrimitiveHue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::primitiveHue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primitiveHue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->primitiveHue();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveHue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setPrimitiveSaturation(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setPrimitiveSaturation(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveSaturation(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -2936,32 +3217,37 @@ void AppearanceTreeWidgetController::setPrimitiveSaturation(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::primitiveSaturation()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primitiveSaturation()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->primitiveSaturation();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveSaturation();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setPrimitiveValue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setPrimitiveValue(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveValue(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -2969,22 +3255,25 @@ void AppearanceTreeWidgetController::setPrimitiveValue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::primitiveValue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primitiveValue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->primitiveValue();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveValue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -2994,9 +3283,12 @@ std::optional<double> AppearanceTreeWidgetController::primitiveValue()
 
 void AppearanceTreeWidgetController::setFrontPrimitiveHighDynamicRange(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setFrontPrimitiveHDR(bool(value));
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveFrontSideHDR(bool(value));
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3004,31 +3296,37 @@ void AppearanceTreeWidgetController::setFrontPrimitiveHighDynamicRange(int value
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::frontPrimitiveHighDynamicRange()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::frontPrimitiveHighDynamicRange()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->frontPrimitiveHDR();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = primitiveViewer->primitiveFrontSideHDR();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setFrontPrimitiveHDRExposure(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setFrontPrimitiveHDRExposure(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveFrontSideHDRExposure(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3036,31 +3334,37 @@ void AppearanceTreeWidgetController::setFrontPrimitiveHDRExposure(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::frontPrimitiveHDRExposure()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontPrimitiveHDRExposure()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->frontPrimitiveHDRExposure();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveFrontSideHDRExposure();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setFrontPrimitiveAmbientLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setFrontPrimitiveAmbientIntensity(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveFrontSideAmbientIntensity(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3068,22 +3372,25 @@ void AppearanceTreeWidgetController::setFrontPrimitiveAmbientLightIntensity(doub
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::frontPrimitiveAmbientLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontPrimitiveAmbientLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->frontPrimitiveAmbientIntensity();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveFrontSideAmbientIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3094,9 +3401,12 @@ void AppearanceTreeWidgetController::setFrontPrimitiveAmbientLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setFrontPrimitiveAmbientColor(color);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveFrontSideAmbientColor(color);
+      }
     }
     reloadPrimitiveProperties();
     emit rendererReloadData();
@@ -3105,31 +3415,37 @@ void AppearanceTreeWidgetController::setFrontPrimitiveAmbientLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveAmbientLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::frontPrimitiveAmbientLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->frontPrimitiveAmbientColor();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = primitiveViewer->primitiveFrontSideAmbientColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setFrontPrimitiveDiffuseLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setFrontPrimitiveDiffuseIntensity(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveFrontSideDiffuseIntensity(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3137,22 +3453,25 @@ void AppearanceTreeWidgetController::setFrontPrimitiveDiffuseLightIntensity(doub
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::frontPrimitiveDiffuseLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontPrimitiveDiffuseLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->frontPrimitiveDiffuseIntensity();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveFrontSideDiffuseIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3163,9 +3482,12 @@ void AppearanceTreeWidgetController::setFrontPrimitiveDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setFrontPrimitiveDiffuseColor(color);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveFrontSideDiffuseColor(color);
+      }
     }
     reloadPrimitiveProperties();
     emit rendererReloadData();
@@ -3174,31 +3496,37 @@ void AppearanceTreeWidgetController::setFrontPrimitiveDiffuseLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveDiffuseLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::frontPrimitiveDiffuseLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->frontPrimitiveDiffuseColor();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = primitiveViewer->primitiveFrontSideDiffuseColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setFrontPrimitiveSpecularLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setFrontPrimitiveSpecularIntensity(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveFrontSideSpecularIntensity(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3206,22 +3534,25 @@ void AppearanceTreeWidgetController::setFrontPrimitiveSpecularLightIntensity(dou
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::frontPrimitiveSpecularLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontPrimitiveSpecularLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->frontPrimitiveSpecularIntensity();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveFrontSideSpecularIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3232,9 +3563,12 @@ void AppearanceTreeWidgetController::setFrontPrimitiveSpecularLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setFrontPrimitiveSpecularColor(color);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveFrontSideSpecularColor(color);
+      }
     }
     reloadPrimitiveProperties();
     emit rendererReloadData();
@@ -3243,31 +3577,37 @@ void AppearanceTreeWidgetController::setFrontPrimitiveSpecularLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::frontPrimitiveSpecularLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::frontPrimitiveSpecularLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->frontPrimitiveSpecularColor();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = primitiveViewer->primitiveFrontSideSpecularColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setFrontPrimitiveShininess(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setFrontPrimitiveShininess(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveFrontSideShininess(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3275,22 +3615,25 @@ void AppearanceTreeWidgetController::setFrontPrimitiveShininess(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::frontPrimitiveShininess()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontPrimitiveShininess()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->frontPrimitiveShininess();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveFrontSideShininess();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3298,9 +3641,12 @@ std::optional<double> AppearanceTreeWidgetController::frontPrimitiveShininess()
 
 void AppearanceTreeWidgetController::setBackPrimitiveHighDynamicRange(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBackPrimitiveHDR(bool(value));
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveBackSideHDR(bool(value));
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3308,31 +3654,37 @@ void AppearanceTreeWidgetController::setBackPrimitiveHighDynamicRange(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::backPrimitiveHighDynamicRange()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::backPrimitiveHighDynamicRange()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->backPrimitiveHDR();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = primitiveViewer->primitiveBackSideHDR();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBackPrimitiveHDRExposure(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBackPrimitiveHDRExposure(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveBackSideHDRExposure(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3340,31 +3692,37 @@ void AppearanceTreeWidgetController::setBackPrimitiveHDRExposure(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::backPrimitiveHDRExposure()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPrimitiveHDRExposure()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->backPrimitiveHDRExposure();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveBackSideHDRExposure();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBackPrimitiveAmbientLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBackPrimitiveAmbientIntensity(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveBackSideAmbientIntensity(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3372,22 +3730,25 @@ void AppearanceTreeWidgetController::setBackPrimitiveAmbientLightIntensity(doubl
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::backPrimitiveAmbientLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPrimitiveAmbientLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->backPrimitiveAmbientIntensity();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveBackSideAmbientIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3398,9 +3759,12 @@ void AppearanceTreeWidgetController::setBackPrimitiveAmbientLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setBackPrimitiveAmbientColor(color);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveBackSideAmbientColor(color);
+      }
     }
     reloadPrimitiveProperties();
     emit rendererReloadData();
@@ -3409,31 +3773,37 @@ void AppearanceTreeWidgetController::setBackPrimitiveAmbientLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveAmbientLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::backPrimitiveAmbientLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->backPrimitiveAmbientColor();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = primitiveViewer->primitiveBackSideAmbientColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBackPrimitiveDiffuseIntensity(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveBackSideDiffuseIntensity(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3441,22 +3811,25 @@ void AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightIntensity(doubl
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::backPrimitiveDiffuseLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPrimitiveDiffuseLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->backPrimitiveDiffuseIntensity();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveBackSideDiffuseIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3467,9 +3840,12 @@ void AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setBackPrimitiveDiffuseColor(color);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveBackSideDiffuseColor(color);
+      }
     }
     reloadPrimitiveProperties();
     emit rendererReloadData();
@@ -3478,31 +3854,37 @@ void AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveDiffuseLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::backPrimitiveDiffuseLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->backPrimitiveDiffuseColor();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = primitiveViewer->primitiveBackSideDiffuseColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBackPrimitiveSpecularLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBackPrimitiveSpecularIntensity(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveBackSideSpecularIntensity(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3510,22 +3892,25 @@ void AppearanceTreeWidgetController::setBackPrimitiveSpecularLightIntensity(doub
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::backPrimitiveSpecularLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPrimitiveSpecularLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->backPrimitiveSpecularIntensity();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveBackSideSpecularIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3536,9 +3921,12 @@ void AppearanceTreeWidgetController::setBackPrimitiveSpecularLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setBackPrimitiveSpecularColor(color);
+      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        primitiveViewer->setPrimitiveBackSideSpecularColor(color);
+      }
     }
     reloadPrimitiveProperties();
     emit rendererReloadData();
@@ -3547,31 +3935,37 @@ void AppearanceTreeWidgetController::setBackPrimitiveSpecularLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::backPrimitiveSpecularLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::backPrimitiveSpecularLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->backPrimitiveSpecularColor();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = primitiveViewer->primitiveBackSideSpecularColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBackPrimitiveShininess(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBackPrimitiveShininess(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      primitiveViewer->setPrimitiveBackSideShininess(value);
+    }
   }
   reloadPrimitiveProperties();
   emit rendererReloadData();
@@ -3579,22 +3973,25 @@ void AppearanceTreeWidgetController::setBackPrimitiveShininess(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::backPrimitiveShininess()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPrimitiveShininess()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->backPrimitiveShininess();
-    set.insert(value);
+    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = primitiveViewer->primitiveBackSideShininess();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3653,23 +4050,26 @@ void AppearanceTreeWidgetController::reloadAtomRepresentationType()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomRepresentationType->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<Structure::RepresentationType, enum_hash>> values = representationType(); values)
+      {
+        _appearanceAtomsForm->atomRepresentationType->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<Structure::RepresentationType> type=representationType())
-      {
-        if(int index = _appearanceAtomsForm->atomRepresentationType->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAtomsForm->atomRepresentationType)->removeItem(index);
+          if(int index = _appearanceAtomsForm->atomRepresentationType->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomRepresentationType)->removeItem(index);
+          }
+          whileBlocking(_appearanceAtomsForm->atomRepresentationType)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_appearanceAtomsForm->atomRepresentationType)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceAtomsForm->atomRepresentationType->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceAtomsForm->atomRepresentationType)->addItem("Multiple values");
+          if(int index = _appearanceAtomsForm->atomRepresentationType->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomRepresentationType)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAtomsForm->atomRepresentationType)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceAtomsForm->atomRepresentationType)->setCurrentText("Multiple values");
       }
     }
   }
@@ -3683,39 +4083,42 @@ void AppearanceTreeWidgetController::reloadAtomRepresentationStyle()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomRepresentationStyle->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<Structure::RepresentationStyle> type=representationStyle())
+      if (std::optional<std::unordered_set<Structure::RepresentationStyle, enum_hash>> values = representationStyle(); values)
       {
-        if(int index = _appearanceAtomsForm->atomRepresentationStyle->findText("Multiple values"); index>=0)
+        _appearanceAtomsForm->atomRepresentationStyle->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->removeItem(index);
-        }
-        if(int index = _appearanceAtomsForm->atomRepresentationStyle->findText("Custom"); index>=0)
-        {
-          whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->removeItem(index);
-        }
-        if(int(*type)<0)
-        {
-           whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->insertItem(int(Structure::RepresentationStyle::multiple_values),"Custom");
-           whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->setCurrentIndex(int(Structure::RepresentationStyle::multiple_values));
+          if(int index = _appearanceAtomsForm->atomRepresentationStyle->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->removeItem(index);
+          }
+          if(int index = _appearanceAtomsForm->atomRepresentationStyle->findText("Custom"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->removeItem(index);
+          }
+          if(int(*(values->begin()))<0)
+          {
+             whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->insertItem(int(Structure::RepresentationStyle::multiple_values),"Custom");
+             whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->setCurrentIndex(int(Structure::RepresentationStyle::multiple_values));
+          }
+          else
+          {
+            whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->setCurrentIndex(int(*(values->begin())));
+          }
         }
         else
         {
-          whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->setCurrentIndex(int(*type));
+          if(int index = _appearanceAtomsForm->atomRepresentationStyle->findText("Custom"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->removeItem(index);
+          }
+          if(int index = _appearanceAtomsForm->atomRepresentationStyle->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->setCurrentText("Multiple values");
         }
-      }
-      else
-      {
-        if(int index = _appearanceAtomsForm->atomRepresentationStyle->findText("Custom"); index>=0)
-        {
-          whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->removeItem(index);
-        }
-        if(int index = _appearanceAtomsForm->atomRepresentationStyle->findText("Multiple values"); index<0)
-        {
-          whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->addItem("Multiple values");
-        }
-        whileBlocking(_appearanceAtomsForm->atomRepresentationStyle)->setCurrentText("Multiple values");
       }
     }
   }
@@ -3729,23 +4132,26 @@ void AppearanceTreeWidgetController::reloadAtomColorSet()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->colorSchemeComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = colorSchemeIdentifier(); values)
+      {
+        _appearanceAtomsForm->colorSchemeComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> colorSchemName = colorSchemeIdentifier())
-      {
-        if(int index = _appearanceAtomsForm->colorSchemeComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAtomsForm->colorSchemeComboBox)->removeItem(index);
+          if(int index = _appearanceAtomsForm->colorSchemeComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->colorSchemeComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAtomsForm->colorSchemeComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_appearanceAtomsForm->colorSchemeComboBox)->setCurrentText(*colorSchemName);
-      }
-      else
-      {
-        if(int index = _appearanceAtomsForm->colorSchemeComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceAtomsForm->colorSchemeComboBox)->addItem("Multiple values");
+          if(int index = _appearanceAtomsForm->colorSchemeComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAtomsForm->colorSchemeComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAtomsForm->colorSchemeComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceAtomsForm->colorSchemeComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -3759,23 +4165,26 @@ void AppearanceTreeWidgetController::reloadAtomColorSetOrder()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->colorSchemeOrderComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash>> values = colorSchemeOrder(); values)
+      {
+        _appearanceAtomsForm->colorSchemeOrderComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<SKColorSet::ColorSchemeOrder> type = colorSchemeOrder())
-      {
-        if(int index = _appearanceAtomsForm->colorSchemeOrderComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAtomsForm->colorSchemeOrderComboBox)->removeItem(index);
+          if(int index = _appearanceAtomsForm->colorSchemeOrderComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->colorSchemeOrderComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAtomsForm->colorSchemeOrderComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_appearanceAtomsForm->colorSchemeOrderComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceAtomsForm->colorSchemeOrderComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceAtomsForm->colorSchemeOrderComboBox)->addItem("Multiple values");
+          if(int index = _appearanceAtomsForm->colorSchemeOrderComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAtomsForm->colorSchemeOrderComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAtomsForm->colorSchemeOrderComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceAtomsForm->colorSchemeOrderComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -3789,23 +4198,26 @@ void AppearanceTreeWidgetController::reloadAtomForceFieldSet()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->forceFieldComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = forceFieldSchemeIdentifier(); values)
+      {
+        _appearanceAtomsForm->forceFieldComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<QString> forceFieldIdentifier = forceFieldSchemeIdentifier())
-      {
-        if(int index = _appearanceAtomsForm->forceFieldComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAtomsForm->forceFieldComboBox)->removeItem(index);
+          if(int index = _appearanceAtomsForm->forceFieldComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->forceFieldComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAtomsForm->forceFieldComboBox)->setCurrentText(*(values->begin()));
         }
-        whileBlocking(_appearanceAtomsForm->forceFieldComboBox)->setCurrentText(*forceFieldIdentifier);
-      }
-      else
-      {
-        if(int index = _appearanceAtomsForm->forceFieldComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceAtomsForm->forceFieldComboBox)->addItem("Multiple values");
+          if(int index = _appearanceAtomsForm->forceFieldComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAtomsForm->forceFieldComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAtomsForm->forceFieldComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceAtomsForm->forceFieldComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -3819,23 +4231,26 @@ void AppearanceTreeWidgetController::reloadAtomForceFieldSetOrder()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->forceFieldSchemeOrderComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash>> values = forceFieldSchemeOrder(); values)
+      {
+        _appearanceAtomsForm->forceFieldSchemeOrderComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<ForceFieldSet::ForceFieldSchemeOrder> type = forceFieldSchemeOrder())
-      {
-        if(int index = _appearanceAtomsForm->forceFieldSchemeOrderComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAtomsForm->forceFieldSchemeOrderComboBox)->removeItem(index);
+          if(int index = _appearanceAtomsForm->forceFieldSchemeOrderComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->forceFieldSchemeOrderComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAtomsForm->forceFieldSchemeOrderComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_appearanceAtomsForm->forceFieldSchemeOrderComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceAtomsForm->forceFieldSchemeOrderComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceAtomsForm->forceFieldSchemeOrderComboBox)->addItem("Multiple values");
+          if(int index = _appearanceAtomsForm->forceFieldSchemeOrderComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAtomsForm->forceFieldSchemeOrderComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAtomsForm->forceFieldSchemeOrderComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceAtomsForm->forceFieldSchemeOrderComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -3849,17 +4264,20 @@ void AppearanceTreeWidgetController::reloadAtomDrawAtoms()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomDrawAtomsCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = atomDrawAtoms(); values)
+      {
+        _appearanceAtomsForm->atomDrawAtomsCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = atomDrawAtoms())
-      {
-        whileBlocking(_appearanceAtomsForm->atomDrawAtomsCheckBox)->setTristate(false);
-        whileBlocking(_appearanceAtomsForm->atomDrawAtomsCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomDrawAtomsCheckBox)->setTristate(true);
-        whileBlocking(_appearanceAtomsForm->atomDrawAtomsCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomDrawAtomsCheckBox)->setTristate(false);
+          whileBlocking(_appearanceAtomsForm->atomDrawAtomsCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomDrawAtomsCheckBox)->setTristate(true);
+          whileBlocking(_appearanceAtomsForm->atomDrawAtomsCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -3875,46 +4293,56 @@ void AppearanceTreeWidgetController::reloadAtomSelectionStyle()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomSelectionStyleComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      _appearanceAtomsForm->atomSelectionStyleNuDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomSelectionStyleNuDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomSelectionStyleRhoDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomSelectionStyleRhoDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-
-      if (std::optional<RKSelectionStyle> type = atomSelectionStyle())
+      if (std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> values = atomSelectionStyle(); values)
       {
-        if(int index = _appearanceAtomsForm->atomSelectionStyleComboBox->findText("Multiple values"); index>=0)
+        _appearanceAtomsForm->atomSelectionStyleComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAtomsForm->atomSelectionStyleComboBox)->removeItem(index);
+          if(int index = _appearanceAtomsForm->atomSelectionStyleComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomSelectionStyleComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAtomsForm->atomSelectionStyleComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_appearanceAtomsForm->atomSelectionStyleComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceAtomsForm->atomSelectionStyleComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceAtomsForm->atomSelectionStyleComboBox)->addItem("Multiple values");
+          if(int index = _appearanceAtomsForm->atomSelectionStyleComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomSelectionStyleComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAtomsForm->atomSelectionStyleComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceAtomsForm->atomSelectionStyleComboBox)->setCurrentText("Multiple values");
       }
 
-      if (std::optional<double> size = atomSelectionStyleNu())
+      if (std::optional<std::unordered_set<double>> values = atomSelectionStyleNu(); values)
       {
-        whileBlocking(_appearanceAtomsForm->atomSelectionStyleNuDoubleSpinBox)->setValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomSelectionStyleNuDoubleSpinBox)->setText("Mult. Val.");
+        _appearanceAtomsForm->atomSelectionStyleNuDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomSelectionStyleNuDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomSelectionStyleNuDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomSelectionStyleNuDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<double> size = atomSelectionStyleRho())
+      if (std::optional<std::unordered_set<double>> values = atomSelectionStyleRho(); values)
       {
-        whileBlocking(_appearanceAtomsForm->atomSelectionStyleRhoDoubleSpinBox)->setValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomSelectionStyleRhoDoubleSpinBox)->setText("Mult. Val.");
+        _appearanceAtomsForm->atomSelectionStyleRhoDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomSelectionStyleRhoDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomSelectionStyleRhoDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomSelectionStyleRhoDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3929,18 +4357,21 @@ void AppearanceTreeWidgetController::reloadAtomSelectionIntensity()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomSelectionItensityDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomSelectionItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomSelectionItensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomSelectionIntensity(); values)
+      {
+        _appearanceAtomsForm->atomSelectionItensityDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomSelectionItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomSelectionItensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> size = atomSelectionIntensity())
-      {
-        whileBlocking(_appearanceAtomsForm->atomSelectionItensityDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearanceAtomsForm->atomSelectionItensityDoubleSlider)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomSelectionItensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomSelectionItensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomSelectionItensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomSelectionItensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3955,18 +4386,21 @@ void AppearanceTreeWidgetController::reloadAtomSelectionScaling()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomSelectionScalingDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomSelectionScalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomSelectionScalingDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomSelectionScaling(); values)
+      {
+        _appearanceAtomsForm->atomSelectionScalingDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomSelectionScalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomSelectionScalingDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> size = atomSelectionScaling())
-      {
-        whileBlocking(_appearanceAtomsForm->atomSelectionScalingDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearanceAtomsForm->atomSelectionScalingDoubleSlider)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomSelectionScalingDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomSelectionScalingDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomSelectionScalingDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomSelectionScalingDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3980,16 +4414,19 @@ void AppearanceTreeWidgetController::reloadAtomSizeScalingDoubleSpinBox()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomSizeScalingSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomSizeScalingSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomSizeScaling(); values)
+      {
+        _appearanceAtomsForm->atomSizeScalingSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomSizeScalingSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> size = atomSizeScaling())
-      {
-        whileBlocking(_appearanceAtomsForm->atomSizeScalingSpinBox)->setValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomSizeScalingSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomSizeScalingSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomSizeScalingSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4003,11 +4440,14 @@ void AppearanceTreeWidgetController::reloadAtomSizeScalingDoubleSlider()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomAtomicSizeScalingSlider->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<double> size = atomSizeScaling())
+      if (std::optional<std::unordered_set<double>> values = atomSizeScaling(); values)
       {
-        whileBlocking(_appearanceAtomsForm->atomAtomicSizeScalingSlider)->setDoubleValue(*size);
+        _appearanceAtomsForm->atomAtomicSizeScalingSlider->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomAtomicSizeScalingSlider)->setDoubleValue(*(values->begin()));
+        }
       }
     }
   }
@@ -4022,17 +4462,20 @@ void AppearanceTreeWidgetController::reloadAtomHighDynamicRange()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomHighDynamicRangeCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = atomHighDynamicRange(); values)
+      {
+        _appearanceAtomsForm->atomHighDynamicRangeCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = atomHighDynamicRange())
-      {
-        whileBlocking(_appearanceAtomsForm->atomHighDynamicRangeCheckBox)->setTristate(false);
-        whileBlocking(_appearanceAtomsForm->atomHighDynamicRangeCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomHighDynamicRangeCheckBox)->setTristate(true);
-        whileBlocking(_appearanceAtomsForm->atomHighDynamicRangeCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomHighDynamicRangeCheckBox)->setTristate(false);
+          whileBlocking(_appearanceAtomsForm->atomHighDynamicRangeCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomHighDynamicRangeCheckBox)->setTristate(true);
+          whileBlocking(_appearanceAtomsForm->atomHighDynamicRangeCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -4047,18 +4490,21 @@ void AppearanceTreeWidgetController::reloadAtomHDRExposure()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomHDRExposureDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomHDRExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomHDRExposureDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomHDRExposure(); values)
+      {
+        _appearanceAtomsForm->atomHDRExposureDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomHDRExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomHDRExposureDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = atomHDRExposure())
-      {
-        whileBlocking(_appearanceAtomsForm->atomHDRExposureDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAtomsForm->atomHDRExposureDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomHDRExposureDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomHDRExposureDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomHDRExposureDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomHDRExposureDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4073,18 +4519,21 @@ void AppearanceTreeWidgetController::reloadAtomHue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomHueDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomHueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomHueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomHue(); values)
+      {
+        _appearanceAtomsForm->atomHueDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomHueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomHueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = atomHue())
-      {
-        whileBlocking(_appearanceAtomsForm->atomHueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAtomsForm->atomHueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomHueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomHueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomHueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomHueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4099,18 +4548,21 @@ void AppearanceTreeWidgetController::reloadAtomSaturation()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomSaturationDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomSaturationDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomSaturationDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomSaturation(); values)
+      {
+        _appearanceAtomsForm->atomSaturationDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomSaturationDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomSaturationDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = atomSaturation())
-      {
-        whileBlocking(_appearanceAtomsForm->atomSaturationDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAtomsForm->atomSaturationDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomSaturationDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomSaturationDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomSaturationDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomSaturationDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4125,18 +4577,21 @@ void AppearanceTreeWidgetController::reloadAtomValue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomValueDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomValueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomValueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomValue(); values)
+      {
+        _appearanceAtomsForm->atomValueDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomValueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomValueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = atomValue())
-      {
-        whileBlocking(_appearanceAtomsForm->atomValueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAtomsForm->atomValueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomValueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomValueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomValueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomValueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4150,17 +4605,20 @@ void AppearanceTreeWidgetController::reloadAtomAmbientOcclusion()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomAmbientOcclusionCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = atomAmbientOcclusion(); values)
+      {
+        _appearanceAtomsForm->atomAmbientOcclusionCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = atomAmbientOcclusion())
-      {
-        whileBlocking(_appearanceAtomsForm->atomAmbientOcclusionCheckBox)->setTristate(false);
-        whileBlocking(_appearanceAtomsForm->atomAmbientOcclusionCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomAmbientOcclusionCheckBox)->setTristate(true);
-        whileBlocking(_appearanceAtomsForm->atomAmbientOcclusionCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomAmbientOcclusionCheckBox)->setTristate(false);
+          whileBlocking(_appearanceAtomsForm->atomAmbientOcclusionCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomAmbientOcclusionCheckBox)->setTristate(true);
+          whileBlocking(_appearanceAtomsForm->atomAmbientOcclusionCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -4175,29 +4633,35 @@ void AppearanceTreeWidgetController::reloadAtomAmbientLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomAmbientIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomAmbientLightIntensity(); values)
+      {
+        _appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomAmbientIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = atomAmbientLightIntensity())
-      {
-        whileBlocking(_appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAtomsForm->atomAmbientIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomAmbientIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = atomAmbientLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = atomAmbientLightColor(); values)
       {
-        whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAtomsForm->atomAmbientColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4212,29 +4676,35 @@ void AppearanceTreeWidgetController::reloadAtomDiffuseLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomDiffuseIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomDiffuseLightIntensity(); values)
+      {
+        _appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomDiffuseIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = atomDiffuseLightIntensity())
-      {
-        whileBlocking(_appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAtomsForm->atomDiffuseIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomDiffuseIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = atomDiffuseLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = atomDiffuseLightColor(); values)
       {
-        whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAtomsForm->atomDiffuseColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4249,29 +4719,35 @@ void AppearanceTreeWidgetController::reloadAtomSpecularLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox->setEnabled(true);
-      _appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomSpecularIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomSpecularLightIntensity(); values)
+      {
+        _appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox->setEnabled(true);
+        _appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomSpecularIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = atomSpecularLightIntensity())
-      {
-        whileBlocking(_appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox)->setValue(*value);
-        whileBlocking(_appearanceAtomsForm->atomSpecularIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomSpecularIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = atomSpecularLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = atomSpecularLightColor(); values)
       {
-        whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAtomsForm->atomSpecularColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4286,18 +4762,21 @@ void AppearanceTreeWidgetController::reloadAtomShininess()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAtomsForm->atomShininessDoubleSpinBox->setEnabled(true);
-      _appearanceAtomsForm->atomShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomShininessDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = atomShininess(); values)
+      {
+        _appearanceAtomsForm->atomShininessDoubleSpinBox->setEnabled(true);
+        _appearanceAtomsForm->atomShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomShininessDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = atomShininess())
-      {
-        whileBlocking(_appearanceAtomsForm->atomShininessDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAtomsForm->atomShininessDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAtomsForm->atomShininessDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAtomsForm->atomShininessDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAtomsForm->atomShininessDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAtomsForm->atomShininessDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -4307,12 +4786,18 @@ void AppearanceTreeWidgetController::reloadAtomShininess()
 
 void AppearanceTreeWidgetController::setRepresentationType(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
     if(value>=0 && value<int(Structure::RepresentationType::multiple_values))
     {
-      iraspa_structure->structure()->setRepresentationType(Structure::RepresentationType(value));
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setRepresentationType(Structure::RepresentationType(value));
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
   }
   reloadAtomProperties();
@@ -4323,22 +4808,25 @@ void AppearanceTreeWidgetController::setRepresentationType(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<Structure::RepresentationType> AppearanceTreeWidgetController::representationType()
+std::optional<std::unordered_set<Structure::RepresentationType, enum_hash>> AppearanceTreeWidgetController::representationType()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<Structure::RepresentationType, enum_hash> set = std::unordered_set<Structure::RepresentationType, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::RepresentationType value = iraspa_structure->structure()->atomRepresentationType();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      Structure::RepresentationType value = atomViewer->atomRepresentationType();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -4347,9 +4835,12 @@ void AppearanceTreeWidgetController::setRepresentationStyle(int value)
 {
   if(value >= 0 && value <= int(Structure::RepresentationStyle::multiple_values))  // also include "Custom"
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setRepresentationStyle(Structure::RepresentationStyle(value), _mainWindow->colorSets());
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setRepresentationStyle(Structure::RepresentationStyle(value), _mainWindow->colorSets());
+      }
     }
 
     reloadAtomProperties();
@@ -4357,7 +4848,7 @@ void AppearanceTreeWidgetController::setRepresentationStyle(int value)
 
     if(_projectStructure)
     {
-      std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
       emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
     }
     emit rendererReloadData();
@@ -4366,22 +4857,25 @@ void AppearanceTreeWidgetController::setRepresentationStyle(int value)
   }
 }
 
-std::optional<Structure::RepresentationStyle> AppearanceTreeWidgetController::representationStyle()
+std::optional<std::unordered_set<Structure::RepresentationStyle, enum_hash>> AppearanceTreeWidgetController::representationStyle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<Structure::RepresentationStyle, enum_hash> set = std::unordered_set<Structure::RepresentationStyle, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::RepresentationStyle value = iraspa_structure->structure()->atomRepresentationStyle();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      Structure::RepresentationStyle value = atomViewer->atomRepresentationStyle();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -4391,10 +4885,16 @@ void AppearanceTreeWidgetController::setColorSchemeComboBoxIndex([[maybe_unused]
   QString stringValue = _appearanceAtomsForm->colorSchemeComboBox->currentText();
   if(QString::compare(stringValue, "Multiple values") != 0)
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(stringValue, _mainWindow->colorSets());
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setRepresentationColorSchemeIdentifier(stringValue, _mainWindow->colorSets());
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadAtomProperties();
     emit rendererReloadData();
@@ -4403,22 +4903,25 @@ void AppearanceTreeWidgetController::setColorSchemeComboBoxIndex([[maybe_unused]
   }
 }
 
-std::optional<QString> AppearanceTreeWidgetController::colorSchemeIdentifier()
+std::optional<std::set<QString>> AppearanceTreeWidgetController::colorSchemeIdentifier()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->atomColorSchemeIdentifier();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QString value = atomViewer->atomColorSchemeIdentifier();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -4427,11 +4930,17 @@ void AppearanceTreeWidgetController::setColorSchemeOrder(int value)
 {
   if(value>=0 && value<int(SKColorSet::ColorSchemeOrder::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setColorSchemeOrder(SKColorSet::ColorSchemeOrder(value));
-      iraspa_structure->structure()->setRepresentationColorSchemeIdentifier(iraspa_structure->structure()->atomColorSchemeIdentifier(), _mainWindow->colorSets());
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setColorSchemeOrder(SKColorSet::ColorSchemeOrder(value));
+        atomViewer->setRepresentationColorSchemeIdentifier(atomViewer->atomColorSchemeIdentifier(), _mainWindow->colorSets());
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadAtomProperties();
     emit rendererReloadData();
@@ -4440,22 +4949,25 @@ void AppearanceTreeWidgetController::setColorSchemeOrder(int value)
   }
 }
 
-std::optional<SKColorSet::ColorSchemeOrder> AppearanceTreeWidgetController::colorSchemeOrder()
+std::optional<std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash>> AppearanceTreeWidgetController::colorSchemeOrder()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash> set = std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    SKColorSet::ColorSchemeOrder value = iraspa_structure->structure()->colorSchemeOrder();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      SKColorSet::ColorSchemeOrder value = atomViewer->colorSchemeOrder();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -4465,9 +4977,12 @@ void AppearanceTreeWidgetController::setForcefieldSchemeComboBoxIndex([[maybe_un
   QString stringValue = _appearanceAtomsForm->forceFieldComboBox->currentText();
   if(QString::compare(stringValue, "Multiple values") != 0)
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAtomForceFieldIdentifier(stringValue,_mainWindow->forceFieldSets());
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setAtomForceFieldIdentifier(stringValue,_mainWindow->forceFieldSets());
+      }
     }
     reloadAtomProperties();
 
@@ -4478,22 +4993,25 @@ void AppearanceTreeWidgetController::setForcefieldSchemeComboBoxIndex([[maybe_un
   }
 }
 
-std::optional<QString> AppearanceTreeWidgetController::forceFieldSchemeIdentifier()
+std::optional<std::set<QString>> AppearanceTreeWidgetController::forceFieldSchemeIdentifier()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set = std::set<QString>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->atomForceFieldIdentifier();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QString value = atomViewer->atomForceFieldIdentifier();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -4502,11 +5020,17 @@ void AppearanceTreeWidgetController::setForceFieldSchemeOrder(int value)
 {
   if(value>=0 && value<int(ForceFieldSet::ForceFieldSchemeOrder::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder(value));
-      iraspa_structure->structure()->updateForceField(_mainWindow->forceFieldSets());
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder(value));
+        atomViewer->updateForceField(_mainWindow->forceFieldSets());
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadAtomProperties();
 
@@ -4517,22 +5041,25 @@ void AppearanceTreeWidgetController::setForceFieldSchemeOrder(int value)
   }
 }
 
-std::optional<ForceFieldSet::ForceFieldSchemeOrder> AppearanceTreeWidgetController::forceFieldSchemeOrder()
+std::optional<std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash>> AppearanceTreeWidgetController::forceFieldSchemeOrder()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash> set = std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    ForceFieldSet::ForceFieldSchemeOrder value = iraspa_structure->structure()->forceFieldSchemeOrder();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      ForceFieldSet::ForceFieldSchemeOrder value = atomViewer->forceFieldSchemeOrder();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -4541,10 +5068,16 @@ void AppearanceTreeWidgetController::setAtomSelectionStyle(int value)
 {
   if(value>=0 && value<int(RKSelectionStyle::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAtomSelectionStyle(RKSelectionStyle(value));
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setAtomSelectionStyle(RKSelectionStyle(value));
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadAtomProperties();
     emit rendererReloadData();
@@ -4553,32 +5086,41 @@ void AppearanceTreeWidgetController::setAtomSelectionStyle(int value)
   }
 }
 
-std::optional<RKSelectionStyle> AppearanceTreeWidgetController::atomSelectionStyle()
+std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> AppearanceTreeWidgetController::atomSelectionStyle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKSelectionStyle value = iraspa_structure->structure()->atomSelectionStyle();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKSelectionStyle value = atomViewer->atomSelectionStyle();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomSelectionStyleNu(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomSelectionFrequency(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomSelectionFrequency(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4586,32 +5128,41 @@ void AppearanceTreeWidgetController::setAtomSelectionStyleNu(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomSelectionStyleNu()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSelectionStyleNu()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomSelectionFrequency();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomSelectionFrequency();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomSelectionStyleRho(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomSelectionDensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomSelectionDensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4619,32 +5170,41 @@ void AppearanceTreeWidgetController::setAtomSelectionStyleRho(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomSelectionStyleRho()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSelectionStyleRho()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomSelectionDensity();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomSelectionDensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomSelectionIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setSelectionIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setSelectionIntensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4652,32 +5212,41 @@ void AppearanceTreeWidgetController::setAtomSelectionIntensity(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomSelectionIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSelectionIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomSelectionIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomSelectionIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomSelectionScaling(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomSelectionScaling(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomSelectionScaling(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4685,22 +5254,25 @@ void AppearanceTreeWidgetController::setAtomSelectionScaling(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomSelectionScaling()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSelectionScaling()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomSelectionScaling();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomSelectionScaling();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -4709,10 +5281,16 @@ std::optional<double> AppearanceTreeWidgetController::atomSelectionScaling()
 
 void AppearanceTreeWidgetController::setAtomDrawAtoms(int state)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setDrawAtoms(bool(state));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setDrawAtoms(bool(state));
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4720,31 +5298,41 @@ void AppearanceTreeWidgetController::setAtomDrawAtoms(int state)
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::atomDrawAtoms()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::atomDrawAtoms()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->drawAtoms();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = atomViewer->drawAtoms();
+      set.insert(value);
+    }
   }
-   if(set.size() == 1)
+
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSpinBox(double size)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomScaleFactor(size);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomScaleFactor(size);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomRepresentationType();
   reloadAtomSizeScalingDoubleSlider();
@@ -4752,7 +5340,7 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSpinBox(double size
 
   if(_projectStructure)
   {
-    std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+    std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
     emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
   }
   emit rendererReloadData();
@@ -4768,9 +5356,12 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderBegin()
 
 void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderIntermediate(double size)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomScaleFactor(size);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomScaleFactor(size);
+    }
   }
   reloadAtomSizeScalingDoubleSpinBox();
 
@@ -4779,16 +5370,19 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderIntermediate(
 
 void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderFinal()
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomRepresentationStyle();
   reloadAtomSizeScalingDoubleSpinBox();
 
   if(_projectStructure)
   {
-    std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+    std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
     emit _mainWindow->invalidateCachedAmbientOcclusionTextures(invalidatedStructures);
   }
   emit rendererReloadData();
@@ -4797,22 +5391,25 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderFinal()
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomSizeScaling()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSizeScaling()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomScaleFactor();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomScaleFactor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -4820,10 +5417,16 @@ std::optional<double> AppearanceTreeWidgetController::atomSizeScaling()
 
 void AppearanceTreeWidgetController::setAtomHighDynamicRange(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomHDR(bool(value));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomHDR(bool(value));
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4831,32 +5434,41 @@ void AppearanceTreeWidgetController::setAtomHighDynamicRange(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::atomHighDynamicRange()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::atomHighDynamicRange()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->atomHDR();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = atomViewer->atomHDR();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomHDRExposure(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomHDRExposure(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomHDRExposure(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4864,32 +5476,41 @@ void AppearanceTreeWidgetController::setAtomHDRExposure(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomHDRExposure()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomHDRExposure()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomHDRExposure();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomHDRExposure();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomHue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomHue(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomHue(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4897,32 +5518,41 @@ void AppearanceTreeWidgetController::setAtomHue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomHue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomHue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomHue();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomHue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomSaturation(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomSaturation(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomSaturation(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4930,32 +5560,41 @@ void AppearanceTreeWidgetController::setAtomSaturation(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomSaturation()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSaturation()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomSaturation();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomSaturation();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomValue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomValue(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomValue(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4963,32 +5602,41 @@ void AppearanceTreeWidgetController::setAtomValue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomValue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomValue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomValue();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomValue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomAmbientOcclusion(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomAmbientOcclusion(bool(value));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomAmbientOcclusion(bool(value));
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -4996,31 +5644,40 @@ void AppearanceTreeWidgetController::setAtomAmbientOcclusion(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::atomAmbientOcclusion()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::atomAmbientOcclusion()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->atomAmbientOcclusion();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = atomViewer->atomAmbientOcclusion();
+      set.insert(value);
+    }
   }
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomAmbientLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomAmbientIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomAmbientIntensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -5028,22 +5685,25 @@ void AppearanceTreeWidgetController::setAtomAmbientLightIntensity(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomAmbientLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomAmbientLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomAmbientIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomAmbientIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -5054,10 +5714,16 @@ void AppearanceTreeWidgetController::setAtomAmbientLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAtomAmbientColor(color);
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setAtomAmbientColor(color);
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadAtomProperties();
     emit rendererReloadData();
@@ -5066,32 +5732,41 @@ void AppearanceTreeWidgetController::setAtomAmbientLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::atomAmbientLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::atomAmbientLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->atomAmbientColor();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = atomViewer->atomAmbientColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomDiffuseLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomDiffuseIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomDiffuseIntensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -5099,22 +5774,25 @@ void AppearanceTreeWidgetController::setAtomDiffuseLightIntensity(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomDiffuseLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomDiffuseLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomDiffuseIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomDiffuseIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -5125,10 +5803,16 @@ void AppearanceTreeWidgetController::setAtomDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAtomDiffuseColor(color);
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setAtomDiffuseColor(color);
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadAtomProperties();
     emit rendererReloadData();
@@ -5137,32 +5821,41 @@ void AppearanceTreeWidgetController::setAtomDiffuseLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::atomDiffuseLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::atomDiffuseLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->atomDiffuseColor();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = atomViewer->atomDiffuseColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomSpecularLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomSpecularIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomSpecularIntensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -5170,22 +5863,25 @@ void AppearanceTreeWidgetController::setAtomSpecularLightIntensity(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomSpecularLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSpecularLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomSpecularIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomSpecularIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -5196,10 +5892,16 @@ void AppearanceTreeWidgetController::setAtomSpecularLightColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAtomSpecularColor(color);
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        atomViewer->setAtomSpecularColor(color);
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadAtomProperties();
     emit rendererReloadData();
@@ -5208,32 +5910,41 @@ void AppearanceTreeWidgetController::setAtomSpecularLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::atomSpecularLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::atomSpecularLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->atomSpecularColor();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = atomViewer->atomSpecularColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAtomShininess(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAtomShininess(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      atomViewer->setAtomShininess(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -5241,22 +5952,25 @@ void AppearanceTreeWidgetController::setAtomShininess(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::atomShininess()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomShininess()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->atomShininess();
-    set.insert(value);
+    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = atomViewer->atomShininess();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -5290,9 +6004,12 @@ void AppearanceTreeWidgetController::reloadBondProperties()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
+     // if (std::optional<std::unordered_set<QColor>> values = bondAmbientLightColor(); values)
+      {
       _appearanceBondsForm->bondAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
       _appearanceBondsForm->bondDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
       _appearanceBondsForm->bondSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
+      }
     }
   }
 }
@@ -5305,17 +6022,20 @@ void AppearanceTreeWidgetController::reloadDrawBondsCheckBox()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->drawBondsCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = bondDrawBonds(); values)
+      {
+        _appearanceBondsForm->drawBondsCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = bondDrawBonds())
-      {
-        whileBlocking(_appearanceBondsForm->drawBondsCheckBox)->setTristate(false);
-        whileBlocking(_appearanceBondsForm->drawBondsCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->drawBondsCheckBox)->setTristate(true);
-        whileBlocking(_appearanceBondsForm->drawBondsCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->drawBondsCheckBox)->setTristate(false);
+          whileBlocking(_appearanceBondsForm->drawBondsCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->drawBondsCheckBox)->setTristate(true);
+          whileBlocking(_appearanceBondsForm->drawBondsCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -5330,18 +6050,21 @@ void AppearanceTreeWidgetController::reloadBondSizeScaling()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondSizeScalingDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondSizeScalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondSizeScalingDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondSizeScaling(); values)
+      {
+        _appearanceBondsForm->bondSizeScalingDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondSizeScalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondSizeScalingDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> size = bondSizeScaling())
-      {
-        whileBlocking(_appearanceBondsForm->bondSizeScalingDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearanceBondsForm->bondSizeScalingDoubleSlider)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondSizeScalingDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondSizeScalingDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondSizeScalingDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondSizeScalingDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5356,23 +6079,26 @@ void AppearanceTreeWidgetController::reloadBondColorMode()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondColorModeComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<RKBondColorMode, enum_hash>> values = bondColorMode(); values)
+      {
+        _appearanceBondsForm->bondColorModeComboBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<RKBondColorMode> type=bondColorMode())
-      {
-        if(int index = _appearanceBondsForm->bondColorModeComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceBondsForm->bondColorModeComboBox)->removeItem(index);
+          if(int index = _appearanceBondsForm->bondColorModeComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceBondsForm->bondColorModeComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceBondsForm->bondColorModeComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_appearanceBondsForm->bondColorModeComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceBondsForm->bondColorModeComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceBondsForm->bondColorModeComboBox)->addItem("Multiple values");
+          if(int index = _appearanceBondsForm->bondColorModeComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceBondsForm->bondColorModeComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceBondsForm->bondColorModeComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceBondsForm->bondColorModeComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -5388,46 +6114,56 @@ void AppearanceTreeWidgetController::reloadBondSelectionStyle()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondSelectionStyleComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      _appearanceBondsForm->bondSelectionStyleNuDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondSelectionStyleNuDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondSelectionStyleRhoDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondSelectionStyleRhoDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-
-      if (std::optional<RKSelectionStyle> type = bondSelectionStyle())
+      if (std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> values = bondSelectionStyle(); values)
       {
-        if(int index = _appearanceBondsForm->bondSelectionStyleComboBox->findText("Multiple values"); index>=0)
+        _appearanceBondsForm->bondSelectionStyleComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceBondsForm->bondSelectionStyleComboBox)->removeItem(index);
+          if(int index = _appearanceBondsForm->bondSelectionStyleComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceBondsForm->bondSelectionStyleComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceBondsForm->bondSelectionStyleComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_appearanceBondsForm->bondSelectionStyleComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceBondsForm->bondSelectionStyleComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceBondsForm->bondSelectionStyleComboBox)->addItem("Multiple values");
+          if(int index = _appearanceBondsForm->bondSelectionStyleComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceBondsForm->bondSelectionStyleComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceBondsForm->bondSelectionStyleComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceBondsForm->bondSelectionStyleComboBox)->setCurrentText("Multiple values");
       }
 
-      if (std::optional<double> size = bondSelectionStyleNu())
+      if (std::optional<std::unordered_set<double>> values = bondSelectionStyleNu(); values)
       {
-        whileBlocking(_appearanceBondsForm->bondSelectionStyleNuDoubleSpinBox)->setValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondSelectionStyleNuDoubleSpinBox)->setText("Mult. Val.");
+        _appearanceBondsForm->bondSelectionStyleNuDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondSelectionStyleNuDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondSelectionStyleNuDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondSelectionStyleNuDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<double> size = bondSelectionStyleRho())
+      if (std::optional<std::unordered_set<double>> values = bondSelectionStyleRho(); values)
       {
-        whileBlocking(_appearanceBondsForm->bondSelectionStyleRhoDoubleSpinBox)->setValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondSelectionStyleRhoDoubleSpinBox)->setText("Mult. Val.");
+        _appearanceBondsForm->bondSelectionStyleRhoDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondSelectionStyleRhoDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondSelectionStyleRhoDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondSelectionStyleRhoDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5442,18 +6178,21 @@ void AppearanceTreeWidgetController::reloadBondSelectionIntensity()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondSelectionItensityDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondSelectionItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondSelectionItensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondSelectionIntensity(); values)
+      {
+        _appearanceBondsForm->bondSelectionItensityDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondSelectionItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondSelectionItensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> size = bondSelectionIntensity())
-      {
-        whileBlocking(_appearanceBondsForm->bondSelectionItensityDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearanceBondsForm->bondSelectionItensityDoubleSlider)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondSelectionItensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondSelectionItensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondSelectionItensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondSelectionItensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5468,18 +6207,21 @@ void AppearanceTreeWidgetController::reloadBondSelectionScaling()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondSelectionScalingDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondSelectionScalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondSelectionScalingDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondSelectionScaling(); values)
+      {
+        _appearanceBondsForm->bondSelectionScalingDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondSelectionScalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondSelectionScalingDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> size = bondSelectionScaling())
-      {
-        whileBlocking(_appearanceBondsForm->bondSelectionScalingDoubleSpinBox)->setValue(*size);
-        whileBlocking(_appearanceBondsForm->bondSelectionScalingDoubleSlider)->setDoubleValue(*size);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondSelectionScalingDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondSelectionScalingDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondSelectionScalingDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondSelectionScalingDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5494,17 +6236,20 @@ void AppearanceTreeWidgetController::reloadBondHighDynamicRange()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondHighDynamicRangeCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = bondHighDynamicRange(); values)
+      {
+        _appearanceBondsForm->bondHighDynamicRangeCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = bondHighDynamicRange())
-      {
-        whileBlocking(_appearanceBondsForm->bondHighDynamicRangeCheckBox)->setTristate(false);
-        whileBlocking(_appearanceBondsForm->bondHighDynamicRangeCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondHighDynamicRangeCheckBox)->setTristate(true);
-        whileBlocking(_appearanceBondsForm->bondHighDynamicRangeCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondHighDynamicRangeCheckBox)->setTristate(false);
+          whileBlocking(_appearanceBondsForm->bondHighDynamicRangeCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondHighDynamicRangeCheckBox)->setTristate(true);
+          whileBlocking(_appearanceBondsForm->bondHighDynamicRangeCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -5519,18 +6264,21 @@ void AppearanceTreeWidgetController::reloadBondHDRExposure()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondHDRExposureDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondHDRExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondHDRExposureDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondHDRExposure(); values)
+      {
+        _appearanceBondsForm->bondHDRExposureDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondHDRExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondHDRExposureDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = bondHDRExposure())
-      {
-        whileBlocking(_appearanceBondsForm->bondHDRExposureDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceBondsForm->bondHDRExposureDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondHDRExposureDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondHDRExposureDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondHDRExposureDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondHDRExposureDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5545,18 +6293,21 @@ void AppearanceTreeWidgetController::reloadBondHue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondHueDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondHueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondHueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondHue(); values)
+      {
+        _appearanceBondsForm->bondHueDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondHueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondHueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = bondHue())
-      {
-        whileBlocking(_appearanceBondsForm->bondHueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceBondsForm->bondHueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondHueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondHueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondHueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondHueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5571,18 +6322,21 @@ void AppearanceTreeWidgetController::reloadBondSaturation()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondSaturationDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondSaturationDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondSaturationDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondSaturation(); values)
+      {
+        _appearanceBondsForm->bondSaturationDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondSaturationDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondSaturationDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = bondSaturation())
-      {
-        whileBlocking(_appearanceBondsForm->bondSaturationDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceBondsForm->bondSaturationDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondSaturationDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondSaturationDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondSaturationDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondSaturationDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5597,18 +6351,21 @@ void AppearanceTreeWidgetController::reloadBondValue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondValueDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondValueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondValueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondValue(); values)
+      {
+        _appearanceBondsForm->bondValueDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondValueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondValueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = bondValue())
-      {
-        whileBlocking(_appearanceBondsForm->bondValueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceBondsForm->bondValueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondValueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondValueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondValueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondValueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5622,17 +6379,20 @@ void AppearanceTreeWidgetController::reloadBondAmbientOcclusion()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondAmbientOcclusionCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = bondAmbientOcclusion(); values)
+      {
+        _appearanceBondsForm->bondAmbientOcclusionCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = bondAmbientOcclusion())
-      {
-        whileBlocking(_appearanceBondsForm->bondAmbientOcclusionCheckBox)->setTristate(false);
-        whileBlocking(_appearanceBondsForm->bondAmbientOcclusionCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondAmbientOcclusionCheckBox)->setTristate(true);
-        whileBlocking(_appearanceBondsForm->bondAmbientOcclusionCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondAmbientOcclusionCheckBox)->setTristate(false);
+          whileBlocking(_appearanceBondsForm->bondAmbientOcclusionCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondAmbientOcclusionCheckBox)->setTristate(true);
+          whileBlocking(_appearanceBondsForm->bondAmbientOcclusionCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -5647,29 +6407,35 @@ void AppearanceTreeWidgetController::reloadBondAmbientLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondAmbientIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondAmbientIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondAmbientLightIntensity(); values)
+      {
+        _appearanceBondsForm->bondAmbientIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondAmbientIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = bondAmbientLightIntensity())
-      {
-        whileBlocking(_appearanceBondsForm->bondAmbientIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceBondsForm->bondAmbientIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondAmbientIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondAmbientIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondAmbientIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondAmbientIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = bondAmbientLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = bondAmbientLightColor(); values)
       {
-        whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceBondsForm->bondAmbientColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5684,29 +6450,35 @@ void AppearanceTreeWidgetController::reloadBondDiffuseLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondDiffuseIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondDiffuseLightIntensity(); values)
+      {
+        _appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondDiffuseIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = bondDiffuseLightIntensity())
-      {
-        whileBlocking(_appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceBondsForm->bondDiffuseIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondDiffuseIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = bondDiffuseLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = bondDiffuseLightColor(); values)
       {
-        whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceBondsForm->bondDiffuseColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5721,29 +6493,35 @@ void AppearanceTreeWidgetController::reloadBondSpecularLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondSpecularIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondSpecularIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondSpecularLightIntensity(); values)
+      {
+        _appearanceBondsForm->bondSpecularIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondSpecularIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = bondSpecularLightIntensity())
-      {
-        whileBlocking(_appearanceBondsForm->bondSpecularIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceBondsForm->bondSpecularIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondSpecularIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondSpecularIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondSpecularIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondSpecularIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = bondSpecularLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = bondSpecularLightColor(); values)
       {
-        whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceBondsForm->bondSpecularColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5758,18 +6536,21 @@ void AppearanceTreeWidgetController::reloadBondShininess()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceBondsForm->bondShininessDoubleSpinBox->setEnabled(true);
-      _appearanceBondsForm->bondShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondShininessDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = bondShininessy(); values)
+      {
+        _appearanceBondsForm->bondShininessDoubleSpinBox->setEnabled(true);
+        _appearanceBondsForm->bondShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondShininessDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = bondShininessy())
-      {
-        whileBlocking(_appearanceBondsForm->bondShininessDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceBondsForm->bondShininessDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceBondsForm->bondShininessDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceBondsForm->bondShininessDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceBondsForm->bondShininessDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceBondsForm->bondShininessDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -5779,10 +6560,16 @@ void AppearanceTreeWidgetController::reloadBondShininess()
 
 void AppearanceTreeWidgetController::setBondDrawBonds(int state)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setDrawBonds(bool(state));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setDrawBonds(bool(state));
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -5790,32 +6577,41 @@ void AppearanceTreeWidgetController::setBondDrawBonds(int state)
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::bondDrawBonds()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::bondDrawBonds()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->drawBonds();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = bondViewer->drawBonds();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondSizeScaling(double size)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondScaleFactor(size);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondScaleFactor(size);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   reloadBondProperties();
@@ -5824,32 +6620,41 @@ void AppearanceTreeWidgetController::setBondSizeScaling(double size)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondSizeScaling()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSizeScaling()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondScaleFactor();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondScaleFactor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondColorMode(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondColorMode(RKBondColorMode(value));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondColorMode(RKBondColorMode(value));
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -5857,22 +6662,25 @@ void AppearanceTreeWidgetController::setBondColorMode(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<RKBondColorMode> AppearanceTreeWidgetController::bondColorMode()
+std::optional<std::unordered_set<RKBondColorMode, enum_hash> > AppearanceTreeWidgetController::bondColorMode()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<RKBondColorMode, enum_hash> set = std::unordered_set<RKBondColorMode, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKBondColorMode value = iraspa_structure->structure()->bondColorMode();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKBondColorMode value = bondViewer->bondColorMode();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -5881,10 +6689,16 @@ void AppearanceTreeWidgetController::setBondSelectionStyle(int value)
 {
   if(value>=0 && value<int(RKSelectionStyle::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setBondSelectionStyle(RKSelectionStyle(value));
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        bondViewer->setBondSelectionStyle(RKSelectionStyle(value));
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadBondProperties();
     emit rendererReloadData();
@@ -5893,32 +6707,41 @@ void AppearanceTreeWidgetController::setBondSelectionStyle(int value)
   }
 }
 
-std::optional<RKSelectionStyle> AppearanceTreeWidgetController::bondSelectionStyle()
+std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> AppearanceTreeWidgetController::bondSelectionStyle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKSelectionStyle value = iraspa_structure->structure()->bondSelectionStyle();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKSelectionStyle value = bondViewer->bondSelectionStyle();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondSelectionStyleNu(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondSelectionFrequency(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondSelectionFrequency(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -5926,32 +6749,41 @@ void AppearanceTreeWidgetController::setBondSelectionStyleNu(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondSelectionStyleNu()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSelectionStyleNu()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondSelectionFrequency();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondSelectionFrequency();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondSelectionStyleRho(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondSelectionDensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondSelectionDensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -5959,32 +6791,41 @@ void AppearanceTreeWidgetController::setBondSelectionStyleRho(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondSelectionStyleRho()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSelectionStyleRho()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondSelectionDensity();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondSelectionDensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondSelectionIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondSelectionIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondSelectionIntensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -5992,32 +6833,41 @@ void AppearanceTreeWidgetController::setBondSelectionIntensity(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondSelectionIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSelectionIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondSelectionIntensity();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondSelectionIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondSelectionScaling(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondSelectionScaling(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondSelectionScaling(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6025,22 +6875,25 @@ void AppearanceTreeWidgetController::setBondSelectionScaling(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondSelectionScaling()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSelectionScaling()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondSelectionScaling();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondSelectionScaling();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -6049,10 +6902,16 @@ std::optional<double> AppearanceTreeWidgetController::bondSelectionScaling()
 
 void AppearanceTreeWidgetController::setBondHighDynamicRange(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondHDR(bool(value));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondHDR(bool(value));
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -6060,32 +6919,41 @@ void AppearanceTreeWidgetController::setBondHighDynamicRange(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::bondHighDynamicRange()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::bondHighDynamicRange()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->bondHDR();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = bondViewer->bondHDR();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondHDRExposure(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondHDRExposure(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondHDRExposure(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -6093,32 +6961,41 @@ void AppearanceTreeWidgetController::setBondHDRExposure(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondHDRExposure()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondHDRExposure()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondHDRExposure();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondHDRExposure();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondHue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondHue(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondHue(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6126,32 +7003,41 @@ void AppearanceTreeWidgetController::setBondHue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondHue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondHue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondHue();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondHue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondSaturation(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondSaturation(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondSaturation(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6159,32 +7045,41 @@ void AppearanceTreeWidgetController::setBondSaturation(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondSaturation()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSaturation()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondSaturation();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondSaturation();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondValue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondValue(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondValue(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6192,32 +7087,41 @@ void AppearanceTreeWidgetController::setBondValue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondValue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondValue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondValue();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondValue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondAmbientOcclusion(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondAmbientOcclusion(bool(value));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondAmbientOcclusion(bool(value));
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6225,31 +7129,40 @@ void AppearanceTreeWidgetController::setBondAmbientOcclusion(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::bondAmbientOcclusion()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::bondAmbientOcclusion()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->bondAmbientOcclusion();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = bondViewer->bondAmbientOcclusion();
+      set.insert(value);
+    }
   }
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondAmbientLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondAmbientIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondAmbientIntensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6257,22 +7170,25 @@ void AppearanceTreeWidgetController::setBondAmbientLightIntensity(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondAmbientLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondAmbientLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondAmbientIntensity();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondAmbientIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -6283,10 +7199,16 @@ void AppearanceTreeWidgetController::setBondAmbientLightColor()
   if(color.isValid())
   {
     _appearanceBondsForm->bondAmbientColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setBondAmbientColor(color);
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        bondViewer->setBondAmbientColor(color);
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadBondProperties();
     emit rendererReloadData();
@@ -6295,32 +7217,41 @@ void AppearanceTreeWidgetController::setBondAmbientLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::bondAmbientLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::bondAmbientLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->bondAmbientColor();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = bondViewer->bondAmbientColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondDiffuseLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondDiffuseIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondDiffuseIntensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6328,22 +7259,25 @@ void AppearanceTreeWidgetController::setBondDiffuseLightIntensity(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondDiffuseLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondDiffuseLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondDiffuseIntensity();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondDiffuseIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -6354,10 +7288,16 @@ void AppearanceTreeWidgetController::setBondDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceBondsForm->bondDiffuseColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setBondDiffuseColor(color);
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        bondViewer->setBondDiffuseColor(color);
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadBondProperties();
     emit rendererReloadData();
@@ -6366,32 +7306,41 @@ void AppearanceTreeWidgetController::setBondDiffuseLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::bondDiffuseLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::bondDiffuseLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->bondDiffuseColor();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = bondViewer->bondDiffuseColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondSpecularLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondSpecularIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondSpecularIntensity(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6399,22 +7348,25 @@ void AppearanceTreeWidgetController::setBondSpecularLightIntensity(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondSpecularLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSpecularLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondSpecularIntensity();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondSpecularIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -6425,10 +7377,16 @@ void AppearanceTreeWidgetController::setBondSpecularLightColor()
   if(color.isValid())
   {
     _appearanceBondsForm->bondSpecularColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setBondSpecularColor(color);
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        bondViewer->setBondSpecularColor(color);
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
     reloadBondProperties();
     emit rendererReloadData();
@@ -6437,32 +7395,41 @@ void AppearanceTreeWidgetController::setBondSpecularLightColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::bondSpecularLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::bondSpecularLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->bondSpecularColor();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = bondViewer->bondSpecularColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setBondShininess(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setBondShininess(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bondViewer->setBondShininess(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadBondProperties();
   emit rendererReloadData();
@@ -6470,22 +7437,25 @@ void AppearanceTreeWidgetController::setBondShininess(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::bondShininessy()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondShininessy()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->bondShininess();
-    set.insert(value);
+    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = bondViewer->bondShininess();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -6585,7 +7555,7 @@ void AppearanceTreeWidgetController::reloadUnitCellDiffuseLight()
         whileBlocking(_appearanceUnitCellForm->diffuseIntensityDoubleSpinBox)->setText("Mult. Val.");
       }
 
-      if (std::optional<QColor> value = bondDiffuseLightColor())
+      if (std::optional<QColor> value = unitCellDiffuseLightColor())
       {
         whileBlocking(_appearanceUnitCellForm->diffuseColorPushButton)->setText(tr("Color"));
         whileBlocking(_appearanceUnitCellForm->diffuseColorPushButton)->setColor(*value);
@@ -6602,10 +7572,13 @@ void AppearanceTreeWidgetController::reloadUnitCellDiffuseLight()
 
 void AppearanceTreeWidgetController::setDrawUnitCell(int state)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setDrawUnitCell(bool(state));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    iraspa_structure->object()->setDrawUnitCell(bool(state));
+    if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structureViewer->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -6620,9 +7593,9 @@ std::optional<bool> AppearanceTreeWidgetController::drawUnitCell()
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->drawUnitCell();
+    bool value = iraspa_structure->object()->drawUnitCell();
     set.insert(value);
   }
   if(set.size() == 1)
@@ -6634,10 +7607,13 @@ std::optional<bool> AppearanceTreeWidgetController::drawUnitCell()
 
 void AppearanceTreeWidgetController::setUnitCellSizeScaling(double size)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setUnitCellScaleFactor(size);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    iraspa_structure->object()->setUnitCellScaleFactor(size);
+    if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+    {
+      structureViewer->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -6652,9 +7628,9 @@ std::optional<double> AppearanceTreeWidgetController::unitCellSizeScaling()
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->unitCellScaleFactor();
+    double value = iraspa_structure->object()->unitCellScaleFactor();
     set.insert(value);
   }
 
@@ -6667,10 +7643,13 @@ std::optional<double> AppearanceTreeWidgetController::unitCellSizeScaling()
 
 void AppearanceTreeWidgetController::setUnitCellDiffuseLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setUnitCellDiffuseIntensity(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    iraspa_structure->object()->setUnitCellDiffuseIntensity(value);
+    if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+    {
+      structureViewer->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -6685,9 +7664,9 @@ std::optional<double> AppearanceTreeWidgetController::unitCellDiffuseLightIntens
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->unitCellDiffuseIntensity();
+    double value = iraspa_structure->object()->unitCellDiffuseIntensity();
     set.insert(value);
   }
 
@@ -6704,10 +7683,13 @@ void AppearanceTreeWidgetController::setUnitCellDiffuseLightColor()
   if(color.isValid())
   {
     _appearanceUnitCellForm->diffuseColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setUnitCellDiffuseColor(color);
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      iraspa_structure->object()->setUnitCellDiffuseColor(color);
+      if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+      {
+        structureViewer->recheckRepresentationStyle();
+      }
     }
     reloadAtomProperties();
     emit rendererReloadData();
@@ -6723,9 +7705,9 @@ std::optional<QColor> AppearanceTreeWidgetController::unitCellDiffuseLightColor(
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->unitCellDiffuseColor();
+    QColor value = iraspa_structure->object()->unitCellDiffuseColor();
     set.insert(value);
   }
 
@@ -6758,30 +7740,33 @@ void AppearanceTreeWidgetController::reloadLocalAxesPosition()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceLocalAxesForm->positionComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<RKLocalAxes::Position> type = localAxesPosition())
+      if (std::optional<std::unordered_set<RKLocalAxes::Position, enum_hash>> values = localAxesPosition(); values)
       {
-        if(int index = _appearanceLocalAxesForm->positionComboBox->findText("Mult. Val."); index>=0)
+        _appearanceLocalAxesForm->positionComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceLocalAxesForm->positionComboBox)->removeItem(index);
-        }
-        if(int(*type)<0)
-        {
-         whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentIndex(int(RKLocalAxes::Position::multiple_values));
+          if(int index = _appearanceLocalAxesForm->positionComboBox->findText("Mult. Val."); index>=0)
+          {
+            whileBlocking(_appearanceLocalAxesForm->positionComboBox)->removeItem(index);
+          }
+          if(int(*(values->begin()))<0)
+          {
+           whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentIndex(int(RKLocalAxes::Position::multiple_values));
+          }
+          else
+          {
+            whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentIndex(int(*(values->begin())));
+          }
         }
         else
         {
-          whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentIndex(int(*type));
+          if(int index = _appearanceLocalAxesForm->positionComboBox->findText("Mult. Val."); index<0)
+          {
+            whileBlocking(_appearanceLocalAxesForm->positionComboBox)->addItem("Mult. Val.");
+          }
+          whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentText("Mult. Val.");
         }
-      }
-      else
-      {
-        if(int index = _appearanceLocalAxesForm->positionComboBox->findText("Mult. Val."); index<0)
-        {
-          whileBlocking(_appearanceLocalAxesForm->positionComboBox)->addItem("Mult. Val.");
-        }
-        whileBlocking(_appearanceLocalAxesForm->positionComboBox)->setCurrentText("Mult. Val.");
       }
     }
   }
@@ -6795,30 +7780,33 @@ void AppearanceTreeWidgetController::reloadLocalAxesStyle()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceLocalAxesForm->styleComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<RKLocalAxes::Style> type = localAxesStyle())
+      if (std::optional<std::unordered_set<RKLocalAxes::Style, enum_hash>> values = localAxesStyle(); values)
       {
-        if(int index = _appearanceLocalAxesForm->styleComboBox->findText("Mult. Val."); index>=0)
+        _appearanceLocalAxesForm->styleComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceLocalAxesForm->styleComboBox)->removeItem(index);
-        }
-        if(int(*type)<0)
-        {
-         whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentIndex(int(RKLocalAxes::Style::multiple_values));
+          if(int index = _appearanceLocalAxesForm->styleComboBox->findText("Mult. Val."); index>=0)
+          {
+            whileBlocking(_appearanceLocalAxesForm->styleComboBox)->removeItem(index);
+          }
+          if(int(*(values->begin()))<0)
+          {
+           whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentIndex(int(RKLocalAxes::Style::multiple_values));
+          }
+          else
+          {
+            whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentIndex(int(*(values->begin())));
+          }
         }
         else
         {
-          whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentIndex(int(*type));
+          if(int index = _appearanceLocalAxesForm->styleComboBox->findText("Mult. Val."); index<0)
+          {
+            whileBlocking(_appearanceLocalAxesForm->styleComboBox)->addItem("Mult. Val.");
+          }
+          whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentText("Mult. Val.");
         }
-      }
-      else
-      {
-        if(int index = _appearanceLocalAxesForm->styleComboBox->findText("Mult. Val."); index<0)
-        {
-          whileBlocking(_appearanceLocalAxesForm->styleComboBox)->addItem("Mult. Val.");
-        }
-        whileBlocking(_appearanceLocalAxesForm->styleComboBox)->setCurrentText("Mult. Val.");
       }
     }
   }
@@ -6832,30 +7820,33 @@ void AppearanceTreeWidgetController::reloadLocalAxesScalingStyle()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceLocalAxesForm->scalingTypeComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<RKLocalAxes::ScalingType> type = localAxesScalingType())
+      if (std::optional<std::unordered_set<RKLocalAxes::ScalingType, enum_hash>> values = localAxesScalingType(); values)
       {
-        if(int index = _appearanceLocalAxesForm->scalingTypeComboBox->findText("Mult. Val."); index>=0)
+        _appearanceLocalAxesForm->scalingTypeComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->removeItem(index);
-        }
-        if(int(*type)<0)
-        {
-         whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentIndex(int(RKLocalAxes::ScalingType::multiple_values));
+          if(int index = _appearanceLocalAxesForm->scalingTypeComboBox->findText("Mult. Val."); index>=0)
+          {
+            whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->removeItem(index);
+          }
+          if(int(*(values->begin()))<0)
+          {
+           whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentIndex(int(RKLocalAxes::ScalingType::multiple_values));
+          }
+          else
+          {
+            whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentIndex(int(*(values->begin())));
+          }
         }
         else
         {
-          whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentIndex(int(*type));
+          if(int index = _appearanceLocalAxesForm->scalingTypeComboBox->findText("Mult. Val."); index<0)
+          {
+            whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->addItem("Mult. Val.");
+          }
+          whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentText("Mult. Val.");
         }
-      }
-      else
-      {
-        if(int index = _appearanceLocalAxesForm->scalingTypeComboBox->findText("Mult. Val."); index<0)
-        {
-          whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->addItem("Mult. Val.");
-        }
-        whileBlocking(_appearanceLocalAxesForm->scalingTypeComboBox)->setCurrentText("Mult. Val.");
       }
     }
   }
@@ -6869,16 +7860,19 @@ void AppearanceTreeWidgetController::reloadLocalAxesLength()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceLocalAxesForm->lengthSpinBox->setEnabled(true);
-      _appearanceLocalAxesForm->lengthSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = localAxesLength(); values)
+      {
+        _appearanceLocalAxesForm->lengthSpinBox->setEnabled(true);
+        _appearanceLocalAxesForm->lengthSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = localAxesLength())
-      {
-        whileBlocking(_appearanceLocalAxesForm->lengthSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceLocalAxesForm->lengthSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceLocalAxesForm->lengthSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceLocalAxesForm->lengthSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -6892,16 +7886,19 @@ void AppearanceTreeWidgetController::reloadLocalAxesWidth()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceLocalAxesForm->widthSpinBox->setEnabled(true);
-      _appearanceLocalAxesForm->widthSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = localAxesWidth(); values)
+      {
+        _appearanceLocalAxesForm->widthSpinBox->setEnabled(true);
+        _appearanceLocalAxesForm->widthSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = localAxesWidth())
-      {
-        whileBlocking(_appearanceLocalAxesForm->widthSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceLocalAxesForm->widthSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceLocalAxesForm->widthSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceLocalAxesForm->widthSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -6917,59 +7914,70 @@ void AppearanceTreeWidgetController::reloadLocalAxesOffset()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceLocalAxesForm->offsetXSpinBox->setEnabled(true);
-      _appearanceLocalAxesForm->offsetYSpinBox->setEnabled(true);
-      _appearanceLocalAxesForm->offsetZSpinBox->setEnabled(true);
-      _appearanceLocalAxesForm->offsetXSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceLocalAxesForm->offsetYSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceLocalAxesForm->offsetZSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = localAxesOffsetX(); values)
+      {
+        _appearanceLocalAxesForm->offsetXSpinBox->setEnabled(true);
+        _appearanceLocalAxesForm->offsetXSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = localAxesOffsetX())
-      {
-        whileBlocking(_appearanceLocalAxesForm->offsetXSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceLocalAxesForm->offsetXSpinBox)->setText("Mult. Val.");
-      }
-
-      if (std::optional<double> value = localAxesOffsetY())
-      {
-        whileBlocking(_appearanceLocalAxesForm->offsetYSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceLocalAxesForm->offsetYSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceLocalAxesForm->offsetXSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceLocalAxesForm->offsetXSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<double> value = localAxesOffsetZ())
+      if (std::optional<std::unordered_set<double>> values = localAxesOffsetY(); values)
       {
-        whileBlocking(_appearanceLocalAxesForm->offsetZSpinBox)->setValue(*value);
+        _appearanceLocalAxesForm->offsetYSpinBox->setEnabled(true);
+        _appearanceLocalAxesForm->offsetYSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceLocalAxesForm->offsetYSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceLocalAxesForm->offsetYSpinBox)->setText("Mult. Val.");
+        }
       }
-      else
+
+      if (std::optional<std::unordered_set<double>> values = localAxesOffsetZ(); values)
       {
-        whileBlocking(_appearanceLocalAxesForm->offsetZSpinBox)->setText("Mult. Val.");
+        _appearanceLocalAxesForm->offsetZSpinBox->setEnabled(true);
+        _appearanceLocalAxesForm->offsetZSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceLocalAxesForm->offsetZSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceLocalAxesForm->offsetZSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
 }
 
-std::optional<RKLocalAxes::Position> AppearanceTreeWidgetController::localAxesPosition()
+std::optional<std::unordered_set<RKLocalAxes::Position, enum_hash>> AppearanceTreeWidgetController::localAxesPosition()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<RKLocalAxes::Position, enum_hash> set = std::unordered_set<RKLocalAxes::Position, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKLocalAxes::Position value = iraspa_structure->structure()->renderLocalAxes().position();
+    RKLocalAxes::Position value = iraspa_structure->object()->renderLocalAxes().position();
     set.insert(value);
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -6979,10 +7987,13 @@ void AppearanceTreeWidgetController::setLocalAxesPosition(int value)
 {
   if(value>=0 && value<int(RKLocalAxes::Position::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->renderLocalAxes().setPosition(RKLocalAxes::Position(value));
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      iraspa_structure->object()->renderLocalAxes().setPosition(RKLocalAxes::Position(value));
+      if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+      {
+        structureViewer->recheckRepresentationStyle();
+      }
     }
 
     emit _mainWindow->rendererReloadData();
@@ -6993,23 +8004,22 @@ void AppearanceTreeWidgetController::setLocalAxesPosition(int value)
   }
 }
 
-std::optional<RKLocalAxes::Style> AppearanceTreeWidgetController::localAxesStyle()
+std::optional<std::unordered_set<RKLocalAxes::Style, enum_hash>> AppearanceTreeWidgetController::localAxesStyle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<RKLocalAxes::Style, enum_hash> set = std::unordered_set<RKLocalAxes::Style, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKLocalAxes::Style value = iraspa_structure->structure()->renderLocalAxes().style();
+    RKLocalAxes::Style value = iraspa_structure->object()->renderLocalAxes().style();
     set.insert(value);
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    qDebug() << "STYLE = " << int(*set.begin());
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -7018,10 +8028,13 @@ void AppearanceTreeWidgetController::setLocalAxesStyle(int value)
 {
   if(value>=0 && value<int(RKLocalAxes::Style::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->renderLocalAxes().setStyle(RKLocalAxes::Style(value));
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      iraspa_structure->object()->renderLocalAxes().setStyle(RKLocalAxes::Style(value));
+      if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+      {
+        structureViewer->recheckRepresentationStyle();
+      }
     }
 
     emit _mainWindow->rendererReloadData();
@@ -7032,22 +8045,22 @@ void AppearanceTreeWidgetController::setLocalAxesStyle(int value)
   }
 }
 
-std::optional<RKLocalAxes::ScalingType> AppearanceTreeWidgetController::localAxesScalingType()
+std::optional<std::unordered_set<RKLocalAxes::ScalingType, enum_hash>> AppearanceTreeWidgetController::localAxesScalingType()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<RKLocalAxes::ScalingType, enum_hash> set = std::unordered_set<RKLocalAxes::ScalingType, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKLocalAxes::ScalingType value = iraspa_structure->structure()->renderLocalAxes().scalingType();
+    RKLocalAxes::ScalingType value = iraspa_structure->object()->renderLocalAxes().scalingType();
     set.insert(value);
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -7056,10 +8069,13 @@ void AppearanceTreeWidgetController::setLocalAxesScalingType(int value)
 {
   if(value>=0 && value<int(RKLocalAxes::ScalingType::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->renderLocalAxes().setScalingType(RKLocalAxes::ScalingType(value));
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      iraspa_structure->object()->renderLocalAxes().setScalingType(RKLocalAxes::ScalingType(value));
+      if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+      {
+        structureViewer->recheckRepresentationStyle();
+      }
     }
 
     emit _mainWindow->rendererReloadData();
@@ -7071,32 +8087,35 @@ void AppearanceTreeWidgetController::setLocalAxesScalingType(int value)
 }
 
 
-std::optional<double> AppearanceTreeWidgetController::localAxesLength()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::localAxesLength()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderLocalAxes().length();
+    double value = iraspa_structure->object()->renderLocalAxes().length();
     set.insert(value);
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setLocalAxesLength(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->renderLocalAxes().setLength(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    iraspa_structure->object()->renderLocalAxes().setLength(value);
+    if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+    {
+      structureViewer->recheckRepresentationStyle();
+    }
   }
   reloadLocalAxes();
   emit rendererReloadData();
@@ -7104,32 +8123,35 @@ void AppearanceTreeWidgetController::setLocalAxesLength(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::localAxesWidth()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::localAxesWidth()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderLocalAxes().width();
+    double value = iraspa_structure->object()->renderLocalAxes().width();
     set.insert(value);
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setLocalAxesWidth(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->renderLocalAxes().setWidth(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    iraspa_structure->object()->renderLocalAxes().setWidth(value);
+    if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+    {
+      structureViewer->recheckRepresentationStyle();
+    }
   }
   reloadLocalAxes();
   emit rendererReloadData();
@@ -7137,32 +8159,35 @@ void AppearanceTreeWidgetController::setLocalAxesWidth(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::localAxesOffsetX()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::localAxesOffsetX()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderLocalAxes().offsetX();
+    double value = iraspa_structure->object()->renderLocalAxes().offsetX();
     set.insert(value);
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setLocalAxesOffsetX(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->renderLocalAxes().setOffsetX(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    iraspa_structure->object()->renderLocalAxes().setOffsetX(value);
+    if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+    {
+      structureViewer->recheckRepresentationStyle();
+    }
   }
   reloadLocalAxes();
   emit rendererReloadData();
@@ -7170,32 +8195,35 @@ void AppearanceTreeWidgetController::setLocalAxesOffsetX(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::localAxesOffsetY()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::localAxesOffsetY()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderLocalAxes().offsetY();
+    double value = iraspa_structure->object()->renderLocalAxes().offsetY();
     set.insert(value);
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setLocalAxesOffsetY(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->renderLocalAxes().setOffsetY(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    iraspa_structure->object()->renderLocalAxes().setOffsetY(value);
+    if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+    {
+      structureViewer->recheckRepresentationStyle();
+    }
   }
   reloadLocalAxes();
   emit rendererReloadData();
@@ -7203,32 +8231,35 @@ void AppearanceTreeWidgetController::setLocalAxesOffsetY(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::localAxesOffsetZ()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::localAxesOffsetZ()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderLocalAxes().offsetZ();
+    double value = iraspa_structure->object()->renderLocalAxes().offsetZ();
     set.insert(value);
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setLocalAxesOffsetZ(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->renderLocalAxes().setOffsetZ(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    iraspa_structure->object()->renderLocalAxes().setOffsetZ(value);
+    if (std::shared_ptr<Structure> structureViewer = std::dynamic_pointer_cast<Structure  >(iraspa_structure->object()))
+    {
+      structureViewer->recheckRepresentationStyle();
+    }
   }
   reloadLocalAxes();
   emit rendererReloadData();
@@ -7292,17 +8323,20 @@ void AppearanceTreeWidgetController::reloadDrawAdsorptionSurfaceCheckBox()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = drawAdsorptionSurface(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = drawAdsorptionSurface())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox)->setTristate(false);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox)->setTristate(true);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox)->setTristate(false);
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox)->setTristate(true);
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -7316,30 +8350,33 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProbeMoleculePopupBo
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->probeParticleComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<Structure::ProbeMolecule> type=adsorptionSurfaceProbeMolecule())
+      if (std::optional<std::unordered_set<ProbeMolecule, enum_hash>> values = adsorptionSurfaceProbeMolecule(); values)
       {
-        if(int index = _appearanceAdsorptionSurfaceForm->probeParticleComboBox->findText("Mult. Val."); index>=0)
+        _appearanceAdsorptionSurfaceForm->probeParticleComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->removeItem(index);
-        }
-        if(int(*type)<0)
-        {
-         whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->setCurrentIndex(int(Structure::ProbeMolecule::multiple_values));
+          if(int index = _appearanceAdsorptionSurfaceForm->probeParticleComboBox->findText("Mult. Val."); index>=0)
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->removeItem(index);
+          }
+          if(int(*(values->begin()))<0)
+          {
+           whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->setCurrentIndex(int(ProbeMolecule::multiple_values));
+          }
+          else
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->setCurrentIndex(int(*(values->begin())));
+          }
         }
         else
         {
-          whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->setCurrentIndex(int(*type));
+          if(int index = _appearanceAdsorptionSurfaceForm->probeParticleComboBox->findText("Mult. Val."); index<0)
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->addItem("Mult. Val.");
+          }
+          whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->setCurrentText("Mult. Val.");
         }
-      }
-      else
-      {
-        if(int index = _appearanceAdsorptionSurfaceForm->probeParticleComboBox->findText("Mult. Val."); index<0)
-        {
-          whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->addItem("Mult. Val.");
-        }
-        whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->setCurrentText("Mult. Val.");
       }
     }
   }
@@ -7354,24 +8391,30 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceIsovalue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<double> value = adsorptionSurfaceMinimumValue())
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceMinimumValue(); values)
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleMinimum(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setMinimum(*value);
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleMinimum(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setMinimum(*(values->begin()));
+        }
       }
 
-      if (std::optional<double> value = adsorptionSurfaceIsovalue())
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceIsovalue(); values)
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7386,18 +8429,21 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOpacity()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceOpacity(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceOpacity())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7413,18 +8459,21 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceHue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceHue(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceHue())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7439,18 +8488,21 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceSaturation()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceSaturation(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceSaturation())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7465,18 +8517,21 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceValue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceValue(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceValue())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7490,17 +8545,20 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideHighDynamicRan
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = adsorptionSurfaceInsideHighDynamicRange(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = adsorptionSurfaceInsideHighDynamicRange())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox)->setTristate(false);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox)->setTristate(true);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox)->setTristate(false);
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox)->setTristate(true);
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideHighDynamicRangecheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -7515,18 +8573,21 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideHDRExposure()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceInsideHDRExposure(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceInsideHDRExposure())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7541,29 +8602,35 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideAmbientLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceInsideAmbientLightIntensity(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceInsideAmbientLightIntensity())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = adsorptionSurfaceInsideAmbientLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = adsorptionSurfaceInsideAmbientLightColor(); values)
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7578,29 +8645,35 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideDiffuseLight()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceInsideDiffuseLightIntensity(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceInsideDiffuseLightIntensity())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = adsorptionSurfaceInsideDiffuseLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = adsorptionSurfaceInsideDiffuseLightColor(); values)
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7615,29 +8688,35 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideSpecularLight(
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceInsideSpecularLightIntensity(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceInsideSpecularLightIntensity())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = adsorptionSurfaceInsideSpecularLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = adsorptionSurfaceInsideSpecularLightColor(); values)
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7652,18 +8731,21 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideShininess()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->insideShininessDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceInsideShininessy(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->insideShininessDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceInsideShininessy())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideShininessDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideShininessDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7677,17 +8759,20 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideHighDynamicRa
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<bool>> values = adsorptionSurfaceOutsideHighDynamicRange(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<bool> state = adsorptionSurfaceOutsideHighDynamicRange())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox)->setTristate(false);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox)->setCheckState(*state ? Qt::Checked : Qt::Unchecked);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox)->setTristate(true);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox)->setCheckState(Qt::PartiallyChecked);
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox)->setTristate(false);
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox)->setCheckState(*(values->begin()) ? Qt::Checked : Qt::Unchecked);
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox)->setTristate(true);
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHighDynamicRangecheckBox)->setCheckState(Qt::PartiallyChecked);
+        }
       }
     }
   }
@@ -7702,18 +8787,21 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideHDRExposure()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceOutsideHDRExposure(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceOutsideHDRExposure())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7728,29 +8816,35 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideAmbientLight(
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceOutsideAmbientLightIntensity(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceOutsideAmbientLightIntensity())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = adsorptionSurfaceOutsideAmbientLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = adsorptionSurfaceOutsideAmbientLightColor(); values)
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7765,29 +8859,35 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideDiffuseLight(
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceOutsideDiffuseLightIntensity(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceOutsideDiffuseLightIntensity())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = adsorptionSurfaceOutsideDiffuseLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = adsorptionSurfaceOutsideDiffuseLightColor(); values)
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7802,29 +8902,35 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideSpecularLight
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceOutsideSpecularLightIntensity(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceOutsideSpecularLightIntensity())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<QColor> value = adsorptionSurfaceOutsideSpecularLightColor())
+      if (std::optional<std::unordered_set<QColor>> values = adsorptionSurfaceOutsideSpecularLightColor(); values)
       {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7839,18 +8945,21 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideShininess()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setEnabled(true);
-      _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceOutsideShininessy(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = adsorptionSurfaceOutsideShininessy())
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideShininessDoubleSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideShininessDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -7858,10 +8967,16 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideShininess()
 
 void AppearanceTreeWidgetController::setDrawAdsorptionSurface(int state)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setDrawAdsorptionSurface(bool(state));
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setDrawAdsorptionSurface(bool(state));
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAtomProperties();
   emit rendererReloadData();
@@ -7869,34 +8984,43 @@ void AppearanceTreeWidgetController::setDrawAdsorptionSurface(int state)
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::drawAdsorptionSurface()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::drawAdsorptionSurface()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->drawAdsorptionSurface();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = adsorptionViewer->drawAdsorptionSurface();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule(int value)
 {
-  if(value>=0 && value<int(Structure::ProbeMolecule::multiple_values))
+  if(value>=0 && value<int(ProbeMolecule::multiple_values))
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAdsorptionSurfaceProbeMolecule(Structure::ProbeMolecule(value));
-      iraspa_structure->structure()->recheckRepresentationStyle();
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceProbeMolecule(ProbeMolecule(value));
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
     }
 
     emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
@@ -7908,31 +9032,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule(int value
   }
 }
 
-std::optional<Structure::ProbeMolecule> AppearanceTreeWidgetController::adsorptionSurfaceProbeMolecule()
+std::optional<std::unordered_set<ProbeMolecule, enum_hash>> AppearanceTreeWidgetController::adsorptionSurfaceProbeMolecule()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
-  std::unordered_set<Structure::ProbeMolecule, enum_hash> set = std::unordered_set<Structure::ProbeMolecule, enum_hash>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  std::unordered_set<ProbeMolecule, enum_hash> set = std::unordered_set<ProbeMolecule, enum_hash>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    Structure::ProbeMolecule value = iraspa_structure->structure()->adsorptionSurfaceProbeMolecule();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      ProbeMolecule value = adsorptionViewer->adsorptionSurfaceProbeMolecule();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceIsoValue(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceIsoValue(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -7940,43 +9070,49 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceIsovalue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceIsovalue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceIsoValue();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceIsoValue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceMinimumValue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceMinimumValue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceMinimumValue();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceMinimumValue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -7986,9 +9122,12 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity(double value)
 {
   if(value>=0 && value<=1.0)
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAdsorptionSurfaceOpacity(value);
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceOpacity(value);
+      }
     }
     reloadAdsorptionSurfaceProperties();
     emit rendererReloadData();
@@ -7997,32 +9136,41 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOpacity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceOpacity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceOpacity();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceOpacity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceHue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceHue(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceHue(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8030,32 +9178,41 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceHue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceHue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceHue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceHue();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceHue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceSaturation(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceSaturation(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceSaturation(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8063,32 +9220,41 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceSaturation(double value
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceSaturation()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceSaturation()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceSaturation();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceSaturation();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceValue(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceValue(value);
-    iraspa_structure->structure()->recheckRepresentationStyle();
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceValue(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8096,22 +9262,25 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceValue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceValue()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceValue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceValue();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceValue();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -8119,9 +9288,12 @@ std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceValue()
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideHighDynamicRange(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceFrontSideHDR(bool(value));
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceFrontSideHDR(bool(value));
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8129,31 +9301,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideHighDynamicRange(
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::adsorptionSurfaceInsideHighDynamicRange()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::adsorptionSurfaceInsideHighDynamicRange()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool state = iraspa_structure->structure()->adsorptionSurfaceFrontSideHDR();
-    set.insert(state);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool state = adsorptionViewer->adsorptionSurfaceFrontSideHDR();
+      set.insert(state);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideHDRExposure(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceFrontSideHDRExposure(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceFrontSideHDRExposure(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8161,31 +9339,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideHDRExposure(doubl
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideHDRExposure()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceInsideHDRExposure()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideHDRExposure();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceFrontSideHDRExposure();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideAmbientLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceFrontSideAmbientIntensity(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceFrontSideAmbientIntensity(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8193,22 +9377,25 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideAmbientLightInten
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideAmbientLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceInsideAmbientLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideAmbientIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceFrontSideAmbientIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -8218,9 +9405,12 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideAmbientLightColor
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAdsorptionSurfaceFrontSideAmbientColor(color);
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceFrontSideAmbientColor(color);
+      }
     }
     reloadAdsorptionSurfaceProperties();
     emit rendererReloadData();
@@ -8229,31 +9419,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideAmbientLightColor
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideAmbientLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorptionSurfaceInsideAmbientLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor color = iraspa_structure->structure()->adsorptionSurfaceFrontSideAmbientColor();
-    set.insert(color);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor color = adsorptionViewer->adsorptionSurfaceFrontSideAmbientColor();
+      set.insert(color);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideDiffuseLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceFrontSideDiffuseIntensity(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceFrontSideDiffuseIntensity(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8261,22 +9457,25 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideDiffuseLightInten
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideDiffuseLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceInsideDiffuseLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideDiffuseIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceFrontSideDiffuseIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -8286,9 +9485,12 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideDiffuseLightColor
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAdsorptionSurfaceFrontSideDiffuseColor(color);
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceFrontSideDiffuseColor(color);
+      }
     }
     reloadAdsorptionSurfaceProperties();
     emit rendererReloadData();
@@ -8297,31 +9499,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideDiffuseLightColor
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideDiffuseLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorptionSurfaceInsideDiffuseLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor color = iraspa_structure->structure()->adsorptionSurfaceFrontSideDiffuseColor();
-    set.insert(color);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor color = adsorptionViewer->adsorptionSurfaceFrontSideDiffuseColor();
+      set.insert(color);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideSpecularLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceFrontSideSpecularIntensity(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceFrontSideSpecularIntensity(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8329,22 +9537,25 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideSpecularLightInte
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideSpecularLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceInsideSpecularLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideSpecularIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceFrontSideSpecularIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -8354,9 +9565,12 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideSpecularLightColo
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAdsorptionSurfaceFrontSideSpecularColor(color);
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceFrontSideSpecularColor(color);
+      }
     }
     reloadAdsorptionSurfaceProperties();
     emit rendererReloadData();
@@ -8365,31 +9579,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideSpecularLightColo
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceInsideSpecularLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorptionSurfaceInsideSpecularLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor color = iraspa_structure->structure()->adsorptionSurfaceFrontSideSpecularColor();
-    set.insert(color);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor color = adsorptionViewer->adsorptionSurfaceFrontSideSpecularColor();
+      set.insert(color);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideShininess(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceFrontSideShininess(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceFrontSideShininess(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8397,31 +9617,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideShininess(double 
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceInsideShininessy()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceInsideShininessy()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceFrontSideShininess();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceFrontSideShininess();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideHighDynamicRange(int value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceBackSideHDR(bool(value));
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceBackSideHDR(bool(value));
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8429,31 +9655,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideHighDynamicRange
   _mainWindow->documentWasModified();
 }
 
-std::optional<bool> AppearanceTreeWidgetController::adsorptionSurfaceOutsideHighDynamicRange()
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideHighDynamicRange()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<bool> set = std::unordered_set<bool>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    bool value = iraspa_structure->structure()->adsorptionSurfaceBackSideHDR();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      bool value = adsorptionViewer->adsorptionSurfaceBackSideHDR();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideHDRExposure(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceBackSideHDRExposure(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceBackSideHDRExposure(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8461,31 +9693,36 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideHDRExposure(doub
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideHDRExposure()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideHDRExposure()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceBackSideHDRExposure();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceBackSideHDRExposure();
+      set.insert(value);
+    }
   }
-
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceBackSideAmbientIntensity(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceBackSideAmbientIntensity(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8493,22 +9730,25 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightInte
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideAmbientLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideAmbientLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceBackSideAmbientIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceBackSideAmbientIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -8518,9 +9758,12 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightColo
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAdsorptionSurfaceBackSideAmbientColor(color);
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceBackSideAmbientColor(color);
+      }
     }
     reloadAdsorptionSurfaceProperties();
     emit rendererReloadData();
@@ -8529,31 +9772,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightColo
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideAmbientLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideAmbientLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->adsorptionSurfaceBackSideAmbientColor();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = adsorptionViewer->adsorptionSurfaceBackSideAmbientColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceBackSideDiffuseIntensity(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceBackSideDiffuseIntensity(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8561,22 +9810,25 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightInte
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideDiffuseLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideDiffuseLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceBackSideDiffuseIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceBackSideDiffuseIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -8586,9 +9838,12 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightColo
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAdsorptionSurfaceBackSideDiffuseColor(color);
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceBackSideDiffuseColor(color);
+      }
     }
     reloadAdsorptionSurfaceProperties();
     emit rendererReloadData();
@@ -8597,31 +9852,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightColo
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideDiffuseLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideDiffuseLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->adsorptionSurfaceBackSideDiffuseColor();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = adsorptionViewer->adsorptionSurfaceBackSideDiffuseColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightIntensity(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceBackSideSpecularIntensity(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceBackSideSpecularIntensity(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8629,22 +9890,25 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightInt
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideSpecularLightIntensity()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideSpecularLightIntensity()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceBackSideSpecularIntensity();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceBackSideSpecularIntensity();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -8654,9 +9918,12 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightCol
   QColor color = QColorDialog::getColor(Qt::white,this,"Choose Color");
   if(color.isValid())
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setAdsorptionSurfaceBackSideSpecularColor(color);
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceBackSideSpecularColor(color);
+      }
     }
     reloadAdsorptionSurfaceProperties();
     emit rendererReloadData();
@@ -8665,31 +9932,37 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightCol
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::adsorptionSurfaceOutsideSpecularLightColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideSpecularLightColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->adsorptionSurfaceBackSideSpecularColor();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = adsorptionViewer->adsorptionSurfaceBackSideSpecularColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideShininess(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setAdsorptionSurfaceBackSideShininess(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceBackSideShininess(value);
+    }
   }
   reloadAdsorptionSurfaceProperties();
   emit rendererReloadData();
@@ -8697,22 +9970,25 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideShininess(double
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::adsorptionSurfaceOutsideShininessy()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceOutsideShininessy()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->adsorptionSurfaceBackSideShininess();
-    set.insert(value);
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionSurfaceBackSideShininess();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -8743,24 +10019,26 @@ void AppearanceTreeWidgetController::reloadAnnotationType()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAnnotationForm->typeComboBox->setEnabled(_projectTreeNode->isEditable());
-
-
-      if (std::optional<RKTextType> type = annotationType())
+      if (std::optional<std::set<RKTextType>> values = annotationType(); values)
       {
-        if(int index = _appearanceAnnotationForm->typeComboBox->findText("Multiple values"); index>=0)
+        _appearanceAnnotationForm->typeComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAnnotationForm->typeComboBox)->removeItem(index);
+          if(int index = _appearanceAnnotationForm->typeComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAnnotationForm->typeComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAnnotationForm->typeComboBox)->setCurrentIndex(int(*(values->begin())));
         }
-        whileBlocking(_appearanceAnnotationForm->typeComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceAnnotationForm->typeComboBox->findText("Multiple values"); index<0)
+        else
         {
-          whileBlocking(_appearanceAnnotationForm->typeComboBox)->addItem("Multiple values");
+          if(int index = _appearanceAnnotationForm->typeComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAnnotationForm->typeComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAnnotationForm->typeComboBox)->setCurrentText("Multiple values");
         }
-        whileBlocking(_appearanceAnnotationForm->typeComboBox)->setCurrentText("Multiple values");
       }
     }
   }
@@ -8775,52 +10053,53 @@ void AppearanceTreeWidgetController::reloadAnnotationFont()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAnnotationForm->fontComboBox->setEnabled(_projectTreeNode->isEditable());
-      _appearanceAnnotationForm->fontSpecifierComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<QString> type = annotationFont())
+      if (std::optional<std::set<QString>> values = annotationFont(); values)
       {
-        QFont font;
-        font.fromString(*type);
-        QFontInfo fontInfo = QFontInfo(font);
-        const QString familyName = fontInfo.family();
-        const QString memberName = fontInfo.styleName();
+        _appearanceAnnotationForm->fontComboBox->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAnnotationForm->fontSpecifierComboBox->setEnabled(_projectTreeNode->isEditable());
 
-        if(int index = _appearanceAnnotationForm->fontComboBox->findText("Multiple values"); index>=0)
+        if(values->size()==1)
         {
-          whileBlocking(_appearanceAnnotationForm->fontComboBox)->removeItem(index);
-        }
-        whileBlocking(_appearanceAnnotationForm->fontComboBox)->setCurrentText(familyName);
+          QFont font;
+          font.fromString(*(values->begin()));
+          QFontInfo fontInfo = QFontInfo(font);
+          const QString familyName = fontInfo.family();
+          const QString memberName = fontInfo.styleName();
 
-        #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
-          QFontDatabase database;
-          const QStringList fontStyles = database.styles(familyName);
-        #else
-          const QStringList fontStyles = QFontDatabase::styles(familyName);
-        #endif
-        whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->clear();
-        for (const QString &style : fontStyles)
+          if(int index = _appearanceAnnotationForm->fontComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAnnotationForm->fontComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAnnotationForm->fontComboBox)->setCurrentText(familyName);
+
+          #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            QFontDatabase database;
+            const QStringList fontStyles = database.styles(familyName);
+          #else
+            const QStringList fontStyles = QFontDatabase::styles(familyName);
+          #endif
+          whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->clear();
+          for (const QString &style : fontStyles)
+          {
+            whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->addItem(style);
+          }
+
+          if(int index = _appearanceAnnotationForm->fontSpecifierComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->setCurrentText(memberName);
+
+        }
+        else
         {
-          whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->addItem(style);
+          if(int index = _appearanceAnnotationForm->fontComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAnnotationForm->fontComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAnnotationForm->fontComboBox)->setCurrentText("Multiple values");
         }
-
-        if(int index = _appearanceAnnotationForm->fontSpecifierComboBox->findText("Multiple values"); index>=0)
-        {
-          whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->removeItem(index);
-        }
-        whileBlocking(_appearanceAnnotationForm->fontSpecifierComboBox)->setCurrentText(memberName);
-
       }
-      else
-      {
-        if(int index = _appearanceAnnotationForm->fontComboBox->findText("Multiple values"); index<0)
-        {
-          whileBlocking(_appearanceAnnotationForm->fontComboBox)->addItem("Multiple values");
-        }
-        whileBlocking(_appearanceAnnotationForm->fontComboBox)->setCurrentText("Multiple values");
-      }
-
-
     }
   }
 }
@@ -8833,16 +10112,19 @@ void AppearanceTreeWidgetController::reloadAnnotationColor()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAnnotationForm->colorPushButton->setEnabled(_projectTreeNode->isEditable());
-      if (std::optional<QColor> value = annotationTextColor())
+      if (std::optional<std::unordered_set<QColor>> values = annotationTextColor(); values)
       {
-        whileBlocking(_appearanceAnnotationForm->colorPushButton)->setText(tr("Color"));
-        whileBlocking(_appearanceAnnotationForm->colorPushButton)->setColor(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAnnotationForm->colorPushButton)->setColor(QColor(255,255,255,255));
-        whileBlocking(_appearanceAnnotationForm->colorPushButton)->setText("Mult. Val.");
+        _appearanceAnnotationForm->colorPushButton->setEnabled(_projectTreeNode->isEditable());
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAnnotationForm->colorPushButton)->setText(tr("Color"));
+          whileBlocking(_appearanceAnnotationForm->colorPushButton)->setColor(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAnnotationForm->colorPushButton)->setColor(QColor(255,255,255,255));
+          whileBlocking(_appearanceAnnotationForm->colorPushButton)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -8856,26 +10138,27 @@ void AppearanceTreeWidgetController::reloadAnnotationAlignment()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAnnotationForm->alignmentComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<RKTextAlignment> type = annotationAlignment())
+      if (std::optional<std::set<RKTextAlignment>> values = annotationAlignment(); values)
       {
-        if(int index = _appearanceAnnotationForm->alignmentComboBox->findText("Multiple values"); index>=0)
-        {
-          whileBlocking(_appearanceAnnotationForm->alignmentComboBox)->removeItem(index);
-        }
-        whileBlocking(_appearanceAnnotationForm->alignmentComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceAnnotationForm->alignmentComboBox->findText("Multiple values"); index<0)
-        {
-          whileBlocking(_appearanceAnnotationForm->alignmentComboBox)->addItem("Multiple values");
-        }
-        whileBlocking(_appearanceAnnotationForm->alignmentComboBox)->setCurrentText("Multiple values");
-      }
+        _appearanceAnnotationForm->alignmentComboBox->setEnabled(_projectTreeNode->isEditable());
 
-
+        if(values->size()==1)
+        {
+          if(int index = _appearanceAnnotationForm->alignmentComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAnnotationForm->alignmentComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAnnotationForm->alignmentComboBox)->setCurrentIndex(int(*(values->begin())));
+        }
+        else
+        {
+          if(int index = _appearanceAnnotationForm->alignmentComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAnnotationForm->alignmentComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAnnotationForm->alignmentComboBox)->setCurrentText("Multiple values");
+        }
+      }
     }
   }
 }
@@ -8888,27 +10171,27 @@ void AppearanceTreeWidgetController::reloadAnnotationStyle()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAnnotationForm->styleComboBox->setEnabled(_projectTreeNode->isEditable());
-
-
-      if (std::optional<RKTextStyle> type = annotationStyle())
+      if (std::optional<std::set<RKTextStyle>> values = annotationStyle(); values)
       {
-        if(int index = _appearanceAnnotationForm->styleComboBox->findText("Multiple values"); index>=0)
-        {
-          whileBlocking(_appearanceAnnotationForm->styleComboBox)->removeItem(index);
-        }
-        whileBlocking(_appearanceAnnotationForm->styleComboBox)->setCurrentIndex(int(*type));
-      }
-      else
-      {
-        if(int index = _appearanceAnnotationForm->styleComboBox->findText("Multiple values"); index<0)
-        {
-          whileBlocking(_appearanceAnnotationForm->styleComboBox)->addItem("Multiple values");
-        }
-        whileBlocking(_appearanceAnnotationForm->styleComboBox)->setCurrentText("Multiple values");
-      }
+        _appearanceAnnotationForm->styleComboBox->setEnabled(_projectTreeNode->isEditable());
 
-
+        if(values->size()==1)
+        {
+          if(int index = _appearanceAnnotationForm->styleComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAnnotationForm->styleComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAnnotationForm->styleComboBox)->setCurrentIndex(int(*(values->begin())));
+        }
+        else
+        {
+          if(int index = _appearanceAnnotationForm->styleComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAnnotationForm->styleComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAnnotationForm->styleComboBox)->setCurrentText("Multiple values");
+        }
+      }
     }
   }
 }
@@ -8922,18 +10205,21 @@ void AppearanceTreeWidgetController::reloadAnnotationScaling()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAnnotationForm->scalingDoubleSpinBox->setEnabled(true);
-      _appearanceAnnotationForm->scalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAnnotationForm->scalingHorizontalSlider->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = annotationScaling(); values)
+      {
+        _appearanceAnnotationForm->scalingDoubleSpinBox->setEnabled(true);
+        _appearanceAnnotationForm->scalingDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAnnotationForm->scalingHorizontalSlider->setEnabled(_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = annotationScaling())
-      {
-        whileBlocking(_appearanceAnnotationForm->scalingDoubleSpinBox)->setValue(*value);
-        whileBlocking(_appearanceAnnotationForm->scalingHorizontalSlider)->setDoubleValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAnnotationForm->scalingDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAnnotationForm->scalingDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAnnotationForm->scalingHorizontalSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAnnotationForm->scalingDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -8949,38 +10235,49 @@ void AppearanceTreeWidgetController::reloadAnnotationOffset()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _appearanceAnnotationForm->offsetXDoubleSpinBox->setEnabled(true);
-      _appearanceAnnotationForm->offsetXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAnnotationForm->offsetYDoubleSpinBox->setEnabled(true);
-      _appearanceAnnotationForm->offsetYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
-      _appearanceAnnotationForm->offsetZDoubleSpinBox->setEnabled(true);
-      _appearanceAnnotationForm->offsetZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = annotationOffsetX(); values)
+      {
+        _appearanceAnnotationForm->offsetXDoubleSpinBox->setEnabled(true);
+        _appearanceAnnotationForm->offsetXDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = annotationOffsetX())
-      {
-        whileBlocking(_appearanceAnnotationForm->offsetXDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAnnotationForm->offsetXDoubleSpinBox)->setText("Mult. Val.");
-      }
-
-      if (std::optional<double> value = annotationOffsetY())
-      {
-        whileBlocking(_appearanceAnnotationForm->offsetYDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_appearanceAnnotationForm->offsetYDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAnnotationForm->offsetXDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAnnotationForm->offsetXDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
 
-      if (std::optional<double> value = annotationOffsetZ())
+      if (std::optional<std::unordered_set<double>> values = annotationOffsetY(); values)
       {
-        whileBlocking(_appearanceAnnotationForm->offsetZDoubleSpinBox)->setValue(*value);
+        _appearanceAnnotationForm->offsetYDoubleSpinBox->setEnabled(true);
+        _appearanceAnnotationForm->offsetYDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAnnotationForm->offsetYDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAnnotationForm->offsetYDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
-      else
+
+      if (std::optional<std::unordered_set<double>> values = annotationOffsetZ(); values)
       {
-        whileBlocking(_appearanceAnnotationForm->offsetZDoubleSpinBox)->setText("Mult. Val.");
+        _appearanceAnnotationForm->offsetZDoubleSpinBox->setEnabled(true);
+        _appearanceAnnotationForm->offsetZDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAnnotationForm->offsetZDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAnnotationForm->offsetZDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -8991,9 +10288,12 @@ void AppearanceTreeWidgetController::setAnnotationType(int value)
 {
   if(value >= 0 && value <= int(RKTextType::multiple_values))  // also include "Custom"
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setRenderTextType(RKTextType(value));
+      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        textViewer->setRenderTextType(RKTextType(value));
+      }
     }
 
     reloadAnnotationProperties();
@@ -9003,31 +10303,37 @@ void AppearanceTreeWidgetController::setAnnotationType(int value)
   }
 }
 
-std::optional<RKTextType> AppearanceTreeWidgetController::annotationType()
+std::optional<std::set<RKTextType>> AppearanceTreeWidgetController::annotationType()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<RKTextType> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKTextType value = iraspa_structure->structure()->renderTextType();
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKTextType value = textViewer->renderTextType();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAnnotationFontFamily(QString value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setRenderTextFont(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      textViewer->setRenderTextFont(value);
+    }
   }
 
   reloadAnnotationProperties();
@@ -9038,18 +10344,21 @@ void AppearanceTreeWidgetController::setAnnotationFontFamily(QString value)
 
 void AppearanceTreeWidgetController::setAnnotationFontMember(QString value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString fontName = iraspa_structure->structure()->renderTextFont();
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QString fontName = textViewer->renderTextFont();
 
-    QFont font = QFont(fontName);
-    QFontInfo fontInfo = QFontInfo(font);
-    QString fontFamily = fontInfo.family();
+      QFont font = QFont(fontName);
+      QFontInfo fontInfo = QFontInfo(font);
+      QString fontFamily = fontInfo.family();
 
-    QFont newFont = QFont(fontFamily);
-    newFont.setStyleName(value);
+      QFont newFont = QFont(fontFamily);
+      newFont.setStyleName(value);
 
-    iraspa_structure->structure()->setRenderTextFont(newFont.toString());
+      textViewer->setRenderTextFont(newFont.toString());
+    }
   }
 
   reloadAnnotationProperties();
@@ -9058,22 +10367,25 @@ void AppearanceTreeWidgetController::setAnnotationFontMember(QString value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<QString> AppearanceTreeWidgetController::annotationFont()
+std::optional<std::set<QString>> AppearanceTreeWidgetController::annotationFont()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<QString> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QString value = iraspa_structure->structure()->renderTextFont();
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QString value = textViewer->renderTextFont();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -9084,9 +10396,12 @@ void AppearanceTreeWidgetController::setAnnotationTextColor()
   if(color.isValid())
   {
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setRenderTextColor(color);
+      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        textViewer->setRenderTextColor(color);
+      }
     }
     reloadAnnotationProperties();
     emit rendererReloadData();
@@ -9095,22 +10410,25 @@ void AppearanceTreeWidgetController::setAnnotationTextColor()
   }
 }
 
-std::optional<QColor> AppearanceTreeWidgetController::annotationTextColor()
+std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::annotationTextColor()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    QColor value = iraspa_structure->structure()->renderTextColor();
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      QColor value = textViewer->renderTextColor();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -9120,9 +10438,12 @@ void AppearanceTreeWidgetController::setAnnotationAlignment(int value)
 {
   if(value >= 0 && value <= int(RKTextAlignment::multiple_values))  // also include "Custom"
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setRenderTextAlignment(RKTextAlignment(value));
+      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        textViewer->setRenderTextAlignment(RKTextAlignment(value));
+      }
     }
 
     reloadAnnotationProperties();
@@ -9132,22 +10453,25 @@ void AppearanceTreeWidgetController::setAnnotationAlignment(int value)
   }
 }
 
-std::optional<RKTextAlignment> AppearanceTreeWidgetController::annotationAlignment()
+std::optional<std::set<RKTextAlignment>> AppearanceTreeWidgetController::annotationAlignment()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<RKTextAlignment> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKTextAlignment value = iraspa_structure->structure()->renderTextAlignment();
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKTextAlignment value = textViewer->renderTextAlignment();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -9156,9 +10480,12 @@ void AppearanceTreeWidgetController::setAnnotationStyle(int value)
 {
   if(value >= 0 && value <= int(RKTextStyle::multiple_values))  // also include "Custom"
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setRenderTextStyle(RKTextStyle(value));
+      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        textViewer->setRenderTextStyle(RKTextStyle(value));
+      }
     }
 
     reloadAnnotationProperties();
@@ -9168,22 +10495,25 @@ void AppearanceTreeWidgetController::setAnnotationStyle(int value)
   }
 }
 
-std::optional<RKTextStyle> AppearanceTreeWidgetController::annotationStyle()
+std::optional<std::set<RKTextStyle>> AppearanceTreeWidgetController::annotationStyle()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::set<RKTextStyle> set{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    RKTextStyle value = iraspa_structure->structure()->renderTextStyle();
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKTextStyle value = textViewer->renderTextStyle();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -9192,9 +10522,12 @@ void AppearanceTreeWidgetController::setAnnotationScaling(double value)
 {
   if(value>=0)
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      iraspa_structure->structure()->setRenderTextScaling(value);
+      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        textViewer->setRenderTextScaling(value);
+      }
     }
     reloadAnnotationProperties();
     emit rendererReloadData();
@@ -9203,22 +10536,25 @@ void AppearanceTreeWidgetController::setAnnotationScaling(double value)
   }
 }
 
-std::optional<double> AppearanceTreeWidgetController::annotationScaling()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annotationScaling()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderTextScaling();
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = textViewer->renderTextScaling();
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -9226,9 +10562,12 @@ std::optional<double> AppearanceTreeWidgetController::annotationScaling()
 
 void AppearanceTreeWidgetController::setAnnotationOffsetX(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setRenderTextOffsetX(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      textViewer->setRenderTextOffsetX(value);
+    }
   }
   reloadAnnotationProperties();
   emit rendererReloadData();
@@ -9236,31 +10575,37 @@ void AppearanceTreeWidgetController::setAnnotationOffsetX(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::annotationOffsetX()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annotationOffsetX()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderTextOffset().x;
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = textViewer->renderTextOffset().x;
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAnnotationOffsetY(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setRenderTextOffsetY(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      textViewer->setRenderTextOffsetY(value);
+    }
   }
   reloadAnnotationProperties();
   emit rendererReloadData();
@@ -9268,31 +10613,37 @@ void AppearanceTreeWidgetController::setAnnotationOffsetY(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::annotationOffsetY()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annotationOffsetY()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderTextOffset().y;
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = textViewer->renderTextOffset().y;
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 void AppearanceTreeWidgetController::setAnnotationOffsetZ(double value)
 {
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    iraspa_structure->structure()->setRenderTextOffsetZ(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      textViewer->setRenderTextOffsetZ(value);
+    }
   }
   reloadAnnotationProperties();
   emit rendererReloadData();
@@ -9300,22 +10651,25 @@ void AppearanceTreeWidgetController::setAnnotationOffsetZ(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> AppearanceTreeWidgetController::annotationOffsetZ()
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annotationOffsetZ()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
   std::unordered_set<double> set = std::unordered_set<double>{};
-  for(const std::shared_ptr<iRASPAStructure> &iraspa_structure: _iraspa_structures)
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    double value = iraspa_structure->structure()->renderTextOffset().z;
-    set.insert(value);
+    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = textViewer->renderTextOffset().z;
+      set.insert(value);
+    }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }

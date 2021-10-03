@@ -139,12 +139,13 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
           this->_camera = projectStructure->camera();
           _iraspa_structures = projectStructure->sceneList()->selectediRASPAStructures();
 
-          for(std::vector<std::shared_ptr<iRASPAStructure>> v : _iraspa_structures)
+          for(std::vector<std::shared_ptr<iRASPAObject>> v : _iraspa_structures)
           {
             std::vector<std::shared_ptr<RKRenderStructure>> r{};
             std::transform(v.begin(),v.end(),std::back_inserter(r),
-                           [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                           [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
             render_structures.push_back(r);
+            qDebug() << "Number of structures: " << r.size() << v.size();
           }
         }
       }
@@ -183,14 +184,14 @@ void RenderStackedWidget::setLogReportingWidget(LogReporting *logReporting)
   }
 }
 
-void RenderStackedWidget::setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> iraspa_structures)
+void RenderStackedWidget::setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> iraspa_structures)
 {
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> renderStructures{};
-  for(std::vector<std::shared_ptr<iRASPAStructure>> v : iraspa_structures)
+  for(std::vector<std::shared_ptr<iRASPAObject>> v : iraspa_structures)
   {
     std::vector<std::shared_ptr<RKRenderStructure>> r{};
     std::transform(v.begin(),v.end(),std::back_inserter(r),
-                   [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
     renderStructures.push_back(r);
   }
 
@@ -415,15 +416,21 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           switch(pixel[0])
           {
           case 1:
-            _iraspa_structures[structureIdentifier][movieIdentifier]->structure()->setAtomSelection(pickedObject);
-            reloadData();
-            emit updateAtomSelection();
-            emit updateBondSelection();
+            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            {
+              structure->setAtomSelection(pickedObject);
+              reloadData();
+              emit updateAtomSelection();
+              emit updateBondSelection();
+            }
             break;
           case 2:
-            _iraspa_structures[structureIdentifier][movieIdentifier]->structure()->setBondSelection(pickedObject);
-            reloadData();
-            emit updateBondSelection();
+            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            {
+              structure->setBondSelection(pickedObject);
+              reloadData();
+              emit updateBondSelection();
+            }
             break;
           default:
             break;
@@ -448,15 +455,21 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           switch(pixel[0])
           {
           case 1:
-            _iraspa_structures[structureIdentifier][movieIdentifier]->structure()->toggleAtomSelection(pickedObject);
-            reloadData();
-            emit updateAtomSelection();
-            emit updateBondSelection();
+            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            {
+              structure->toggleAtomSelection(pickedObject);
+              reloadData();
+              emit updateAtomSelection();
+              emit updateBondSelection();
+            }
             break;
           case 2:
-            _iraspa_structures[structureIdentifier][movieIdentifier]->structure()->toggleBondSelection(pickedObject);
-            reloadData();
-            emit updateBondSelection();
+            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            {
+              structure->toggleBondSelection(pickedObject);
+              reloadData();
+              emit updateBondSelection();
+            }
             break;
           default:
             break;
@@ -487,7 +500,10 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
         {
           for(size_t j=0; j<_iraspa_structures[i].size(); j++)
           {
-            _iraspa_structures[i][j]->structure()->clearSelection();
+            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[i][j]->object()))
+            {
+              structure->clearSelection();
+            }
           }
         }
         if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
@@ -512,15 +528,21 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             emit updateBondSelection();
             break;
           case 1:
-            _iraspa_structures[structureIdentifier][movieIdentifier]->structure()->setAtomSelection(pickedObject);
-            reloadData();
-            emit updateAtomSelection();
-            emit updateBondSelection();
+            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            {
+              structure->setAtomSelection(pickedObject);
+              reloadData();
+              emit updateAtomSelection();
+              emit updateBondSelection();
+            }
             break;
           case 2:
-            _iraspa_structures[structureIdentifier][movieIdentifier]->structure()->setBondSelection(pickedObject);
-            reloadData();
-            emit updateBondSelection();
+            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            {
+              structure->setBondSelection(pickedObject);
+              reloadData();
+              emit updateBondSelection();
+            }
             break;
           default:
             break;
@@ -579,31 +601,34 @@ void RenderStackedWidget::selectAsymetricAtomsInRectangle(QRect rect, bool exten
         {
           for(size_t j=0; j<_iraspa_structures[i].size(); j++)
           {
-            std::shared_ptr<SKAtomTreeController> atomTreeController = _iraspa_structures[i][j]->structure()->atomsTreeController();
-            std::shared_ptr<SKBondSetController> bondSetController = _iraspa_structures[i][j]->structure()->bondSetController();
-
-            AtomSelectionIndexPaths previousAtomSelection = atomTreeController->selectionIndexPaths();
-            std::set<int> previousBondSelection = bondSetController->selectionIndexSet();
-
-            std::set<int> indexSetSelectedAtoms = _iraspa_structures[i][j]->structure()->filterCartesianAtomPositions(closure);
-            std::set<int> indexSetSelectedBonds = _iraspa_structures[i][j]->structure()->filterCartesianBondPositions(closure);
-
-            if(extend)
+            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[i][j]->object()))
             {
-              _iraspa_structures[i][j]->structure()->addToAtomSelection(indexSetSelectedAtoms);
-              _iraspa_structures[i][j]->structure()->bondSetController()->addSelectedObjects(indexSetSelectedBonds);
-            }
-            else
-            {
-              _iraspa_structures[i][j]->structure()->setAtomSelection(indexSetSelectedAtoms);
-              _iraspa_structures[i][j]->structure()->bondSetController()->setSelectionIndexSet(indexSetSelectedBonds);
-            }
+              std::shared_ptr<SKAtomTreeController> atomTreeController = structure->atomsTreeController();
+              std::shared_ptr<SKBondSetController> bondSetController = structure->bondSetController();
 
-            AtomSelectionIndexPaths atomSelection = atomTreeController->selectionIndexPaths();
-            std::set<int> bondSelection = bondSetController->selectionIndexSet();
+              AtomSelectionIndexPaths previousAtomSelection = atomTreeController->selectionIndexPaths();
+              std::set<int> previousBondSelection = bondSetController->selectionIndexSet();
 
-            new RenderViewChangeSelectionSubCommand(_iraspa_structures[i][j]->structure(), atomSelection, previousAtomSelection,
-                                                    bondSelection, previousBondSelection, changeSelectionCommand);
+              std::set<int> indexSetSelectedAtoms = structure->filterCartesianAtomPositions(closure);
+              std::set<int> indexSetSelectedBonds = structure->filterCartesianBondPositions(closure);
+
+              if(extend)
+              {
+                structure->addToAtomSelection(indexSetSelectedAtoms);
+                structure->bondSetController()->addSelectedObjects(indexSetSelectedBonds);
+              }
+              else
+              {
+                structure->setAtomSelection(indexSetSelectedAtoms);
+                structure->bondSetController()->setSelectionIndexSet(indexSetSelectedBonds);
+              }
+
+              AtomSelectionIndexPaths atomSelection = atomTreeController->selectionIndexPaths();
+              std::set<int> bondSelection = bondSetController->selectionIndexSet();
+
+              new RenderViewChangeSelectionSubCommand(structure, atomSelection, previousAtomSelection,
+                                                      bondSelection, previousBondSelection, changeSelectionCommand);
+            }
           }
         }
         iraspaProject->undoManager().push(changeSelectionCommand);
@@ -721,11 +746,11 @@ void RenderStackedWidget::reloadRenderData()
   _iraspa_structures = _project.lock()->sceneList()->selectediRASPAStructures();
 
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
-  for(std::vector<std::shared_ptr<iRASPAStructure>> v : _iraspa_structures)
+  for(std::vector<std::shared_ptr<iRASPAObject>> v : _iraspa_structures)
   {
     std::vector<std::shared_ptr<RKRenderStructure>> r{};
     std::transform(v.begin(),v.end(),std::back_inserter(r),
-                   [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
     render_structures.push_back(r);
   }
 
@@ -741,11 +766,11 @@ void RenderStackedWidget::resetData()
 {
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
 
-  for(std::vector<std::shared_ptr<iRASPAStructure>> v : _iraspa_structures)
+  for(std::vector<std::shared_ptr<iRASPAObject>> v : _iraspa_structures)
   {
     std::vector<std::shared_ptr<RKRenderStructure>> r{};
     std::transform(v.begin(),v.end(),std::back_inserter(r),
-                   [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
     render_structures.push_back(r);
   }
 
@@ -1505,13 +1530,13 @@ void RenderStackedWidget::redrawWithQuality(RKRenderQuality quality)
 }
 
 
-void RenderStackedWidget::invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures)
+void RenderStackedWidget::invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures)
 {
   std::vector<std::shared_ptr<RKRenderStructure>> renderStructures{};
-  for (const std::vector<std::shared_ptr<iRASPAStructure>> &v : structures)
+  for (const std::vector<std::shared_ptr<iRASPAObject>> &v : structures)
   {
     std::transform(v.begin(),v.end(),std::back_inserter(renderStructures),
-                   [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
   }
 
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
@@ -1520,13 +1545,13 @@ void RenderStackedWidget::invalidateCachedAmbientOcclusionTextures(std::vector<s
   }
 }
 
-void RenderStackedWidget::invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures)
+void RenderStackedWidget::invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures)
 {
   std::vector<std::shared_ptr<RKRenderStructure>> renderStructures{};
-  for (const std::vector<std::shared_ptr<iRASPAStructure>> &v : structures)
+  for (const std::vector<std::shared_ptr<iRASPAObject>> &v : structures)
   {
     std::transform(v.begin(),v.end(),std::back_inserter(renderStructures),
-                   [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->structure();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
   }
 
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))

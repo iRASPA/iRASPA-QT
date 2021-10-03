@@ -54,8 +54,8 @@ public:
   //void setSelectedFrameIndices(int frameIndex);
   std::set<std::shared_ptr<Movie>>& selectedMovies() {return _selectedMovies;}
   std::shared_ptr<Movie> selectedMovie();
-  QString displayName() const override final;
-  void setDisplayName(QString displayName) {_displayName = displayName;}
+  QString displayName() const override final {return _displayName;}
+  void setDisplayName(QString name) override final {_displayName = name;}
   std::optional<int> selectMovieIndex();
   void setParent(std::weak_ptr<SceneList> parent) {_parent = parent;}
   std::weak_ptr<SceneList> parent() {return _parent;}

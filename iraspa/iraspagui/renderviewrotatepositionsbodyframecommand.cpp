@@ -25,7 +25,7 @@
 #include <QDebug>
 #include <algorithm>
 
-RenderViewRotatePositionsBodyFrameCommand::RenderViewRotatePositionsBodyFrameCommand(MainWindow *mainWindow, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> iraspaStructures, simd_quatd rotation, QUndoCommand *parent):
+RenderViewRotatePositionsBodyFrameCommand::RenderViewRotatePositionsBodyFrameCommand(MainWindow *mainWindow, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::vector<std::shared_ptr<iRASPAObject>>> iraspaStructures, simd_quatd rotation, QUndoCommand *parent):
   QUndoCommand(parent),
   _mainWindow(mainWindow),
   _iraspaStructures(iraspaStructures),
@@ -37,9 +37,9 @@ RenderViewRotatePositionsBodyFrameCommand::RenderViewRotatePositionsBodyFrameCom
   setText(QString("Rotate atom selection"));
   _structures = projectStructure->sceneList()->invalidatediRASPAStructures();
 
-  for(const std::vector<std::shared_ptr<iRASPAStructure>> &_iraspaSubStructures : _iraspaStructures)
+  for(const std::vector<std::shared_ptr<iRASPAObject>> &_iraspaSubStructures : _iraspaStructures)
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspaStructure : _iraspaSubStructures)
+    for(const std::shared_ptr<iRASPAObject> &iraspaStructure : _iraspaSubStructures)
     {
       new RenderViewRotatePositionsBodyFrameSubCommand(_mainWindow, iraspaStructure, rotation, this);
     }

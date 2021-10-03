@@ -36,14 +36,14 @@
 class AtomTreeViewInsertAtomCommand : public QUndoCommand
 {
 public:
-  AtomTreeViewInsertAtomCommand(MainWindow *mainWindow, AtomTreeView *atomTreeView, std::shared_ptr<iRASPAStructure> iraspaStructure,
+  AtomTreeViewInsertAtomCommand(MainWindow *mainWindow, AtomTreeView *atomTreeView, std::shared_ptr<iRASPAObject> iraspaStructure,
                                 std::shared_ptr<SKAtomTreeNode> parentTreeNode, int row, AtomSelectionNodesAndIndexPaths selection, QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
   MainWindow *_mainWindow;
   AtomTreeView *_atomTreeView;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<Structure> _structure;
   std::shared_ptr<SKAtomTreeNode> _parentTreeNode;
   std::shared_ptr<SKAtomTreeNode> _newAtomtreeNode;

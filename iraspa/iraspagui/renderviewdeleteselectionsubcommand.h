@@ -35,7 +35,7 @@ class RenderViewDeleteSelectionSubCommand : public QUndoCommand
 {
 public:
   RenderViewDeleteSelectionSubCommand(MainWindow *mainWindow, AtomTreeViewModel *atomModel, BondListViewModel *bondModel,
-                                     std::shared_ptr<iRASPAStructure> iraspaStructure,
+                                     std::shared_ptr<iRASPAObject> iraspaStructure,
                                      AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection, QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
@@ -43,7 +43,7 @@ private:
   [[maybe_unused]] MainWindow *_mainWindow;
   AtomTreeViewModel *_atomModel;
   BondListViewModel *_bondModel;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   AtomSelectionIndexPaths _atomSelection;
   BondSelectionNodesAndIndexSet _bondSelection;
   std::shared_ptr<SKAtomTreeController> _atomTreeController;

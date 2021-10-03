@@ -70,17 +70,20 @@ void OpenGLCylinderObjectPickingShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
-        if(_renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _cylinderShader._numberOfIndices[i][j]>0 && _cylinderShader._numberOfDrawnAtoms[i][j]>0)
+        if (RKRenderPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))
         {
-          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, index * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
-          glBindVertexArray(_vertexArrayObject[i][j]);
-          check_gl_error();
+          if(source->drawAtoms() && _renderStructures[i][j]->isVisible() && _cylinderShader._numberOfIndices[i][j]>0 && _cylinderShader._numberOfDrawnAtoms[i][j]>0)
+          {
+            glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, index * sizeof(RKStructureUniforms), sizeof(RKStructureUniforms));
+            glBindVertexArray(_vertexArrayObject[i][j]);
+            check_gl_error();
 
-          glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_cylinderShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_cylinderShader._numberOfDrawnAtoms[i][j]));
-          check_gl_error();
-          glBindVertexArray(0);
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_cylinderShader._numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_cylinderShader._numberOfDrawnAtoms[i][j]));
+            check_gl_error();
+            glBindVertexArray(0);
+          }
         }
       }
       index++;

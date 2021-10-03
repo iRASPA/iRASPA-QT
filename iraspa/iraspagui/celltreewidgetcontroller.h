@@ -46,7 +46,7 @@ class CellTreeWidgetController : public QTreeWidget, public MainWindowConsumer, 
 public:
   CellTreeWidgetController(QWidget* parent = nullptr);
   void setMainWindow(MainWindow *mainWindow)  override{_mainWindow = mainWindow;}
-  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures);
+  void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures);
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override;
 
   void resetData();
@@ -66,7 +66,7 @@ private:
   MainWindow *_mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
   std::shared_ptr<ProjectStructure> _projectStructure;
-  std::vector<std::shared_ptr<iRASPAStructure>> _iraspa_structures{};
+  std::vector<std::shared_ptr<iRASPAObject>> _iraspa_structures{};
   void reloadCellProperties();
 
   void reloadStructureType();
@@ -91,7 +91,7 @@ private:
   void reloadCellOriginZ();
 
   void setStructureType(int value);
-  std::optional<iRASPAStructureType>  structureType();
+  std::optional<ObjectType>  structureType();
   SKBoundingBox boundingBox();
 
   std::optional<double> unitCellAX();
@@ -211,7 +211,7 @@ private:
   std::optional<double> structureSpecificVolume();
   std::optional<double> structureAccessiblePoreVolume();
   void setFrameworkProbeMolecule(int value);
-  std::optional<Structure::ProbeMolecule> frameworkProbeMolecule();
+  std::optional<ProbeMolecule> frameworkProbeMolecule();
   std::optional<double> structureVolumetricNitrogenSurfaceArea();
   std::optional<double> structureGravimetricNitrogenSurfaceArea();
   std::optional<int> structureNumberOfChannelSystems();
@@ -245,22 +245,22 @@ private:
   void reloadSpaceGroupSchoenfliesSymbol();
   void reloadSpaceGroupSymmorphicity();
 
-  std::optional<int> symmetrySpaceGroupHallNumber();
+  std::optional<std::unordered_set<int> > symmetrySpaceGroupHallNumber();
   void setSymmetrySpaceGroupHallNumber(int value);
-  std::optional<int> symmetrySpaceGroupStamdardNumber();
+  std::optional<std::unordered_set<int> > symmetrySpaceGroupStamdardNumber();
   void setSymmetrySpaceGroupStandardNumber(int value);
-  std::optional<double> symmetryPrecision();
+  std::optional<std::unordered_set<double> > symmetryPrecision();
   void setSymmetryPrecision(double value);
-  std::optional<QString> symmetryCenteringString();
-  std::optional<QString> symmetryHolohedryString();
-  std::optional<QString> symmetryQualifierString();
+  std::optional<std::set<QString> > symmetryCenteringString();
+  std::optional<std::set<QString> > symmetryHolohedryString();
+  std::optional<std::set<QString> > symmetryQualifierString();
 
-  std::optional<bool> symmetryInversion();
-  std::optional<QString> symmetryInversionCenterString();
-  std::optional<bool> symmetryCentrosymmetric();
-  std::optional<bool> symmetryEnantiomorphic();
-  std::optional<int> symmetryPointGroup();
-  std::optional<QString> symmetrySymmorphicity();
+  std::optional<std::unordered_set<bool> > symmetryInversion();
+  std::optional<std::set<QString> > symmetryInversionCenterString();
+  std::optional<std::unordered_set<bool> > symmetryCentrosymmetric();
+  std::optional<std::unordered_set<bool>> symmetryEnantiomorphic();
+  std::optional<std::unordered_set<int> > symmetryPointGroup();
+  std::optional<std::set<QString> > symmetrySymmorphicity();
 
 private slots:
   void expandCellItem();
@@ -277,6 +277,6 @@ signals:
   void redrawWithQuality(RKRenderQuality quality);
   void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures);
   void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures);
-  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
-  void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
+  void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };

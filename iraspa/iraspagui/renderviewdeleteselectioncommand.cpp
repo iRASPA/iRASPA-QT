@@ -37,14 +37,14 @@ RenderViewDeleteSelectionCommand::RenderViewDeleteSelectionCommand(MainWindow *m
   setText(QString("Delete selected atoms"));
 
   _structures = projectStructure->sceneList()->invalidatediRASPAStructures();
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures = projectStructure->sceneList()->selectediRASPAStructures();
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures = projectStructure->sceneList()->selectediRASPAStructures();
 
-  for(const std::vector<std::shared_ptr<iRASPAStructure>> &scene : structures)
+  for(const std::vector<std::shared_ptr<iRASPAObject>> &scene : structures)
   {
-    for(const std::shared_ptr<iRASPAStructure> &iraspaStructure : scene)
+    for(const std::shared_ptr<iRASPAObject> &iraspaStructure : scene)
     {
-      AtomSelectionIndexPaths atomSelection = iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
-      BondSelectionNodesAndIndexSet bondSelection = iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
+      AtomSelectionIndexPaths atomSelection = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->atomsTreeController()->selectionIndexPaths();
+      BondSelectionNodesAndIndexSet bondSelection = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->bondSetController()->selectionNodesAndIndexSet();
       new RenderViewDeleteSelectionSubCommand(_mainWindow, atomModel, bondModel,iraspaStructure,
                                               atomSelection, bondSelection, this);
     }

@@ -23,17 +23,21 @@
 
 #include <symmetrykit.h>
 #include "structure.h"
+#include "spacegroupviewer.h"
 
-class MolecularCrystal: public Structure
+class MolecularCrystal: public Structure, public SpaceGroupViewer
 {
 public:
   MolecularCrystal();
   MolecularCrystal(const MolecularCrystal &molecularCrystal);
-  MolecularCrystal(std::shared_ptr<SKStructure> structure);
+  MolecularCrystal(std::shared_ptr<SKStructure> frame);
   MolecularCrystal(std::shared_ptr<Structure> s);
   ~MolecularCrystal() {}
 
   std::shared_ptr<Structure> clone() override final;
+
+  void setSpaceGroupHallNumber(int HallNumber) override final {Structure::setSpaceGroupHallNumber(HallNumber);}
+  SKSpaceGroup& spaceGroup() override final {return Structure::spaceGroup();}
 
   bool hasSymmetry() override final {return true;}
   std::shared_ptr<Structure> superCell() const override final;
@@ -42,7 +46,7 @@ public:
   std::shared_ptr<Structure> flattenHierarchy() const override final;
   std::shared_ptr<Structure> appliedCellContentShift() const override final;
 
-	iRASPAStructureType structureType() override final  { return iRASPAStructureType::molecularCrystal; }
+	ObjectType structureType() override final  { return ObjectType::molecularCrystal; }
 
 	std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override final;
   std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const override final;
@@ -68,7 +72,6 @@ public:
   std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToFractionalPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToFractionalPositions() override final;
-  void setSpaceGroupHallNumber(int HallNumber) override final;
 
   double bondLength(std::shared_ptr<SKBond> bond) const override final;
   double3 bondVector(std::shared_ptr<SKBond> bond) const override final;

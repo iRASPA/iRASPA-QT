@@ -64,67 +64,70 @@ void OpenGLExternalBondSelectionWorleyNoise3DShader::paintGL(GLuint structureUni
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if(_renderStructures[i][j]->bondSelectionStyle() == RKSelectionStyle::WorleyNoise3D)
+      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
       {
-        glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
-
-        if (_renderStructures[i][j]->isUnity())
+        if(source->bondSelectionStyle() == RKSelectionStyle::WorleyNoise3D)
         {
-          if(_renderStructures[i][j]->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._allBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfAllBonds[i][j]>0)
+          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
+
+          if (source->isUnity())
           {
-            glBindVertexArray(_vertexAllBondsArrayObject[i][j]);
-            check_gl_error();
+            if(source->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._allBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfAllBonds[i][j]>0)
+            {
+              glBindVertexArray(_vertexAllBondsArrayObject[i][j]);
+              check_gl_error();
 
-            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._allBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfAllBonds[i][j]));
+              glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._allBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfAllBonds[i][j]));
 
-            check_gl_error();
-            glBindVertexArray(0);
+              check_gl_error();
+              glBindVertexArray(0);
+            }
           }
-        }
-        else
-        {
-          if(_renderStructures[i][j]->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._singleBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfSingleBonds[i][j]>0)
+          else
           {
-            glBindVertexArray(_vertexSingleBondsArrayObject[i][j]);
-            check_gl_error();
+            if(source->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._singleBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfSingleBonds[i][j]>0)
+            {
+              glBindVertexArray(_vertexSingleBondsArrayObject[i][j]);
+              check_gl_error();
 
-            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._singleBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfSingleBonds[i][j]));
+              glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._singleBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfSingleBonds[i][j]));
 
-            check_gl_error();
-            glBindVertexArray(0);
-          }
+              check_gl_error();
+              glBindVertexArray(0);
+            }
 
-          if(_renderStructures[i][j]->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._doubleBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfDoubleBonds[i][j]>0)
-          {
-            glBindVertexArray(_vertexDoubleBondsArrayObject[i][j]);
-            check_gl_error();
+            if(source->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._doubleBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfDoubleBonds[i][j]>0)
+            {
+              glBindVertexArray(_vertexDoubleBondsArrayObject[i][j]);
+              check_gl_error();
 
-            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._doubleBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDoubleBonds[i][j]));
+              glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._doubleBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfDoubleBonds[i][j]));
 
-            check_gl_error();
-            glBindVertexArray(0);
-          }
+              check_gl_error();
+              glBindVertexArray(0);
+            }
 
-          if(_renderStructures[i][j]->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._partialDoubleBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfPartialDoubleBonds[i][j]>0)
-          {
-            glBindVertexArray(_vertexPartialDoubleBondsArrayObject[i][j]);
-            check_gl_error();
+            if(source->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._partialDoubleBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfPartialDoubleBonds[i][j]>0)
+            {
+              glBindVertexArray(_vertexPartialDoubleBondsArrayObject[i][j]);
+              check_gl_error();
 
-            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._partialDoubleBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfPartialDoubleBonds[i][j]));
+              glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._partialDoubleBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfPartialDoubleBonds[i][j]));
 
-            check_gl_error();
-            glBindVertexArray(0);
-          }
+              check_gl_error();
+              glBindVertexArray(0);
+            }
 
-          if(_renderStructures[i][j]->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._tripleBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfTripleBonds[i][j]>0)
-          {
-            glBindVertexArray(_vertexTripleBondsArrayObject[i][j]);
-            check_gl_error();
+            if(source->drawBonds() && _renderStructures[i][j]->isVisible() && _bondShader._tripleBondNumberOfIndices[i][j]>0 && _instanceShader._numberOfTripleBonds[i][j]>0)
+            {
+              glBindVertexArray(_vertexTripleBondsArrayObject[i][j]);
+              check_gl_error();
 
-            glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._tripleBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfTripleBonds[i][j]));
+              glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_bondShader._tripleBondNumberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_instanceShader._numberOfTripleBonds[i][j]));
 
-            check_gl_error();
-            glBindVertexArray(0);
+              check_gl_error();
+              glBindVertexArray(0);
+            }
           }
         }
       }

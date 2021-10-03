@@ -79,7 +79,7 @@ private:
   std::weak_ptr<ProjectStructure> _project;
   std::weak_ptr<iRASPAProject> _iRASPAProject;
   std::weak_ptr<RKCamera> _camera;
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _iraspa_structures;
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> _iraspa_structures;
   Tracking _tracking;
   QPoint _origin;
   QPoint _panStartPoint;
@@ -95,7 +95,7 @@ private:
 protected:
   bool eventFilter(QObject *obj, QEvent *event) override final;
 public slots:
-  void setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
   void redraw();
   void redrawWithQuality(RKRenderQuality quality);
   void resetData();
@@ -108,8 +108,8 @@ public slots:
   void createPicture(QUrl fileURL, int width, int height);
   void createMovie(QUrl fileURL, int width, int height, MovieWriter::Type type);
   void resizeEvent(QResizeEvent *event) override final;
-  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
-  void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
+  void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
   void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures);
   void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures);
   void pressedTranslateCartesianMinusX();

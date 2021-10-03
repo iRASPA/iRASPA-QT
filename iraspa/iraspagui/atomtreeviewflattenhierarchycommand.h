@@ -34,12 +34,12 @@
 class AtomTreeViewFlattenHierarchyCommand : public QUndoCommand
 {
 public:
-  AtomTreeViewFlattenHierarchyCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAStructure> iraspa_structure, QUndoCommand *undoParent = nullptr);
+  AtomTreeViewFlattenHierarchyCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAObject> iraspa_structure, QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
 private:
   MainWindow *_mainWindow;
   [[maybe_unused]] AtomTreeViewModel *_model;
-  std::shared_ptr<iRASPAStructure> _iraspa_structure;
+  std::shared_ptr<iRASPAObject> _iraspa_structure;
   std::shared_ptr<Structure> _structure;
 };

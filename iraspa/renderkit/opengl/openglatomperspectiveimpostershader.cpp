@@ -84,39 +84,42 @@ void OpenGLAtomPerspectiveImposterShader::paintGL(std::vector<std::vector<GLuint
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if(_renderStructures[i][j]->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _atomShader._numberOfDrawnAtoms[i][j]>0)
+      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
       {
-        if(_renderStructures[i][j]->clipAtomsAtUnitCell())
+        if(source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _atomShader._numberOfDrawnAtoms[i][j]>0)
         {
-          glEnable(GL_CLIP_DISTANCE0);
-          glEnable(GL_CLIP_DISTANCE1);
-          glEnable(GL_CLIP_DISTANCE2);
-          glEnable(GL_CLIP_DISTANCE3);
-          glEnable(GL_CLIP_DISTANCE4);
-          glEnable(GL_CLIP_DISTANCE5);
+          if(source->clipAtomsAtUnitCell())
+          {
+            glEnable(GL_CLIP_DISTANCE0);
+            glEnable(GL_CLIP_DISTANCE1);
+            glEnable(GL_CLIP_DISTANCE2);
+            glEnable(GL_CLIP_DISTANCE3);
+            glEnable(GL_CLIP_DISTANCE4);
+            glEnable(GL_CLIP_DISTANCE5);
+          }
+          else
+          {
+            glDisable(GL_CLIP_DISTANCE0);
+            glDisable(GL_CLIP_DISTANCE1);
+            glDisable(GL_CLIP_DISTANCE2);
+            glDisable(GL_CLIP_DISTANCE3);
+            glDisable(GL_CLIP_DISTANCE4);
+            glDisable(GL_CLIP_DISTANCE5);
+          }
+
+          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
+
+          glBindVertexArray(_vertexArrayObject[i][j]);
+          check_gl_error();
+
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, atomTextures[i][j]);
+          glUniform1i(_ambientOcclusionTextureUniformLocation,0);
+
+          glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_atomShader._numberOfDrawnAtoms[i][j]));
+          check_gl_error();
+          glBindVertexArray(0);
         }
-        else
-        {
-          glDisable(GL_CLIP_DISTANCE0);
-          glDisable(GL_CLIP_DISTANCE1);
-          glDisable(GL_CLIP_DISTANCE2);
-          glDisable(GL_CLIP_DISTANCE3);
-          glDisable(GL_CLIP_DISTANCE4);
-          glDisable(GL_CLIP_DISTANCE5);
-        }
-
-        glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
-
-        glBindVertexArray(_vertexArrayObject[i][j]);
-        check_gl_error();
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, atomTextures[i][j]);
-        glUniform1i(_ambientOcclusionTextureUniformLocation,0);
-
-        glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_atomShader._numberOfDrawnAtoms[i][j]));
-        check_gl_error();
-        glBindVertexArray(0);
       }
       index++;
     }

@@ -35,12 +35,12 @@
 class RenderViewRotatePositionsCartesianSubCommand : public QUndoCommand
 {
 public:
-  RenderViewRotatePositionsCartesianSubCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAStructure> iraspaStructure, simd_quatd rotation, QUndoCommand *parent = nullptr);
+  RenderViewRotatePositionsCartesianSubCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAObject> iraspaStructure, simd_quatd rotation, QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
   MainWindow *_mainWindow;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   simd_quatd _rotation;
   std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> _oldPositions;
 };

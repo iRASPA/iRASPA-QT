@@ -56,7 +56,7 @@ void OpenGLPolygonalPrismObjectSelectionGlowShader::paintGL(GLuint structureUnif
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderPrimitivePolygonalPrimsObjectsSource* object = dynamic_cast<RKRenderPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))
+      if (RKRenderPrimitiveObjectsSource* object = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
         if(object->primitiveSelectionStyle() == RKSelectionStyle::glow)
         {

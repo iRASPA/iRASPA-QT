@@ -26,17 +26,21 @@
 #include "structure.h"
 #include "iraspakitprotocols.h"
 #include <cmath>
+#include "spacegroupviewer.h"
 
-class Crystal: public Structure
+class Crystal: public Structure, public SpaceGroupViewer
 {
 public:
   Crystal() {}
   Crystal(const Crystal &crystal);
   Crystal(std::shared_ptr<SKAtomTreeController> atomTreeController): Structure(atomTreeController){}
-  Crystal(std::shared_ptr<SKStructure> structure);
+  Crystal(std::shared_ptr<SKStructure> frame);
   Crystal(std::shared_ptr<Structure> s);
   std::shared_ptr<Structure> clone() override final;
   ~Crystal() {}
+
+  void setSpaceGroupHallNumber(int HallNumber) override final {Structure::setSpaceGroupHallNumber(HallNumber);}
+  SKSpaceGroup& spaceGroup() override final {return Structure::spaceGroup();}
 
   bool hasSymmetry() override final {return true;}
   std::shared_ptr<Structure> superCell() const override final;
@@ -45,7 +49,7 @@ public:
   std::shared_ptr<Structure> flattenHierarchy() const override final;
   std::shared_ptr<Structure> appliedCellContentShift() const override final;
 
-  iRASPAStructureType structureType() override final { return iRASPAStructureType::crystal; }
+  ObjectType structureType() override final { return ObjectType::crystal; }
 
   std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override final;
   std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const override final;
@@ -74,13 +78,10 @@ public:
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToFractionalPositions() override final;
 
-
-
   double bondLength(std::shared_ptr<SKBond> bond) const override final;
   double3 bondVector(std::shared_ptr<SKBond> bond) const override final;
   std::pair<double3, double3> computeChangedBondLength(std::shared_ptr<SKBond> bond, double bondlength) const override final;
   void computeBonds() final override;
-  void setSpaceGroupHallNumber(int HallNumber) override final;
 
   bool clipAtomsAtUnitCell() const override;
   bool clipBondsAtUnitCell() const override;

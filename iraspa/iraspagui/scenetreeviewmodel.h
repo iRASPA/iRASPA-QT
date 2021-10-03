@@ -84,6 +84,6 @@ signals:
   void expandAll();
   void rendererReloadData();
   void updateSelection();
-  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> structures);
+  void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };
 

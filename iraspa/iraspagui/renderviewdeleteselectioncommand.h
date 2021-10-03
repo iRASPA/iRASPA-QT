@@ -43,5 +43,5 @@ private:
   MainWindow *_mainWindow;
   AtomTreeViewModel *_atomModel;
   BondListViewModel *_bondModel;
-  std::vector<std::vector<std::shared_ptr<iRASPAStructure>>> _structures;
+  std::vector<std::vector<std::shared_ptr<iRASPAObject>>> _structures;
 };

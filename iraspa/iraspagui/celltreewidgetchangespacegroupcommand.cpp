@@ -26,7 +26,7 @@
 
 // Note: The iRASPAStructure is not modified, but the structure it contains is replaced.
 
-CellTreeWidgetChangeSpaceGroupCommand::CellTreeWidgetChangeSpaceGroupCommand(MainWindow *mainWindow, CellTreeWidgetController *controller, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::shared_ptr<iRASPAStructure>> iraspa_structures,
+CellTreeWidgetChangeSpaceGroupCommand::CellTreeWidgetChangeSpaceGroupCommand(MainWindow *mainWindow, CellTreeWidgetController *controller, std::shared_ptr<ProjectStructure> projectStructure, std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures,
                                      int value, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
@@ -39,26 +39,26 @@ CellTreeWidgetChangeSpaceGroupCommand::CellTreeWidgetChangeSpaceGroupCommand(Mai
   setText(QString("Change space group"));
 
   std::transform(iraspa_structures.begin(), iraspa_structures.end(), std::back_inserter(_old_iraspa_structures),
-                 [](std::shared_ptr<iRASPAStructure> iraspastructure) -> std::pair<std::shared_ptr<iRASPAStructure>, std::shared_ptr<Structure>>
-                  {return std::make_pair(iraspastructure, iraspastructure->structure());});
+                 [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::pair<std::shared_ptr<iRASPAObject>, std::shared_ptr<Structure>>
+                  {return std::make_pair(iraspastructure, std::dynamic_pointer_cast<Structure>(iraspastructure->object()));});
 }
 
 void CellTreeWidgetChangeSpaceGroupCommand::redo()
 {
-  for(std::shared_ptr<iRASPAStructure> iraspa_structure: _iraspa_structures)
+  for(std::shared_ptr<iRASPAObject> iraspa_structure: _iraspa_structures)
   {
-    std::shared_ptr<Structure> structure = iraspa_structure->structure()->clone();
+    std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->clone();
 
     QByteArray byteArray = QByteArray();
     QDataStream stream(&byteArray, QIODevice::WriteOnly);
-    stream << iraspa_structure->structure()->atomsTreeController();
+    stream << std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->atomsTreeController();
 
     std::shared_ptr<SKAtomTreeController> atomTreeController;
     QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
     streamRead >> structure->atomsTreeController();
 
     structure->setSpaceGroupHallNumber(_value);
-    iraspa_structure->setStructure(structure);
+    iraspa_structure->setObject(structure);
   }
 
   emit _controller->invalidateCachedAmbientOcclusionTextures(_projectStructure->sceneList()->allIRASPAStructures());
@@ -72,7 +72,7 @@ void CellTreeWidgetChangeSpaceGroupCommand::undo()
 {
   for(const auto &[iraspa_structure, structure]: _old_iraspa_structures)
   {
-    iraspa_structure->setStructure(structure);
+    iraspa_structure->setObject(structure);
   }
 
   emit _controller->invalidateCachedAmbientOcclusionTextures(_projectStructure->sceneList()->allIRASPAStructures());

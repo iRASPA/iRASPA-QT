@@ -20,7 +20,8 @@ SOURCES += \
     $$PWD/octahedrongeometry.cpp \
     $$PWD/quadgeometry.cpp \
     $$PWD/spheregeometry.cpp \
-    $$PWD/uncappedcylindergeometry.cpp
+    $$PWD/uncappedcylindergeometry.cpp \
+    $$PWD/unitcubegeometry.cpp
 
 HEADERS += \
     $$PWD/arrowxgeometry.h \
@@ -42,4 +43,5 @@ HEADERS += \
     $$PWD/octahedrongeometry.h \
     $$PWD/quadgeometry.h \
     $$PWD/spheregeometry.h \
-    $$PWD/uncappedcylindergeometry.h
+    $$PWD/uncappedcylindergeometry.h \
+    $$PWD/unitcubegeometry.h

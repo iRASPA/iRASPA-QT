@@ -53,6 +53,7 @@
 #include "atomtreeviewfindnigglicommand.h"
 #include "atomtreeviewwrapatomstocellcommand.h"
 #include "atomtreeviewremovesymmetrycommand.h"
+#include "atomviewer.h"
 
 AtomTreeView::AtomTreeView(QWidget* parent): QTreeView(parent ), _atomModel(std::make_shared<AtomTreeViewModel>())
 {
@@ -154,13 +155,16 @@ void AtomTreeView::setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode)
         {
           std::shared_ptr<Scene> selectedScene = projectStructure->sceneList()->selectedScene();
           std::shared_ptr<Movie> selectedMovie = selectedScene? selectedScene->selectedMovie() : nullptr;
-          std::shared_ptr<iRASPAStructure> iraspaStructure = selectedMovie ? selectedMovie->frameAtIndex(0) : nullptr;
+          std::shared_ptr<iRASPAObject> iraspaStructure = selectedMovie ? selectedMovie->frameAtIndex(0) : nullptr;
           _iraspaStructure = iraspaStructure;
 
           if(iraspaStructure)
           {
-            double netCharge = iraspaStructure->structure()->atomsTreeController()->netCharge();
-            _netChargeLineEdit->setText(QString::number(netCharge));
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(iraspaStructure->object()))
+            {
+              double netCharge = atomViewer->atomsTreeController()->netCharge();
+              _netChargeLineEdit->setText(QString::number(netCharge));
+            }
           }
         }
       }
@@ -172,7 +176,7 @@ void AtomTreeView::setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode)
   this->reloadData();
 }
 
-void AtomTreeView::setSelectedFrame(std::shared_ptr<iRASPAStructure> iraspastructure)
+void AtomTreeView::setSelectedFrame(std::shared_ptr<iRASPAObject> iraspastructure)
 {
   _iraspaStructure = iraspastructure;
 
@@ -186,7 +190,7 @@ SKAtomTreeNode* AtomTreeView::getItem(const QModelIndex &index) const
 {
   if(_iraspaStructure)
   {
-    std::shared_ptr<Structure> structure = _iraspaStructure->structure();
+    std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object());
     if (index.isValid())
     {
        SKAtomTreeNode *item = static_cast<SKAtomTreeNode*>(index.internalPointer());
@@ -232,57 +236,59 @@ void AtomTreeView::selectionChanged(const QItemSelection &selected, const QItemS
 
   if(_iraspaStructure)
   {
-    std::shared_ptr<Structure> structure = _iraspaStructure->structure();
-    std::shared_ptr<SKAtomTreeController> atomTreeControler = structure->atomsTreeController();
-    std::shared_ptr<SKBondSetController> bondListControler = structure->bondSetController();
-
-    AtomSelectionIndexPaths previousAtomSelection = atomTreeControler->selectionIndexPaths();
-    BondSelectionIndexSet previousBondSelection = bondListControler->selectionIndexSet();
-
-    for(QModelIndex index : deselected.indexes())
+    if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
     {
-      if(index.column() == 0)
+      std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object());
+      std::shared_ptr<SKAtomTreeController> atomTreeControler = structure->atomsTreeController();
+      std::shared_ptr<SKBondSetController> bondListControler = structure->bondSetController();
+
+      AtomSelectionIndexPaths previousAtomSelection = atomTreeControler->selectionIndexPaths();
+      BondSelectionIndexSet previousBondSelection = bondListControler->selectionIndexSet();
+
+      for(QModelIndex index : deselected.indexes())
       {
-        IndexPath indexPath = IndexPath::indexPath(index);
-        atomTreeControler->removeSelectionIndexPath(indexPath);
-
-        SKAtomTreeNode *node = getItem(index);
-        std::shared_ptr<SKAtomTreeNode> atom = node->shared_from_this();
-        atomTreeControler->removeSelectionIndexPath(atom->indexPath());
-
-        // remove bonds that are connected to this atom from the selection
-        int bondIndex=0;
-        for(const std::shared_ptr<SKAsymmetricBond> &bond : bondListControler->arrangedObjects())
+        if(index.column() == 0)
         {
-          if(bond->atom1() == atom->representedObject() || bond->atom2() == atom->representedObject())
+          IndexPath indexPath = IndexPath::indexPath(index);
+          atomTreeControler->removeSelectionIndexPath(indexPath);
+
+          SKAtomTreeNode *node = getItem(index);
+          std::shared_ptr<SKAtomTreeNode> atom = node->shared_from_this();
+          atomTreeControler->removeSelectionIndexPath(atom->indexPath());
+
+          // remove bonds that are connected to this atom from the selection
+          int bondIndex=0;
+          for(const std::shared_ptr<SKAsymmetricBond> &bond : bondListControler->arrangedObjects())
           {
-            bondListControler->selectionIndexSet().erase(bondIndex);
+            if(bond->atom1() == atom->representedObject() || bond->atom2() == atom->representedObject())
+            {
+              bondListControler->selectionIndexSet().erase(bondIndex);
+            }
+            bondIndex++;
           }
-          bondIndex++;
         }
       }
-    }
 
-    for(QModelIndex index : selected.indexes())
-    {
-      if(index.column() == 0)
+      for(QModelIndex index : selected.indexes())
       {
-        IndexPath indexPath = IndexPath::indexPath(index);
-        atomTreeControler->insertSelectionIndexPath(indexPath);
+        if(index.column() == 0)
+        {
+          IndexPath indexPath = IndexPath::indexPath(index);
+          atomTreeControler->insertSelectionIndexPath(indexPath);
+        }
       }
+
+      bondListControler->correctBondSelectionDueToAtomSelection();
+
+      AtomSelectionIndexPaths atomSelection = atomTreeControler->selectionIndexPaths();
+      BondSelectionIndexSet bondSelection = bondListControler->selectionIndexSet();
+
+      AtomTreeViewChangeSelectionCommand *changeSelectionCommand = new AtomTreeViewChangeSelectionCommand(_mainWindow, _atomModel, _bondModel,
+                                                                                                          _iraspaStructure,
+                                                                                                          atomSelection, previousAtomSelection,
+                                                                                                          bondSelection, previousBondSelection, nullptr);
+      _iRASPAProject->undoManager().push(changeSelectionCommand);
     }
-
-    bondListControler->correctBondSelectionDueToAtomSelection();
-
-
-    AtomSelectionIndexPaths atomSelection = atomTreeControler->selectionIndexPaths();
-    BondSelectionIndexSet bondSelection = bondListControler->selectionIndexSet();
-
-    AtomTreeViewChangeSelectionCommand *changeSelectionCommand = new AtomTreeViewChangeSelectionCommand(_mainWindow, _atomModel, _bondModel,
-                                                                                                        _iraspaStructure,
-                                                                                                        atomSelection, previousAtomSelection,
-                                                                                                        bondSelection, previousBondSelection, nullptr);
-    _iRASPAProject->undoManager().push(changeSelectionCommand);
   }
 }
 
@@ -433,19 +439,21 @@ void AtomTreeView::reloadData()
 {
   if(_iraspaStructure)
   {
-    std::shared_ptr<Structure> structure = _iraspaStructure->structure();
-    std::shared_ptr<SKAtomTreeController> atomTreeController = structure->atomsTreeController();
-
-    if(atomTreeController->rootNodes().size() > 0)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      this->header()->setStretchLastSection(true);
-      this->setColumnWidth(0,120);
-      this->resizeColumnToContents(1);
-      this->resizeColumnToContents(2);
-      this->resizeColumnToContents(3);
-      this->resizeColumnToContents(4);
-      this->resizeColumnToContents(5);
-      this->resizeColumnToContents(6);
+      std::shared_ptr<SKAtomTreeController> atomTreeController = structure->atomsTreeController();
+
+      if(atomTreeController->rootNodes().size() > 0)
+      {
+        this->header()->setStretchLastSection(true);
+        this->setColumnWidth(0,120);
+        this->resizeColumnToContents(1);
+        this->resizeColumnToContents(2);
+        this->resizeColumnToContents(3);
+        this->resizeColumnToContents(4);
+        this->resizeColumnToContents(5);
+        this->resizeColumnToContents(6);
+      }
     }
   }
 }
@@ -488,12 +496,15 @@ void AtomTreeView::deleteSelection()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            AtomSelectionNodesAndIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
-            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionNodesAndIndexPaths atomSelection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
+              BondSelectionNodesAndIndexSet bondSelection = structure->bondSetController()->selectionNodesAndIndexSet();
 
-            AtomTreeViewDeleteSelectionCommand *deleteSelectionCommand = new AtomTreeViewDeleteSelectionCommand(_mainWindow, _atomModel.get(), _bondModel.get(),
-                                                                                                        projectStructure, _iraspaStructure, atomSelection, bondSelection, nullptr);
-            _iRASPAProject->undoManager().push(deleteSelectionCommand);
+              AtomTreeViewDeleteSelectionCommand *deleteSelectionCommand = new AtomTreeViewDeleteSelectionCommand(_mainWindow, _atomModel.get(), _bondModel.get(),
+                                                                                                          projectStructure, _iraspaStructure, atomSelection, bondSelection, nullptr);
+              _iRASPAProject->undoManager().push(deleteSelectionCommand);
+            }
           }
         }
       }
@@ -505,15 +516,18 @@ void AtomTreeView::addAtom()
 {
   if(_iraspaStructure)
   {
-    AtomSelectionNodesAndIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
-    if(atomSelection.second.empty())
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      SKAtomTreeNode *parentNode = _iraspaStructure->structure()->atomsTreeController()->hiddenRootNode().get();
-      int row = int(parentNode->childCount());
-      AtomTreeViewInsertAtomCommand *insertAtomCommand = new AtomTreeViewInsertAtomCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
-                                                                                           atomSelection, nullptr);
-      _iRASPAProject->undoManager().push(insertAtomCommand);
-      return;
+      AtomSelectionNodesAndIndexPaths atomSelection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
+      if(atomSelection.second.empty())
+      {
+        SKAtomTreeNode *parentNode = structure->atomsTreeController()->hiddenRootNode().get();
+        int row = int(parentNode->childCount());
+        AtomTreeViewInsertAtomCommand *insertAtomCommand = new AtomTreeViewInsertAtomCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
+                                                                                             atomSelection, nullptr);
+        _iRASPAProject->undoManager().push(insertAtomCommand);
+        return;
+      }
     }
   }
 }
@@ -522,15 +536,18 @@ void AtomTreeView::addAtomGroup()
 {
   if(_iraspaStructure)
   {
-    AtomSelectionNodesAndIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
-    if(atomSelection.second.empty())
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      SKAtomTreeNode *parentNode = _iraspaStructure->structure()->atomsTreeController()->hiddenRootNode().get();
-      int row = int(parentNode->childCount());
-      AtomTreeViewInsertAtomGroupCommand *insertAtomCommand = new AtomTreeViewInsertAtomGroupCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
-                                                                                                     atomSelection, nullptr);
-      _iRASPAProject->undoManager().push(insertAtomCommand);
-      return;
+      AtomSelectionNodesAndIndexPaths atomSelection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
+      if(atomSelection.second.empty())
+      {
+        SKAtomTreeNode *parentNode = structure->atomsTreeController()->hiddenRootNode().get();
+        int row = int(parentNode->childCount());
+        AtomTreeViewInsertAtomGroupCommand *insertAtomCommand = new AtomTreeViewInsertAtomGroupCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
+                                                                                                       atomSelection, nullptr);
+        _iRASPAProject->undoManager().push(insertAtomCommand);
+        return;
+      }
     }
   }
 }
@@ -539,17 +556,20 @@ void AtomTreeView::addAtom(QModelIndex index)
 {
   if(_iraspaStructure)
   {
-    if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(model()))
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      QModelIndex parentIndex = index.isValid() ? index.parent() : QModelIndex();
-      int row = index.isValid() ? index.row() + 1 : pModel->rowCount(index);
-      SKAtomTreeNode *parentNode = pModel->nodeForIndex(parentIndex);
+      if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(model()))
+      {
+        QModelIndex parentIndex = index.isValid() ? index.parent() : QModelIndex();
+        int row = index.isValid() ? index.row() + 1 : pModel->rowCount(index);
+        SKAtomTreeNode *parentNode = pModel->nodeForIndex(parentIndex);
 
-      AtomSelectionNodesAndIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
+        AtomSelectionNodesAndIndexPaths atomSelection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
 
-      AtomTreeViewInsertAtomCommand *insertAtomCommand = new AtomTreeViewInsertAtomCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
-                                                                                                     atomSelection, nullptr);
-      _iRASPAProject->undoManager().push(insertAtomCommand);
+        AtomTreeViewInsertAtomCommand *insertAtomCommand = new AtomTreeViewInsertAtomCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
+                                                                                                       atomSelection, nullptr);
+        _iRASPAProject->undoManager().push(insertAtomCommand);
+      }
     }
   }
 }
@@ -558,17 +578,20 @@ void AtomTreeView::addAtomGroup(QModelIndex index)
 {
   if(_iraspaStructure)
   {
-    if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(model()))
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      QModelIndex parentIndex = index.isValid() ? index.parent() : QModelIndex();
-      int row = index.isValid() ? index.row() + 1 : pModel->rowCount(index);
-      SKAtomTreeNode *parentNode = pModel->nodeForIndex(parentIndex);
+      if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(model()))
+      {
+        QModelIndex parentIndex = index.isValid() ? index.parent() : QModelIndex();
+        int row = index.isValid() ? index.row() + 1 : pModel->rowCount(index);
+        SKAtomTreeNode *parentNode = pModel->nodeForIndex(parentIndex);
 
-      AtomSelectionNodesAndIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
+        AtomSelectionNodesAndIndexPaths atomSelection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
 
-      AtomTreeViewInsertAtomGroupCommand *insertAtomCommand = new AtomTreeViewInsertAtomGroupCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
-                                                                                                     atomSelection, nullptr);
-      _iRASPAProject->undoManager().push(insertAtomCommand);
+        AtomTreeViewInsertAtomGroupCommand *insertAtomCommand = new AtomTreeViewInsertAtomGroupCommand(_mainWindow, this, _iraspaStructure, parentNode->shared_from_this(), row,
+                                                                                                       atomSelection, nullptr);
+        _iRASPAProject->undoManager().push(insertAtomCommand);
+      }
     }
   }
 }
@@ -627,13 +650,16 @@ void AtomTreeView::copyToNewMovie()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            AtomSelectionIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
-            BondSelectionIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionIndexSet();
-            AtomTreeViewCopySelectionToNewMovieCommand *newCopySelectionCommand = new AtomTreeViewCopySelectionToNewMovieCommand(_mainWindow,
-                                                                                    _atomModel.get(), _sceneModel.get(),
-                                                                                    projectStructure->sceneList(), _iraspaStructure,
-                                                                                    atomSelection, bondSelection, nullptr);
-            iRASPAProject->undoManager().push(newCopySelectionCommand);
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionIndexPaths atomSelection = structure->atomsTreeController()->selectionIndexPaths();
+              BondSelectionIndexSet bondSelection = structure->bondSetController()->selectionIndexSet();
+              AtomTreeViewCopySelectionToNewMovieCommand *newCopySelectionCommand = new AtomTreeViewCopySelectionToNewMovieCommand(_mainWindow,
+                                                                                      _atomModel.get(), _sceneModel.get(),
+                                                                                      projectStructure->sceneList(), _iraspaStructure,
+                                                                                      atomSelection, bondSelection, nullptr);
+              iRASPAProject->undoManager().push(newCopySelectionCommand);
+            }
           }
         }
       }
@@ -653,13 +679,16 @@ void AtomTreeView::moveToNewMovie()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            AtomSelectionNodesAndIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
-            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
-            AtomTreeViewMoveSelectionToNewMovieCommand *newMoveSelectionCommand = new AtomTreeViewMoveSelectionToNewMovieCommand(_mainWindow,
-                                                                                    _atomModel.get(), _bondModel.get(), _sceneModel.get(),
-                                                                                    projectStructure->sceneList(), _iraspaStructure,
-                                                                                    atomSelection, bondSelection, nullptr);
-            iRASPAProject->undoManager().push(newMoveSelectionCommand);
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionNodesAndIndexPaths atomSelection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
+              BondSelectionNodesAndIndexSet bondSelection = structure->bondSetController()->selectionNodesAndIndexSet();
+              AtomTreeViewMoveSelectionToNewMovieCommand *newMoveSelectionCommand = new AtomTreeViewMoveSelectionToNewMovieCommand(_mainWindow,
+                                                                                      _atomModel.get(), _bondModel.get(), _sceneModel.get(),
+                                                                                      projectStructure->sceneList(), _iraspaStructure,
+                                                                                      atomSelection, bondSelection, nullptr);
+              iRASPAProject->undoManager().push(newMoveSelectionCommand);
+            }
           }
         }
       }
@@ -680,12 +709,14 @@ void AtomTreeView::invertSelection()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-
-            AtomSelectionIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
-            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
-            AtomTreeViewInvertSelectionCommand *newInvertSelectionCommand = new AtomTreeViewInvertSelectionCommand(_mainWindow,
-                                                                                    _iraspaStructure->structure(), atomSelection, bondSelection, nullptr);
-            iRASPAProject->undoManager().push(newInvertSelectionCommand);
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionIndexPaths atomSelection = structure->atomsTreeController()->selectionIndexPaths();
+              BondSelectionNodesAndIndexSet bondSelection = structure->bondSetController()->selectionNodesAndIndexSet();
+              AtomTreeViewInvertSelectionCommand *newInvertSelectionCommand = new AtomTreeViewInvertSelectionCommand(_mainWindow,
+                                                                                    structure, atomSelection, bondSelection, nullptr);
+              iRASPAProject->undoManager().push(newInvertSelectionCommand);
+            }
           }
         }
       }
@@ -697,12 +728,15 @@ void AtomTreeView::scrollToFirstSelected()
 {
   if(_iraspaStructure)
   {
-    AtomSelectionNodesAndIndexPaths selection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
-    if(!selection.second.empty())
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      std::shared_ptr<SKAtomTreeNode> firstSelected = (*selection.second.begin()).first;
-      QModelIndex index = _atomModel->indexForNode(firstSelected.get());
-      scrollTo(index,EnsureVisible);
+      AtomSelectionNodesAndIndexPaths selection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
+      if(!selection.second.empty())
+      {
+        std::shared_ptr<SKAtomTreeNode> firstSelected = (*selection.second.begin()).first;
+        QModelIndex index = _atomModel->indexForNode(firstSelected.get());
+        scrollTo(index,EnsureVisible);
+      }
     }
   }
 }
@@ -711,12 +745,15 @@ void AtomTreeView::scrollToLastSelected()
 {
   if(_iraspaStructure)
   {
-    AtomSelectionNodesAndIndexPaths selection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
-    if(!selection.second.empty())
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      std::shared_ptr<SKAtomTreeNode> firstSelected = (*selection.second.rbegin()).first;
-      QModelIndex index = _atomModel->indexForNode(firstSelected.get());
-      scrollTo(index,EnsureVisible);
+      AtomSelectionNodesAndIndexPaths selection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
+      if(!selection.second.empty())
+      {
+        std::shared_ptr<SKAtomTreeNode> firstSelected = (*selection.second.rbegin()).first;
+        QModelIndex index = _atomModel->indexForNode(firstSelected.get());
+        scrollTo(index,EnsureVisible);
+      }
     }
   }
 }
@@ -729,23 +766,26 @@ void AtomTreeView::visibilityMatchSelection()
     {
       if(_iraspaStructure)
       {
-        std::vector<std::shared_ptr<SKAtomTreeNode>> flattenedNodes = _iraspaStructure->structure()->atomsTreeController()->flattenedLeafNodes();
-        std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms{};
-
-        std::transform(flattenedNodes.begin(),flattenedNodes.end(), std::inserter(asymmetricAtoms, asymmetricAtoms.begin()),
-                           [](std::shared_ptr<SKAtomTreeNode> treeNode) -> std::shared_ptr<SKAsymmetricAtom>
-                           {return treeNode->representedObject();});
-        for(const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
+        if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
         {
-          atom->setVisibility(false);
-        }
+          std::vector<std::shared_ptr<SKAtomTreeNode>> flattenedNodes = structure->atomsTreeController()->flattenedLeafNodes();
+          std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms{};
 
-        AtomSelectionNodesAndIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionNodesAndIndexPaths();
-        for(const auto &[atom, indexPath] : atomSelection.second)
-        {
-          atom->representedObject()->setVisibility(true);
+          std::transform(flattenedNodes.begin(),flattenedNodes.end(), std::inserter(asymmetricAtoms, asymmetricAtoms.begin()),
+                             [](std::shared_ptr<SKAtomTreeNode> treeNode) -> std::shared_ptr<SKAsymmetricAtom>
+                             {return treeNode->representedObject();});
+          for(const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
+          {
+            atom->setVisibility(false);
+          }
+
+          AtomSelectionNodesAndIndexPaths atomSelection = structure->atomsTreeController()->selectionNodesAndIndexPaths();
+          for(const auto &[atom, indexPath] : atomSelection.second)
+          {
+            atom->representedObject()->setVisibility(true);
+          }
+          emit rendererReloadData();
         }
-        emit rendererReloadData();
       }
     }
   }
@@ -759,18 +799,21 @@ void AtomTreeView::visibilityInvert()
     {
       if(_iraspaStructure)
       {
-        std::vector<std::shared_ptr<SKAtomTreeNode>> flattenedNodes = _iraspaStructure->structure()->atomsTreeController()->flattenedLeafNodes();
-        std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms{};
-
-        std::transform(flattenedNodes.begin(),flattenedNodes.end(), std::inserter(asymmetricAtoms, asymmetricAtoms.begin()),
-                           [](std::shared_ptr<SKAtomTreeNode> treeNode) -> std::shared_ptr<SKAsymmetricAtom>
-                           {return treeNode->representedObject();});
-        for(const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
+        if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
         {
-          atom->toggleVisibility();
-        }
+          std::vector<std::shared_ptr<SKAtomTreeNode>> flattenedNodes = structure->atomsTreeController()->flattenedLeafNodes();
+          std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms{};
 
-        emit rendererReloadData();
+          std::transform(flattenedNodes.begin(),flattenedNodes.end(), std::inserter(asymmetricAtoms, asymmetricAtoms.begin()),
+                             [](std::shared_ptr<SKAtomTreeNode> treeNode) -> std::shared_ptr<SKAsymmetricAtom>
+                             {return treeNode->representedObject();});
+          for(const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
+          {
+            atom->toggleVisibility();
+          }
+
+          emit rendererReloadData();
+        }
       }
     }
   }
@@ -786,8 +829,11 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
   bool isSymmetryEnabled = false;
   if(_iraspaStructure)
   {
-    isEnabled = _projectTreeNode->isEditable()  && (model()->rowCount(QModelIndex()) > 0);
-    isSymmetryEnabled = isEnabled && _iraspaStructure->structure()->hasSymmetry();
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+    {
+      isEnabled = _projectTreeNode->isEditable()  && (model()->rowCount(QModelIndex()) > 0);
+      isSymmetryEnabled = isEnabled && structure->hasSymmetry();
+    }
   }
 
   QAction actionAddAtom(tr("Add Atom"), this);
@@ -941,10 +987,13 @@ void AtomTreeView::removeSymmetry()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            AtomSelectionIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
-            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
-            AtomTreeViewRemoveSymmetryCommand *removeSymmetryCommand = new AtomTreeViewRemoveSymmetryCommand(_mainWindow, _atomModel.get(), _iraspaStructure, nullptr);
-            iRASPAProject->undoManager().push(removeSymmetryCommand);
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionIndexPaths atomSelection = structure->atomsTreeController()->selectionIndexPaths();
+              BondSelectionNodesAndIndexSet bondSelection = structure->bondSetController()->selectionNodesAndIndexSet();
+              AtomTreeViewRemoveSymmetryCommand *removeSymmetryCommand = new AtomTreeViewRemoveSymmetryCommand(_mainWindow, _atomModel.get(), _iraspaStructure, nullptr);
+              iRASPAProject->undoManager().push(removeSymmetryCommand);
+            }
           }
         }
       }
@@ -964,10 +1013,13 @@ void AtomTreeView::wrapAtoms()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            AtomSelectionIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
-            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
-            AtomTreeViewWrapAtomsToCellCommand *wrapAtomsToCellCommand = new AtomTreeViewWrapAtomsToCellCommand(_mainWindow, _atomModel.get(), _iraspaStructure, nullptr);
-            iRASPAProject->undoManager().push(wrapAtomsToCellCommand);
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionIndexPaths atomSelection = structure->atomsTreeController()->selectionIndexPaths();
+              BondSelectionNodesAndIndexSet bondSelection = structure->bondSetController()->selectionNodesAndIndexSet();
+              AtomTreeViewWrapAtomsToCellCommand *wrapAtomsToCellCommand = new AtomTreeViewWrapAtomsToCellCommand(_mainWindow, _atomModel.get(), _iraspaStructure, nullptr);
+              iRASPAProject->undoManager().push(wrapAtomsToCellCommand);
+            }
           }
         }
       }
@@ -987,12 +1039,14 @@ void AtomTreeView::findNiggli()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            AtomSelectionIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
-            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
-            AtomTreeViewFindNiggliCommand *findNiggliCommand = new AtomTreeViewFindNiggliCommand(_mainWindow,
-                                                                                    _iraspaStructure, atomSelection, bondSelection, nullptr);
-            iRASPAProject->undoManager().push(findNiggliCommand);
-
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionIndexPaths atomSelection = structure->atomsTreeController()->selectionIndexPaths();
+              BondSelectionNodesAndIndexSet bondSelection = structure->bondSetController()->selectionNodesAndIndexSet();
+              AtomTreeViewFindNiggliCommand *findNiggliCommand = new AtomTreeViewFindNiggliCommand(_mainWindow,
+                                                                                      _iraspaStructure, atomSelection, bondSelection, nullptr);
+              iRASPAProject->undoManager().push(findNiggliCommand);
+            }
           }
         }
       }
@@ -1013,12 +1067,14 @@ void AtomTreeView::findPrimitive()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            AtomSelectionIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
-            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
-            AtomTreeViewFindPrimitiveCommand *findSymmetryCommand = new AtomTreeViewFindPrimitiveCommand(_mainWindow,
-                                                                                    _iraspaStructure, atomSelection, bondSelection, nullptr);
-            iRASPAProject->undoManager().push(findSymmetryCommand);
-
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionIndexPaths atomSelection = structure->atomsTreeController()->selectionIndexPaths();
+              BondSelectionNodesAndIndexSet bondSelection = structure->bondSetController()->selectionNodesAndIndexSet();
+              AtomTreeViewFindPrimitiveCommand *findSymmetryCommand = new AtomTreeViewFindPrimitiveCommand(_mainWindow,
+                                                                                      _iraspaStructure, atomSelection, bondSelection, nullptr);
+              iRASPAProject->undoManager().push(findSymmetryCommand);
+            }
           }
         }
       }
@@ -1038,12 +1094,14 @@ void AtomTreeView::findSymmetry()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            AtomSelectionIndexPaths atomSelection = _iraspaStructure->structure()->atomsTreeController()->selectionIndexPaths();
-            BondSelectionNodesAndIndexSet bondSelection = _iraspaStructure->structure()->bondSetController()->selectionNodesAndIndexSet();
-            AtomTreeViewFindSymmetryCommand *findSymmetryCommand = new AtomTreeViewFindSymmetryCommand(_mainWindow,
-                                                                                    _iraspaStructure, atomSelection, bondSelection, nullptr);
-            iRASPAProject->undoManager().push(findSymmetryCommand);
-
+            if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+            {
+              AtomSelectionIndexPaths atomSelection = structure->atomsTreeController()->selectionIndexPaths();
+              BondSelectionNodesAndIndexSet bondSelection = structure->bondSetController()->selectionNodesAndIndexSet();
+              AtomTreeViewFindSymmetryCommand *findSymmetryCommand = new AtomTreeViewFindSymmetryCommand(_mainWindow,
+                                                                                      _iraspaStructure, atomSelection, bondSelection, nullptr);
+              iRASPAProject->undoManager().push(findSymmetryCommand);
+            }
           }
         }
       }
@@ -1055,32 +1113,35 @@ void AtomTreeView::exportToPDB() const
 {
   if(_iraspaStructure)
   {
-    QString displayName = _iraspaStructure->structure()->displayName();
-    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = _iraspaStructure->structure()->asymmetricAtomsCopiedAndTransformedToCartesianPositions();
-    SKSpaceGroup &spaceGroup = _iraspaStructure->structure()->spaceGroup();
-    std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = _iraspaStructure->structure()->cellForCartesianPositions();
-    std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
-    double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
-
-    SKPDBWriter writer = SKPDBWriter(displayName, spaceGroup, cell, origin, atoms);
-
-    SavePDBFormatDialog dialog(nullptr);
-
-    if(dialog.exec() == QDialog::Accepted)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      QList<QUrl> fileURLs = dialog.selectedUrls();
-      if(fileURLs.isEmpty())
+      QString displayName = structure->displayName();
+      std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->asymmetricAtomsCopiedAndTransformedToCartesianPositions();
+      SKSpaceGroup &spaceGroup = structure->spaceGroup();
+      std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = structure->cellForCartesianPositions();
+      std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
+      double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
+
+      SKPDBWriter writer = SKPDBWriter(displayName, spaceGroup, cell, origin, atoms);
+
+      SavePDBFormatDialog dialog(nullptr);
+
+      if(dialog.exec() == QDialog::Accepted)
       {
-        return;
-      }
-      else
-      {
-        QFile qFile = fileURLs.first().toLocalFile();
-        if (qFile.open(QIODevice::WriteOnly))
+        QList<QUrl> fileURLs = dialog.selectedUrls();
+        if(fileURLs.isEmpty())
         {
-          QTextStream out(&qFile);
-          out << writer.string();
-          qFile.close();
+          return;
+        }
+        else
+        {
+          QFile qFile = fileURLs.first().toLocalFile();
+          if (qFile.open(QIODevice::WriteOnly))
+          {
+            QTextStream out(&qFile);
+            out << writer.string();
+            qFile.close();
+          }
         }
       }
     }
@@ -1091,32 +1152,35 @@ void AtomTreeView::exportToMMCIF() const
 {
   if(_iraspaStructure)
   {
-    QString displayName = _iraspaStructure->structure()->displayName();
-    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = _iraspaStructure->structure()->asymmetricAtomsCopiedAndTransformedToCartesianPositions();
-    SKSpaceGroup &spaceGroup = _iraspaStructure->structure()->spaceGroup();
-    std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = _iraspaStructure->structure()->cellForCartesianPositions();
-    std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
-    double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
-
-    SKmmCIFWriter writer = SKmmCIFWriter(displayName, spaceGroup, cell, origin, atoms);
-
-    SaveMMCIFFormatDialog dialog(nullptr);
-
-    if(dialog.exec() == QDialog::Accepted)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      QList<QUrl> fileURLs = dialog.selectedUrls();
-      if(fileURLs.isEmpty())
+      QString displayName = structure->displayName();
+      std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->asymmetricAtomsCopiedAndTransformedToCartesianPositions();
+      SKSpaceGroup &spaceGroup = structure->spaceGroup();
+      std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = structure->cellForCartesianPositions();
+      std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
+      double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
+
+      SKmmCIFWriter writer = SKmmCIFWriter(displayName, spaceGroup, cell, origin, atoms);
+
+      SaveMMCIFFormatDialog dialog(nullptr);
+
+      if(dialog.exec() == QDialog::Accepted)
       {
-        return;
-      }
-      else
-      {
-        QFile qFile = fileURLs.first().toLocalFile();
-        if (qFile.open(QIODevice::WriteOnly))
+        QList<QUrl> fileURLs = dialog.selectedUrls();
+        if(fileURLs.isEmpty())
         {
-          QTextStream out(&qFile);
-          out << writer.string();
-          qFile.close();
+          return;
+        }
+        else
+        {
+          QFile qFile = fileURLs.first().toLocalFile();
+          if (qFile.open(QIODevice::WriteOnly))
+          {
+            QTextStream out(&qFile);
+            out << writer.string();
+            qFile.close();
+          }
         }
       }
     }
@@ -1127,30 +1191,33 @@ void AtomTreeView::exportToCIF() const
 {
   if(_iraspaStructure)
   {
-    QString displayName = _iraspaStructure->structure()->displayName();
-    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = _iraspaStructure->structure()->asymmetricAtomsCopiedAndTransformedToFractionalPositions();
-    SKSpaceGroup &spaceGroup = _iraspaStructure->structure()->spaceGroup();
-    std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cell = _iraspaStructure->structure()->cellForFractionalPositions();
-
-    SKCIFWriter writer = SKCIFWriter(displayName, spaceGroup, cell->first, cell->second, atoms);
-
-    SaveCIFFormatDialog dialog(nullptr);
-
-    if(dialog.exec() == QDialog::Accepted)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      QList<QUrl> fileURLs = dialog.selectedUrls();
-      if(fileURLs.isEmpty())
+      QString displayName = structure->displayName();
+      std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->asymmetricAtomsCopiedAndTransformedToFractionalPositions();
+      SKSpaceGroup &spaceGroup = structure->spaceGroup();
+      std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cell = structure->cellForFractionalPositions();
+
+      SKCIFWriter writer = SKCIFWriter(displayName, spaceGroup, cell->first, cell->second, atoms);
+
+      SaveCIFFormatDialog dialog(nullptr);
+
+      if(dialog.exec() == QDialog::Accepted)
       {
-        return;
-      }
-      else
-      {
-        QFile qFile = fileURLs.first().toLocalFile();
-        if (qFile.open(QIODevice::WriteOnly))
+        QList<QUrl> fileURLs = dialog.selectedUrls();
+        if(fileURLs.isEmpty())
         {
-          QTextStream out(&qFile);
-          out << writer.string();
-          qFile.close();
+          return;
+        }
+        else
+        {
+          QFile qFile = fileURLs.first().toLocalFile();
+          if (qFile.open(QIODevice::WriteOnly))
+          {
+            QTextStream out(&qFile);
+            out << writer.string();
+            qFile.close();
+          }
         }
       }
     }
@@ -1161,32 +1228,35 @@ void AtomTreeView::exportToXYZ() const
 {
   if(_iraspaStructure)
   {
-    QString displayName = _iraspaStructure->structure()->displayName();
-    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = _iraspaStructure->structure()->atomsCopiedAndTransformedToCartesianPositions();
-    SKSpaceGroup &spaceGroup = _iraspaStructure->structure()->spaceGroup();
-    std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = _iraspaStructure->structure()->cellForCartesianPositions();
-    std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
-    double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
-
-    SKXYZWriter writer = SKXYZWriter(displayName, spaceGroup, cell, origin, atoms);
-
-    SaveXYZFormatDialog dialog(nullptr);
-
-    if(dialog.exec() == QDialog::Accepted)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      QList<QUrl> fileURLs = dialog.selectedUrls();
-      if(fileURLs.isEmpty())
+      QString displayName = structure->displayName();
+      std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->atomsCopiedAndTransformedToCartesianPositions();
+      SKSpaceGroup &spaceGroup = structure->spaceGroup();
+      std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = structure->cellForCartesianPositions();
+      std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
+      double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
+
+      SKXYZWriter writer = SKXYZWriter(displayName, spaceGroup, cell, origin, atoms);
+
+      SaveXYZFormatDialog dialog(nullptr);
+
+      if(dialog.exec() == QDialog::Accepted)
       {
-        return;
-      }
-      else
-      {
-        QFile qFile = fileURLs.first().toLocalFile();
-        if (qFile.open(QIODevice::WriteOnly))
+        QList<QUrl> fileURLs = dialog.selectedUrls();
+        if(fileURLs.isEmpty())
         {
-          QTextStream out(&qFile);
-          out << writer.string();
-          qFile.close();
+          return;
+        }
+        else
+        {
+          QFile qFile = fileURLs.first().toLocalFile();
+          if (qFile.open(QIODevice::WriteOnly))
+          {
+            QTextStream out(&qFile);
+            out << writer.string();
+            qFile.close();
+          }
         }
       }
     }
@@ -1197,31 +1267,34 @@ void AtomTreeView::exportToPOSCAR() const
 {
   if(_iraspaStructure)
   {
-    QString displayName = _iraspaStructure->structure()->displayName();
-    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = _iraspaStructure->structure()->atomsCopiedAndTransformedToFractionalPositions();
-    SKSpaceGroup &spaceGroup = _iraspaStructure->structure()->spaceGroup();
-    std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cell = _iraspaStructure->structure()->cellForFractionalPositions();
-
-    SKPOSCARWriter writer = SKPOSCARWriter(displayName, spaceGroup, cell->first, cell->second, atoms);
-
-    SavePOSCARFormatDialog dialog(nullptr);
-
-    if(dialog.exec() == QDialog::Accepted)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
-      QList<QUrl> fileURLs = dialog.selectedUrls();
-      if(fileURLs.isEmpty())
-      {
-        return;
-      }
-      else
-      {
-        QFile qFile = fileURLs.first().toLocalFile();
-        if (qFile.open(QIODevice::WriteOnly))
-        {
-          QTextStream out(&qFile);
-          out << writer.string();
-          qFile.close();
-        }
+     QString displayName = structure->displayName();
+     std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->atomsCopiedAndTransformedToFractionalPositions();
+     SKSpaceGroup &spaceGroup = structure->spaceGroup();
+     std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cell = structure->cellForFractionalPositions();
+
+     SKPOSCARWriter writer = SKPOSCARWriter(displayName, spaceGroup, cell->first, cell->second, atoms);
+
+     SavePOSCARFormatDialog dialog(nullptr);
+
+     if(dialog.exec() == QDialog::Accepted)
+     {
+       QList<QUrl> fileURLs = dialog.selectedUrls();
+       if(fileURLs.isEmpty())
+       {
+         return;
+       }
+       else
+       {
+         QFile qFile = fileURLs.first().toLocalFile();
+         if (qFile.open(QIODevice::WriteOnly))
+         {
+           QTextStream out(&qFile);
+           out << writer.string();
+           qFile.close();
+         }
+       }
       }
     }
   }
@@ -1231,8 +1304,11 @@ void AtomTreeView::updateNetChargeLineEdit()
 {
   if(_iraspaStructure)
   {
-    double netCharge = _iraspaStructure->structure()->atomsTreeController()->netCharge();
-    _netChargeLineEdit->setText(QString::number(netCharge));
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+    {
+      double netCharge = structure->atomsTreeController()->netCharge();
+      _netChargeLineEdit->setText(QString::number(netCharge));
+    }
   }
 }
 

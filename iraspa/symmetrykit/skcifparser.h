@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QString>
+#include <QUrl>
 #include <string>
 #include <vector>
 #include <map>
@@ -38,8 +39,7 @@
 class SKCIFParser: public SKParser
 {
 public:
-  SKCIFParser(QString fileContent, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
-    _scanner(fileContent, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log) {}
+  SKCIFParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
   bool startParsing() override final;
   std::optional<int> spaceGroupHallNumber() {return _spaceGroupHallNumber;}
 private:

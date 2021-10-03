@@ -24,11 +24,11 @@
 #include <algorithm>
 #include <set>
 
-AtomTreeViewFindPrimitiveCommand::AtomTreeViewFindPrimitiveCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAStructure> iraspaStructure,
+AtomTreeViewFindPrimitiveCommand::AtomTreeViewFindPrimitiveCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAObject> iraspaStructure,
                                      AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection, QUndoCommand *parent):
   _mainWindow(mainWindow),
   _iraspaStructure(iraspaStructure),
-  _structure(iraspaStructure->structure()),
+  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
   _atomSelection(atomSelection),
   _bondSelection(bondSelection)
 {
@@ -41,14 +41,14 @@ AtomTreeViewFindPrimitiveCommand::AtomTreeViewFindPrimitiveCommand(MainWindow *m
 
 void AtomTreeViewFindPrimitiveCommand::redo()
 {
-  const std::vector<std::tuple<double3,int,double>> symmetryData = _iraspaStructure->structure()->atomSymmetryData();
+  const std::vector<std::tuple<double3,int,double>> symmetryData = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomSymmetryData();
 
-  double3x3 unitCell = _iraspaStructure->structure()->cell()->unitCell();
-  double precision = _iraspaStructure->structure()->cell()->precision();
+  double3x3 unitCell = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->cell()->unitCell();
+  double precision = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->cell()->precision();
   std::optional<SKSpaceGroup::FoundPrimitiveCellInfo> foundSpaceGroup = SKSpaceGroup::SKFindPrimitive(unitCell,symmetryData,true,precision);
   if(foundSpaceGroup)
   {
-    std::shared_ptr<Structure> structure = _iraspaStructure->structure()->clone();
+    std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->clone();
 
     double3x3 newUnitCell = foundSpaceGroup->cell.unitCell();
     std::vector<std::tuple<double3, int, double>> primitiveAtoms = foundSpaceGroup->atoms;
@@ -63,7 +63,10 @@ void AtomTreeViewFindPrimitiveCommand::redo()
     structure->updateForceField(_mainWindow->forceFieldSets());
 
     structure->setSpaceGroupHallNumber(1);
-    _iraspaStructure->setStructure(structure);
+    structure->expandSymmetry();
+    structure->atomsTreeController()->setTags();
+    structure->computeBonds();
+    _iraspaStructure->setObject(structure);
 
     //emit _controller->invalidateCachedAmbientOcclusionTexture(_projectStructure->sceneList()->allIRASPAStructures());
 
@@ -75,7 +78,7 @@ void AtomTreeViewFindPrimitiveCommand::redo()
 
 void AtomTreeViewFindPrimitiveCommand::undo()
 {
-  _iraspaStructure->setStructure(_structure);
+  _iraspaStructure->setObject(_structure);
 
   if(std::shared_ptr<Structure> structure = _structure)
   {

@@ -37,9 +37,9 @@ public:
   BondListViewModel();
 
   void resetData();
-  void setFrame(std::shared_ptr<iRASPAStructure> frame);
-  bool isActive(std::shared_ptr<iRASPAStructure> iraspaStructure) {return (iraspaStructure == _iraspaStructure);}
-  std::shared_ptr<iRASPAStructure> frame() {return _iraspaStructure;}
+  void setFrame(std::shared_ptr<iRASPAObject> frame);
+  bool isActive(std::shared_ptr<iRASPAObject> iraspaStructure) {return (iraspaStructure == _iraspaStructure);}
+  std::shared_ptr<iRASPAObject> frame() {return _iraspaStructure;}
 
   //QT
   QModelIndex index(int row, int column, const QModelIndex &parent) const override final;
@@ -62,7 +62,7 @@ public:
   void insertSelection(std::shared_ptr<Structure> structure, std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, std::set<int> indexSet);
   void insertSelection(std::shared_ptr<Structure> structure, BondSelectionNodesAndIndexSet selection);
 private:
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
 signals:
   void updateSelection();
   void reloadRenderDataRenderer();

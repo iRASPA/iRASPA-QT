@@ -34,6 +34,13 @@
 #include <cmath>
 #include <qmath.h>
 
+
+SKCIFParser::SKCIFParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
+  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log)
+{
+
+}
+
 bool SKCIFParser::startParsing()
 {
   while(!_scanner.isAtEnd())
@@ -88,6 +95,7 @@ bool SKCIFParser::startParsing()
 
   std::vector<std::shared_ptr<SKStructure>> movieFrames{};
   std::shared_ptr<SKStructure> structure = std::make_shared<SKStructure>();
+  structure->displayName = _scanner.displayName();
   structure->kind = SKStructure::Kind::crystal;
   structure->atoms = _atoms;
   structure->cell = std::make_shared<SKCell>(_a, _b, _c, _alpha * M_PI/180.0, _beta*M_PI/180.0, _gamma*M_PI/180.0);

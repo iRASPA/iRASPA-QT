@@ -38,7 +38,7 @@ class AtomTreeViewMoveSelectionToNewMovieCommand : public QUndoCommand
 public:
   AtomTreeViewMoveSelectionToNewMovieCommand(MainWindow *mainWindow, AtomTreeViewModel *atomTreeViewModel, BondListViewModel *bondListViewModel,
                                              SceneTreeViewModel *sceneTreeViewModel, std::shared_ptr<SceneList> sceneList,
-                                             std::shared_ptr<iRASPAStructure> iraspaStructure, AtomSelectionNodesAndIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection,
+                                             std::shared_ptr<iRASPAObject> iraspaStructure, AtomSelectionNodesAndIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection,
                                              QUndoCommand *undoParent = nullptr);
   void redo() override final;
   void undo() override final;
@@ -48,7 +48,7 @@ private:
   BondListViewModel *_bondListViewModel;
   SceneTreeViewModel *_sceneTreeViewModel;
   std::shared_ptr<SceneList> _sceneList;
-  std::shared_ptr<iRASPAStructure> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaStructure;
   std::shared_ptr<SKAtomTreeController> _atomTreeController;
   std::shared_ptr<SKBondSetController> _bondSetController;
   AtomSelectionNodesAndIndexPaths _atomSelection;

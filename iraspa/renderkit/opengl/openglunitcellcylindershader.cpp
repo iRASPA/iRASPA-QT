@@ -48,16 +48,19 @@ void OpenGLUnitCellCylinderShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if(_renderStructures[i][j]->drawUnitCell() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfUnitCellCylinders[i][j]>0)
+      if (RKRenderStructure* source = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
       {
-        glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
+        if(source->drawUnitCell() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfUnitCellCylinders[i][j]>0)
+        {
+          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
 
-        glBindVertexArray(_vertexArrayObject[i][j]);
-        check_gl_error();
+          glBindVertexArray(_vertexArrayObject[i][j]);
+          check_gl_error();
 
-        glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfUnitCellCylinders[i][j]));
-        check_gl_error();
-        glBindVertexArray(0);
+          glDrawElementsInstanced(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_numberOfIndices[i][j]), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_numberOfUnitCellCylinders[i][j]));
+          check_gl_error();
+          glBindVertexArray(0);
+        }
       }
       index++;
     }
@@ -78,50 +81,53 @@ void OpenGLUnitCellCylinderShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      glBindVertexArray(_vertexArrayObject[i][j]);
-
-      _numberOfIndices[i][j] = cylinder.indices().size();
-
-      glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
-      if(cylinder.vertices().size()>0)
+      if (RKRenderStructure* source = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
       {
-        glBufferData(GL_ARRAY_BUFFER, cylinder.vertices().size()*sizeof(RKVertex), cylinder.vertices().data(), GL_DYNAMIC_DRAW);
-        check_gl_error();
+        glBindVertexArray(_vertexArrayObject[i][j]);
+
+        _numberOfIndices[i][j] = cylinder.indices().size();
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
+        if(cylinder.vertices().size()>0)
+        {
+          glBufferData(GL_ARRAY_BUFFER, cylinder.vertices().size()*sizeof(RKVertex), cylinder.vertices().data(), GL_DYNAMIC_DRAW);
+          check_gl_error();
+        }
+
+        glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE,sizeof(RKVertex), (GLvoid *)offsetof(RKVertex,position));
+        glVertexAttribPointer(_vertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), (GLvoid *)offsetof(RKVertex,normal));
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer[i][j]);
+        if(cylinder.indices().size() >0)
+        {
+          glBufferData(GL_ELEMENT_ARRAY_BUFFER, cylinder.indices().size() * sizeof(GLshort), cylinder.indices().data(), GL_DYNAMIC_DRAW);
+          check_gl_error();
+        }
+
+        std::vector<RKInPerInstanceAttributesBonds> unitCellCylinderInstanceData = source->renderUnitCellCylinders();
+        _numberOfUnitCellCylinders[i][j] = unitCellCylinderInstanceData.size();
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vertexInstanceBuffer[i][j]);
+        if(unitCellCylinderInstanceData.size()>0)
+        {
+          glBufferData(GL_ARRAY_BUFFER, unitCellCylinderInstanceData.size() * sizeof(RKInPerInstanceAttributesBonds), unitCellCylinderInstanceData.data(), GL_DYNAMIC_DRAW);
+          check_gl_error();
+        }
+        glVertexAttribPointer(_instancePositionFirstAtomAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesBonds), (void*)offsetof(RKInPerInstanceAttributesBonds, position1));
+        glVertexAttribPointer(_instancePositionSecondAtomAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesBonds), (void*)offsetof(RKInPerInstanceAttributesBonds, position2));
+        glVertexAttribDivisor(_instancePositionFirstAtomAttributeLocation,1);
+        glVertexAttribDivisor(_instancePositionSecondAtomAttributeLocation,1);
+        glVertexAttribPointer(_instanceScaleAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesBonds), (void*)offsetof(RKInPerInstanceAttributesBonds, scale));
+        glVertexAttribDivisor(_instanceScaleAttributeLocation,1);
+
+        glEnableVertexAttribArray(_vertexPositionAttributeLocation);
+        glEnableVertexAttribArray(_vertexNormalAttributeLocation);
+        glEnableVertexAttribArray(_instancePositionFirstAtomAttributeLocation);
+        glEnableVertexAttribArray(_instancePositionSecondAtomAttributeLocation);
+        glEnableVertexAttribArray(_instanceScaleAttributeLocation);
+
+        glBindVertexArray(0);
       }
-
-      glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE,sizeof(RKVertex), (GLvoid *)offsetof(RKVertex,position));
-      glVertexAttribPointer(_vertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), (GLvoid *)offsetof(RKVertex,normal));
-
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer[i][j]);
-      if(cylinder.indices().size() >0)
-      {
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, cylinder.indices().size() * sizeof(GLshort), cylinder.indices().data(), GL_DYNAMIC_DRAW);
-        check_gl_error();
-      }
-
-      std::vector<RKInPerInstanceAttributesBonds> unitCellCylinderInstanceData = _renderStructures[i][j]->renderUnitCellCylinders();
-      _numberOfUnitCellCylinders[i][j] = unitCellCylinderInstanceData.size();
-
-      glBindBuffer(GL_ARRAY_BUFFER, _vertexInstanceBuffer[i][j]);
-      if(unitCellCylinderInstanceData.size()>0)
-      {
-        glBufferData(GL_ARRAY_BUFFER, unitCellCylinderInstanceData.size() * sizeof(RKInPerInstanceAttributesBonds), unitCellCylinderInstanceData.data(), GL_DYNAMIC_DRAW);
-        check_gl_error();
-      }
-      glVertexAttribPointer(_instancePositionFirstAtomAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesBonds), (void*)offsetof(RKInPerInstanceAttributesBonds, position1));
-      glVertexAttribPointer(_instancePositionSecondAtomAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesBonds), (void*)offsetof(RKInPerInstanceAttributesBonds, position2));
-      glVertexAttribDivisor(_instancePositionFirstAtomAttributeLocation,1);
-      glVertexAttribDivisor(_instancePositionSecondAtomAttributeLocation,1);
-      glVertexAttribPointer(_instanceScaleAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKInPerInstanceAttributesBonds), (void*)offsetof(RKInPerInstanceAttributesBonds, scale));
-      glVertexAttribDivisor(_instanceScaleAttributeLocation,1);
-
-      glEnableVertexAttribArray(_vertexPositionAttributeLocation);
-      glEnableVertexAttribArray(_vertexNormalAttributeLocation);
-      glEnableVertexAttribArray(_instancePositionFirstAtomAttributeLocation);
-      glEnableVertexAttribArray(_instancePositionSecondAtomAttributeLocation);
-      glEnableVertexAttribArray(_instanceScaleAttributeLocation);
-
-      glBindVertexArray(0);
     }
   }
 }

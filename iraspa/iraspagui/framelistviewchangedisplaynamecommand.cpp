@@ -23,7 +23,7 @@
 #include <QDebug>
 #include <algorithm>
 
-FrameListViewChangeDisplayNameCommand::FrameListViewChangeDisplayNameCommand(MainWindow *mainWindow, FrameListViewModel *model, std::shared_ptr<iRASPAStructure> iraspaStructure, QString newValue, QUndoCommand *undoParent):
+FrameListViewChangeDisplayNameCommand::FrameListViewChangeDisplayNameCommand(MainWindow *mainWindow, FrameListViewModel *model, std::shared_ptr<iRASPAObject> iraspaStructure, QString newValue, QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
   _model(model),
@@ -35,27 +35,33 @@ FrameListViewChangeDisplayNameCommand::FrameListViewChangeDisplayNameCommand(Mai
 
 void FrameListViewChangeDisplayNameCommand::redo()
 {
-  _oldValue = _iraspaStructure->structure()->displayName();
-  _iraspaStructure->structure()->setDisplayName(_newValue);
-
-  if(_model)
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
   {
-    QModelIndex index = _model->indexForNode(_iraspaStructure.get(), 0);
-    emit _model->dataChanged(index,index);
+    _oldValue = structure->displayName();
+    structure->setDisplayName(_newValue);
 
-    _mainWindow->documentWasModified();
+    if(_model)
+    {
+      QModelIndex index = _model->indexForNode(_iraspaStructure.get(), 0);
+      emit _model->dataChanged(index,index);
+
+      _mainWindow->documentWasModified();
+    }
   }
 }
 
 void FrameListViewChangeDisplayNameCommand::undo()
 {
-  _iraspaStructure->structure()->setDisplayName(_oldValue);
-
-  if(_model)
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
   {
-    QModelIndex index = _model->indexForNode(_iraspaStructure.get(), 0);
-    emit _model->dataChanged(index,index);
+    structure->setDisplayName(_oldValue);
 
-    _mainWindow->documentWasModified();
+    if(_model)
+    {
+      QModelIndex index = _model->indexForNode(_iraspaStructure.get(), 0);
+      emit _model->dataChanged(index,index);
+
+      _mainWindow->documentWasModified();
+    }
   }
 }
