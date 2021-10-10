@@ -42,7 +42,7 @@
   #include <CL/opencl.h>
 #endif
 
-class OpenGLEnergySurface: public OpenGLShader, public LogReportingConsumer
+class OpenGLEnergySurface final: public OpenGLShader, public LogReportingConsumer
 {
 public:
   OpenGLEnergySurface();

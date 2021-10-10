@@ -132,10 +132,11 @@ void OpenGLPickingShader::paintGL(int width,int height,GLuint structureUniformBu
 {
   GLfloat black[4] = {0.0,0.0,0.0,0.0};
 
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _frameBufferObject);
+  glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferObject);
 
   glDisable(GL_BLEND);
   glEnable (GL_DEPTH_TEST);
+  glDepthMask(GL_TRUE);
   glClearBufferfv(GL_COLOR, 0, black);
   glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -149,7 +150,7 @@ void OpenGLPickingShader::paintGL(int width,int height,GLuint structureUniformBu
   _ellipsePickingShader.paintGL(structureUniformBuffer);
   _polygonalPrismPickingShader.paintGL(structureUniformBuffer);
 
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 std::array<int,4> OpenGLPickingShader::pickTexture(int x, int y, int width, int height)
@@ -167,7 +168,6 @@ std::array<int,4> OpenGLPickingShader::pickTexture(int x, int y, int width, int 
   glReadPixels(x, height - y, 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, pixel.data());
   check_gl_error();
 
-  glReadBuffer(GL_NONE);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   return pixel;
@@ -202,8 +202,20 @@ void OpenGLPickingShader::generateFrameBuffers()
   check_gl_error();
 
   glBindTexture(GL_TEXTURE_2D, _depthTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 512, 512, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
+  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_T), GLint(GL_CLAMP_TO_EDGE));
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MIN_FILTER), GLint(GL_NEAREST));
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_MAG_FILTER), GLint(GL_NEAREST));
+  check_gl_error();
+  // Necessary to allow sampling from the texture
+  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_COMPARE_MODE), GLint(GL_NONE));
+  //glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_COMPARE_FUNC), GLint(GL_ALWAYS));
+  check_gl_error();
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 512, 512, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
   check_gl_error();
 
   // check framebuffer completeness
@@ -243,14 +255,26 @@ void OpenGLPickingShader::resizeGL(int w, int h)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   check_gl_error();
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  check_gl_error();
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
   check_gl_error();
 
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, _depthTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
   check_gl_error();
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
+  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_T), GLint(GL_CLAMP_TO_EDGE));
+  check_gl_error();
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  check_gl_error();
+  // Necessary to allow sampling from the texture
+  glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_COMPARE_MODE), GLint(GL_NONE));
+  check_gl_error();
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
   check_gl_error();
 
   // check framebuffer completeness

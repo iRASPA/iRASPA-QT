@@ -42,6 +42,7 @@ public:
   void paintGL();
   void reload(std::shared_ptr<RKRenderDataSource> source);
   void initializeVertexArrayObject();
+  GLuint backgroundTexture() {return _backgroundTexture;}
   GLuint program() {return _program;}
 private:
   GLuint _program;

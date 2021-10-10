@@ -293,7 +293,7 @@ void SKCell::setBox(const double3x3& fullCell)
 }
 
 
-int SKCell::numberOfReplicas() const
+int SKCell::totalNumberOfReplicas() const
 {
   int dx = _maximumReplica.x - _minimumReplica.x + 1;
   int dy = _maximumReplica.y - _minimumReplica.y + 1;
@@ -408,6 +408,14 @@ void SKCell::setMaximumReplicaZ(const int newValue)
   _fullCell.cz = _unitCell.cz * double(dz);
 
   _inverseFullCell = _fullCell.inverse();
+}
+
+int3 SKCell::numberOfReplicas()
+{
+  int dx = _maximumReplica.x - _minimumReplica.x + 1;
+  int dy = _maximumReplica.y - _minimumReplica.y + 1;
+  int dz = _maximumReplica.z - _minimumReplica.z + 1;
+  return int3(dx,dy,dz);
 }
 
 double SKCell::a() const

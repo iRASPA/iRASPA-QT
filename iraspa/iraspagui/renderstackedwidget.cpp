@@ -59,7 +59,6 @@
 #endif
 
 RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QWidget(parent )
-
 {
   this->setContextMenuPolicy(Qt::PreventContextMenu);
 
@@ -69,6 +68,11 @@ RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QWidget(parent )
 
 #if defined (USE_OPENGL)
    OpenGLWindow *w = new OpenGLWindow(parent);
+   if(!w)
+   {
+       qDebug() << "WINDOW IS NULL";
+       exit(0);
+   }
    renderWindow = w;
    w->installEventFilter(this);
    renderViewController = w;

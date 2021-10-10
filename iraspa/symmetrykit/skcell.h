@@ -45,7 +45,7 @@ public:
   int3 replicaFromIndex(int index);
   double3x3 box() const;
   void setBox(const double3x3& fullCell);
-  int numberOfReplicas() const;
+  int totalNumberOfReplicas() const;
 
   std::shared_ptr<SKCell> superCell() const;
 
@@ -95,6 +95,7 @@ public:
   inline double3 convertToNormalizedFractional(double3 r) {return (_inverseFullCell * r).fract();}
 
   int3 numberOfReplicas(double cutoff);
+  int3 numberOfReplicas();
 
   SKBoundingBox boundingBox() const {return _boundingBox;}
   void setBoundingBox(SKBoundingBox boundingBox) {_boundingBox = boundingBox;}

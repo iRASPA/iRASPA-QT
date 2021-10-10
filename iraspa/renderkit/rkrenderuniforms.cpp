@@ -64,7 +64,6 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(renderStructure->orientation()),centerOfRotation, renderStructure->origin());
 
     this->modelMatrix = float4x4(currentModelMatrix);
-    this->inverseModelMatrix = float4x4(double3x3::inverse(currentModelMatrix));
 
     this->unitCellScaling =  float(renderStructure->unitCellScaleFactor());
     this->unitCellDiffuseColor = float(renderStructure->unitCellDiffuseIntensity()) * float4(renderStructure->unitCellDiffuseColor().redF(),renderStructure->unitCellDiffuseColor().greenF(),
@@ -74,7 +73,9 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     double3 offset = renderStructure->renderLocalAxes().offset();
     double3x3 box = renderStructure->cell()->box();
     double3 boxAspectRatio = boundingbox.aspectRatio();
-    this->aspectRatio = float4(boxAspectRatio.x,boxAspectRatio.y,boxAspectRatio.z, 1.0);
+
+    double3 numberOfReplicas = renderStructure->cell()->numberOfReplicas();
+    this->numberOfReplicas = float4(numberOfReplicas.x,numberOfReplicas.y,numberOfReplicas.z,1.0);
 
     this->boxMatrix = float4x4(box);
     double3 shift = renderStructure->cell()->unitCell() * double3(renderStructure->cell()->minimumReplicas());
@@ -255,7 +256,6 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       // difference
       double4x4 modelMatrix2 = inverseModelMatrix * double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(renderStructure->orientation()),centerOfRotation, renderStructure->origin());
       this->modelMatrix = float4x4(modelMatrix2);
-      this->inverseModelMatrix = float4x4(double3x3::inverse(modelMatrix2));
 
       this->sceneIdentifier = int32_t(sceneIdentifier);
       this->MovieIdentifier = int32_t(movieIdentifier);
@@ -380,8 +380,13 @@ RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderStructure> st
     if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
     {
       double3x3 currentUnitCellMatrix = renderStructure->cell()->unitCell();
+      double3x3 currentBoxMatrix = renderStructure->cell()->box();
       this->unitCellMatrix = float4x4(currentUnitCellMatrix);
+      this->inverseUnitCellMatrix = float4x4(currentUnitCellMatrix.inverse());
       this->unitCellNormalMatrix = float4x4(double3x3::transpose(double3x3::inverse(currentUnitCellMatrix)));
+
+      this->boxMatrix = float4x4(currentBoxMatrix);
+      this->inverseBoxMatrix = float4x4(currentBoxMatrix.inverse());
 
       this->hue = float(source->adsorptionSurfaceHue());
       this->saturation = float(source->adsorptionSurfaceSaturation());

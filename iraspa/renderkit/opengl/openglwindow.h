@@ -57,6 +57,7 @@
 #include "openglatomselectionshader.h"
 #include "openglblurshader.h"
 #include "openglenergysurface.h"
+#include "openglenergyvolumerenderedsurface.h"
 #include "rkcamera.h"
 #include "trackball.h"
 #include "skopenclenergygridunitcell.h"
@@ -177,6 +178,7 @@ private:
   OpenGLBackgroundShader _backgroundShader;
   OpenGLBlurShader _blurShader;
   OpenGLEnergySurface _energySurfaceShader;
+  OpenGLEnergyVolumeRenderedSurface _energyVolumeRenderedSurface;
 
   OpenGLBoundingBoxShader _boundingBoxShader;
   OpenGLGlobalAxesShader _globalAxesShader;

@@ -22,7 +22,7 @@
 #pragma once
 
 #include <vector>
-#include <array>
+#include <QCache>
 #define GL_GLEXT_PROTOTYPES
 #include <QtOpenGL>
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -30,51 +30,42 @@
 #else
   #include <QOpenGLFunctions>
 #endif
-#include "rkrenderkitprotocols.h"
-#include "rkrenderuniforms.h"
-
 #include "openglshader.h"
+#include "rkrenderkitprotocols.h"
+#include <foundationkit.h>
+#include <simulationkit.h>
 
-// Ray
-struct Ray
-{
-  double3 origin;
-  double3 direction;
+#ifdef Q_OS_MACOS
+  #include <OpenCL/opencl.h>
+  #include <OpenGL/OpenGL.h>
+#else
+  #include <CL/opencl.h>
+#endif
 
-  Ray(double3 origin, double3 direction): origin(origin), direction(direction) {}
-};
-
-// Axis-aligned bounding box
-struct AABB
-{
-  double3 top;
-  double3 bottom;
-
-  AABB(double3 top, double3 bottom): top(top), bottom(bottom) {}
-};
-
-class OpenGLDensityVolumeShader: public OpenGLShader
+class OpenGLEnergyVolumeRenderedSurface final: public OpenGLShader, public LogReportingConsumer
 {
 public:
-  OpenGLDensityVolumeShader();
-
+  OpenGLEnergyVolumeRenderedSurface();
+  void initializeOpenCL(bool isOpenCLInitialized, cl_context _clContext, cl_device_id _clDeviceId, cl_command_queue _clCommandQueue, QStringList &logData);
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
-  void paintGL(GLuint structureUniformBuffer);
+  void paintGL(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
   void reloadData();
-  //void initializeNoiseTexture();
   void initializeTransferFunctionTexture();
   void initializeVertexArrayObject();
   void initializeTransformUniforms();
   void initializeStructureUniforms();
+  void initializeIsosurfaceUniforms();
   void initializeLightUniforms();
   void loadShader(void) override final;
-
+  void setLogReportingWidget(LogReporting *logReporting)  override final;
+  void deleteBuffers();
+  void generateBuffers();
 private:
+  bool _isOpenCLInitialized;
   GLuint _program;
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
 
-  void deleteBuffers();
-  void generateBuffers();
+  LogReporting* _logReporter = nullptr;
 
   std::vector<std::vector<size_t>> _numberOfIndices;
 
@@ -90,7 +81,6 @@ private:
   //std::vector<std::vector<GLuint>> _diffuseColorBuffer;
   std::vector<std::vector<GLuint>> _specularColorBuffer;
 
-  GLuint _noiseTexture;
   std::pair<double, double> _range;
   double3 _origin;
   double3 _spacing;
@@ -98,9 +88,17 @@ private:
 
   GLint _volumeTextureUniformLocation{-1};
   GLint _transferFunctionUniformLocation{-1};
+  GLint _depthTextureUniformLocation{-1};
 
   GLuint _vertexPositionAttributeLocation{0};
   GLuint _stepLengthUniformLocation{0};
+
+  cl_context _clContext;
+  cl_device_id _clDeviceId;
+  cl_command_queue _clCommandQueue;
+  SKOpenCLEnergyGridUnitCell _energyGridUnitCell;
+
+  QCache<RKRenderStructure*, std::vector<float4>> _cache;
 
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;

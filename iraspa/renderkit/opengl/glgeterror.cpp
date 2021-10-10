@@ -21,6 +21,7 @@
 
 #include "glgeterror.h"
 #include <QOpenGLFunctions_3_3_Core>
+#include "mathkit.h"
 
 void check_gl_error_local(const char *file, int line)
 {
@@ -54,4 +55,5 @@ void check_gl_error_local(const char *file, int line)
     }
   }
 }
+
 

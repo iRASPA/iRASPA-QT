@@ -73,6 +73,9 @@ public:
 
   std::array<int,4> pickTexture(int x, int y, int width, int height);
 
+  GLuint &depthTexture() {return _depthTexture;}
+  GLuint &colorTexture() {return _texture;}
+
   void reloadData();
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
 private:

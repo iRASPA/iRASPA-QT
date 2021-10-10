@@ -297,7 +297,7 @@ struct RKStructureUniforms
   float4 clipPlaneFront = float4(1.0, 1.0, 1.0, 1.0);
   float4 clipPlaneBack = float4(1.0, 1.0, 1.0, 1.0);
 
-  float4x4 pad14 = float4x4(0.0f);
+  float4x4 modelMatrix = float4x4(0.0f);
 
   //----------------------------------------  384 bytes boundary
 
@@ -358,11 +358,11 @@ struct RKStructureUniforms
   float pad9;
 
   float4 localAxisPosition = float4(0.0f,0.0f,0.0f,0.0f);
+  float4 numberOfReplicas = float4(0.0f,0.0f,0.0f,0.0f);
   float4 pad11 = float4(0.0f,0.0f,0.0f,0.0f);
   float4 pad12 = float4(0.0f,0.0f,0.0f,0.0f);
-  float4 aspectRatio = float4(0.0f,0.0f,0.0f,0.0f);
-  float4x4 modelMatrix = float4x4(double4x4());
-  float4x4 inverseModelMatrix = float4x4(double4x4());
+  float4x4 pad13 = float4x4(double4x4());
+  float4x4 pad14 = float4x4(double4x4());
 
   RKStructureUniforms() {}
   RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure);
@@ -428,7 +428,7 @@ layout (std140) uniform StructureUniformBlock
   vec4 clipPlaneFront;
   vec4 clipPlaneBack;
 
-  mat4 pad13;
+  mat4 modelMatrix;
 
   //----------------------------------------  384 bytes boundary
 
@@ -489,12 +489,12 @@ layout (std140) uniform StructureUniformBlock
   float pad9;
 
   vec4 localAxisPosition;
-  vec4 pad10;
+  vec4 numberOfReplicas;
   vec4 pad11;
-  vec4 aspectRatio;
+  vec4 pad12;
 
-  mat4 modelMatrix;
-  mat4 inverseModelMatrix;
+  mat4 pad13;
+  mat4 pad14;
 } structureUniforms;
 )foo";
 
@@ -524,7 +524,11 @@ layout (std140) uniform ShadowUniformBlock
 struct RKIsosurfaceUniforms
 {
   float4x4 unitCellMatrix = float4x4();
+  float4x4 inverseUnitCellMatrix = float4x4();
   float4x4 unitCellNormalMatrix = float4x4();
+
+  float4x4 boxMatrix = float4x4();
+  float4x4 inverseBoxMatrix = float4x4();
 
   //----------------------------------------  128 bytes boundary
 
@@ -554,12 +558,11 @@ struct RKIsosurfaceUniforms
   float4 pad4;
   float4 pad5;
   float4 pad6;
-  float4x4 pad7;
+
 
   //----------------------------------------  384 bytes boundary
 
-  float4x4 pad8;
-  float4x4 pad9;
+
 
   RKIsosurfaceUniforms();
   RKIsosurfaceUniforms(std::shared_ptr<RKRenderStructure> structure);
@@ -569,7 +572,11 @@ const std::string  OpenGLIsosurfaceUniformBlockStringLiteral = R"foo(
 layout (std140) uniform IsosurfaceUniformBlock
 {
   mat4 unitCellMatrix;
+  mat4 inverseUnitCellMatrix;
   mat4 unitCellNormalMatrix;
+
+  mat4 boxMatrix;
+  mat4 inverseBoxMatrix;
 
   vec4 ambientFrontSide;
   vec4 diffuseFrontSide;
@@ -595,10 +602,6 @@ layout (std140) uniform IsosurfaceUniformBlock
   vec4 pad4;
   vec4 pad5;
   vec4 pad6;
-  mat4 pad7;
-
-  mat4 pad8;
-  mat4 pad9;
 } isosurfaceUniforms;
 )foo";
 

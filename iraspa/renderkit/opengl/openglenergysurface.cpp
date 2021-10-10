@@ -322,7 +322,7 @@ void OpenGLEnergySurface::computeHeliumVoidFraction(std::vector<std::shared_ptr<
     return;
   }
 
-  for(std::shared_ptr<RKRenderStructure> structure: structures)
+  for(const std::shared_ptr<RKRenderStructure> &structure: structures)
   {
       if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
     if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))

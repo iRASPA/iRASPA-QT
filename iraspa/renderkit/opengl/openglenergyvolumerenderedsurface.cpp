@@ -19,23 +19,34 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
+#include "openglenergyvolumerenderedsurface.h"
 #include "glgeterror.h"
-#include "opengldensityvolumeshader.h"
-#include "unitcubegeometry.h"
-#include "spheregeometry.h"
 #include "cubegeometry.h"
-#include <qmath.h>
-#include <math.h>
-#include <cmath>
+#include "rkrenderuniforms.h"
 
-
-OpenGLDensityVolumeShader::OpenGLDensityVolumeShader()
+OpenGLEnergyVolumeRenderedSurface::OpenGLEnergyVolumeRenderedSurface(): _isOpenCLInitialized(false)
 {
 
 }
 
+void OpenGLEnergyVolumeRenderedSurface::setLogReportingWidget(LogReporting *logReporting)
+{
+  _logReporter = logReporting;
+}
 
-void OpenGLDensityVolumeShader::deleteBuffers()
+void OpenGLEnergyVolumeRenderedSurface::initializeOpenCL(bool isOpenCLInitialized, cl_context context, cl_device_id deviceId, cl_command_queue commandQueue, QStringList &logData)
+{
+  _isOpenCLInitialized = isOpenCLInitialized;
+
+  _clContext = context;
+  _clDeviceId = deviceId;
+  _clCommandQueue = commandQueue;
+
+  _energyGridUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
+  check_gl_error();
+}
+
+void OpenGLEnergyVolumeRenderedSurface::deleteBuffers()
 {
   for(size_t i=0;i<_renderStructures.size();i++)
   {
@@ -49,7 +60,7 @@ void OpenGLDensityVolumeShader::deleteBuffers()
   }
 }
 
-void OpenGLDensityVolumeShader::generateBuffers()
+void OpenGLEnergyVolumeRenderedSurface::generateBuffers()
 {
   _numberOfIndices.resize(_renderStructures.size());
 
@@ -84,7 +95,7 @@ void OpenGLDensityVolumeShader::generateBuffers()
   }
 }
 
-void OpenGLDensityVolumeShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLEnergyVolumeRenderedSurface::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -93,16 +104,18 @@ void OpenGLDensityVolumeShader::setRenderStructures(std::vector<std::vector<std:
 
 
 
-void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer)
+void OpenGLEnergyVolumeRenderedSurface::paintGL(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture)
 {
+  if(!_isOpenCLInitialized)
+      return;
+
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 
-  glDepthMask(GL_FALSE);
-  //glDepthFunc(GL_ALWAYS);
+  glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
+  glEnable(GL_DEPTH_TEST);
 
   glUseProgram(_program);
   check_gl_error();
@@ -112,7 +125,7 @@ void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (std::shared_ptr<RKRenderDensityVolumeSource> object = std::dynamic_pointer_cast<RKRenderDensityVolumeSource>(_renderStructures[i][j]))
+      //if (std::shared_ptr<RKRenderDensityVolumeSource> object = std::dynamic_pointer_cast<RKRenderDensityVolumeSource>(_renderStructures[i][j]))
       {
         if(_renderStructures[i][j]->isVisible())
         {
@@ -123,17 +136,27 @@ void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer)
           check_gl_error();
 
           glActiveTexture(GL_TEXTURE1);
-          glBindTexture(GL_TEXTURE_1D, _transferFunctionTexture);
+          glBindTexture(GL_TEXTURE_2D, depthTexture);
           check_gl_error();
-          glUniform1i(_transferFunctionUniformLocation, 1);
+          glUniform1i(_depthTextureUniformLocation, 1);
           check_gl_error();
 
-          GLfloat m_stepLength=0.0005;
+
+          glActiveTexture(GL_TEXTURE2);
+          glBindTexture(GL_TEXTURE_1D, _transferFunctionTexture);
+          check_gl_error();
+          glUniform1i(_transferFunctionUniformLocation, 2);
+          check_gl_error();
+
+
+
+          GLfloat m_stepLength=0.001;
 
           glUniform1f(_stepLengthUniformLocation, m_stepLength);
           check_gl_error();
 
-          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
+          glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, static_cast<GLintptr>(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
+          glBindBufferRange(GL_UNIFORM_BUFFER, 2, isosurfaceUniformBuffer, static_cast<GLintptr>(index * sizeof(RKIsosurfaceUniforms)), sizeof(RKIsosurfaceUniforms));
           check_gl_error();
 
           glBindVertexArray(_vertexArrayObject[i][j]);
@@ -154,44 +177,14 @@ void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer)
 }
 
 
-void OpenGLDensityVolumeShader::reloadData()
+void OpenGLEnergyVolumeRenderedSurface::reloadData()
 {
   initializeVertexArrayObject();
   initializeTransferFunctionTexture();
 }
-/*
-void OpenGLDensityVolumeShader::initializeNoiseTexture()
-{
-  GLint viewport[4];
-  glGetIntegerv(GL_VIEWPORT, viewport);
-  const int width = viewport[2];
-  const int height = viewport[3];
 
-  qDebug() << "width, heigth" << width << height;
 
-  std::srand(std::time(NULL));
-  unsigned char noise[width * height];
-
-  for (unsigned char *p = noise; p <= noise + width * height; ++p) {
-      *p = std::rand() % 256;
-  }
-
-  glDeleteTextures(1, &_noiseTexture);
-  check_gl_error();
-  glGenTextures(1, &_noiseTexture);
-  check_gl_error();
-  glBindTexture(GL_TEXTURE_2D, _noiseTexture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, noise);
-  check_gl_error();
-  glBindTexture(GL_TEXTURE_2D, 0);
-}
-*/
-
-void OpenGLDensityVolumeShader::initializeTransferFunctionTexture()
+void OpenGLEnergyVolumeRenderedSurface::initializeTransferFunctionTexture()
 {
   glDeleteTextures(1, &_transferFunctionTexture);
   check_gl_error();
@@ -206,70 +199,168 @@ void OpenGLDensityVolumeShader::initializeTransferFunctionTexture()
   glBindTexture(GL_TEXTURE_1D, 0);
 }
 
-void OpenGLDensityVolumeShader::initializeVertexArrayObject()
+void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
 {
-    CubeGeometry sphere = CubeGeometry();
+    if(!_isOpenCLInitialized)
+        return;
 
-    for(size_t i=0;i<_renderStructures.size();i++)
+  CubeGeometry sphere = CubeGeometry();
+
+  for(size_t i=0;i<_renderStructures.size();i++)
+  {
+    for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      for(size_t j=0;j<_renderStructures[i].size();j++)
+      if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
       {
-        if (std::shared_ptr<RKRenderDensityVolumeSource> object = std::dynamic_pointer_cast<RKRenderDensityVolumeSource>(_renderStructures[i][j]))
+        std::vector<float4> *textureData{}; // = std::make_shared<std::vector<cl_float>>();
+
+        if(_cache.contains(_renderStructures[i][j].get()))
         {
-          glBindTexture(GL_TEXTURE_3D, _volumeTextures[i][j]);
-          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-          check_gl_error();
-          glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // The array on the host has 1 byte alignment
-          glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, object->dimension().x, object->dimension().y, object->dimension().z, 0, GL_RGBA, GL_FLOAT, object->data().data());
-          check_gl_error();
-          glBindTexture(GL_TEXTURE_3D, 0);
-          check_gl_error();
-
-          glBindVertexArray(_vertexArrayObject[i][j]);
-          check_gl_error();
-
-          _numberOfIndices[i][j] = sphere.indices().size();
-
-          glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
-          check_gl_error();
-
-          if(sphere.vertices().size()>0)
-          {
-            glBufferData(GL_ARRAY_BUFFER, sphere.vertices().size() * sizeof(RKVertex), sphere.vertices().data(), GL_DYNAMIC_DRAW);
-          }
-          check_gl_error();
-
-          glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), (GLvoid *)offsetof(RKVertex,position));
-          check_gl_error();
-
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer[i][j]);
-          check_gl_error();
-          if(sphere.indices().size()>0)
-          {
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices().size() * sizeof(GLshort), sphere.indices().data(), GL_DYNAMIC_DRAW);
-          }
-          check_gl_error();
-
-          glEnableVertexAttribArray(_vertexPositionAttributeLocation);
-          check_gl_error();
-
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindVertexArray(0);
+           std::clock_t beginTime = clock();
+           textureData = _cache.object(_renderStructures[i][j].get());
+           std::clock_t endTime = clock();
+           double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
+           _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
         }
+        else
+        {
+          int sizeX = 128;
+          int sizeY = 128;
+          int sizeZ = 128;
+
+          std::clock_t beginTime = clock();
+          double2 probeParameter = source->adsorptionSurfaceProbeParameters();
+          std::vector<double3> positions = source->atomUnitCellPositions();
+          std::vector<double2> potentialParameters = source->potentialParameters();
+          double3x3 unitCell = renderStructure->cell()->unitCell();
+          int3 numberOfReplicas = renderStructure->cell()->numberOfReplicas(12.0);
+          std::vector<cl_float> gridData = *_energyGridUnitCell.ComputeEnergyGrid(sizeX, sizeY, sizeZ, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
+
+
+
+          textureData = new std::vector<float4>(128*128*128);
+
+          float minimum=1000.0;
+          for(int x=0;x<128;x++)
+          {
+            for(int y=0;y<128;y++)
+            {
+              for(int z=0;z<128;z++)
+              {
+                float value = gridData[x+128*y+z*128*128];
+                if(value<minimum)
+                {
+                    minimum=value;
+                }
+              }
+            }
+          }
+          for(int x=0;x<128;x++)
+          {
+            for(int y=0;y<128;y++)
+            {
+              for(int z=0;z<128;z++)
+              {
+                float temp = 1000.0*(1.0/300.0)*(gridData[x+128*y+z*128*128]-minimum);
+                float value;
+                if(temp<0)
+                {
+                  value = 0.0;
+                }
+                else if(temp>54000)
+                {
+                 value = 1.0;
+                }
+                else
+                {
+                  value=temp/65535.0;
+                }
+
+
+                int xi = (int)(x + 0.5f);
+                float xf = x + 0.5f - xi;
+                float xd0 = gridData[((xi-1 + 128) % 128)+y*128+z*128*128];
+                float xd1 = gridData[(xi)+y*128+z*128*128];
+                float xd2 = gridData[((xi+1 + 128) % 128)+y*128+z*128*128];
+                float gx = (xd1 - xd0) * (1.0f - xf) + (xd2 - xd1) * xf;
+
+                int yi = (int)(y + 0.5f);
+                float yf = y + 0.5f - yi;
+                float yd0 = gridData[x+((yi-1+128) % 128)*128+z*128*128];
+                float yd1 = gridData[x+ (yi)*128+z*128*128];
+                float yd2 = gridData[x+((yi+1+128)% 128)*128+z*128*128];
+                float gy = (yd1 - yd0) * (1.0f - yf) + (yd2 - yd1) * yf;
+
+                int zi = (int)(z + 0.5f);
+                float zf = z + 0.5f - zi;
+                float zd0 =  gridData[x+y*128+((zi-1+128) % 128)*128*128];
+                float zd1 =  gridData[x+y*128+(zi)*128*128];
+                float zd2 =  gridData[x+y*128+((zi+1+128) % 128)*128*128];
+                float gz =  (zd1 - zd0) * (1.0f - zf) + (zd2 - zd1) * zf;
+
+                (*textureData)[x+128*y+z*128*128] = float4(value, gx, gy, gz);
+              }
+            }
+          }
+
+          _cache.insert(_renderStructures[i][j].get(),textureData);
+        }
+
+        glBindTexture(GL_TEXTURE_3D, _volumeTextures[i][j]);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        check_gl_error();
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // The array on the host has 1 byte alignment
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, 128, 128, 128, 0, GL_RGBA, GL_FLOAT, textureData->data());
+        check_gl_error();
+        glBindTexture(GL_TEXTURE_3D, 0);
+        check_gl_error();
+
+        glBindVertexArray(_vertexArrayObject[i][j]);
+        check_gl_error();
+
+        _numberOfIndices[i][j] = sphere.indices().size();
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
+        check_gl_error();
+
+        if(sphere.vertices().size()>0)
+        {
+          glBufferData(GL_ARRAY_BUFFER, sphere.vertices().size() * sizeof(RKVertex), sphere.vertices().data(), GL_DYNAMIC_DRAW);
+        }
+        check_gl_error();
+
+        glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), (GLvoid *)offsetof(RKVertex,position));
+        check_gl_error();
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer[i][j]);
+        check_gl_error();
+        if(sphere.indices().size()>0)
+        {
+          glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices().size() * sizeof(GLshort), sphere.indices().data(), GL_DYNAMIC_DRAW);
+        }
+        check_gl_error();
+
+        glEnableVertexAttribArray(_vertexPositionAttributeLocation);
+        check_gl_error();
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
       }
     }
+  }
 }
 
-void OpenGLDensityVolumeShader::loadShader(void)
+void OpenGLEnergyVolumeRenderedSurface::loadShader(void)
 {
   GLuint vertexShader;
   GLuint fragmentShader;
-  vertexShader=compileShaderOfType(GL_VERTEX_SHADER,OpenGLDensityVolumeShader::_vertexShaderSource.c_str());
-  fragmentShader=compileShaderOfType(GL_FRAGMENT_SHADER,OpenGLDensityVolumeShader::_fragmentShaderSource.c_str());
+  vertexShader=compileShaderOfType(GL_VERTEX_SHADER,OpenGLEnergyVolumeRenderedSurface::_vertexShaderSource.c_str());
+  fragmentShader=compileShaderOfType(GL_FRAGMENT_SHADER,OpenGLEnergyVolumeRenderedSurface::_fragmentShaderSource.c_str());
 
   if (0 != vertexShader && 0 != fragmentShader)
   {
@@ -289,6 +380,7 @@ void OpenGLDensityVolumeShader::loadShader(void)
 
     _transferFunctionUniformLocation   = glGetUniformLocation(_program, "transferFunction");
     _volumeTextureUniformLocation   = glGetUniformLocation(_program, "volume");
+    _depthTextureUniformLocation   = glGetUniformLocation(_program, "depthTexture");
 
     _stepLengthUniformLocation   = glGetUniformLocation(_program, "step_length");
 
@@ -303,17 +395,23 @@ void OpenGLDensityVolumeShader::loadShader(void)
   }
 }
 
-void OpenGLDensityVolumeShader::initializeTransformUniforms()
+void OpenGLEnergyVolumeRenderedSurface::initializeTransformUniforms()
 {
   glUniformBlockBinding(_program, glGetUniformBlockIndex(_program, "FrameUniformBlock"), 0);
 }
 
-void OpenGLDensityVolumeShader::initializeStructureUniforms()
+void OpenGLEnergyVolumeRenderedSurface::initializeStructureUniforms()
 {
   glUniformBlockBinding(_program, glGetUniformBlockIndex(_program, "StructureUniformBlock"), 1);
 }
 
-void OpenGLDensityVolumeShader::initializeLightUniforms()
+void OpenGLEnergyVolumeRenderedSurface::initializeIsosurfaceUniforms()
+{
+  glUniformBlockBinding(_program, glGetUniformBlockIndex(_program, "IsosurfaceUniformBlock"), 2);
+  check_gl_error();
+}
+
+void OpenGLEnergyVolumeRenderedSurface::initializeLightUniforms()
 {
   glUniformBlockBinding(_program, glGetUniformBlockIndex(_program, "LightsUniformBlock"), 3);
 }
@@ -321,10 +419,11 @@ void OpenGLDensityVolumeShader::initializeLightUniforms()
 
 // Based on: page 168 "Real-Time Volume Graphics", Klaus Engels et al.
 
-const std::string  OpenGLDensityVolumeShader::_vertexShaderSource =
+const std::string  OpenGLEnergyVolumeRenderedSurface::_vertexShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLFrameUniformBlockStringLiteral +
 OpenGLStructureUniformBlockStringLiteral +
+OpenGLIsosurfaceUniformBlockStringLiteral +
 OpenGLLightUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
@@ -340,25 +439,25 @@ out VS_OUT
 
 void main()
 {
-  vec4 pos = structureUniforms.boxMatrix * vertexPosition;
+  vec4 pos = structureUniforms.modelMatrix * isosurfaceUniforms.boxMatrix * vertexPosition;
   vs_out.position = pos.xyz;
   vs_out.UV =  vertexPosition.xyz;
 
-  vec4 P = frameUniforms.viewMatrix * structureUniforms.modelMatrix * pos;
+  vec4 P = frameUniforms.viewMatrix *  pos;
 
   // Calculate light vector
   vec4 dir = lightUniforms.lights[0].position - P*lightUniforms.lights[0].position.w;
-  vs_out.L = (inverse(frameUniforms.viewMatrix) * inverse(frameUniforms.normalMatrix) * inverse(structureUniforms.boxMatrix) * vec4(dir.xyz,0.0)).xyz;
 
   vs_out.clipPosition = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * pos;
   gl_Position = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * pos;
 }
 )foo";
 
-const std::string  OpenGLDensityVolumeShader::_fragmentShaderSource =
+const std::string  OpenGLEnergyVolumeRenderedSurface::_fragmentShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLFrameUniformBlockStringLiteral +
 OpenGLStructureUniformBlockStringLiteral +
+OpenGLIsosurfaceUniformBlockStringLiteral +
 OpenGLLightUniformBlockStringLiteral +
 R"foo(
 out vec4 vFragColor;
@@ -367,7 +466,7 @@ out vec4 vFragColor;
 in VS_OUT
 {
   smooth vec3 UV;
-  vec3 position;
+  smooth vec3 position;
   smooth vec3 L;
   smooth vec4 clipPosition;
 } fs_in;
@@ -376,6 +475,7 @@ uniform float step_length;
 
 uniform sampler3D volume;
 uniform sampler1D transferFunction;
+uniform sampler2D depthTexture;
 
 // Ray
 struct Ray
@@ -419,13 +519,17 @@ const int numSamples = 5000;
 
 void main()
 {
+ // float value = texture(depthTexture, fs_in.UV.xy).r;
+ //vFragColor = vec4(value, value, value,1.0);
+
+  vec3 numberOfReplicas = structureUniforms.numberOfReplicas.xyz;
   vec3 direction = normalize(fs_in.position.xyz - frameUniforms.cameraPosition.xyz);
   vec4 dir = vec4(direction.x,direction.y,direction.z,0.0);
-  //dir = vec4(0,0,-1,0);
-  vec3 ray_direction = (inverse(structureUniforms.boxMatrix) * dir).xyz;
-  //vec3 ray_direction = dir.xyz;
+  vec3 ray_direction = (isosurfaceUniforms.inverseBoxMatrix * dir).xyz;
 
   vec3 ray_origin = fs_in.UV;
+
+  float stepLength = step_length/numberOfReplicas.z;
 
   float t_0, t_1;
   Ray casting_ray = Ray(ray_origin, ray_direction);
@@ -437,40 +541,51 @@ void main()
 
   vec3 ray = ray_stop - ray_start;
   float ray_length = length(ray);
-  vec3 step_vector = step_length * ray / ray_length;
+  vec3 step_vector = stepLength * ray / ray_length;
+
+  float depth = 1.0;
+  float newDepth = 0.0;
+
+  mat4 m = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * isosurfaceUniforms.boxMatrix;
 
   vec4 colour = vec4(0.0,0.0,0.0,0.0);
   vec3 position = ray_start;
   for (int i=0; i < numSamples && ray_length > 0 && colour.a < 1.0; i++)
   {
-    vec4 values = texture(volume,position);
+    vec4 values = texture(volume,numberOfReplicas * position);
     vec3 normal = normalize(values.gba);
 
     //vec4 c = colour_transfer(values.r);
     vec4 c = texture(transferFunction,values.r);
 
-    // Alpha-blending
+
     vec3 R = reflect(-direction, normal);
     vec3 ambient = vec3(0.3,0.3,0.3);
     vec3 diffuse = vec3(max(abs(dot(normal, direction)),0.0));
     vec3 specular = vec3(pow(max(dot(R, direction), 0.0), 0.4));
 
+    // Alpha-blending
     colour.rgb = c.a * (ambient+diffuse+specular) * c.rgb + (1 - c.a) * colour.a * colour.rgb;
     colour.a = c.a + (1 - c.a) * colour.a;
 
     position = position + step_vector;
-    ray_length -= step_length;
+    ray_length -= stepLength;
+
+    vec4 clipPosition = m * vec4(position,1.0);
+    gl_FragDepth = 0.5*(clipPosition.z / clipPosition.w)+0.5;
   }
-  mat4 m = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * structureUniforms.boxMatrix;
-  vec4 clipPosition = m * vec4(position,1.0);
-  gl_FragDepth = 0.5*(clipPosition.z / clipPosition.w)+0.5;
+
+  if(colour.a<0.99)
+  {
+    discard;
+  }
 
   vFragColor.rgb = 1.0 - exp2(-colour.rgb * 1.5);
   vFragColor.a=colour.a;
 }
 )foo";
 
-std::array<float4, 256> OpenGLDensityVolumeShader::transferFunction
+std::array<float4, 256> OpenGLEnergyVolumeRenderedSurface::transferFunction
 {
     float4(0.5, 0.2, 0.2, 0),
     float4(0.521254, 0.204251, 0.204251, 0),
@@ -729,3 +844,4 @@ std::array<float4, 256> OpenGLDensityVolumeShader::transferFunction
     float4(0.3, 0.502882, 0.992796, 0),
     float4(0.3, 0.501441, 0.996398, 0)
 };
+

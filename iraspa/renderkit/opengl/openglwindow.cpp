@@ -55,6 +55,7 @@ OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGL
     _backgroundShader(),
     _blurShader(),
     _energySurfaceShader(),
+    _energyVolumeRenderedSurface(),
     _boundingBoxShader(),
     _globalAxesShader(),
     _atomShader(),
@@ -93,6 +94,7 @@ void OpenGLWindow::setLogReportingWidget(LogReporting *logReporting)
   _logReporter = logReporting;
 
   _energySurfaceShader.setLogReportingWidget(logReporting);
+  _energyVolumeRenderedSurface.setLogReportingWidget(logReporting);
 
   if(!_logData.isEmpty())
   {
@@ -142,6 +144,7 @@ void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<R
   _renderStructures = structures;
 
   _energySurfaceShader.setRenderStructures(structures);
+  _energyVolumeRenderedSurface.setRenderStructures(structures);
 
   _atomShader.setRenderStructures(structures);
   _bondShader.setRenderStructures(structures);
@@ -181,6 +184,7 @@ void OpenGLWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRen
 {
   makeCurrent();
   _energySurfaceShader.invalidateIsosurface(structures);
+  //_energyVolumeRenderedSurface
 }
 
 std::array<int,4> OpenGLWindow::pickTexture(int x, int y, int width, int height)
@@ -211,6 +215,7 @@ void OpenGLWindow::initializeGL()
   _backgroundShader.initializeOpenGLFunctions();
   _blurShader.initializeOpenGLFunctions();
   _energySurfaceShader.initializeOpenGLFunctions();
+  _energyVolumeRenderedSurface.initializeOpenGLFunctions();
   _boundingBoxShader.initializeOpenGLFunctions();
   _globalAxesShader.initializeOpenGLFunctions();
 
@@ -459,6 +464,7 @@ void OpenGLWindow::initializeGL()
   }
 
   _energySurfaceShader.initializeOpenCL(_isOpenCLInitialized, _clContext, _clDeviceId, _clCommandQueue, _logData);
+  _energyVolumeRenderedSurface.initializeOpenCL(_isOpenCLInitialized, _clContext, _clDeviceId, _clCommandQueue, _logData);
 
   // Set the clear color to white
   glClearColor( 1.0f, 1.0f, 0.0f, 1.0f );
@@ -467,6 +473,7 @@ void OpenGLWindow::initializeGL()
   _backgroundShader.loadShader();
   _blurShader.loadShader();
   _energySurfaceShader.loadShader();
+  _energyVolumeRenderedSurface.loadShader();
   _boundingBoxShader.loadShader();
   _globalAxesShader.loadShader();
   _atomShader.loadShader();
@@ -480,6 +487,7 @@ void OpenGLWindow::initializeGL()
   _densityVolumeShader.loadShader();
 
   _energySurfaceShader.generateBuffers();
+  _energyVolumeRenderedSurface.generateBuffers();
   _boundingBoxShader.generateBuffers();
   _globalAxesShader.generateBuffers();
   _unitCellShader.generateBuffers();
@@ -490,6 +498,7 @@ void OpenGLWindow::initializeGL()
 
   _backgroundShader.initializeVertexArrayObject();
   _energySurfaceShader.initializeVertexArrayObject();
+  _energyVolumeRenderedSurface.initializeVertexArrayObject();
   _blurShader.initializeVertexArrayObject();
   _boundingBoxShader.initializeVertexArrayObject();
   _globalAxesShader.initializeVertexArrayObject();
@@ -723,6 +732,7 @@ void OpenGLWindow::initializeCL_Linux(cl_context &_clContext, cl_device_id &_clD
 
   // do not use OpenGL/OpenCL for linux
   _energySurfaceShader.setGLInteroperability(false);
+  _energyVolumeRenderedSurface.setGLInteroperability(false);
 
   // see first if there is a suitable GPU device for OpenCL
   std::optional<cl_device_id> bestGPUDevice = bestOpenCLDevice(CL_DEVICE_TYPE_GPU);
@@ -1503,7 +1513,7 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
 
 void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio)
 {
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER,framebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
   check_gl_error();
   glDrawBuffer(GL_COLOR_ATTACHMENT0);
   check_gl_error();
@@ -1531,16 +1541,13 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int hei
     _bondShader.paintGL(_structureUniformBuffer);
      check_gl_error();
 
-
-
     _objectShader.paintGL(_structureUniformBuffer);
     _unitCellShader.paintGL(_structureUniformBuffer);
     _localAxesShader.paintGL(_structureUniformBuffer);
 
-
-
     _boundingBoxShader.paintGL();
     _energySurfaceShader.paintGLOpaque(_structureUniformBuffer,_isosurfaceUniformBuffer);
+    _energyVolumeRenderedSurface.paintGL(_structureUniformBuffer,_isosurfaceUniformBuffer, _pickingShader.depthTexture());
 
     _objectShader.paintGLTransparent(_structureUniformBuffer);
 
@@ -1562,7 +1569,7 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int hei
   check_gl_error();
 
   _selectionShader.paintGLGlow(_structureUniformBuffer);
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
+  glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 
 void OpenGLWindow::keyPressEvent( QKeyEvent* e )
@@ -1755,6 +1762,7 @@ void OpenGLWindow::initializeTransformUniforms()
   check_gl_error();
 
   _energySurfaceShader.initializeTransformUniforms();
+  _energyVolumeRenderedSurface.initializeTransformUniforms();
   check_gl_error();
   _boundingBoxShader.initializeTransformUniforms();
   check_gl_error();
@@ -1836,6 +1844,7 @@ void OpenGLWindow::initializeStructureUniforms()
   check_gl_error();
 
   _energySurfaceShader.initializeStructureUniforms();
+  _energyVolumeRenderedSurface.initializeStructureUniforms();
   _atomShader.initializeStructureUniforms();
   _bondShader.initializeStructureUniforms();
   _objectShader.initializeStructureUniforms();
@@ -1888,6 +1897,7 @@ void OpenGLWindow::initializeIsosurfaceUniforms()
   glBindBufferBase(GL_UNIFORM_BUFFER, 2, _isosurfaceUniformBuffer);
 
   _energySurfaceShader.initializeIsosurfaceUniforms();
+  _energyVolumeRenderedSurface.initializeIsosurfaceUniforms();
 
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
   check_gl_error();
@@ -1931,6 +1941,7 @@ void OpenGLWindow::initializeLightUniforms()
   glBindBufferBase(GL_UNIFORM_BUFFER, 3, _lightsUniformBuffer);
 
   _energySurfaceShader.initializeLightUniforms();
+  _energyVolumeRenderedSurface.initializeLightUniforms();
   _boundingBoxShader.initializeLightUniforms();
   _globalAxesShader.initializeLightUniforms();
   _atomShader.initializeLightUniforms();
@@ -2000,6 +2011,7 @@ void OpenGLWindow::reloadData()
   qDebug() << "OpenGLWindow::reloadData";
 
   _energySurfaceShader.reloadData();
+  _energyVolumeRenderedSurface.reloadData();
   _boundingBoxShader.reloadData();
   _globalAxesShader.reloadData();
 
@@ -2024,6 +2036,7 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
   makeCurrent();
 
   _energySurfaceShader.reloadData();
+  _energyVolumeRenderedSurface.reloadData();
   _boundingBoxShader.reloadData();
   _globalAxesShader.reloadData();
 
@@ -2054,6 +2067,7 @@ void OpenGLWindow::reloadRenderData()
   makeCurrent();
 
    _energySurfaceShader.reloadData();
+   _energyVolumeRenderedSurface.reloadData();
 
   _atomShader.reloadData();
   _atomShader.reloadAmbientOcclusionData(_dataSource, RKRenderQuality:: low);
