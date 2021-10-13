@@ -150,6 +150,8 @@ private:
   std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderStructure>>>{};
   GLuint _sceneFrameBuffer;
   GLuint _sceneDepthTexture;
+  GLuint _sceneResolveDepthFrameBuffer;
+  GLuint _sceneResolvedDepthTexture;
   GLuint _sceneTexture;
   GLuint _glowSelectionTexture;
   GLuint _downSamplerVertexArray;
@@ -208,7 +210,8 @@ private:
   void printDeviceInformation(cl_device_id &clDeviceId);
   bool supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId);
 
-  void drawSceneToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio);
+  void drawSceneOpaqueToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio);
+  void drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio);
 
   void adjustAmbientOcclusionTextureSize();
 

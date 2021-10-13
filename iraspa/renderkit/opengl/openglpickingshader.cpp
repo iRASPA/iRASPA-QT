@@ -215,6 +215,7 @@ void OpenGLPickingShader::generateFrameBuffers()
   //glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_COMPARE_FUNC), GLint(GL_ALWAYS));
   check_gl_error();
   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 512, 512, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  check_gl_error();
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
   check_gl_error();
 

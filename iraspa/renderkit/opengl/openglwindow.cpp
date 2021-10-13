@@ -358,30 +358,17 @@ void OpenGLWindow::initializeGL()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   check_gl_error();
 
-
-  //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-  check_gl_error();
-
-  glActiveTexture(GL_TEXTURE1);
-  check_gl_error();
-
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _glowSelectionTexture);
-  check_gl_error();
-
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_RGBA16F, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_TRUE);
   check_gl_error();
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   check_gl_error();
-  //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-
-  //glActiveTexture(GL_TEXTURE1);
-  //check_gl_error();
-
-  glActiveTexture(GL_TEXTURE2);
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _multiSampling, GL_RGBA16F, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_TRUE);
   check_gl_error();
+
+
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneDepthTexture);
   check_gl_error();
   glTexParameteri(GL_TEXTURE_2D, GLenum(GL_TEXTURE_WRAP_S), GLint(GL_CLAMP_TO_EDGE));
@@ -410,9 +397,34 @@ void OpenGLWindow::initializeGL()
   {
     qWarning("initializeSceneFrameBuffer fatal error: framebuffer incomplete");
   }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
+  glGenFramebuffers(1, &_sceneResolveDepthFrameBuffer);
+  check_gl_error();
+
+  glGenTextures(1, &_sceneResolvedDepthTexture);
+  check_gl_error();
+
+  glBindFramebuffer(GL_FRAMEBUFFER, _sceneResolveDepthFrameBuffer);
+  glBindTexture(GL_TEXTURE_2D, _sceneResolvedDepthTexture);
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  check_gl_error();
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, _width * _devicePixelRatio, _height * _devicePixelRatio, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  check_gl_error();
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _sceneResolvedDepthTexture, 0);
+  check_gl_error();
+
+  // check framebuffer completeness
+  status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (status != GL_FRAMEBUFFER_COMPLETE)
+  {
+    qWarning("Resolve Depth FrameBuffer fatal error: framebuffer incomplete");
+  }
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   _blurShader.initializeFramebuffers();
@@ -1237,6 +1249,34 @@ void OpenGLWindow::resizeGL( int w, int h )
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, _sceneResolveDepthFrameBuffer);
+    check_gl_error();
+    if(_sceneResolvedDepthTexture)
+      glDeleteTextures(1, &_sceneResolvedDepthTexture);
+    check_gl_error();
+    glGenTextures(1, &_sceneResolvedDepthTexture);
+    check_gl_error();
+
+    glBindTexture(GL_TEXTURE_2D, _sceneResolvedDepthTexture);
+    check_gl_error();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    check_gl_error();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, _width * _devicePixelRatio, _height * _devicePixelRatio, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    check_gl_error();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _sceneResolvedDepthTexture, 0);
+    check_gl_error();
+
+    // check framebuffer completeness
+    status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+      qWarning("Resolve Depth FrameBuffer fatal error: framebuffer incomplete");
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     if(std::shared_ptr<RKRenderDataSource> dataSource = _dataSource)
     {
       _blurShader.resizeGL(_width, _height);
@@ -1271,7 +1311,19 @@ void OpenGLWindow::paintGL()
     _pickingShader.paintGL(_width, _height, _structureUniformBuffer);
 
     glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
-    drawSceneToFramebuffer(_sceneFrameBuffer, _width, _height, _devicePixelRatio);
+    drawSceneOpaqueToFramebuffer(_sceneFrameBuffer, _width, _height, _devicePixelRatio);
+    check_gl_error();
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, _sceneFrameBuffer);
+    check_gl_error();
+    glBindFramebuffer(GLenum(GL_DRAW_FRAMEBUFFER), _sceneResolveDepthFrameBuffer);
+    check_gl_error();
+
+    glBlitFramebuffer(0, 0, _width * _devicePixelRatio, _height * _devicePixelRatio, 0, 0, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    check_gl_error();
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+    drawSceneTransparentToFramebuffer(_sceneFrameBuffer, _sceneResolvedDepthTexture, _width, _height, _devicePixelRatio);
     check_gl_error();
 
     glViewport(0,0,_width,_height);
@@ -1355,6 +1407,9 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   GLuint sceneTexture;
   GLuint glowSelectionTexture;
 
+  GLuint sceneResolveDepthFrameBuffer;
+  GLuint sceneResolvedDepthTexture;
+
   makeCurrent();
 
   glEnable(GL_MULTISAMPLE);
@@ -1366,6 +1421,8 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   updateTransformUniforms();
   updateIsosurfaceUniforms();
   updateLightUniforms();
+
+
 
   glGenFramebuffers(1, &sceneFrameBuffer);
   glGenTextures(1, &sceneDepthTexture);
@@ -1426,20 +1483,56 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   {
     qWarning("initializeSceneFrameBuffer fatal error: framebuffer incomplete");
   }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+  glGenFramebuffers(1, &sceneResolveDepthFrameBuffer);
+  check_gl_error();
+
+  glGenTextures(1, &sceneResolvedDepthTexture);
+  check_gl_error();
+
+  glBindFramebuffer(GL_FRAMEBUFFER, sceneResolveDepthFrameBuffer);
+  glBindTexture(GL_TEXTURE_2D, sceneResolvedDepthTexture);
+  check_gl_error();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  check_gl_error();
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  check_gl_error();
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, sceneResolvedDepthTexture, 0);
+  check_gl_error();
+
+  // check framebuffer completeness
+  status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (status != GL_FRAMEBUFFER_COMPLETE)
+  {
+    qWarning("Resolve Depth FrameBuffer fatal error: framebuffer incomplete");
+  }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   glViewport(0,0,width,height);
 
-  drawSceneToFramebuffer(sceneFrameBuffer, width, height, 1);
+
+  drawSceneOpaqueToFramebuffer(sceneFrameBuffer, width, height, 1);
+
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFrameBuffer);
+  check_gl_error();
+  glBindFramebuffer(GLenum(GL_DRAW_FRAMEBUFFER), sceneResolveDepthFrameBuffer);
+  check_gl_error();
+
+  glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+  check_gl_error();
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+  drawSceneTransparentToFramebuffer(sceneFrameBuffer, sceneResolvedDepthTexture, width, height, 1);
 
   GLuint downSamplerFrameBufferObject;
   GLuint downSamplerTexture;
 
   glGenFramebuffers(1, &downSamplerFrameBufferObject);
   glGenTextures(1, &downSamplerTexture);
-
 
   glBindFramebuffer(GL_FRAMEBUFFER, downSamplerFrameBufferObject);
   check_gl_error();
@@ -1503,6 +1596,9 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   glDeleteTextures(1, &downSamplerTexture);
   glDeleteFramebuffers(1, &downSamplerFrameBufferObject);
 
+  glDeleteTextures(1, &sceneResolvedDepthTexture);
+  glDeleteFramebuffers(1, &sceneResolveDepthFrameBuffer);
+
   glDeleteTextures(1, &glowSelectionTexture);
   glDeleteTextures(1, &sceneTexture);
   glDeleteTextures(1, &sceneDepthTexture);
@@ -1511,7 +1607,7 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   return img.mirrored();
 }
 
-void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio)
+void OpenGLWindow::drawSceneOpaqueToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio)
 {
   glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
   check_gl_error();
@@ -1547,7 +1643,17 @@ void OpenGLWindow::drawSceneToFramebuffer(GLuint framebuffer, int width, int hei
 
     _boundingBoxShader.paintGL();
     _energySurfaceShader.paintGLOpaque(_structureUniformBuffer,_isosurfaceUniformBuffer);
-    _energyVolumeRenderedSurface.paintGL(_structureUniformBuffer,_isosurfaceUniformBuffer, _pickingShader.depthTexture());
+
+  }
+   glBindFramebuffer(GL_FRAMEBUFFER,0);
+}
+
+void OpenGLWindow::drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio)
+{
+  glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
+  if (std::shared_ptr<RKCamera> camera = _camera.lock())
+  {
+     _energyVolumeRenderedSurface.paintGL(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture);
 
     _objectShader.paintGLTransparent(_structureUniformBuffer);
 

@@ -442,13 +442,14 @@ void main()
   vec4 pos = structureUniforms.modelMatrix * isosurfaceUniforms.boxMatrix * vertexPosition;
   vs_out.position = pos.xyz;
   vs_out.UV =  vertexPosition.xyz;
+  vs_out.clipPosition = frameUniforms.mvpMatrix * pos;
 
   vec4 P = frameUniforms.viewMatrix *  pos;
 
   // Calculate light vector
   vec4 dir = lightUniforms.lights[0].position - P*lightUniforms.lights[0].position.w;
 
-  vs_out.clipPosition = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * pos;
+
   gl_Position = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * pos;
 }
 )foo";
@@ -519,8 +520,10 @@ const int numSamples = 5000;
 
 void main()
 {
- // float value = texture(depthTexture, fs_in.UV.xy).r;
- //vFragColor = vec4(value, value, value,1.0);
+ // float depth = texelFetch(depthTexture, ivec2(gl_FragCoord.x,textureSize(depthTexture,0).y-gl_FragCoord.y),0).r;
+ // float depth = texelFetch(depthTexture, ivec2(gl_FragCoord.xy),0).r;
+ // vFragColor = vec4(depth, depth, depth,1.0);
+
 
   vec3 numberOfReplicas = structureUniforms.numberOfReplicas.xyz;
   vec3 direction = normalize(fs_in.position.xyz - frameUniforms.cameraPosition.xyz);
@@ -543,9 +546,9 @@ void main()
   float ray_length = length(ray);
   vec3 step_vector = stepLength * ray / ray_length;
 
-  float depth = 1.0;
-  float newDepth = 0.0;
 
+  float depth = texelFetch(depthTexture, ivec2(gl_FragCoord.xy),0).r;
+  float newDepth = 1.0;
   mat4 m = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * isosurfaceUniforms.boxMatrix;
 
   vec4 colour = vec4(0.0,0.0,0.0,0.0);
@@ -572,7 +575,11 @@ void main()
     ray_length -= stepLength;
 
     vec4 clipPosition = m * vec4(position,1.0);
-    gl_FragDepth = 0.5*(clipPosition.z / clipPosition.w)+0.5;
+    newDepth = 0.5*(clipPosition.z / clipPosition.w)+0.5;
+    if(newDepth>depth)
+    {
+      break;
+    }
   }
 
   if(colour.a<0.99)
