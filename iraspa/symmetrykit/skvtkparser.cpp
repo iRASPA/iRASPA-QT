@@ -198,7 +198,7 @@ bool SKVTKParser::startParsing()
             }
           }
         }
-        if (string.startsWith("UNIT_CELL"))
+        if (string.startsWith("CELL_PARAMETERS"))
         {
           qDebug() << "Unit cell found";
           QStringList strSplited = headerString.split(' ');

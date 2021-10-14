@@ -58,7 +58,7 @@ struct enum_hash
 class Structure: public Object, public InfoViewer, public CellViewer, public AtomViewer, public BondViewer,
                  public AtomVisualAppearanceViewer, public BondVisualAppearanceViewer,
                  public AdsorptionSurfaceVisualAppearanceViewer, public AtomTextVisualAppearanceViewer,
-                 public RKRenderAtomicStructureSource
+                 public RKRenderAtomicStructureSource, public RKRenderAdsorptionSurfaceSource
 {
 public:
   Structure();
@@ -386,6 +386,12 @@ public:
 
 
   // adsorption surface
+  RKEnergySurfaceType adsorptionSurfaceRenderingMethod() override final {return _adsorptionSurfaceRenderingMethod;}
+  void setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType type) override final {_adsorptionSurfaceRenderingMethod = type;}
+  RKPredefinedVolumeRenderingTransferFunction adsorptionVolumeTransferFunction() override final {return _adsorptionVolumeTransferFunction;}
+  void setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction function) override final {_adsorptionVolumeTransferFunction = function;}
+  double adsorptionVolumeStepLength() override final {return _adsorptionVolumeStepLength;}
+  void setAdsorptionVolumeStepLength(double stepLength) override final {_adsorptionVolumeStepLength = stepLength;}
   std::vector<double3> atomUnitCellPositions() const override {return std::vector<double3>();}
   bool drawAdsorptionSurface() const override {return _drawAdsorptionSurface;}
   void setDrawAdsorptionSurface(bool state) override {_drawAdsorptionSurface = state;}
@@ -764,6 +770,10 @@ protected:
   double _adsorptionSurfaceOpacity = 1.0;
   double _adsorptionSurfaceIsoValue = 0.0;
   double _adsorptionSurfaceMinimumValue = -1000.0;
+
+  RKEnergySurfaceType _adsorptionSurfaceRenderingMethod = RKEnergySurfaceType::isoSurface;
+  RKPredefinedVolumeRenderingTransferFunction  _adsorptionVolumeTransferFunction = RKPredefinedVolumeRenderingTransferFunction::standard;
+  double _adsorptionVolumeStepLength = 0.0005;
 
   qint64 _adsorptionSurfaceSize = 128;
   qint64 _adsorptionSurfaceNumberOfTriangles = 0;

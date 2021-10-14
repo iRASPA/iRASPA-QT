@@ -31,6 +31,11 @@ RKRenderAtomicStructureSource::~RKRenderAtomicStructureSource()
   // Compulsory virtual destructor definition
 }
 
+RKRenderAdsorptionSurfaceSource::~RKRenderAdsorptionSurfaceSource()
+{
+  // Compulsory virtual destructor definition
+}
+
 RKRenderPrimitiveObjectsSource::~RKRenderPrimitiveObjectsSource()
 {
   // Compulsory virtual destructor definition

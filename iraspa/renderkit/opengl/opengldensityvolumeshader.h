@@ -59,9 +59,8 @@ public:
   OpenGLDensityVolumeShader();
 
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
-  void paintGL(GLuint structureUniformBuffer);
+  void paintGL(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
   void reloadData();
-  //void initializeNoiseTexture();
   void initializeTransferFunctionTexture();
   void initializeVertexArrayObject();
   void initializeTransformUniforms();
@@ -100,7 +99,7 @@ private:
   GLint _transferFunctionUniformLocation{-1};
 
   GLuint _vertexPositionAttributeLocation{0};
-  GLuint _stepLengthUniformLocation{0};
+  GLuint _depthTextureUniformLocation{0};
 
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;

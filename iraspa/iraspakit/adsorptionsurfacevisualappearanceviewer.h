@@ -22,6 +22,7 @@
 #pragma  once
 
 #include <mathkit.h>
+#include "rkrenderkitprotocols.h"
 
 enum class ProbeMolecule: qint64
 {
@@ -34,6 +35,14 @@ class AdsorptionSurfaceVisualAppearanceViewer
 public:
 
   virtual  ~AdsorptionSurfaceVisualAppearanceViewer() = 0;
+
+  virtual RKEnergySurfaceType adsorptionSurfaceRenderingMethod() = 0;
+  virtual void setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType type) = 0;
+  virtual RKPredefinedVolumeRenderingTransferFunction adsorptionVolumeTransferFunction() = 0;
+  virtual void setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction function) = 0;
+  virtual double adsorptionVolumeStepLength() = 0;
+  virtual void setAdsorptionVolumeStepLength(double value) = 0;
+
 
   virtual std::vector<double3> atomUnitCellPositions() const = 0;
   virtual bool drawAdsorptionSurface() const  = 0;

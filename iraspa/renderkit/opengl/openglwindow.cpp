@@ -184,7 +184,7 @@ void OpenGLWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRen
 {
   makeCurrent();
   _energySurfaceShader.invalidateIsosurface(structures);
-  //_energyVolumeRenderedSurface
+  _energyVolumeRenderedSurface.invalidateIsosurface(structures);
 }
 
 std::array<int,4> OpenGLWindow::pickTexture(int x, int y, int width, int height)
@@ -1314,11 +1314,22 @@ void OpenGLWindow::paintGL()
     drawSceneOpaqueToFramebuffer(_sceneFrameBuffer, _width, _height, _devicePixelRatio);
     check_gl_error();
 
+    // resolve depth-buffer
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _sceneFrameBuffer);
     check_gl_error();
     glBindFramebuffer(GLenum(GL_DRAW_FRAMEBUFFER), _sceneResolveDepthFrameBuffer);
     check_gl_error();
+    glBlitFramebuffer(0, 0, _width * _devicePixelRatio, _height * _devicePixelRatio, 0, 0, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    check_gl_error();
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
+    drawSceneVolumeRenderedSurfacesToFramebuffer(_sceneFrameBuffer, _sceneResolvedDepthTexture, _width, _height, _devicePixelRatio);
+
+    // resolve depth-buffer
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, _sceneFrameBuffer);
+    check_gl_error();
+    glBindFramebuffer(GLenum(GL_DRAW_FRAMEBUFFER), _sceneResolveDepthFrameBuffer);
+    check_gl_error();
     glBlitFramebuffer(0, 0, _width * _devicePixelRatio, _height * _devicePixelRatio, 0, 0, _width * _devicePixelRatio, _height * _devicePixelRatio, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     check_gl_error();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -1517,11 +1528,22 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
 
   drawSceneOpaqueToFramebuffer(sceneFrameBuffer, width, height, 1);
 
+  // resolve depth-buffer
   glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFrameBuffer);
   check_gl_error();
   glBindFramebuffer(GLenum(GL_DRAW_FRAMEBUFFER), sceneResolveDepthFrameBuffer);
   check_gl_error();
+  glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+  check_gl_error();
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
+  drawSceneVolumeRenderedSurfacesToFramebuffer(sceneFrameBuffer, sceneResolvedDepthTexture, width, height, 1);
+
+  // resolve depth-buffer
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFrameBuffer);
+  check_gl_error();
+  glBindFramebuffer(GLenum(GL_DRAW_FRAMEBUFFER), sceneResolveDepthFrameBuffer);
+  check_gl_error();
   glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
   check_gl_error();
   glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -1648,12 +1670,26 @@ void OpenGLWindow::drawSceneOpaqueToFramebuffer(GLuint framebuffer, int width, i
    glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 
-void OpenGLWindow::drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio)
+
+
+
+void OpenGLWindow::drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio)
 {
   glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
   if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
      _energyVolumeRenderedSurface.paintGL(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture);
+  }
+
+  glBindFramebuffer(GL_FRAMEBUFFER,0);
+}
+
+void OpenGLWindow::drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio)
+{
+  glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
+  if (std::shared_ptr<RKCamera> camera = _camera.lock())
+  {
+    _densityVolumeShader.paintGL(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture);
 
     _objectShader.paintGLTransparent(_structureUniformBuffer);
 
@@ -1661,7 +1697,7 @@ void OpenGLWindow::drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint 
 
     _selectionShader.paintGL(camera, _quality, _structureUniformBuffer);
 
-    _densityVolumeShader.paintGL(_structureUniformBuffer);
+
 
     _textShader.paintGL(_structureUniformBuffer);
 
@@ -2131,6 +2167,9 @@ void OpenGLWindow::reloadData()
   _pickingShader.reloadData();
   _textShader.reloadData();
   _densityVolumeShader.reloadData();
+
+  updateStructureUniforms();
+  updateIsosurfaceUniforms();
 
   update();
 

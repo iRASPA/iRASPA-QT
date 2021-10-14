@@ -182,7 +182,24 @@ public:
   virtual double bondSelectionWorleyNoise3DFrequency() const = 0;
   virtual double bondSelectionWorleyNoise3DJitter() const = 0;
 
-  // adsorption surface
+
+  virtual void recomputeDensityProperties() = 0;
+  virtual double2 frameworkProbeParameters() const = 0;
+  virtual void setStructureHeliumVoidFraction(double value) = 0;
+  virtual void setStructureNitrogenSurfaceArea(double value) = 0;
+
+  virtual std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const = 0;
+};
+
+class RKRenderAdsorptionSurfaceSource
+{
+public:
+  virtual ~RKRenderAdsorptionSurfaceSource() = 0;
+
+  virtual RKEnergySurfaceType adsorptionSurfaceRenderingMethod() = 0;
+  virtual RKPredefinedVolumeRenderingTransferFunction adsorptionVolumeTransferFunction() = 0;
+  virtual double adsorptionVolumeStepLength() = 0;
+
   virtual std::vector<double3> atomUnitCellPositions() const = 0;
   virtual bool drawAdsorptionSurface() const = 0;
   virtual double adsorptionSurfaceOpacity() const = 0;
@@ -191,6 +208,8 @@ public:
   virtual void setAdsorptionSurfaceMinimumValue(double value) = 0;
   virtual int adsorptionSurfaceSize() const = 0;
   virtual double2 adsorptionSurfaceProbeParameters() const = 0;
+
+  virtual std::vector<double2> potentialParameters() const = 0;
 
   virtual double adsorptionSurfaceHue() const = 0;
   virtual double adsorptionSurfaceSaturation() const = 0;
@@ -220,8 +239,6 @@ public:
   virtual double2 frameworkProbeParameters() const = 0;
   virtual void setStructureHeliumVoidFraction(double value) = 0;
   virtual void setStructureNitrogenSurfaceArea(double value) = 0;
-
-  virtual std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const = 0;
 };
 
 class RKRenderPrimitiveObjectsSource

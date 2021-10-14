@@ -147,7 +147,7 @@ void OpenGLEnergySurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint is
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
         if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(_renderStructures[i][j].get()))
       {
         if (renderStructure->isVisible() && source->drawAdsorptionSurface() && source->adsorptionSurfaceOpacity()>0.99999 && _surfaceNumberOfIndices[i][j] > 0 && _surfaceNumberOfInstances[i][j]>0)
         {
@@ -186,15 +186,15 @@ void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLui
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(_renderStructures[i][j].get()))
       {
-        if (_renderStructures[i][j]->isVisible() && source->drawAdsorptionSurface() && source->adsorptionSurfaceOpacity()<=0.99999 && _surfaceNumberOfIndices[i][j] > 0 )
+        if (_renderStructures[i][j]->isVisible() && source->drawAdsorptionSurface() && source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::isoSurface &&
+            source->adsorptionSurfaceOpacity()<=0.99999 && _surfaceNumberOfIndices[i][j] > 0 )
         {
           glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, static_cast<GLintptr>(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
           glBindBufferRange(GL_UNIFORM_BUFFER, 2, isosurfaceUniformBuffer, static_cast<GLintptr>(index * sizeof(RKIsosurfaceUniforms)), sizeof(RKIsosurfaceUniforms));
 
           glBindVertexArray(_surfaceVertexArrayObject[i][j]);
-
 
           glCullFace(GL_FRONT);
           glDrawArraysInstanced(GL_TRIANGLES, 0, static_cast<GLsizei>(3 * _surfaceNumberOfIndices[i][j]), static_cast<GLsizei>(_surfaceNumberOfInstances[i][j]));
@@ -227,88 +227,90 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-        if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
       {
-        if (source->drawAdsorptionSurface())
+        if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(_renderStructures[i][j].get()))
         {
-          glBindVertexArray(_surfaceVertexArrayObject[i][j]);
-          check_gl_error();
-          glBindBuffer(GL_ARRAY_BUFFER, _surfaceVertexBuffer[i][j]);
-          check_gl_error();
-
-          glVertexAttribPointer(_atomSurfaceVertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid *>(offsetof(RKVertex,position)));
-          glVertexAttribPointer(_atomSurfaceVertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid *>(offsetof(RKVertex,normal)));
-
-          std::vector<cl_float>* gridData; // = std::make_shared<std::vector<cl_float>>();
-          if(_cache.contains(_renderStructures[i][j].get()))
+          if (source->drawAdsorptionSurface() && source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::isoSurface )
           {
-             std::clock_t beginTime = clock();
-             gridData = _cache.object(_renderStructures[i][j].get());
-             std::clock_t endTime = clock();
-             double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
-             _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
-          }
-          else
-          {
-            int sizeX = 128;
-            int sizeY = 128;
-            int sizeZ = 128;
+            glBindVertexArray(_surfaceVertexArrayObject[i][j]);
+            check_gl_error();
+            glBindBuffer(GL_ARRAY_BUFFER, _surfaceVertexBuffer[i][j]);
+            check_gl_error();
 
-            std::clock_t beginTime = clock();
-            double2 probeParameter = source->adsorptionSurfaceProbeParameters();
-            std::vector<double3> positions = source->atomUnitCellPositions();
-            std::vector<double2> potentialParameters = source->potentialParameters();
-            double3x3 unitCell = renderStructure->cell()->unitCell();
-            int3 numberOfReplicas = renderStructure->cell()->numberOfReplicas(12.0);
-            gridData = _energyGridUnitCell.ComputeEnergyGrid(sizeX, sizeY, sizeZ, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
+            glVertexAttribPointer(_atomSurfaceVertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid *>(offsetof(RKVertex,position)));
+            glVertexAttribPointer(_atomSurfaceVertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid *>(offsetof(RKVertex,normal)));
+
+            std::vector<cl_float>* gridData; // = std::make_shared<std::vector<cl_float>>();
+            if(_cache.contains(_renderStructures[i][j].get()))
+            {
+               std::clock_t beginTime = clock();
+               gridData = _cache.object(_renderStructures[i][j].get());
+               std::clock_t endTime = clock();
+               double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
+               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+            }
+            else
+            {
+              int sizeX = 128;
+              int sizeY = 128;
+              int sizeZ = 128;
+
+              std::clock_t beginTime = clock();
+              double2 probeParameter = source->adsorptionSurfaceProbeParameters();
+              std::vector<double3> positions = source->atomUnitCellPositions();
+              std::vector<double2> potentialParameters = source->potentialParameters();
+              double3x3 unitCell = renderStructure->cell()->unitCell();
+              int3 numberOfReplicas = renderStructure->cell()->numberOfReplicas(12.0);
+              gridData = _energyGridUnitCell.ComputeEnergyGrid(sizeX, sizeY, sizeZ, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
+
+              if(gridData)
+              {
+                _cache.insert(_renderStructures[i][j].get(),gridData);
+                std::clock_t endTime = clock();
+                double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
+                _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time computing grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+              }
+            }
 
             if(gridData)
             {
-              _cache.insert(_renderStructures[i][j].get(),gridData);
+              std::clock_t beginTime = clock();
+              double minimumEnergy = _findMinimumEnergyGridUnitCell.findMinimumEnergy(gridData);
+              source->setAdsorptionSurfaceMinimumValue(minimumEnergy);
               std::clock_t endTime = clock();
               double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
-              _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time computing grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+              _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Finding minimum value in grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+
+              beginTime = clock();
+              double isoValue = source->adsorptionSurfaceIsoValue();
+              int numberOfTriangles = _energyGridMarchingCubes.computeIsosurface(128, gridData, isoValue, _surfaceVertexBuffer[i][j]);
+              _surfaceNumberOfIndices[i][j]=numberOfTriangles;
+              endTime = clock();
+              elapsedTime = double(endTime - beginTime) * 1000.0/ CLOCKS_PER_SEC;
+              _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Extracting surface " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
             }
-          }
 
-          if(gridData)
-          {
-            std::clock_t beginTime = clock();
-            double minimumEnergy = _findMinimumEnergyGridUnitCell.findMinimumEnergy(gridData);
-            source->setAdsorptionSurfaceMinimumValue(minimumEnergy);
-            std::clock_t endTime = clock();
-            double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
-            _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Finding minimum value in grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+            std::vector<float4> renderLatticeVectors = renderStructure->cell()->renderTranslationVectors();
+            _surfaceNumberOfInstances[i][j] = renderLatticeVectors.size();
+            glBindBuffer(GL_ARRAY_BUFFER,_surfaceInstancePositionBuffer[i][j]);
+            if(renderLatticeVectors.size()>0)
+            {
+              glBufferData(GL_ARRAY_BUFFER, renderLatticeVectors.size()*sizeof(float4), renderLatticeVectors.data(), GL_DYNAMIC_DRAW);
+              check_gl_error();
+            }
 
-            beginTime = clock();
-            double isoValue = source->adsorptionSurfaceIsoValue();
-            int numberOfTriangles = _energyGridMarchingCubes.computeIsosurface(128, gridData, isoValue, _surfaceVertexBuffer[i][j]);
-            _surfaceNumberOfIndices[i][j]=numberOfTriangles;
-            endTime = clock();
-            elapsedTime = double(endTime - beginTime) * 1000.0/ CLOCKS_PER_SEC;
-            _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Extracting surface " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
-          }
+            glVertexAttribPointer(_atomSurfaceInstancePositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(float4), (GLvoid *)offsetof(RKInPerInstanceAttributesAtoms,position));
+            glVertexAttribDivisor(_atomSurfaceInstancePositionAttributeLocation, 1);
 
-          std::vector<float4> renderLatticeVectors = renderStructure->cell()->renderTranslationVectors();
-          _surfaceNumberOfInstances[i][j] = renderLatticeVectors.size();
-          glBindBuffer(GL_ARRAY_BUFFER,_surfaceInstancePositionBuffer[i][j]);
-          if(renderLatticeVectors.size()>0)
-          {
-            glBufferData(GL_ARRAY_BUFFER, renderLatticeVectors.size()*sizeof(float4), renderLatticeVectors.data(), GL_DYNAMIC_DRAW);
+            glEnableVertexAttribArray(_atomSurfaceVertexPositionAttributeLocation);
+            glEnableVertexAttribArray(_atomSurfaceVertexNormalAttributeLocation);
+            glEnableVertexAttribArray(_atomSurfaceInstancePositionAttributeLocation);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
             check_gl_error();
           }
-
-          glVertexAttribPointer(_atomSurfaceInstancePositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(float4), (GLvoid *)offsetof(RKInPerInstanceAttributesAtoms,position));
-          glVertexAttribDivisor(_atomSurfaceInstancePositionAttributeLocation, 1);
-
-          glEnableVertexAttribArray(_atomSurfaceVertexPositionAttributeLocation);
-          glEnableVertexAttribArray(_atomSurfaceVertexNormalAttributeLocation);
-          glEnableVertexAttribArray(_atomSurfaceInstancePositionAttributeLocation);
-
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindVertexArray(0);
-          check_gl_error();
         }
       }
     }
@@ -325,7 +327,7 @@ void OpenGLEnergySurface::computeHeliumVoidFraction(std::vector<std::shared_ptr<
   for(const std::shared_ptr<RKRenderStructure> &structure: structures)
   {
       if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
-    if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
+    if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(structure.get()))
     {
       std::vector<cl_float>* gridData; // = std::make_shared<std::vector<cl_float>>();
 
@@ -378,10 +380,10 @@ void OpenGLEnergySurface::computeNitrogenSurfaceArea(std::vector<std::shared_ptr
     return;
   }
 
-  for(std::shared_ptr<RKRenderStructure> structure: structures)
+  for(const std::shared_ptr<RKRenderStructure> &structure: structures)
   {
       if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
-    if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
+    if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(structure.get()))
     {
       GLuint localbuffer;
       glGenBuffers(1, &localbuffer);

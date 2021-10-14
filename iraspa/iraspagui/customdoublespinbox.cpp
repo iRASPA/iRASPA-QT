@@ -108,7 +108,9 @@ QValidator::State CustomDoubleSpinBox::validate(QString& input, int& pos) const
   }
   else
   {
-    return QDoubleSpinBox::validate(input,pos);
+    bool ok = false;
+    locale().toDouble(input, &ok);
+    return ok ? QValidator::Acceptable : QValidator::Invalid;
   }
 }
 

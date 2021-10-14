@@ -38,6 +38,17 @@
 class RKRenderStructure;
 class RKRenderDataSource;
 
+
+enum class RKEnergySurfaceType: qint64
+{
+  isoSurface = 0, volumeRendering = 1, multiple_values = 2
+};
+
+enum class RKPredefinedVolumeRenderingTransferFunction: qint64
+{
+  standard = 0, multiple_values = 1
+};
+
 enum class RKBackgroundType: qint64
 {
   color = 0, linearGradient = 1, radialGradient = 2, image = 3
@@ -553,7 +564,7 @@ struct RKIsosurfaceUniforms
   float hue;
   float saturation;
   float value;
-  float pad3;
+  float stepLength = 0.001;
 
   float4 pad4;
   float4 pad5;
@@ -597,7 +608,7 @@ layout (std140) uniform IsosurfaceUniformBlock
   float hue;
   float saturation;
   float value;
-  float pad3;
+  float stepLength;
 
   vec4 pad4;
   vec4 pad5;

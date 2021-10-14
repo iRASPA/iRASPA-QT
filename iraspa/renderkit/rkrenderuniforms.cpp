@@ -377,13 +377,15 @@ RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderStructure> st
 {
   if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
   {
-    if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
+    if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(structure.get()))
     {
       double3x3 currentUnitCellMatrix = renderStructure->cell()->unitCell();
       double3x3 currentBoxMatrix = renderStructure->cell()->box();
       this->unitCellMatrix = float4x4(currentUnitCellMatrix);
       this->inverseUnitCellMatrix = float4x4(currentUnitCellMatrix.inverse());
       this->unitCellNormalMatrix = float4x4(double3x3::transpose(double3x3::inverse(currentUnitCellMatrix)));
+
+      this->stepLength = source->adsorptionVolumeStepLength();
 
       this->boxMatrix = float4x4(currentBoxMatrix);
       this->inverseBoxMatrix = float4x4(currentBoxMatrix.inverse());

@@ -93,16 +93,15 @@ void OpenGLDensityVolumeShader::setRenderStructures(std::vector<std::vector<std:
 
 
 
-void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer)
+void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture)
 {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 
-  glDepthMask(GL_FALSE);
-  //glDepthFunc(GL_ALWAYS);
+  glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
+  glEnable(GL_DEPTH_TEST);
 
   glUseProgram(_program);
   check_gl_error();
@@ -123,17 +122,20 @@ void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer)
           check_gl_error();
 
           glActiveTexture(GL_TEXTURE1);
+          glBindTexture(GL_TEXTURE_2D, depthTexture);
+          check_gl_error();
+          glUniform1i(_depthTextureUniformLocation, 1);
+          check_gl_error();
+
+          glActiveTexture(GL_TEXTURE2);
           glBindTexture(GL_TEXTURE_1D, _transferFunctionTexture);
           check_gl_error();
-          glUniform1i(_transferFunctionUniformLocation, 1);
-          check_gl_error();
-
-          GLfloat m_stepLength=0.0005;
-
-          glUniform1f(_stepLengthUniformLocation, m_stepLength);
+          glUniform1i(_transferFunctionUniformLocation, 2);
           check_gl_error();
 
           glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
+          check_gl_error();
+          glBindBufferRange(GL_UNIFORM_BUFFER, 2, isosurfaceUniformBuffer, static_cast<GLintptr>(index * sizeof(RKIsosurfaceUniforms)), sizeof(RKIsosurfaceUniforms));
           check_gl_error();
 
           glBindVertexArray(_vertexArrayObject[i][j]);
@@ -159,37 +161,6 @@ void OpenGLDensityVolumeShader::reloadData()
   initializeVertexArrayObject();
   initializeTransferFunctionTexture();
 }
-/*
-void OpenGLDensityVolumeShader::initializeNoiseTexture()
-{
-  GLint viewport[4];
-  glGetIntegerv(GL_VIEWPORT, viewport);
-  const int width = viewport[2];
-  const int height = viewport[3];
-
-  qDebug() << "width, heigth" << width << height;
-
-  std::srand(std::time(NULL));
-  unsigned char noise[width * height];
-
-  for (unsigned char *p = noise; p <= noise + width * height; ++p) {
-      *p = std::rand() % 256;
-  }
-
-  glDeleteTextures(1, &_noiseTexture);
-  check_gl_error();
-  glGenTextures(1, &_noiseTexture);
-  check_gl_error();
-  glBindTexture(GL_TEXTURE_2D, _noiseTexture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, noise);
-  check_gl_error();
-  glBindTexture(GL_TEXTURE_2D, 0);
-}
-*/
 
 void OpenGLDensityVolumeShader::initializeTransferFunctionTexture()
 {
@@ -198,7 +169,7 @@ void OpenGLDensityVolumeShader::initializeTransferFunctionTexture()
   glGenTextures(1, &_transferFunctionTexture);
   check_gl_error();
   glBindTexture(GL_TEXTURE_1D, _transferFunctionTexture);
-  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA16F, transferFunction.size(), 0, GL_RGBA, GL_FLOAT, transferFunction.data());
@@ -217,9 +188,9 @@ void OpenGLDensityVolumeShader::initializeVertexArrayObject()
         if (std::shared_ptr<RKRenderDensityVolumeSource> object = std::dynamic_pointer_cast<RKRenderDensityVolumeSource>(_renderStructures[i][j]))
         {
           glBindTexture(GL_TEXTURE_3D, _volumeTextures[i][j]);
-          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+          glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
           glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
           glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
           check_gl_error();
@@ -289,8 +260,7 @@ void OpenGLDensityVolumeShader::loadShader(void)
 
     _transferFunctionUniformLocation   = glGetUniformLocation(_program, "transferFunction");
     _volumeTextureUniformLocation   = glGetUniformLocation(_program, "volume");
-
-    _stepLengthUniformLocation   = glGetUniformLocation(_program, "step_length");
+    _depthTextureUniformLocation   = glGetUniformLocation(_program, "depthTexture");
 
     if (_vertexPositionAttributeLocation < 0) qDebug() << "Shader did not contain the 'vertexPosition' attribute.";
     if (_transferFunctionUniformLocation < 0) qDebug() << "Shader did not contain the 'transferFunction' uniform.";
@@ -340,17 +310,16 @@ out VS_OUT
 
 void main()
 {
-  vec4 pos = structureUniforms.boxMatrix * vertexPosition;
+  vec4 pos = structureUniforms.modelMatrix * structureUniforms.boxMatrix * vertexPosition;
   vs_out.position = pos.xyz;
   vs_out.UV =  vertexPosition.xyz;
+  vs_out.clipPosition = frameUniforms.mvpMatrix * pos;
 
-  vec4 P = frameUniforms.viewMatrix * structureUniforms.modelMatrix * pos;
+  vec4 P = frameUniforms.viewMatrix *  pos;
 
   // Calculate light vector
   vec4 dir = lightUniforms.lights[0].position - P*lightUniforms.lights[0].position.w;
-  vs_out.L = (inverse(frameUniforms.viewMatrix) * inverse(frameUniforms.normalMatrix) * inverse(structureUniforms.boxMatrix) * vec4(dir.xyz,0.0)).xyz;
 
-  vs_out.clipPosition = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * pos;
   gl_Position = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * pos;
 }
 )foo";
@@ -359,6 +328,7 @@ const std::string  OpenGLDensityVolumeShader::_fragmentShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLFrameUniformBlockStringLiteral +
 OpenGLStructureUniformBlockStringLiteral +
+OpenGLIsosurfaceUniformBlockStringLiteral +
 OpenGLLightUniformBlockStringLiteral +
 R"foo(
 out vec4 vFragColor;
@@ -367,15 +337,14 @@ out vec4 vFragColor;
 in VS_OUT
 {
   smooth vec3 UV;
-  vec3 position;
+  smooth vec3 position;
   smooth vec3 L;
   smooth vec4 clipPosition;
 } fs_in;
 
-uniform float step_length;
-
 uniform sampler3D volume;
 uniform sampler1D transferFunction;
+uniform sampler2D depthTexture;
 
 // Ray
 struct Ray
@@ -415,17 +384,19 @@ vec4 colour_transfer(float intensity)
   return vec4(intensity * high + (1.0 - intensity) * low, alpha);
 }
 
-const int numSamples = 5000;
+const int numSamples = 100000;
 
 void main()
 {
+  vec3 numberOfReplicas = structureUniforms.numberOfReplicas.xyz;
   vec3 direction = normalize(fs_in.position.xyz - frameUniforms.cameraPosition.xyz);
   vec4 dir = vec4(direction.x,direction.y,direction.z,0.0);
-  //dir = vec4(0,0,-1,0);
   vec3 ray_direction = (inverse(structureUniforms.boxMatrix) * dir).xyz;
-  //vec3 ray_direction = dir.xyz;
 
   vec3 ray_origin = fs_in.UV;
+
+  float stepLength = 0.001/numberOfReplicas.z;
+  //float stepLength = isosurfaceUniforms.stepLength/numberOfReplicas.z;
 
   float t_0, t_1;
   Ray casting_ray = Ray(ray_origin, ray_direction);
@@ -437,33 +408,54 @@ void main()
 
   vec3 ray = ray_stop - ray_start;
   float ray_length = length(ray);
-  vec3 step_vector = step_length * ray / ray_length;
+  vec3 step_vector = stepLength * ray / ray_length;
+
+
+  float depth = texelFetch(depthTexture, ivec2(gl_FragCoord.xy),0).r;
+  gl_FragDepth = depth;  // at least write a value once (required)
+  float newDepth = 1.0;
+  mat4 m = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * structureUniforms.boxMatrix;
 
   vec4 colour = vec4(0.0,0.0,0.0,0.0);
   vec3 position = ray_start;
   for (int i=0; i < numSamples && ray_length > 0 && colour.a < 1.0; i++)
   {
-    vec4 values = texture(volume,position);
+    vec4 values = texture(volume,numberOfReplicas * position);
     vec3 normal = normalize(values.gba);
 
     //vec4 c = colour_transfer(values.r);
     vec4 c = texture(transferFunction,values.r);
 
-    // Alpha-blending
+
     vec3 R = reflect(-direction, normal);
     vec3 ambient = vec3(0.3,0.3,0.3);
     vec3 diffuse = vec3(max(abs(dot(normal, direction)),0.0));
     vec3 specular = vec3(pow(max(dot(R, direction), 0.0), 0.4));
 
+    // Alpha-blending
     colour.rgb = c.a * (ambient+diffuse+specular) * c.rgb + (1 - c.a) * colour.a * colour.rgb;
     colour.a = c.a + (1 - c.a) * colour.a;
 
     position = position + step_vector;
-    ray_length -= step_length;
+    ray_length -= stepLength;
+
+    vec4 clipPosition = m * vec4(position,1.0);
+    newDepth = 0.5*(clipPosition.z / clipPosition.w)+0.5;
+    if(newDepth>depth)
+    {
+      break;
+    }
   }
-  mat4 m = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * structureUniforms.boxMatrix;
-  vec4 clipPosition = m * vec4(position,1.0);
-  gl_FragDepth = 0.5*(clipPosition.z / clipPosition.w)+0.5;
+
+  //if(colour.a<0.99)
+  //{
+  //  discard;
+  //}
+
+  if(colour.a>0.9)
+  {
+    gl_FragDepth = newDepth;
+  }
 
   vFragColor.rgb = 1.0 - exp2(-colour.rgb * 1.5);
   vFragColor.a=colour.a;
@@ -473,259 +465,259 @@ void main()
 std::array<float4, 256> OpenGLDensityVolumeShader::transferFunction
 {
     float4(0.5, 0.2, 0.2, 0),
-    float4(0.521254, 0.204251, 0.204251, 0),
-    float4(0.54259, 0.208518, 0.208518, 0),
-    float4(0.563927, 0.212785, 0.212785, 0),
-    float4(0.585264, 0.217053, 0.217053, 0),
-    float4(0.606601, 0.22132, 0.22132, 0),
-    float4(0.627938, 0.225588, 0.225588, 0),
-    float4(0.649275, 0.229855, 0.229855, 0),
-    float4(0.670612, 0.234122, 0.234122, 0),
-    float4(0.691949, 0.23839, 0.23839, 0),
-    float4(0.713286, 0.242657, 0.242657, 0),
-    float4(0.734622, 0.246924, 0.246924, 0),
-    float4(0.755959, 0.251192, 0.251192, 0),
-    float4(0.777296, 0.255459, 0.255459, 0),
-    float4(0.798633, 0.259727, 0.259727, 0),
-    float4(0.81997, 0.263994, 0.263994, 0),
-    float4(0.841307, 0.268261, 0.268261, 0),
-    float4(0.862644, 0.272529, 0.272529, 0),
-    float4(0.883981, 0.276796, 0.276796, 0),
-    float4(0.905318, 0.281064, 0.281064, 0),
-    float4(0.926654, 0.285331, 0.285331, 0),
-    float4(0.947991, 0.289598, 0.289598, 0),
-    float4(0.969328, 0.293866, 0.293866, 0),
-    float4(0.990665, 0.298133, 0.298133, 0),
-    float4(1, 0.303927, 0.3, 0),
-    float4(1, 0.310909, 0.3, 0),
-    float4(1, 0.317891, 0.3, 0),
-    float4(1, 0.324873, 0.3, 0),
-    float4(1, 0.331855, 0.3, 0),
-    float4(1, 0.338836, 0.3, 0),
-    float4(1, 0.345818, 0.3, 0),
-    float4(1, 0.3528, 0.3, 0),
-    float4(1, 0.359782, 0.3, 0),
-    float4(1, 0.366764, 0.3, 0),
-    float4(1, 0.373745, 0.3, 0),
-    float4(1, 0.380727, 0.3, 0),
-    float4(1, 0.387709, 0.3, 0),
-    float4(1, 0.394691, 0.3, 0),
-    float4(1, 0.401673, 0.3, 0),
-    float4(1, 0.408655, 0.3, 0),
-    float4(1, 0.415636, 0.3, 0.0288),
-    float4(1, 0.422618, 0.3, 0.05952),
-    float4(1, 0.4296, 0.3, 0.09024),
-    float4(1, 0.436582, 0.3, 0.12096),
-    float4(1, 0.443564, 0.3, 0.15168),
-    float4(1, 0.450545, 0.3, 0.1824),
-    float4(1, 0.457527, 0.3, 0.21312),
-    float4(1, 0.464509, 0.3, 0.24384),
-    float4(1, 0.471491, 0.3, 0.27456),
-    float4(1, 0.478473, 0.3, 0.30528),
-    float4(1, 0.485455, 0.3, 0.336),
-    float4(1, 0.492436, 0.3, 0.36672),
-    float4(1, 0.499418, 0.3, 0.39744),
-    float4(1, 0.5064, 0.3, 0.42816),
-    float4(1, 0.513382, 0.3, 0.45888),
-    float4(1, 0.520364, 0.3, 0.4896),
-    float4(1, 0.527345, 0.3, 0.52032),
-    float4(1, 0.534327, 0.3, 0.55104),
-    float4(1, 0.541309, 0.3, 0.58176),
-    float4(1, 0.548291, 0.3, 0.6),
-    float4(1, 0.555273, 0.3, 0.6),
-    float4(1, 0.562255, 0.3, 0.6),
-    float4(1, 0.569236, 0.3, 0.6),
-    float4(1, 0.576218, 0.3, 0.6),
-    float4(1, 0.5832, 0.3, 0.6),
-    float4(1, 0.590182, 0.3, 0.6),
-    float4(1, 0.597164, 0.3, 0.6),
-    float4(1, 0.605527, 0.295855, 0.6),
-    float4(1, 0.614836, 0.288873, 0.6),
-    float4(1, 0.624145, 0.281891, 0.6),
-    float4(1, 0.633455, 0.274909, 0.6),
-    float4(1, 0.642764, 0.267927, 0.6),
-    float4(1, 0.652073, 0.260945, 0.6),
-    float4(1, 0.661382, 0.253964, 0.6),
-    float4(1, 0.670691, 0.246982, 0.6),
-    float4(1, 0.68, 0.24, 0.6),
-    float4(1, 0.689309, 0.233018, 0.6),
-    float4(1, 0.698618, 0.226036, 0.6),
-    float4(1, 0.707927, 0.219055, 0.6),
-    float4(1, 0.717236, 0.212073, 0.60672),
-    float4(1, 0.726545, 0.205091, 0.6144),
-    float4(1, 0.735855, 0.198109, 0.62208),
-    float4(1, 0.745164, 0.191127, 0.62976),
-    float4(1, 0.754473, 0.184145, 0.63744),
-    float4(1, 0.763782, 0.177164, 0.64512),
-    float4(1, 0.773091, 0.170182, 0.6528),
-    float4(1, 0.7824, 0.1632, 0.66048),
-    float4(1, 0.791709, 0.156218, 0.66816),
-    float4(1, 0.801018, 0.149236, 0.67584),
-    float4(1, 0.810327, 0.142255, 0.68352),
-    float4(1, 0.819636, 0.135273, 0.6912),
-    float4(1, 0.828945, 0.128291, 0.69888),
-    float4(1, 0.838255, 0.121309, 0.70656),
-    float4(1, 0.847564, 0.114327, 0.71424),
-    float4(1, 0.856873, 0.107345, 0.72192),
-    float4(1, 0.866182, 0.100364, 0.7296),
-    float4(1, 0.875491, 0.0933818, 0.73728),
-    float4(1, 0.8848, 0.0864, 0.74496),
-    float4(1, 0.894109, 0.0794182, 0.75264),
-    float4(1, 0.903418, 0.0724364, 0.76032),
-    float4(1, 0.912727, 0.0654545, 0.768),
-    float4(1, 0.922036, 0.0584727, 0.77568),
-    float4(1, 0.931345, 0.0514909, 0.78336),
-    float4(1, 0.940655, 0.0445091, 0.79104),
-    float4(1, 0.949964, 0.0375273, 0.79872),
-    float4(1, 0.959273, 0.0305455, 0.8064),
-    float4(1, 0.968582, 0.0235636, 0.81408),
-    float4(1, 0.977891, 0.0165818, 0.82176),
-    float4(1, 0.9872, 0.0096, 0.82944),
-    float4(1, 0.996509, 0.00261818, 0.83712),
-    float4(0.904, 1, 0.096, 0.8448),
-    float4(0.7504, 1, 0.2496, 0.85248),
-    float4(0.5968, 1, 0.4032, 0.86016),
-    float4(0.4432, 1, 0.5568, 0.86784),
-    float4(0.3816, 0.9448, 0.5816, 0.87552),
-    float4(0.356, 0.868, 0.556, 0.8832),
-    float4(0.3304, 0.7912, 0.5304, 0.89088),
-    float4(0.3048, 0.7144, 0.5048, 0.89856),
-    float4(0.3, 0.698829, 0.502927, 0.900693),
-    float4(0.3, 0.697389, 0.506529, 0.901547),
-    float4(0.3, 0.695948, 0.510131, 0.9024),
-    float4(0.3, 0.694507, 0.513733, 0.903253),
-    float4(0.3, 0.693066, 0.517335, 0.904107),
-    float4(0.3, 0.691625, 0.520937, 0.90496),
-    float4(0.3, 0.690185, 0.524538, 0.905813),
-    float4(0.3, 0.688744, 0.52814, 0.906667),
-    float4(0.3, 0.687303, 0.531742, 0.90752),
-    float4(0.3, 0.685862, 0.535344, 0.908373),
-    float4(0.3, 0.684421, 0.538946, 0.909227),
-    float4(0.3, 0.682981, 0.542548, 0.91008),
-    float4(0.3, 0.68154, 0.54615, 0.910933),
-    float4(0.3, 0.680099, 0.549752, 0.911787),
-    float4(0.3, 0.678658, 0.553354, 0.91264),
-    float4(0.3, 0.677217, 0.556956, 0.913493),
-    float4(0.3, 0.675777, 0.560558, 0.914347),
-    float4(0.3, 0.674336, 0.56416, 0.9152),
-    float4(0.3, 0.672895, 0.567762, 0.916053),
-    float4(0.3, 0.671454, 0.571364, 0.916907),
-    float4(0.3, 0.670014, 0.574966, 0.91776),
-    float4(0.3, 0.668573, 0.578568, 0.918613),
-    float4(0.3, 0.667132, 0.58217, 0.919467),
-    float4(0.3, 0.665691, 0.585772, 0.92032),
-    float4(0.3, 0.66425, 0.589374, 0.921173),
-    float4(0.3, 0.66281, 0.592976, 0.922027),
-    float4(0.3, 0.661369, 0.596578, 0.92288),
-    float4(0.3, 0.659928, 0.60018, 0.923733),
-    float4(0.3, 0.658487, 0.603782, 0.924587),
-    float4(0.3, 0.657046, 0.607384, 0.92544),
-    float4(0.3, 0.655606, 0.610986, 0.926293),
-    float4(0.3, 0.654165, 0.614588, 0.927147),
-    float4(0.3, 0.652724, 0.61819, 0.928),
-    float4(0.3, 0.651283, 0.621792, 0.928853),
-    float4(0.3, 0.649842, 0.625394, 0.929707),
-    float4(0.3, 0.648402, 0.628996, 0.93056),
-    float4(0.3, 0.646961, 0.632598, 0.931413),
-    float4(0.3, 0.64552, 0.6362, 0.932267),
-    float4(0.3, 0.644079, 0.639802, 0.93312),
-    float4(0.3, 0.642638, 0.643404, 0.933973),
-    float4(0.3, 0.641198, 0.647006, 0.934827),
-    float4(0.3, 0.639757, 0.650608, 0.93568),
-    float4(0.3, 0.638316, 0.65421, 0.936533),
-    float4(0.3, 0.636875, 0.657812, 0.937387),
-    float4(0.3, 0.635434, 0.661414, 0.93824),
-    float4(0.3, 0.633994, 0.665016, 0.939093),
-    float4(0.3, 0.632553, 0.668618, 0.939947),
-    float4(0.3, 0.631112, 0.67222, 0.9408),
-    float4(0.3, 0.629671, 0.675822, 0.941653),
-    float4(0.3, 0.628231, 0.679424, 0.942507),
-    float4(0.3, 0.62679, 0.683026, 0.94336),
-    float4(0.3, 0.625349, 0.686628, 0.944213),
-    float4(0.3, 0.623908, 0.69023, 0.945067),
-    float4(0.3, 0.622467, 0.693832, 0.94592),
-    float4(0.3, 0.621027, 0.697434, 0.946773),
-    float4(0.3, 0.619586, 0.701036, 0.947627),
-    float4(0.3, 0.618145, 0.704638, 0.94848),
-    float4(0.3, 0.616704, 0.70824, 0.949333),
-    float4(0.3, 0.615263, 0.711842, 0.950187),
-    float4(0.3, 0.613823, 0.715443, 0.95104),
-    float4(0.3, 0.612382, 0.719045, 0.951893),
-    float4(0.3, 0.610941, 0.722647, 0.952747),
-    float4(0.3, 0.6095, 0.726249, 0.9536),
-    float4(0.3, 0.608059, 0.729851, 0.954453),
-    float4(0.3, 0.606619, 0.733453, 0.955307),
-    float4(0.3, 0.605178, 0.737055, 0.95616),
-    float4(0.3, 0.603737, 0.740657, 0.957013),
-    float4(0.3, 0.602296, 0.744259, 0.957867),
-    float4(0.3, 0.600855, 0.747861, 0.95872),
-    float4(0.3, 0.599415, 0.751463, 0.959573),
-    float4(0.3, 0.597974, 0.755065, 0.960427),
-    float4(0.3, 0.596533, 0.758667, 0.96128),
-    float4(0.3, 0.595092, 0.762269, 0.962133),
-    float4(0.3, 0.593652, 0.765871, 0.962987),
-    float4(0.3, 0.592211, 0.769473, 0.96384),
-    float4(0.3, 0.59077, 0.773075, 0.964693),
-    float4(0.3, 0.589329, 0.776677, 0.965547),
-    float4(0.3, 0.587888, 0.780279, 0.9664),
-    float4(0.3, 0.586448, 0.783881, 0.967253),
-    float4(0.3, 0.585007, 0.787483, 0.968107),
-    float4(0.3, 0.583566, 0.791085, 0.96896),
-    float4(0.3, 0.582125, 0.794687, 0.969813),
-    float4(0.3, 0.580684, 0.798289, 0.970667),
-    float4(0.3, 0.579244, 0.801891, 0.97152),
-    float4(0.3, 0.577803, 0.805493, 0.972373),
-    float4(0.3, 0.576362, 0.809095, 0.973227),
-    float4(0.3, 0.574921, 0.812697, 0.97408),
-    float4(0.3, 0.57348, 0.816299, 0.974933),
-    float4(0.3, 0.57204, 0.819901, 0.975787),
-    float4(0.3, 0.570599, 0.823503, 0.97664),
-    float4(0.3, 0.569158, 0.827105, 0.977493),
-    float4(0.3, 0.567717, 0.830707, 0.978347),
-    float4(0.3, 0.566276, 0.834309, 0.9792),
-    float4(0.3, 0.564836, 0.837911, 0.980053),
-    float4(0.3, 0.563395, 0.841513, 0.980907),
-    float4(0.3, 0.561954, 0.845115, 0.98176),
-    float4(0.3, 0.560513, 0.848717, 0.982613),
-    float4(0.3, 0.559072, 0.852319, 0.983467),
-    float4(0.3, 0.557632, 0.855921, 0.98432),
-    float4(0.3, 0.556191, 0.859523, 0.985173),
-    float4(0.3, 0.55475, 0.863125, 0.986027),
-    float4(0.3, 0.553309, 0.866727, 0.98688),
-    float4(0.3, 0.551869, 0.870329, 0.987733),
-    float4(0.3, 0.550428, 0.873931, 0.988587),
-    float4(0.3, 0.548987, 0.877533, 0.98944),
-    float4(0.3, 0.547546, 0.881135, 0.990293),
-    float4(0.3, 0.546105, 0.884737, 0.991147),
-    float4(0.3, 0.544665, 0.888339, 0.992),
-    float4(0.3, 0.543224, 0.891941, 0.992853),
-    float4(0.3, 0.541783, 0.895543, 0.993707),
-    float4(0.3, 0.540342, 0.899145, 0.99456),
-    float4(0.3, 0.538901, 0.902747, 0.995413),
-    float4(0.3, 0.537461, 0.906348, 0.996267),
-    float4(0.3, 0.53602, 0.90995, 0.99712),
-    float4(0.3, 0.534579, 0.913552, 0.997973),
-    float4(0.3, 0.533138, 0.917154, 0.998827),
-    float4(0.3, 0.531697, 0.920756, 0.99968),
-    float4(0.3, 0.530257, 0.924358, 0.968),
-    float4(0.3, 0.528816, 0.92796, 0.9168),
-    float4(0.3, 0.527375, 0.931562, 0.8656),
-    float4(0.3, 0.525934, 0.935164, 0.8144),
-    float4(0.3, 0.524493, 0.938766, 0.7632),
-    float4(0.3, 0.523053, 0.942368, 0.712),
-    float4(0.3, 0.521612, 0.94597, 0.6608),
-    float4(0.3, 0.520171, 0.949572, 0.6096),
-    float4(0.3, 0.51873, 0.953174, 0.5584),
-    float4(0.3, 0.51729, 0.956776, 0.5072),
-    float4(0.3, 0.515849, 0.960378, 0.456),
-    float4(0.3, 0.514408, 0.96398, 0.4048),
-    float4(0.3, 0.512967, 0.967582, 0.3536),
-    float4(0.3, 0.511526, 0.971184, 0.3024),
-    float4(0.3, 0.510086, 0.974786, 0.2512),
-    float4(0.3, 0.508645, 0.978388, 0.2),
-    float4(0.3, 0.507204, 0.98199, 0.1488),
-    float4(0.3, 0.505763, 0.985592, 0.0976),
-    float4(0.3, 0.504322, 0.989194, 0.0464),
-    float4(0.3, 0.502882, 0.992796, 0),
-    float4(0.3, 0.501441, 0.996398, 0)
+    float4(0.55102, 0.210204, 0.210204, 0),
+    float4(0.602241, 0.220448, 0.220448, 0),
+    float4(0.653461, 0.230692, 0.230692, 0),
+    float4(0.704682, 0.240936, 0.240936, 0),
+    float4(0.755902, 0.25118, 0.25118, 0),
+    float4(0.807123, 0.261425, 0.261425, 0),
+    float4(0.858343, 0.271669, 0.271669, 0),
+    float4(0.909564, 0.281913, 0.281913, 0),
+    float4(0.960784, 0.292157, 0.292157, 0),
+    float4(0.984571, 0.312, 0.305143, 0),
+    float4(0.918743, 0.3632, 0.327086, 0),
+    float4(0.852914, 0.4144, 0.349029, 0),
+    float4(0.787086, 0.4656, 0.370971, 0),
+    float4(0.721257, 0.5168, 0.392914, 0),
+    float4(0.655429, 0.568, 0.414857, 0),
+    float4(0.5896, 0.6192, 0.4368, 0),
+    float4(0.523771, 0.6704, 0.458743, 0),
+    float4(0.457943, 0.7216, 0.480686, 0),
+    float4(0.392114, 0.7728, 0.502629, 0),
+    float4(0.326286, 0.824, 0.524571, 0),
+    float4(0.260457, 0.8752, 0.546514, 0),
+    float4(0.194629, 0.9264, 0.568457, 0),
+    float4(0.1288, 0.9776, 0.5904, 0),
+    float4(0.1, 0.99136, 0.59712, 0),
+    float4(0.1, 0.976, 0.592, 0),
+    float4(0.1, 0.96064, 0.58688, 0),
+    float4(0.1, 0.94528, 0.58176, 0),
+    float4(0.1, 0.92992, 0.57664, 0),
+    float4(0.1, 0.91456, 0.57152, 0),
+    float4(0.1, 0.8992, 0.5664, 0),
+    float4(0.1, 0.88384, 0.56128, 0),
+    float4(0.1, 0.86848, 0.55616, 0),
+    float4(0.1, 0.85312, 0.55104, 0),
+    float4(0.1, 0.83776, 0.54592, 0),
+    float4(0.1, 0.8224, 0.5408, 0),
+    float4(0.1, 0.80704, 0.53568, 0),
+    float4(0.1, 0.79168, 0.53056, 0),
+    float4(0.1, 0.77632, 0.52544, 0),
+    float4(0.1, 0.76096, 0.52032, 0),
+    float4(0.1, 0.7456, 0.5152, 0),
+    float4(0.1, 0.73024, 0.51008, 0),
+    float4(0.1, 0.71488, 0.50496, 0),
+    float4(0.1, 0.699893, 0.500267, 0),
+    float4(0.1, 0.69648, 0.5088, 0),
+    float4(0.1, 0.693067, 0.517333, 0),
+    float4(0.1, 0.689653, 0.525867, 0),
+    float4(0.1, 0.68624, 0.5344, 0),
+    float4(0.1, 0.682827, 0.542933, 0),
+    float4(0.1, 0.679413, 0.551467, 0),
+    float4(0.1, 0.676, 0.56, 0),
+    float4(0.1, 0.672587, 0.568533, 0),
+    float4(0.1, 0.669173, 0.577067, 0),
+    float4(0.1, 0.66576, 0.5856, 0),
+    float4(0.1, 0.662347, 0.594133, 0),
+    float4(0.1, 0.658933, 0.602667, 0),
+    float4(0.1, 0.65552, 0.6112, 0),
+    float4(0.1, 0.652107, 0.619733, 0),
+    float4(0.1, 0.648693, 0.628267, 0),
+    float4(0.1, 0.64528, 0.6368, 0.00416),
+    float4(0.1, 0.641867, 0.645333, 0.0144),
+    float4(0.1, 0.638453, 0.653867, 0.02464),
+    float4(0.1, 0.63504, 0.6624, 0.03488),
+    float4(0.1, 0.631627, 0.670933, 0.04512),
+    float4(0.1, 0.628213, 0.679467, 0.05536),
+    float4(0.1, 0.6248, 0.688, 0.0656),
+    float4(0.1, 0.621387, 0.696533, 0.07584),
+    float4(0.1, 0.617973, 0.705067, 0.08608),
+    float4(0.1, 0.61456, 0.7136, 0.09632),
+    float4(0.1, 0.611147, 0.722133, 0.10656),
+    float4(0.1, 0.607733, 0.730667, 0.1168),
+    float4(0.1, 0.60432, 0.7392, 0.12704),
+    float4(0.1, 0.600907, 0.747733, 0.13728),
+    float4(0.1, 0.597493, 0.756267, 0.14752),
+    float4(0.1, 0.59408, 0.7648, 0.15776),
+    float4(0.1, 0.590667, 0.773333, 0.168),
+    float4(0.1, 0.587253, 0.781867, 0.17824),
+    float4(0.1, 0.58384, 0.7904, 0.18848),
+    float4(0.1, 0.580427, 0.798933, 0.19872),
+    float4(0.1, 0.577013, 0.807467, 0.20896),
+    float4(0.1, 0.5736, 0.816, 0.2192),
+    float4(0.1, 0.570187, 0.824533, 0.22944),
+    float4(0.1, 0.566773, 0.833067, 0.23968),
+    float4(0.1, 0.56336, 0.8416, 0.24992),
+    float4(0.1, 0.559947, 0.850133, 0.26016),
+    float4(0.1, 0.556533, 0.858667, 0.2704),
+    float4(0.1, 0.55312, 0.8672, 0.28064),
+    float4(0.1, 0.549707, 0.875733, 0.29088),
+    float4(0.1, 0.546293, 0.884267, 0.30112),
+    float4(0.1, 0.54288, 0.8928, 0.31136),
+    float4(0.1, 0.539467, 0.901333, 0.3216),
+    float4(0.1, 0.536053, 0.909867, 0.33184),
+    float4(0.1, 0.53264, 0.9184, 0.34208),
+    float4(0.1, 0.529227, 0.926933, 0.35232),
+    float4(0.1, 0.525813, 0.935467, 0.36256),
+    float4(0.1, 0.5224, 0.944, 0.3728),
+    float4(0.1, 0.518987, 0.952533, 0.38304),
+    float4(0.1, 0.515573, 0.961067, 0.39328),
+    float4(0.1, 0.51216, 0.9696, 0.40352),
+    float4(0.1, 0.508747, 0.978133, 0.41376),
+    float4(0.1, 0.505333, 0.986667, 0.424),
+    float4(0.1, 0.50192, 0.9952, 0.43424),
+    float4(0.099552, 0.49776, 1, 0.44448),
+    float4(0.098528, 0.49264, 1, 0.45472),
+    float4(0.097504, 0.48752, 1, 0.46496),
+    float4(0.09648, 0.4824, 1, 0.4752),
+    float4(0.095456, 0.47728, 1, 0.48544),
+    float4(0.094432, 0.47216, 1, 0.49568),
+    float4(0.093408, 0.46704, 1, 0.50592),
+    float4(0.092384, 0.46192, 1, 0.51616),
+    float4(0.09136, 0.4568, 1, 0.5264),
+    float4(0.090336, 0.45168, 1, 0.53664),
+    float4(0.089312, 0.44656, 1, 0.54688),
+    float4(0.088288, 0.44144, 1, 0.55712),
+    float4(0.087264, 0.43632, 1, 0.56736),
+    float4(0.08624, 0.4312, 1, 0.5776),
+    float4(0.085216, 0.42608, 1, 0.58784),
+    float4(0.084192, 0.42096, 1, 0.59808),
+    float4(0.083168, 0.41584, 1, 0.60832),
+    float4(0.082144, 0.41072, 1, 0.61856),
+    float4(0.08112, 0.4056, 1, 0.6288),
+    float4(0.080096, 0.40048, 1, 0.63904),
+    float4(0.079072, 0.39536, 1, 0.64928),
+    float4(0.078048, 0.39024, 1, 0.65952),
+    float4(0.077024, 0.38512, 1, 0.66976),
+    float4(0.076, 0.38, 1, 0.68),
+    float4(0.074976, 0.37488, 1, 0.69024),
+    float4(0.073952, 0.36976, 1, 0.70048),
+    float4(0.072928, 0.36464, 1, 0.71072),
+    float4(0.071904, 0.35952, 1, 0.72096),
+    float4(0.07088, 0.3544, 1, 0.7312),
+    float4(0.069856, 0.34928, 1, 0.74144),
+    float4(0.068832, 0.34416, 1, 0.75168),
+    float4(0.067808, 0.33904, 1, 0.76192),
+    float4(0.066784, 0.33392, 1, 0.77216),
+    float4(0.06576, 0.3288, 1, 0.7824),
+    float4(0.064736, 0.32368, 1, 0.79264),
+    float4(0.063712, 0.31856, 1, 0.80288),
+    float4(0.062688, 0.31344, 1, 0.81312),
+    float4(0.061664, 0.30832, 1, 0.82336),
+    float4(0.06064, 0.3032, 1, 0.8336),
+    float4(0.059616, 0.29808, 1, 0.84384),
+    float4(0.058592, 0.29296, 1, 0.85408),
+    float4(0.057568, 0.28784, 1, 0.86432),
+    float4(0.056544, 0.28272, 1, 0.87456),
+    float4(0.05552, 0.2776, 1, 0.8848),
+    float4(0.054496, 0.27248, 1, 0.89504),
+    float4(0.053472, 0.26736, 1, 0.90528),
+    float4(0.052448, 0.26224, 1, 0.91552),
+    float4(0.051424, 0.25712, 1, 0.92576),
+    float4(0.0504, 0.252, 1, 0.936),
+    float4(0.049376, 0.24688, 1, 0.94624),
+    float4(0.048352, 0.24176, 1, 0.95648),
+    float4(0.047328, 0.23664, 1, 0.96672),
+    float4(0.046304, 0.23152, 1, 0.97696),
+    float4(0.04528, 0.2264, 1, 0.9872),
+    float4(0.044256, 0.22128, 1, 0.99744),
+    float4(0.043232, 0.21616, 1, 1),
+    float4(0.042208, 0.21104, 1, 1),
+    float4(0.041184, 0.20592, 1, 1),
+    float4(0.04016, 0.2008, 1, 1),
+    float4(0.039136, 0.19568, 1, 1),
+    float4(0.038112, 0.19056, 1, 1),
+    float4(0.037088, 0.18544, 1, 1),
+    float4(0.036064, 0.18032, 1, 1),
+    float4(0.03504, 0.1752, 1, 1),
+    float4(0.034016, 0.17008, 1, 1),
+    float4(0.032992, 0.16496, 1, 1),
+    float4(0.031968, 0.15984, 1, 1),
+    float4(0.030944, 0.15472, 1, 1),
+    float4(0.02992, 0.1496, 1, 1),
+    float4(0.028896, 0.14448, 1, 1),
+    float4(0.027872, 0.13936, 1, 1),
+    float4(0.026848, 0.13424, 1, 1),
+    float4(0.025824, 0.12912, 1, 1),
+    float4(0.0248, 0.124, 1, 1),
+    float4(0.023776, 0.11888, 1, 1),
+    float4(0.022752, 0.11376, 1, 1),
+    float4(0.021728, 0.10864, 1, 1),
+    float4(0.020704, 0.10352, 1, 1),
+    float4(0.01968, 0.0984, 1, 1),
+    float4(0.018656, 0.09328, 1, 1),
+    float4(0.017632, 0.08816, 1, 1),
+    float4(0.016608, 0.08304, 1, 1),
+    float4(0.015584, 0.07792, 1, 1),
+    float4(0.01456, 0.0728, 1, 1),
+    float4(0.013536, 0.06768, 1, 1),
+    float4(0.012512, 0.06256, 1, 1),
+    float4(0.011488, 0.05744, 1, 1),
+    float4(0.010464, 0.05232, 1, 1),
+    float4(0.00944, 0.0472, 1, 1),
+    float4(0.008416, 0.04208, 1, 1),
+    float4(0.007392, 0.03696, 1, 1),
+    float4(0.006368, 0.03184, 1, 1),
+    float4(0.005344, 0.02672, 1, 1),
+    float4(0.00432, 0.0216, 1, 1),
+    float4(0.003296, 0.01648, 1, 1),
+    float4(0.002272, 0.01136, 1, 1),
+    float4(0.001248, 0.00624, 1, 1),
+    float4(0.000224, 0.00112, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1),
+    float4(0, 0, 1, 1)
 };

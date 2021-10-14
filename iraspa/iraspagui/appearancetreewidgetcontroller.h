@@ -401,7 +401,10 @@ private:
   // adsorption surface properties
 
   void reloadDrawAdsorptionSurfaceCheckBox();
-  void reloadAdsorptionSurfaceProbeMoleculePopupBox();
+  void reloadAdsorptionSurfaceRenderingMethod();
+  void reloadAdsorptionSurfaceProbeMolecule();
+  void reloadAdsorptionVolumeTransferFunction();
+  void reloadAdsorptionVolumeStepLength();
   void reloadAdsorptionSurfaceIsovalue();
   void reloadAdsorptionSurfaceOpacity();
   void reloadAdsorptionSurfaceHue();
@@ -421,6 +424,13 @@ private:
   void reloadAdsorptionSurfaceOutsideShininess();
 
   void setDrawAdsorptionSurface(int state);
+  void setAdsorptionSurfaceRenderingMethod(int value);
+  std::optional<std::unordered_set<RKEnergySurfaceType, enum_hash> > adsorptionSurfaceRenderingMethod();
+  void setAdsorptionVolumeTransferFunction(int value);
+  std::optional<std::unordered_set<RKPredefinedVolumeRenderingTransferFunction, enum_hash> > adsorptionVolumeTransferFunction();
+  void setAdsorptionVolumeStepLength(double value);
+  std::optional<std::unordered_set<double>> adsorptionVolumeStepLength();
+
   std::optional<std::unordered_set<bool>> drawAdsorptionSurface();
   void setAdsorptionSurfaceProbeMolecule(int value);
   std::optional<std::unordered_set<ProbeMolecule, enum_hash> > adsorptionSurfaceProbeMolecule();

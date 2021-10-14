@@ -36,6 +36,7 @@ DensityVolume::DensityVolume()
 //  return std::make_shared<DensityVolume>(static_cast<const DensityVolume&>(*this));
 //}
 
+
 DensityVolume::DensityVolume(std::shared_ptr<SKStructure> frame)
 {
   std::optional<QString> displayName = frame->displayName;
@@ -55,37 +56,28 @@ DensityVolume::DensityVolume(std::shared_ptr<SKStructure> frame)
     _data.push_back(float4(float(p[i])/float(65535),0.0,0.0,0.0));
   }
 
-  for(int x=0;x<_dimensions.x;x++)
+  for(int z=0;z<_dimensions.z;z++)
   {
     for(int y=0;y<_dimensions.y;y++)
     {
-      for(int z=0;z<_dimensions.z;z++)
+      for(int x=0;x<_dimensions.x;x++)
       {
-          float value = _data[x+y*_dimensions.y+z*_dimensions.x*_dimensions.y].x;
+        float value = Images(x,y,z);
 
-          // x
-             int xi = (int)(x + 0.5f);
-             float xf = x + 0.5f - xi;
-             float xd0 = _data[((xi-1 + _dimensions.x) % _dimensions.x)+y*_dimensions.y+z*_dimensions.x*_dimensions.y].x;
-             float xd1 = _data[(xi)+y*_dimensions.y+z*_dimensions.x*_dimensions.y].x;
-             float xd2 = _data[((xi+1 + _dimensions.x) % _dimensions.x)+y*_dimensions.y+z*_dimensions.x*_dimensions.y].x;
-             float gx = (xd1 - xd0) * (1.0f - xf) + (xd2 - xd1) * xf; // lerp
-             // y
-             int yi = (int)(y + 0.5f);
-             float yf = y + 0.5f - yi;
-             float yd0 = _data[x+((yi-1+_dimensions.y) % _dimensions.y)*_dimensions.y+z*_dimensions.x*_dimensions.y].x;
-             float yd1 = _data[x+ (yi)*_dimensions.y+z*_dimensions.x*_dimensions.y].x;
-             float yd2 = _data[x+((yi+1+_dimensions.y)% _dimensions.y)*_dimensions.y+z*_dimensions.x*_dimensions.y].x;
-             float gy = (yd1 - yd0) * (1.0f - yf) + (yd2 - yd1) * yf; // lerp
-             // z
-             int zi = (int)(z + 0.5f);
-             float zf = z + 0.5f - zi;
-             float zd0 =  _data[x+y*_dimensions.y+((zi-1+_dimensions.z) % _dimensions.z)*_dimensions.x*_dimensions.y].x;
-             float zd1 =  _data[x+y*_dimensions.y+(zi)*_dimensions.x*_dimensions.y].x;
-             float zd2 =  _data[x+y*_dimensions.y+((zi+1+_dimensions.z) % _dimensions.z)*_dimensions.x*_dimensions.y].x;
-             float gz =  (zd1 - zd0) * (1.0f - zf) + (zd2 - zd1) * zf; // lerp
+        // Sobel 3D gradient (finite difference leads to anisotropic gradients)
+        float gx = Images(x+1,y+1,z+1)+2*Images(x,y+1,z+1)+Images(x-1,y+1,z+1) +2*Images(x+1,y+1,z)+4*Images(x,y+1,z)+ 2*Images(x-1,y+1,z) +
+                   Images(x+1,y+1,z-1)+2*Images(x,y+1,z-1)+Images(x-1,y+1,z-1) - (Images(x+1,y-1,z+1)+2*Images(x,y-1,z+1)+Images(x-1,y-1,z+1) +
+                   2*Images(x+1,y-1,z)+4*Images(x,y-1,z)+ 2*Images(x-1,y-1,z) +Images(x+1,y-1,z-1)+2*Images(x,y-1,z-1)+Images(x-1,y-1,z-1)) ;
 
-             _data[x+y*_dimensions.y+z*_dimensions.x*_dimensions.y] = float4(value,gx,gy,gz);
+        float gy = Images(x+1,y+1,z+1)+2*Images(x+1,y+1,z)+Images(x+1,y+1,z-1) +2*Images(x+1,y,z+1)+4*Images(x+1,y,z)+ 2*Images(x+1,y,z-1) +
+                   Images(x+1,y-1,z+1)+2*Images(x+1,y-1,z)+Images(x+1,y-1,z-1) -(Images(x-1,y+1,z+1)+2*Images(x-1,y+1,z)+Images(x-1,y+1,z-1) +
+                   2*Images(x-1,y,z+1)+4*Images(x-1,y,z)+ 2*Images(x-1,y,z-1) + Images(x-1,y-1,z+1)+2*Images(x-1,y-1,z)+Images(x-1,y-1,z-1));
+
+        float gz = Images(x+1,y+1,z+1)+2*Images(x,y+1,z+1)+Images(x-1,y+1,z+1) +2*Images(x+1,y,z+1)+4*Images(x,y,z+1)+2*Images(x-1,y,z+1) +
+                   Images(x+1,y-1,z+1)+2*Images(x,y-1,z+1)+Images(x-1,y-1,z+1) -(Images(x+1,y+1,z-1)+2*Images(x,y+1,z-1)+Images(x-1,y+1,z-1) +
+                   2*Images(x+1,y,z-1)+4*Images(x,y,z-1)+ 2*Images(x-1,y,z-1) +Images(x+1,y-1,z-1)+2*Images(x,y-1,z-1)+Images(x-1,y-1,z-1));
+
+        _data[x+y*_dimensions.y+z*_dimensions.x*_dimensions.y] = float4(value, gx, gy, gz);
 
       }
     }

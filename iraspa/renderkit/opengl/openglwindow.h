@@ -211,6 +211,7 @@ private:
   bool supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId);
 
   void drawSceneOpaqueToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio);
+  void drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio);
   void drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio);
 
   void adjustAmbientOcclusionTextureSize();

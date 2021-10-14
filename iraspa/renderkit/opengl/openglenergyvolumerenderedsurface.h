@@ -60,6 +60,7 @@ public:
   void setLogReportingWidget(LogReporting *logReporting)  override final;
   void deleteBuffers();
   void generateBuffers();
+  void invalidateIsosurface(std::vector<std::shared_ptr<RKRenderStructure>> structures);
 private:
   bool _isOpenCLInitialized;
   GLuint _program;
@@ -99,6 +100,21 @@ private:
   SKOpenCLEnergyGridUnitCell _energyGridUnitCell;
 
   QCache<RKRenderStructure*, std::vector<float4>> _cache;
+
+  inline unsigned modulo( int value, unsigned m) {
+      int mod = value % (int)m;
+      if (mod < 0) {
+          mod += m;
+      }
+      return mod;
+  }
+
+  inline float Images(std::vector<float> &gridData, size_t x,size_t y,size_t z)
+  {
+    size_t index = modulo(x,128)+modulo(y,128)*128+modulo(z,128)*128*128;
+
+    return gridData[index];
+  }
 
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;

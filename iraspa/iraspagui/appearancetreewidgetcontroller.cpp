@@ -619,6 +619,11 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem *childAdsorptionSurfaceItem = new QTreeWidgetItem(AdsorptionSurfaceItem);
   this->setItemWidget(childAdsorptionSurfaceItem,0, _appearanceAdsorptionSurfaceForm);
 
+  _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(0, tr("Isosurface"));
+  _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(1, tr("Volume Rendering"));
+
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(0, tr("Default"));
+
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(0, tr("Helium"));
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(1, tr("Methane"));
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(2, tr("Nitrogen"));
@@ -628,6 +633,13 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(6, tr("Xenon"));
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(7, tr("Krypton"));
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(8, tr("Argon"));
+
+  _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setMinimum(0.00001);
+  _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setMaximum(0.1);
+  _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setDecimals(6);
+  _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setSingleStep(0.0001);
+  _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
 
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider->setDoubleMinimum(-1000.0);
@@ -657,6 +669,11 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSlider->setDoubleMaximum(1.5);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSlider->setDoubleMinimum(0.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSlider->setDoubleMaximum(1.5);
+
+  QObject::connect(_appearanceAdsorptionSurfaceForm->renderingMethodComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceRenderingMethod);
+  QObject::connect(_appearanceAdsorptionSurfaceForm->transferFunctionComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setAdsorptionVolumeTransferFunction);
+  QObject::connect(_appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setAdsorptionVolumeStepLength);
+
 
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox,static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged),this,&AppearanceTreeWidgetController::setDrawAdsorptionSurface);
   QObject::connect(_appearanceAdsorptionSurfaceForm->probeParticleComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule);
@@ -8274,7 +8291,10 @@ void AppearanceTreeWidgetController::setLocalAxesOffsetZ(double value)
 void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProperties()
 {
   reloadDrawAdsorptionSurfaceCheckBox();
-  reloadAdsorptionSurfaceProbeMoleculePopupBox();
+  reloadAdsorptionSurfaceRenderingMethod();
+  reloadAdsorptionSurfaceProbeMolecule();
+  reloadAdsorptionVolumeTransferFunction();
+  reloadAdsorptionVolumeStepLength();
   reloadAdsorptionSurfaceIsovalue();
   reloadAdsorptionSurfaceOpacity();
   reloadAdsorptionSurfaceHue();
@@ -8342,7 +8362,48 @@ void AppearanceTreeWidgetController::reloadDrawAdsorptionSurfaceCheckBox()
   }
 }
 
-void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProbeMoleculePopupBox()
+
+void AppearanceTreeWidgetController::reloadAdsorptionSurfaceRenderingMethod()
+{
+  _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      if (std::optional<std::unordered_set<RKEnergySurfaceType, enum_hash>> values = adsorptionSurfaceRenderingMethod(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          if(int index = _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->findText("Mult. Val."); index>=0)
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->renderingMethodComboBox)->removeItem(index);
+          }
+          if(int(*(values->begin()))<0)
+          {
+           whileBlocking(_appearanceAdsorptionSurfaceForm->renderingMethodComboBox)->setCurrentIndex(int(RKEnergySurfaceType::multiple_values));
+          }
+          else
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->renderingMethodComboBox)->setCurrentIndex(int(*(values->begin())));
+          }
+        }
+        else
+        {
+          if(int index = _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->findText("Mult. Val."); index<0)
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->renderingMethodComboBox)->addItem("Mult. Val.");
+          }
+          whileBlocking(_appearanceAdsorptionSurfaceForm->renderingMethodComboBox)->setCurrentText("Mult. Val.");
+        }
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProbeMolecule()
 {
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->setDisabled(true);
 
@@ -8376,6 +8437,68 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProbeMoleculePopupBo
             whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->addItem("Mult. Val.");
           }
           whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->setCurrentText("Mult. Val.");
+        }
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadAdsorptionVolumeTransferFunction()
+{
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      if (std::optional<std::unordered_set<RKPredefinedVolumeRenderingTransferFunction, enum_hash>> values = adsorptionVolumeTransferFunction(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          if(int index = _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->findText("Mult. Val."); index>=0)
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->transferFunctionComboBox)->removeItem(index);
+          }
+          if(int(*(values->begin()))<0)
+          {
+           whileBlocking(_appearanceAdsorptionSurfaceForm->transferFunctionComboBox)->setCurrentIndex(int(RKPredefinedVolumeRenderingTransferFunction::multiple_values));
+          }
+          else
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->transferFunctionComboBox)->setCurrentIndex(int(*(values->begin())));
+          }
+        }
+        else
+        {
+          if(int index = _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->findText("Mult. Val."); index<0)
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->transferFunctionComboBox)->addItem("Mult. Val.");
+          }
+          whileBlocking(_appearanceAdsorptionSurfaceForm->transferFunctionComboBox)->setCurrentText("Mult. Val.");
+        }
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadAdsorptionVolumeStepLength()
+{
+  _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      if (std::optional<std::unordered_set<double>> values = adsorptionVolumeStepLength(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox)->setValue(*(values->begin()));
         }
       }
     }
@@ -9007,6 +9130,57 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::drawAdso
   return std::nullopt;
 }
 
+void AppearanceTreeWidgetController::setAdsorptionSurfaceRenderingMethod(int value)
+{
+  if(value>=0 && value<int(ProbeMolecule::multiple_values))
+  {
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+    {
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType(value));
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
+    }
+
+    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
+    emit _mainWindow->rendererReloadData();
+
+    reloadAdsorptionSurfaceIsovalue();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+
+
+std::optional<std::unordered_set<RKEnergySurfaceType, enum_hash>> AppearanceTreeWidgetController::adsorptionSurfaceRenderingMethod()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<RKEnergySurfaceType, enum_hash> set = std::unordered_set<RKEnergySurfaceType, enum_hash>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKEnergySurfaceType value = adsorptionViewer->adsorptionSurfaceRenderingMethod();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+
 void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule(int value)
 {
   if(value>=0 && value<int(ProbeMolecule::multiple_values))
@@ -9032,7 +9206,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule(int value
   }
 }
 
-std::optional<std::unordered_set<ProbeMolecule, enum_hash>> AppearanceTreeWidgetController::adsorptionSurfaceProbeMolecule()
+std::optional<std::unordered_set<ProbeMolecule, enum_hash> > AppearanceTreeWidgetController::adsorptionSurfaceProbeMolecule()
 {
   if(_iraspa_structures.empty())
   {
@@ -9054,6 +9228,97 @@ std::optional<std::unordered_set<ProbeMolecule, enum_hash>> AppearanceTreeWidget
   }
   return std::nullopt;
 }
+
+
+void AppearanceTreeWidgetController::setAdsorptionVolumeTransferFunction(int value)
+{
+  if(value>=0 && value<int(ProbeMolecule::multiple_values))
+  {
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+    {
+      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction(value));
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
+    }
+
+    emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
+    emit _mainWindow->rendererReloadData();
+
+    reloadAdsorptionSurfaceIsovalue();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<std::unordered_set<RKPredefinedVolumeRenderingTransferFunction, enum_hash> > AppearanceTreeWidgetController::adsorptionVolumeTransferFunction()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<RKPredefinedVolumeRenderingTransferFunction, enum_hash> set = std::unordered_set<RKPredefinedVolumeRenderingTransferFunction, enum_hash>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      RKPredefinedVolumeRenderingTransferFunction value = adsorptionViewer->adsorptionVolumeTransferFunction();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+
+void AppearanceTreeWidgetController::setAdsorptionVolumeStepLength(double value)
+{
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionVolumeStepLength(value);
+    }
+  }
+  reloadAdsorptionSurfaceProperties();
+  emit rendererReloadData();
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionVolumeStepLength()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionVolumeStepLength();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+
+
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue(double value)
 {

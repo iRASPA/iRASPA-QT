@@ -74,6 +74,21 @@ public:
 private:
   qint64 _versionNumber{1};
 
+  inline unsigned modulo( int value, unsigned m) {
+      int mod = value % (int)m;
+      if (mod < 0) {
+          mod += m;
+      }
+      return mod;
+  }
+
+  inline float Images(size_t x,size_t y,size_t z)
+  {
+    size_t index = modulo(x,_dimensions.x)+modulo(y,_dimensions.y)*_dimensions.y+modulo(z,_dimensions.z)*_dimensions.x*_dimensions.y;
+
+    return _data[index].x;
+  }
+
   //inline float4 operator() (int i,int j, int k) {return _data[i+j*_dimensions.y+k*_dimensions.x*_dimensions.y];}
 
   int3 _dimensions;
