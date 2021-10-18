@@ -317,7 +317,7 @@ bool FrameListViewModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
       qlonglong nodePtr;
       stream >> nodePtr;
       iRASPAObject *item = reinterpret_cast<iRASPAObject *>(nodePtr);
-      std::shared_ptr<iRASPAObject> node = item->clone();
+      std::shared_ptr<iRASPAObject> node = item->shallowClone();
       nodes.push_back(std::make_pair(node, beginRow));
 
       beginRow += 1;

@@ -433,6 +433,19 @@ void SKCell::setLengthA(double value)
 {
   double multiplier = value/a();
   _unitCell = double3x3(multiplier * _unitCell[0], _unitCell[1], _unitCell[2]);
+  _inverseUnitCell = _unitCell.inverse();
+
+  _fullCell = _unitCell;
+
+  int dx = _maximumReplica.x - _minimumReplica.x + 1;
+  int dy = _maximumReplica.y - _minimumReplica.y + 1;
+  int dz = _maximumReplica.z - _minimumReplica.z + 1;
+
+  _fullCell.ax *= dx;  _fullCell.bx *= dy;  _fullCell.cx *= dz;
+  _fullCell.ay *= dx;  _fullCell.by *= dy;  _fullCell.cy *= dz;
+  _fullCell.az *= dx;  _fullCell.bz *= dy;  _fullCell.cz *= dz;
+
+  _inverseFullCell = _fullCell.inverse();
 }
 
 double SKCell::b() const
@@ -449,6 +462,19 @@ void SKCell::setLengthB(double value)
 {
   double multiplier = value/b();
   _unitCell = double3x3(_unitCell[0], multiplier * _unitCell[1], _unitCell[2]);
+  _inverseUnitCell = _unitCell.inverse();
+
+  _fullCell = _unitCell;
+
+  int dx = _maximumReplica.x - _minimumReplica.x + 1;
+  int dy = _maximumReplica.y - _minimumReplica.y + 1;
+  int dz = _maximumReplica.z - _minimumReplica.z + 1;
+
+  _fullCell.ax *= dx;  _fullCell.bx *= dy;  _fullCell.cx *= dz;
+  _fullCell.ay *= dx;  _fullCell.by *= dy;  _fullCell.cy *= dz;
+  _fullCell.az *= dx;  _fullCell.bz *= dy;  _fullCell.cz *= dz;
+
+  _inverseFullCell = _fullCell.inverse();
 }
 
 double SKCell::c() const
@@ -460,6 +486,19 @@ void SKCell::setLengthC(double value)
 {
   double multiplier = value/c();
   _unitCell = double3x3(_unitCell[0], _unitCell[1], multiplier * _unitCell[2]);
+  _inverseUnitCell = _unitCell.inverse();
+
+  _fullCell = _unitCell;
+
+  int dx = _maximumReplica.x - _minimumReplica.x + 1;
+  int dy = _maximumReplica.y - _minimumReplica.y + 1;
+  int dz = _maximumReplica.z - _minimumReplica.z + 1;
+
+  _fullCell.ax *= dx;  _fullCell.bx *= dy;  _fullCell.cx *= dz;
+  _fullCell.ay *= dx;  _fullCell.by *= dy;  _fullCell.cy *= dz;
+  _fullCell.az *= dx;  _fullCell.bz *= dy;  _fullCell.cz *= dz;
+
+  _inverseFullCell = _fullCell.inverse();
 }
 
 void SKCell::c(const double& newValue)
@@ -496,6 +535,18 @@ void SKCell::setAlphaAngle(double value)
 
   double3 v3 = lengthC * double3(cos(betaAngle), temp, sqrt(1.0 - cos(betaAngle)*cos(betaAngle)-temp*temp));
   _unitCell = double3x3(_unitCell[0], _unitCell[1], v3);
+
+  _fullCell = _unitCell;
+
+  int dx = _maximumReplica.x - _minimumReplica.x + 1;
+  int dy = _maximumReplica.y - _minimumReplica.y + 1;
+  int dz = _maximumReplica.z - _minimumReplica.z + 1;
+
+  _fullCell.ax *= dx;  _fullCell.bx *= dy;  _fullCell.cx *= dz;
+  _fullCell.ay *= dx;  _fullCell.by *= dy;  _fullCell.cy *= dz;
+  _fullCell.az *= dx;  _fullCell.bz *= dy;  _fullCell.cz *= dz;
+
+  _inverseFullCell = _fullCell.inverse();
 }
 
 double SKCell::beta() const
@@ -518,6 +569,18 @@ void SKCell::setBetaAngle(double value)
 
   double3 v3  = lengthC * double3(cos(value), temp, sqrt(1.0 - cos(value)*cos(value)-temp*temp));
   _unitCell = double3x3(_unitCell[0], _unitCell[1], v3);
+
+  _fullCell = _unitCell;
+
+  int dx = _maximumReplica.x - _minimumReplica.x + 1;
+  int dy = _maximumReplica.y - _minimumReplica.y + 1;
+  int dz = _maximumReplica.z - _minimumReplica.z + 1;
+
+  _fullCell.ax *= dx;  _fullCell.bx *= dy;  _fullCell.cx *= dz;
+  _fullCell.ay *= dx;  _fullCell.by *= dy;  _fullCell.cy *= dz;
+  _fullCell.az *= dx;  _fullCell.bz *= dy;  _fullCell.cz *= dz;
+
+  _inverseFullCell = _fullCell.inverse();
 }
 
 void SKCell::beta(const double& newValue)
@@ -551,6 +614,18 @@ void SKCell::setGammaAngle(double value)
   double3 v2 = lengthB * double3(cos(value), sin(value), 0.0);
   double3 v3 = lengthC * double3(cos(betaAngle), temp, sqrt(1.0 - cos(betaAngle)*cos(betaAngle)-temp*temp));
   _unitCell = double3x3(_unitCell[0], v2, v3);
+
+  _fullCell = _unitCell;
+
+  int dx = _maximumReplica.x - _minimumReplica.x + 1;
+  int dy = _maximumReplica.y - _minimumReplica.y + 1;
+  int dz = _maximumReplica.z - _minimumReplica.z + 1;
+
+  _fullCell.ax *= dx;  _fullCell.bx *= dy;  _fullCell.cx *= dz;
+  _fullCell.ay *= dx;  _fullCell.by *= dy;  _fullCell.cy *= dz;
+  _fullCell.az *= dx;  _fullCell.bz *= dy;  _fullCell.cz *= dz;
+
+  _inverseFullCell = _fullCell.inverse();
 }
 
 void SKCell::gamma(const double& newValue)

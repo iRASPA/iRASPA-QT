@@ -50,7 +50,7 @@ void AtomTreeViewChangeOccupancyCommand::redo()
     {
       if(_model->isActive(_iraspaStructure))
       {
-        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),3);
+        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),4);
         emit _model->dataChanged(index,index);
       }
     }
@@ -78,7 +78,7 @@ void AtomTreeViewChangeOccupancyCommand::undo()
     {
       if(_model->isActive(_iraspaStructure))
       {
-        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),3);
+        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),4);
         emit _model->dataChanged(index,index);
       }
     }

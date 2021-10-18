@@ -35,14 +35,14 @@
 class RenderViewChangeSelectionSubCommand : public QUndoCommand
 {
 public:
-  RenderViewChangeSelectionSubCommand(std::shared_ptr<Structure> structure,
+  RenderViewChangeSelectionSubCommand(std::shared_ptr<Object> structure,
                                      AtomSelectionIndexPaths atomSelection, AtomSelectionIndexPaths previousAtomSelection,
                                      std::set<int> bondSelection, std::set<int> previousBondSelection,
                                      QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
-  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<Object> _object;
   AtomSelectionIndexPaths _atomSelection;
   AtomSelectionIndexPaths _previousAtomSelection;
   std::set<int> _bondSelection;

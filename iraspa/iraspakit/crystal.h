@@ -35,8 +35,21 @@ public:
   Crystal(const Crystal &crystal);
   Crystal(std::shared_ptr<SKAtomTreeController> atomTreeController): Structure(atomTreeController){}
   Crystal(std::shared_ptr<SKStructure> frame);
-  Crystal(std::shared_ptr<Structure> s);
-  std::shared_ptr<Structure> clone() override final;
+  std::shared_ptr<Object> shallowClone() override final;
+
+  Crystal(const std::shared_ptr<const class Crystal> structure);
+  Crystal(const std::shared_ptr<const class MolecularCrystal> structure);
+  Crystal(const std::shared_ptr<const class Molecule> structure);
+  Crystal(const std::shared_ptr<const class ProteinCrystal> structure);
+  Crystal(const std::shared_ptr<const class Protein> structure);
+  Crystal(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  Crystal(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  Crystal(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  Crystal(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  Crystal(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  Crystal(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  Crystal(const std::shared_ptr<const class GridVolume> volume);
+
   ~Crystal() {}
 
   void setSpaceGroupHallNumber(int HallNumber) override final {Structure::setSpaceGroupHallNumber(HallNumber);}

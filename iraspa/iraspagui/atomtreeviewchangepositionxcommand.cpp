@@ -29,7 +29,7 @@ AtomTreeViewChangePositionXCommand::AtomTreeViewChangePositionXCommand(MainWindo
   _mainWindow(mainWindow),
   _model(model),
   _iraspaStructure(iraspaStructure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
+  _object(iraspaStructure->object()),
   _atomTreeNode(atomTreeNode),
   _newValue(newValue)
 {
@@ -41,15 +41,24 @@ void AtomTreeViewChangePositionXCommand::redo()
 {
   _oldValue = _atomTreeNode->representedObject()->position().x;
   _atomTreeNode->representedObject()->setPositionX(_newValue);
-  _structure->expandSymmetry();
-  _structure->computeBonds();
+
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
+  {
+    atomViewer->expandSymmetry();
+  }
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    bondViewer->computeBonds();
+  }
 
   if(_model)
   {
     if(_model->isActive(_iraspaStructure))
     {
-      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),3);
+      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),5);
       emit _model->dataChanged(index,index);
+
+      emit _model->updateNetCharge();
     }
   }
 
@@ -66,15 +75,24 @@ void AtomTreeViewChangePositionXCommand::redo()
 void AtomTreeViewChangePositionXCommand::undo()
 {
   _atomTreeNode->representedObject()->setPositionX(_oldValue);
-  _structure->expandSymmetry();
-  _structure->computeBonds();
+
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
+  {
+    atomViewer->expandSymmetry();
+  }
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    bondViewer->computeBonds();
+  }
 
   if(_model)
   {
     if(_model->isActive(_iraspaStructure))
     {
-      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),3);
+      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),5);
       emit _model->dataChanged(index,index);
+
+      emit _model->updateNetCharge();
     }
   }
 

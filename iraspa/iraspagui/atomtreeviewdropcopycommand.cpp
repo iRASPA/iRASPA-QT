@@ -30,7 +30,7 @@ AtomTreeViewDropCopyCommand::AtomTreeViewDropCopyCommand(MainWindow *mainWindow,
   _mainWindow(mainWindow),
   _model(model),
   _iraspaStructure(iraspaStructure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
+  _object(iraspaStructure->object()),
   _moves(moves),
   _reverseMoves({})
 {
@@ -39,54 +39,60 @@ AtomTreeViewDropCopyCommand::AtomTreeViewDropCopyCommand(MainWindow *mainWindow,
 
 void AtomTreeViewDropCopyCommand::redo()
 {
-  _reverseMoves.clear();
-
-  if(_model->isActive(_iraspaStructure))
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    emit _model->layoutAboutToBeChanged();
-    for(const auto &[atom, parentNode, insertionRow] : _moves)
+    _reverseMoves.clear();
+
+    if(_model->isActive(_iraspaStructure))
     {
-      _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
+      emit _model->layoutAboutToBeChanged();
+      for(const auto &[atom, parentNode, insertionRow] : _moves)
+      {
+        _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
 
-      whileBlocking(_model)->insertRow(insertionRow, parentNode,atom);
+        whileBlocking(_model)->insertRow(insertionRow, parentNode,atom);
+      }
+      emit _model->layoutChanged();
     }
-    emit _model->layoutChanged();
-  }
-  else
-  {
-    for(const auto &[atom, parentNode, insertionRow] : _moves)
+    else
     {
-      _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
-      parentNode->insertChild(insertionRow, atom);
+      for(const auto &[atom, parentNode, insertionRow] : _moves)
+      {
+        _reverseMoves.insert(_reverseMoves.begin(), std::make_tuple(atom, atom->parent(), atom->row()));
+        parentNode->insertChild(insertionRow, atom);
+      }
     }
+
+    atomViewer->atomsTreeController()->setTags();
+
+    _mainWindow->documentWasModified();
   }
-
-  _structure->atomsTreeController()->setTags();
-
-  _mainWindow->documentWasModified();
 }
 
 void AtomTreeViewDropCopyCommand::undo()
 {
-  if(_model->isActive(_iraspaStructure))
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    emit _model->layoutAboutToBeChanged();
-    for(const auto &[atom, parentNode, insertionRow] : _reverseMoves)
+    if(_model->isActive(_iraspaStructure))
     {
-      whileBlocking(_model)->removeRow(atom->row(), atom->parent());
+      emit _model->layoutAboutToBeChanged();
+      for(const auto &[atom, parentNode, insertionRow] : _reverseMoves)
+      {
+        whileBlocking(_model)->removeRow(atom->row(), atom->parent());
+      }
+
+      emit _model->layoutChanged();
+    }
+    else
+    {
+      for(const auto &[atom, parentNode, insertionRow] : _reverseMoves)
+      {
+        parentNode->removeChild(insertionRow);
+      }
     }
 
-    emit _model->layoutChanged();
-  }
-  else
-  {
-    for(const auto &[atom, parentNode, insertionRow] : _reverseMoves)
-    {
-      parentNode->removeChild(insertionRow);
-    }
-  }
+    atomViewer->atomsTreeController()->setTags();
 
-  _structure->atomsTreeController()->setTags();
-
-  _mainWindow->documentWasModified();
+    _mainWindow->documentWasModified();
+  }
 }

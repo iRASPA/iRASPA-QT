@@ -27,7 +27,7 @@ AtomTreeViewCopySelectionToNewMovieCommand::AtomTreeViewCopySelectionToNewMovieC
                                                                                        AtomTreeViewModel* atomTreeViewModel,
                                                                                        SceneTreeViewModel* sceneTreeViewModel,
                                                                                        std::shared_ptr<SceneList> sceneList,
-                                                                                       std::shared_ptr<iRASPAObject> iraspaStructure,
+                                                                                       std::shared_ptr<iRASPAObject> iraspaObject,
                                                                                        AtomSelectionIndexPaths atomSelection,
                                                                                        BondSelectionIndexSet bondSelection,
                                                                                        QUndoCommand *undoParent):
@@ -36,7 +36,7 @@ AtomTreeViewCopySelectionToNewMovieCommand::AtomTreeViewCopySelectionToNewMovieC
   _atomTreeViewModel(atomTreeViewModel),
   _sceneTreeViewModel(sceneTreeViewModel),
   _sceneList(sceneList),
-  _iraspaStructure(iraspaStructure),
+  _iraspaObject(iraspaObject),
   _atomSelection(atomSelection),
   _bondSelection(bondSelection),
   _scene(nullptr),
@@ -48,15 +48,15 @@ AtomTreeViewCopySelectionToNewMovieCommand::AtomTreeViewCopySelectionToNewMovieC
 
 void AtomTreeViewCopySelectionToNewMovieCommand::redo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaObject->object()))
   {
-    if(std::shared_ptr<Movie> movie = _iraspaStructure->parent().lock())
+    if(std::shared_ptr<Movie> movie = _iraspaObject->parent().lock())
     {
       if((_scene = movie->parent().lock()))
       {
         _row = int(_scene->movies().size());
 
-        std::shared_ptr<iRASPAObject> newiRASPAStructure = _iraspaStructure->clone();
+        std::shared_ptr<iRASPAObject> newiRASPAStructure = _iraspaObject->shallowClone();
         if(std::shared_ptr<Structure> newStructure = std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object()))
         {
           newStructure->setSpaceGroupHallNumber(structure->spaceGroup().spaceGroupSetting().HallNumber());

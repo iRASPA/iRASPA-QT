@@ -509,8 +509,8 @@ void SceneTreeView::newCrystalEllipsoid()
   crystalEllipsoid->atomsTreeController()->appendToRootnodes(atomtreeNode);
   crystalEllipsoid->expandSymmetry();
 
-  crystalEllipsoid->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
-  crystalEllipsoid->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
+ // crystalEllipsoid->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
+ // crystalEllipsoid->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
   std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(crystalEllipsoid);
 
@@ -525,8 +525,8 @@ void SceneTreeView::newCrystalCylinder()
   crystalCylinder->atomsTreeController()->appendToRootnodes(atomtreeNode);
   crystalCylinder->expandSymmetry();
 
-  crystalCylinder->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
-  crystalCylinder->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
+//  crystalCylinder->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
+//  crystalCylinder->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
   std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(crystalCylinder);
 
@@ -541,8 +541,8 @@ void SceneTreeView::newCrystalPolygonalPrism()
   crystalPolygonalPrismPrimitive->atomsTreeController()->appendToRootnodes(atomtreeNode);
   crystalPolygonalPrismPrimitive->expandSymmetry();
 
-  crystalPolygonalPrismPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
-  crystalPolygonalPrismPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
+//  crystalPolygonalPrismPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
+//  crystalPolygonalPrismPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
   std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(crystalPolygonalPrismPrimitive);
 
@@ -557,8 +557,8 @@ void SceneTreeView::newEllipsoid()
   ellipsoidPrimitive->atomsTreeController()->appendToRootnodes(atomtreeNode);
   ellipsoidPrimitive->expandSymmetry();
 
-  ellipsoidPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
-  ellipsoidPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
+//  ellipsoidPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
+//  ellipsoidPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
   std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(ellipsoidPrimitive);
 
@@ -573,8 +573,8 @@ void SceneTreeView::newCylinder()
   cylinderPrimitive->atomsTreeController()->appendToRootnodes(atomtreeNode);
   cylinderPrimitive->expandSymmetry();
 
-  cylinderPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
-  cylinderPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
+ // cylinderPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
+ // cylinderPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
   std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(cylinderPrimitive);
 
@@ -589,8 +589,8 @@ void SceneTreeView::newPolygonalPrism()
   polygonalPrismPrimitive->atomsTreeController()->appendToRootnodes(atomtreeNode);
   polygonalPrismPrimitive->expandSymmetry();
 
-  polygonalPrismPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
-  polygonalPrismPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
+//  polygonalPrismPrimitive->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
+//  polygonalPrismPrimitive->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
 
   std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(polygonalPrismPrimitive);
 

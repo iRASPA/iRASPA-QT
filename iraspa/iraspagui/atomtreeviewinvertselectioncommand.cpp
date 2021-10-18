@@ -24,10 +24,10 @@
 #include <algorithm>
 #include <set>
 
-AtomTreeViewInvertSelectionCommand::AtomTreeViewInvertSelectionCommand(MainWindow *main_window, std::shared_ptr<Structure> structure,
+AtomTreeViewInvertSelectionCommand::AtomTreeViewInvertSelectionCommand(MainWindow *main_window, std::shared_ptr<Object> object,
                                      AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection, QUndoCommand *parent):
   _main_window(main_window),
-  _structure(structure),
+  _object(object),
   _atomSelection(atomSelection),
   _bondSelection(bondSelection),
   _invertedAtomSelection(),
@@ -37,64 +37,73 @@ AtomTreeViewInvertSelectionCommand::AtomTreeViewInvertSelectionCommand(MainWindo
 
   setText(QString("Invert atom/bond selection"));
 
-  // allAtomTreeNodes: set of all the treenodes
-  std::set<std::shared_ptr<SKAtomTreeNode>> allAtomTreeNodes{};
-  std::vector<std::shared_ptr<SKAtomTreeNode>> flattenedNodes = structure->atomsTreeController()->flattenedLeafNodes();
-  std::copy(flattenedNodes.begin(),flattenedNodes.end(), std::inserter(allAtomTreeNodes, allAtomTreeNodes.begin()));
-
-  // selectedAtoms: set of all the selected treenodes
-  std::set<std::shared_ptr<SKAtomTreeNode>> selectedAtoms = structure->atomsTreeController()->selectedTreeNodes();
-
-  // invertedTreeNodeAtoms: the difference between all nodes and the selected nodes
-  std::set<std::shared_ptr<SKAtomTreeNode>> invertedTreeNodeAtoms{};
-  std::set_difference(allAtomTreeNodes.begin(), allAtomTreeNodes.end(), selectedAtoms.begin(), selectedAtoms.end(),
-      std::inserter(invertedTreeNodeAtoms, invertedTreeNodeAtoms.end()));
-
-  // invertedAsymmetricAtoms: the asymmetric atoms in the invertedTreeNodeAtoms set
   std::set<std::shared_ptr<SKAsymmetricAtom>> invertedAsymmetricAtoms{};
-  std::transform(invertedTreeNodeAtoms.begin(),invertedTreeNodeAtoms.end(), std::inserter(invertedAsymmetricAtoms, invertedAsymmetricAtoms.begin()),
-                 [](std::shared_ptr<SKAtomTreeNode> treeNode) -> std::shared_ptr<SKAsymmetricAtom>
-                 {return treeNode->representedObject();});
-  std::transform(invertedTreeNodeAtoms.begin(),invertedTreeNodeAtoms.end(), std::inserter(_invertedAtomSelection.second, _invertedAtomSelection.second.begin()),
-                 [](std::shared_ptr<SKAtomTreeNode> treeNode) -> IndexPath
-                 {return treeNode->indexPath();});
-
-
-  std::set<int> selectedBonds = structure->bondSetController()->selectionIndexSet();
-  std::set<int> allBondIndices{};
-  std::generate_n( inserter( allBondIndices, allBondIndices.begin() ), selectedBonds.size(), [ i=0 ]() mutable { return i++; });
-
-  std::set<int> invertedBonds{};
-  std::set_difference(allBondIndices.begin(), allBondIndices.end(), selectedBonds.begin(), selectedBonds.end(),
-      std::inserter(invertedBonds, invertedBonds.end()));
-
-
-  const std::vector<std::shared_ptr<SKAsymmetricBond>> asymmetricBonds = structure->bondSetController()->arrangedObjects();
-  int index=0;
-  for(const std::shared_ptr<SKAsymmetricBond> &asymmetricBond: asymmetricBonds)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    const bool containsAtom1 = invertedAsymmetricAtoms.find(asymmetricBond->atom1()) != invertedAsymmetricAtoms.end();
-    const bool containsAtom2 = invertedAsymmetricAtoms.find(asymmetricBond->atom2()) != invertedAsymmetricAtoms.end();
-    if(containsAtom1 || containsAtom2)
-    {
-       invertedBonds.insert(index);
-    }
-    index++;
+    // allAtomTreeNodes: set of all the treenodes
+    std::set<std::shared_ptr<SKAtomTreeNode>> allAtomTreeNodes{};
+    std::vector<std::shared_ptr<SKAtomTreeNode>> flattenedNodes = atomViewer->atomsTreeController()->flattenedLeafNodes();
+    std::copy(flattenedNodes.begin(),flattenedNodes.end(), std::inserter(allAtomTreeNodes, allAtomTreeNodes.begin()));
+
+    // selectedAtoms: set of all the selected treenodes
+    std::set<std::shared_ptr<SKAtomTreeNode>> selectedAtoms = atomViewer->atomsTreeController()->selectedTreeNodes();
+
+    // invertedTreeNodeAtoms: the difference between all nodes and the selected nodes
+    std::set<std::shared_ptr<SKAtomTreeNode>> invertedTreeNodeAtoms{};
+    std::set_difference(allAtomTreeNodes.begin(), allAtomTreeNodes.end(), selectedAtoms.begin(), selectedAtoms.end(),
+        std::inserter(invertedTreeNodeAtoms, invertedTreeNodeAtoms.end()));
+
+    // invertedAsymmetricAtoms: the asymmetric atoms in the invertedTreeNodeAtoms set
+
+    std::transform(invertedTreeNodeAtoms.begin(),invertedTreeNodeAtoms.end(), std::inserter(invertedAsymmetricAtoms, invertedAsymmetricAtoms.begin()),
+                   [](std::shared_ptr<SKAtomTreeNode> treeNode) -> std::shared_ptr<SKAsymmetricAtom>
+                   {return treeNode->representedObject();});
+    std::transform(invertedTreeNodeAtoms.begin(),invertedTreeNodeAtoms.end(), std::inserter(_invertedAtomSelection.second, _invertedAtomSelection.second.begin()),
+                   [](std::shared_ptr<SKAtomTreeNode> treeNode) -> IndexPath
+                   {return treeNode->indexPath();});
   }
 
-  _invertedBondSelection.clear();
-  std::transform(invertedBonds.begin(),invertedBonds.end(), std::inserter(_invertedBondSelection, _invertedBondSelection.begin()),
-                 [asymmetricBonds](int index) -> std::pair<std::shared_ptr<SKAsymmetricBond>, int>
-                 {return std::make_pair(asymmetricBonds[index], index);});
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    std::set<int> selectedBonds = bondViewer->bondSetController()->selectionIndexSet();
+    std::set<int> allBondIndices{};
+    std::generate_n( inserter( allBondIndices, allBondIndices.begin() ), selectedBonds.size(), [ i=0 ]() mutable { return i++; });
+
+    std::set<int> invertedBonds{};
+    std::set_difference(allBondIndices.begin(), allBondIndices.end(), selectedBonds.begin(), selectedBonds.end(),
+        std::inserter(invertedBonds, invertedBonds.end()));
+
+
+    const std::vector<std::shared_ptr<SKAsymmetricBond>> asymmetricBonds = bondViewer->bondSetController()->arrangedObjects();
+    int index=0;
+    for(const std::shared_ptr<SKAsymmetricBond> &asymmetricBond: asymmetricBonds)
+    {
+      const bool containsAtom1 = invertedAsymmetricAtoms.find(asymmetricBond->atom1()) != invertedAsymmetricAtoms.end();
+      const bool containsAtom2 = invertedAsymmetricAtoms.find(asymmetricBond->atom2()) != invertedAsymmetricAtoms.end();
+      if(containsAtom1 || containsAtom2)
+      {
+         invertedBonds.insert(index);
+      }
+      index++;
+    }
+
+    _invertedBondSelection.clear();
+    std::transform(invertedBonds.begin(),invertedBonds.end(), std::inserter(_invertedBondSelection, _invertedBondSelection.begin()),
+                   [asymmetricBonds](int index) -> std::pair<std::shared_ptr<SKAsymmetricBond>, int>
+                   {return std::make_pair(asymmetricBonds[index], index);});
+  }
 
 }
 
 void AtomTreeViewInvertSelectionCommand::redo()
 {
-  if(std::shared_ptr<Structure> structure = _structure)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    structure->atomsTreeController()->setSelectionIndexPaths(_invertedAtomSelection);
-    structure->bondSetController()->setSelection(_invertedBondSelection);
+    atomViewer->atomsTreeController()->setSelectionIndexPaths(_invertedAtomSelection);
+  }
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    bondViewer->bondSetController()->setSelection(_invertedBondSelection);
   }
 
   if(_main_window)
@@ -106,10 +115,13 @@ void AtomTreeViewInvertSelectionCommand::redo()
 
 void AtomTreeViewInvertSelectionCommand::undo()
 {
-  if(std::shared_ptr<Structure> structure = _structure)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    structure->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
-    structure->bondSetController()->setSelection(_bondSelection);
+    atomViewer->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
+  }
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    bondViewer->bondSetController()->setSelection(_bondSelection);
   }
 
   if(_main_window)

@@ -415,23 +415,21 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
 
-          qDebug() << "Pick: " << pixel[0] << pickedObject;
-
           switch(pixel[0])
           {
           case 1:
-            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
             {
-              structure->setAtomSelection(pickedObject);
+              atomViewer->setAtomSelection(pickedObject);
               reloadData();
               emit updateAtomSelection();
               emit updateBondSelection();
             }
             break;
           case 2:
-            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
             {
-              structure->setBondSelection(pickedObject);
+              bondViewer->setBondSelection(pickedObject);
               reloadData();
               emit updateBondSelection();
             }
@@ -454,23 +452,22 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
 
-          qDebug() << "Pick: " << pixel[0] << pickedObject;
 
           switch(pixel[0])
           {
           case 1:
-            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
             {
-              structure->toggleAtomSelection(pickedObject);
+              atomViewer->toggleAtomSelection(pickedObject);
               reloadData();
               emit updateAtomSelection();
               emit updateBondSelection();
             }
             break;
           case 2:
-            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
             {
-              structure->toggleBondSelection(pickedObject);
+              bondViewer->toggleBondSelection(pickedObject);
               reloadData();
               emit updateBondSelection();
             }
@@ -504,9 +501,9 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
         {
           for(size_t j=0; j<_iraspa_structures[i].size(); j++)
           {
-            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[i][j]->object()))
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[i][j]->object()))
             {
-              structure->clearSelection();
+              atomViewer->clearSelection();
             }
           }
         }
@@ -522,8 +519,6 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
 
-          qDebug() << "Background Pick: " << pixel[0] << pickedObject;
-
           switch(pixel[0])
           {
           case 0:
@@ -532,18 +527,18 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             emit updateBondSelection();
             break;
           case 1:
-            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
             {
-              structure->setAtomSelection(pickedObject);
+              atomViewer->setAtomSelection(pickedObject);
               reloadData();
               emit updateAtomSelection();
               emit updateBondSelection();
             }
             break;
           case 2:
-            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
             {
-              structure->setBondSelection(pickedObject);
+              bondViewer->setBondSelection(pickedObject);
               reloadData();
               emit updateBondSelection();
             }
@@ -605,32 +600,50 @@ void RenderStackedWidget::selectAsymetricAtomsInRectangle(QRect rect, bool exten
         {
           for(size_t j=0; j<_iraspa_structures[i].size(); j++)
           {
-            if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structures[i][j]->object()))
+            std::shared_ptr<Object> object = _iraspa_structures[i][j]->object();
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
             {
-              std::shared_ptr<SKAtomTreeController> atomTreeController = structure->atomsTreeController();
-              std::shared_ptr<SKBondSetController> bondSetController = structure->bondSetController();
+              std::shared_ptr<SKAtomTreeController> atomTreeController = atomViewer->atomsTreeController();
+
 
               AtomSelectionIndexPaths previousAtomSelection = atomTreeController->selectionIndexPaths();
-              std::set<int> previousBondSelection = bondSetController->selectionIndexSet();
 
-              std::set<int> indexSetSelectedAtoms = structure->filterCartesianAtomPositions(closure);
-              std::set<int> indexSetSelectedBonds = structure->filterCartesianBondPositions(closure);
+              std::set<int> indexSetSelectedAtoms = atomViewer->filterCartesianAtomPositions(closure);
 
               if(extend)
               {
-                structure->addToAtomSelection(indexSetSelectedAtoms);
-                structure->bondSetController()->addSelectedObjects(indexSetSelectedBonds);
+                atomViewer->addToAtomSelection(indexSetSelectedAtoms);
               }
               else
               {
-                structure->setAtomSelection(indexSetSelectedAtoms);
-                structure->bondSetController()->setSelectionIndexSet(indexSetSelectedBonds);
+                atomViewer->setAtomSelection(indexSetSelectedAtoms);
               }
 
               AtomSelectionIndexPaths atomSelection = atomTreeController->selectionIndexPaths();
-              std::set<int> bondSelection = bondSetController->selectionIndexSet();
 
-              new RenderViewChangeSelectionSubCommand(structure, atomSelection, previousAtomSelection,
+              std::set<int> previousBondSelection{};
+              std::set<int> bondSelection{};
+              if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(object))
+              {
+                std::shared_ptr<SKBondSetController> bondSetController = bondViewer->bondSetController();
+
+                previousBondSelection = bondSetController->selectionIndexSet();
+
+                std::set<int> indexSetSelectedBonds = bondViewer->filterCartesianBondPositions(closure);
+
+                if(extend)
+                {
+                  bondViewer->bondSetController()->addSelectedObjects(indexSetSelectedBonds);
+                }
+                else
+                {
+                  bondViewer->bondSetController()->setSelectionIndexSet(indexSetSelectedBonds);
+                }
+
+                bondSelection = bondSetController->selectionIndexSet();
+              }
+
+              new RenderViewChangeSelectionSubCommand(object, atomSelection, previousAtomSelection,
                                                       bondSelection, previousBondSelection, changeSelectionCommand);
             }
           }

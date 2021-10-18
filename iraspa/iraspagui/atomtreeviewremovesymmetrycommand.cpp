@@ -31,28 +31,34 @@ AtomTreeViewRemoveSymmetryCommand::AtomTreeViewRemoveSymmetryCommand(MainWindow 
   _mainWindow(mainWindow),
   _model(model),
   _iraspa_structure(iraspa_structure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+  _object(iraspa_structure->object())
 {
   setText(QString("Make super cell"));
 }
 
 void AtomTreeViewRemoveSymmetryCommand::redo()
 {
-  std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structure->object())->removeSymmetry();
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+  {
+    std::shared_ptr<Structure> newStructure = structure->removeSymmetry();
 
-  _iraspa_structure->setObject(structure);
+    _iraspa_structure->setObject(newStructure);
 
-  _mainWindow->resetData();
+    _mainWindow->resetData();
 
-  _mainWindow->documentWasModified();
+    _mainWindow->documentWasModified();
+  }
 }
 
 void AtomTreeViewRemoveSymmetryCommand::undo()
 {
-  _iraspa_structure->setObject(_structure);
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+  {
+    _iraspa_structure->setObject(_object);
 
-  _mainWindow->resetData();
+    _mainWindow->resetData();
 
-  _mainWindow->documentWasModified();
+    _mainWindow->documentWasModified();
+  }
 }
 

@@ -38,11 +38,14 @@
 #include "crystalellipsoidprimitive.h"
 #include "crystalcylinderprimitive.h"
 #include "crystalpolygonalprismprimitive.h"
-#include "densityvolume.h"
+#include "gridvolume.h"
 #include "object.h"
+#include "raspadensityvolume.h"
+#include "vtkdensityvolume.h"
+#include "vaspdensityvolume.h"
+#include "gaussiancubevolume.h"
 
 class Movie;
-
 
 class iRASPAObject: public std::enable_shared_from_this<iRASPAObject>
 {
@@ -61,9 +64,9 @@ public:
   iRASPAObject(std::shared_ptr<CrystalEllipsoidPrimitive> crystalEllipsoidPrimitive):_rawValue(ObjectType::crystalEllipsoidPrimitive), _object(crystalEllipsoidPrimitive) {}
   iRASPAObject(std::shared_ptr<CrystalCylinderPrimitive> crystalCylinderPrimitive):_rawValue(ObjectType::crystalCylinderPrimitive), _object(crystalCylinderPrimitive) {}
   iRASPAObject(std::shared_ptr<CrystalPolygonalPrismPrimitive> crystalPolygonalPrismPrimitive):_rawValue(ObjectType::crystalPolygonalPrismPrimitive), _object(crystalPolygonalPrismPrimitive) {}
-  iRASPAObject(std::shared_ptr<DensityVolume> densityVolume):_rawValue(ObjectType::densityVolume), _object(densityVolume) {}
+  iRASPAObject(std::shared_ptr<GridVolume> densityVolume):_rawValue(ObjectType::gridVolume), _object(densityVolume) {}
 
-  std::shared_ptr<iRASPAObject> clone();
+  std::shared_ptr<iRASPAObject> shallowClone();
 
   size_t row() const;
   static std::shared_ptr<iRASPAObject> create(ObjectType type);

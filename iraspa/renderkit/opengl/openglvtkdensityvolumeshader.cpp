@@ -20,7 +20,7 @@
  ********************************************************************************************************************/
 
 #include "glgeterror.h"
-#include "opengldensityvolumeshader.h"
+#include "openglvtkdensityvolumeshader.h"
 #include "unitcubegeometry.h"
 #include "spheregeometry.h"
 #include "cubegeometry.h"
@@ -29,13 +29,13 @@
 #include <cmath>
 
 
-OpenGLDensityVolumeShader::OpenGLDensityVolumeShader()
+OpenGLVTKDensityVolumeShader::OpenGLVTKDensityVolumeShader()
 {
 
 }
 
 
-void OpenGLDensityVolumeShader::deleteBuffers()
+void OpenGLVTKDensityVolumeShader::deleteBuffers()
 {
   for(size_t i=0;i<_renderStructures.size();i++)
   {
@@ -49,7 +49,7 @@ void OpenGLDensityVolumeShader::deleteBuffers()
   }
 }
 
-void OpenGLDensityVolumeShader::generateBuffers()
+void OpenGLVTKDensityVolumeShader::generateBuffers()
 {
   _numberOfIndices.resize(_renderStructures.size());
 
@@ -84,7 +84,7 @@ void OpenGLDensityVolumeShader::generateBuffers()
   }
 }
 
-void OpenGLDensityVolumeShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLVTKDensityVolumeShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -93,7 +93,7 @@ void OpenGLDensityVolumeShader::setRenderStructures(std::vector<std::vector<std:
 
 
 
-void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture)
+void OpenGLVTKDensityVolumeShader::paintGL(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture)
 {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -111,7 +111,7 @@ void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer, GLuint is
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (std::shared_ptr<RKRenderDensityVolumeSource> object = std::dynamic_pointer_cast<RKRenderDensityVolumeSource>(_renderStructures[i][j]))
+      if (std::shared_ptr<RKRenderVTKDensityVolumeSource> object = std::dynamic_pointer_cast<RKRenderVTKDensityVolumeSource>(_renderStructures[i][j]))
       {
         if(_renderStructures[i][j]->isVisible())
         {
@@ -156,13 +156,13 @@ void OpenGLDensityVolumeShader::paintGL(GLuint structureUniformBuffer, GLuint is
 }
 
 
-void OpenGLDensityVolumeShader::reloadData()
+void OpenGLVTKDensityVolumeShader::reloadData()
 {
   initializeVertexArrayObject();
   initializeTransferFunctionTexture();
 }
 
-void OpenGLDensityVolumeShader::initializeTransferFunctionTexture()
+void OpenGLVTKDensityVolumeShader::initializeTransferFunctionTexture()
 {
   glDeleteTextures(1, &_transferFunctionTexture);
   check_gl_error();
@@ -177,7 +177,7 @@ void OpenGLDensityVolumeShader::initializeTransferFunctionTexture()
   glBindTexture(GL_TEXTURE_1D, 0);
 }
 
-void OpenGLDensityVolumeShader::initializeVertexArrayObject()
+void OpenGLVTKDensityVolumeShader::initializeVertexArrayObject()
 {
     CubeGeometry sphere = CubeGeometry();
 
@@ -185,7 +185,7 @@ void OpenGLDensityVolumeShader::initializeVertexArrayObject()
     {
       for(size_t j=0;j<_renderStructures[i].size();j++)
       {
-        if (std::shared_ptr<RKRenderDensityVolumeSource> object = std::dynamic_pointer_cast<RKRenderDensityVolumeSource>(_renderStructures[i][j]))
+        if (std::shared_ptr<RKRenderVTKDensityVolumeSource> object = std::dynamic_pointer_cast<RKRenderVTKDensityVolumeSource>(_renderStructures[i][j]))
         {
           glBindTexture(GL_TEXTURE_3D, _volumeTextures[i][j]);
           glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -235,12 +235,12 @@ void OpenGLDensityVolumeShader::initializeVertexArrayObject()
     }
 }
 
-void OpenGLDensityVolumeShader::loadShader(void)
+void OpenGLVTKDensityVolumeShader::loadShader(void)
 {
   GLuint vertexShader;
   GLuint fragmentShader;
-  vertexShader=compileShaderOfType(GL_VERTEX_SHADER,OpenGLDensityVolumeShader::_vertexShaderSource.c_str());
-  fragmentShader=compileShaderOfType(GL_FRAGMENT_SHADER,OpenGLDensityVolumeShader::_fragmentShaderSource.c_str());
+  vertexShader=compileShaderOfType(GL_VERTEX_SHADER,OpenGLVTKDensityVolumeShader::_vertexShaderSource.c_str());
+  fragmentShader=compileShaderOfType(GL_FRAGMENT_SHADER,OpenGLVTKDensityVolumeShader::_fragmentShaderSource.c_str());
 
   if (0 != vertexShader && 0 != fragmentShader)
   {
@@ -273,17 +273,17 @@ void OpenGLDensityVolumeShader::loadShader(void)
   }
 }
 
-void OpenGLDensityVolumeShader::initializeTransformUniforms()
+void OpenGLVTKDensityVolumeShader::initializeTransformUniforms()
 {
   glUniformBlockBinding(_program, glGetUniformBlockIndex(_program, "FrameUniformBlock"), 0);
 }
 
-void OpenGLDensityVolumeShader::initializeStructureUniforms()
+void OpenGLVTKDensityVolumeShader::initializeStructureUniforms()
 {
   glUniformBlockBinding(_program, glGetUniformBlockIndex(_program, "StructureUniformBlock"), 1);
 }
 
-void OpenGLDensityVolumeShader::initializeLightUniforms()
+void OpenGLVTKDensityVolumeShader::initializeLightUniforms()
 {
   glUniformBlockBinding(_program, glGetUniformBlockIndex(_program, "LightsUniformBlock"), 3);
 }
@@ -291,7 +291,7 @@ void OpenGLDensityVolumeShader::initializeLightUniforms()
 
 // Based on: page 168 "Real-Time Volume Graphics", Klaus Engels et al.
 
-const std::string  OpenGLDensityVolumeShader::_vertexShaderSource =
+const std::string  OpenGLVTKDensityVolumeShader::_vertexShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLFrameUniformBlockStringLiteral +
 OpenGLStructureUniformBlockStringLiteral +
@@ -324,7 +324,7 @@ void main()
 }
 )foo";
 
-const std::string  OpenGLDensityVolumeShader::_fragmentShaderSource =
+const std::string  OpenGLVTKDensityVolumeShader::_fragmentShaderSource =
 OpenGLVersionStringLiteral +
 OpenGLFrameUniformBlockStringLiteral +
 OpenGLStructureUniformBlockStringLiteral +
@@ -462,7 +462,7 @@ void main()
 }
 )foo";
 
-std::array<float4, 256> OpenGLDensityVolumeShader::transferFunction
+std::array<float4, 256> OpenGLVTKDensityVolumeShader::transferFunction
 {
     float4(0.5, 0.2, 0.2, 0),
     float4(0.55102, 0.210204, 0.210204, 0),

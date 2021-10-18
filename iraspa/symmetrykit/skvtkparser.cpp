@@ -28,7 +28,7 @@
 
 SKVTKParser::SKVTKParser(QUrl url, QDataStream::ByteOrder byteorder, LogReporting *log): _url(url), _byteOrder(byteorder), _log(log), _frame(std::make_shared<SKStructure>())
 {
-  _frame->kind = SKStructure::Kind::densityVolume;
+  _frame->kind = SKStructure::Kind::VTKDensityVolume;
 }
 
 template <typename T> static QByteArray readData(QTextStream &stream, size_t numberOfElements)
@@ -196,11 +196,24 @@ bool SKVTKParser::startParsing()
               }
               return false;
             }
+
+            if(strSplited.size()>=4)
+            {
+              _numberOfScalarsPerPoint = strSplited[4].toInt();
+            }
           }
         }
+      }
+
+      _frame->cell = std::make_shared<SKCell>(_dimensions.x * _spacing.x, _dimensions.y * _spacing.y, _dimensions.z * _spacing.z, 90.0 * M_PI/180.0, 90.0*M_PI/180.0, 90.0*M_PI/180.0);
+
+      for(const QString &headerString : headerData)
+      {
+        QString string = headerString.toUpper();
+
+        // do this last to overwrite cell
         if (string.startsWith("CELL_PARAMETERS"))
         {
-          qDebug() << "Unit cell found";
           QStringList strSplited = headerString.split(' ');
           if(strSplited.size() >= 6)
           {
@@ -211,6 +224,7 @@ bool SKVTKParser::startParsing()
             _beta  = strSplited[5].toDouble();
             _gamma = strSplited[6].toDouble();
             _frame->cell = std::make_shared<SKCell>(_a, _b, _c, _alpha * M_PI/180.0, _beta*M_PI/180.0, _gamma*M_PI/180.0);
+            _frame->kind = SKStructure::Kind::RASPADensityVolume;
           }
         }
       }
@@ -281,7 +295,6 @@ bool SKVTKParser::startParsing()
       _frame->spacing = _spacing;
       _frame->byteData = _byteData;
       _frame->dataType = _dataType;
-      _frame->kind = SKStructure::Kind::densityVolume;
       _movies.push_back({_frame});
       return true;
     }

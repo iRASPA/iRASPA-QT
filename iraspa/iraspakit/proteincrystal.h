@@ -31,7 +31,20 @@ public:
   ProteinCrystal();
   ProteinCrystal(const ProteinCrystal &proteinCrystal);
   ProteinCrystal(std::shared_ptr<SKStructure> frame);
-  ProteinCrystal(std::shared_ptr<Structure> s);
+
+  ProteinCrystal(const std::shared_ptr<const class Crystal> structure);
+  ProteinCrystal(const std::shared_ptr<const class MolecularCrystal> structure);
+  ProteinCrystal(const std::shared_ptr<const class Molecule> structure);
+  ProteinCrystal(const std::shared_ptr<const class ProteinCrystal> structure);
+  ProteinCrystal(const std::shared_ptr<const class Protein> structure);
+  ProteinCrystal(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  ProteinCrystal(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  ProteinCrystal(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  ProteinCrystal(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  ProteinCrystal(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  ProteinCrystal(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  ProteinCrystal(const std::shared_ptr<const class GridVolume> volume);
+
   ~ProteinCrystal() {}
 
   void setSpaceGroupHallNumber(int HallNumber) override final {Structure::setSpaceGroupHallNumber(HallNumber);}
@@ -39,7 +52,7 @@ public:
 
   bool drawAtoms() const override {return _drawAtoms;}
 
-  std::shared_ptr<Structure> clone() override final;
+  std::shared_ptr<Object> shallowClone() override final;
 
   bool hasSymmetry() override final {return true;}
   std::shared_ptr<Structure> superCell() const override final;

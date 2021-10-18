@@ -24,12 +24,12 @@
 #include <algorithm>
 
 BondListViewDeleteSelectionCommand::BondListViewDeleteSelectionCommand(MainWindow *mainWindow, std::shared_ptr<BondListViewModel> bondTreeModel,
-                                               std::shared_ptr<Structure> structure,
+                                               std::shared_ptr<Object> object,
                                                std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, std::set<int> bondSelection, QUndoCommand *parent):
   QUndoCommand(parent),
   _mainWindow(mainWindow),
   _bondTreeModel(bondTreeModel),
-  _structure(structure),
+  _object(object),
   _bonds(bonds),
   _bondSelection(bondSelection)
 {
@@ -40,30 +40,36 @@ BondListViewDeleteSelectionCommand::BondListViewDeleteSelectionCommand(MainWindo
 
 void BondListViewDeleteSelectionCommand::redo()
 {
-  if(std::shared_ptr<BondListViewModel> bondListModel = _bondTreeModel.lock())
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
   {
-    bondListModel->deleteSelection(_structure, _bondSelection);
-  }
+    if(std::shared_ptr<BondListViewModel> bondListModel = _bondTreeModel.lock())
+    {
+      bondListModel->deleteSelection(_object, _bondSelection);
+    }
 
-  if(_mainWindow)
-  {
-    _mainWindow->reloadDetailViews();
+    if(_mainWindow)
+    {
+      _mainWindow->reloadDetailViews();
 
-    _mainWindow->documentWasModified();
+      _mainWindow->documentWasModified();
+    }
   }
 }
 
 void BondListViewDeleteSelectionCommand::undo()
 {
-  if(std::shared_ptr<BondListViewModel> bondListModel = _bondTreeModel.lock())
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
   {
-    bondListModel->insertSelection(_structure, _bonds, _bondSelection);
-  }
+    if(std::shared_ptr<BondListViewModel> bondListModel = _bondTreeModel.lock())
+    {
+      bondListModel->insertSelection(_object, _bonds, _bondSelection);
+    }
 
-  if(_mainWindow)
-  {
-    _mainWindow->reloadDetailViews();
+    if(_mainWindow)
+    {
+      _mainWindow->reloadDetailViews();
 
-    _mainWindow->documentWasModified();
+      _mainWindow->documentWasModified();
+    }
   }
 }

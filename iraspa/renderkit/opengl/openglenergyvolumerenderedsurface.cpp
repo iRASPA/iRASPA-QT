@@ -290,41 +290,29 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
                       value=temp/65535.0;
                     }
 
-                    // Sobel 3D gradient (finite difference leads to anisotropic gradients)
-                    float gx = Images(gridData,x+1,y+1,z+1)+2*Images(gridData,x,y+1,z+1)+Images(gridData,x-1,y+1,z+1) +2*Images(gridData,x+1,y+1,z)+4*Images(gridData,x,y+1,z)+ 2*Images(gridData,x-1,y+1,z) +
-                               Images(gridData,x+1,y+1,z-1)+2*Images(gridData,x,y+1,z-1)+Images(gridData,x-1,y+1,z-1) - (Images(gridData,x+1,y-1,z+1)+2*Images(gridData,x,y-1,z+1)+Images(gridData,x-1,y-1,z+1) +
-                               2*Images(gridData,x+1,y-1,z)+4*Images(gridData,x,y-1,z)+ 2*Images(gridData,x-1,y-1,z) +Images(gridData,x+1,y-1,z-1)+2*Images(gridData,x,y-1,z-1)+Images(gridData,x-1,y-1,z-1)) ;
-
-                    float gy = Images(gridData,x+1,y+1,z+1)+2*Images(gridData,x+1,y+1,z)+Images(gridData,x+1,y+1,z-1) +2*Images(gridData,x+1,y,z+1)+4*Images(gridData,x+1,y,z)+ 2*Images(gridData,x+1,y,z-1) +
-                               Images(gridData,x+1,y-1,z+1)+2*Images(gridData,x+1,y-1,z)+Images(gridData,x+1,y-1,z-1) -(Images(gridData,x-1,y+1,z+1)+2*Images(gridData,x-1,y+1,z)+Images(gridData,x-1,y+1,z-1) +
-                               2*Images(gridData,x-1,y,z+1)+4*Images(gridData,x-1,y,z)+ 2*Images(gridData,x-1,y,z-1) + Images(gridData,x-1,y-1,z+1)+2*Images(gridData,x-1,y-1,z)+Images(gridData,x-1,y-1,z-1));
-
-                    float gz = Images(gridData,x+1,y+1,z+1)+2*Images(gridData,x,y+1,z+1)+Images(gridData,x-1,y+1,z+1) +2*Images(gridData,x+1,y,z+1)+4*Images(gridData,x,y,z+1)+2*Images(gridData,x-1,y,z+1) +
-                               Images(gridData,x+1,y-1,z+1)+2*Images(gridData,x,y-1,z+1)+Images(gridData,x-1,y-1,z+1) -(Images(gridData,x+1,y+1,z-1)+2*Images(gridData,x,y+1,z-1)+Images(gridData,x-1,y+1,z-1) +
-                               2*Images(gridData,x+1,y,z-1)+4*Images(gridData,x,y,z-1)+ 2*Images(gridData,x-1,y,z-1) +Images(gridData,x+1,y-1,z-1)+2*Images(gridData,x,y-1,z-1)+Images(gridData,x-1,y-1,z-1));
-
-                    /*
+                    // x
                     int xi = (int)(x + 0.5f);
                     float xf = x + 0.5f - xi;
-                    float xd0 = gridData[((xi-1 + 128) % 128)+y*128+z*128*128];
-                    float xd1 = gridData[(xi)+y*128+z*128*128];
-                    float xd2 = gridData[((xi+1 + 128) % 128)+y*128+z*128*128];
-                    float gx = (xd1 - xd0) * (1.0f - xf) + (xd2 - xd1) * xf;
+                    float xd0 = Images(gridData,x-1,y,z);
+                    float xd1 = Images(gridData,x,y,z);
+                    float xd2 = Images(gridData,x+1,y,z);
+                    float gx = (xd1 - xd0) * (1.0f - xf) + (xd2 - xd1) * xf; // lerp
 
+                    // y
                     int yi = (int)(y + 0.5f);
                     float yf = y + 0.5f - yi;
-                    float yd0 = gridData[x+((yi-1+128) % 128)*128+z*128*128];
-                    float yd1 = gridData[x+ (yi)*128+z*128*128];
-                    float yd2 = gridData[x+((yi+1+128)% 128)*128+z*128*128];
-                    float gy = (yd1 - yd0) * (1.0f - yf) + (yd2 - yd1) * yf;
+                    float yd0 = Images(gridData,x,y-1,z);
+                    float yd1 = Images(gridData,x,y,z);
+                    float yd2 = Images(gridData,x,y+1,z);
+                    float gy = (yd1 - yd0) * (1.0f - yf) + (yd2 - yd1) * yf; // lerp
 
+                    // z
                     int zi = (int)(z + 0.5f);
                     float zf = z + 0.5f - zi;
-                    float zd0 =  gridData[x+y*128+((zi-1+128) % 128)*128*128];
-                    float zd1 =  gridData[x+y*128+(zi)*128*128];
-                    float zd2 =  gridData[x+y*128+((zi+1+128) % 128)*128*128];
-                    float gz =  (zd1 - zd0) * (1.0f - zf) + (zd2 - zd1) * zf;
-*/
+                    float zd0 =  Images(gridData,x,y,z-1);
+                    float zd1 =  Images(gridData,x,y,z);
+                    float zd2 =  Images(gridData,x,y,z+1);
+                    float gz =  (zd1 - zd0) * (1.0f - zf) + (zd2 - zd1) * zf; // lerp
 
                     (*textureData)[x+128*y+z*128*128] = float4(value, gx, gy, gz);
                   }
@@ -468,7 +456,7 @@ out VS_OUT
 
 void main()
 {
-  vec4 pos = structureUniforms.modelMatrix * isosurfaceUniforms.boxMatrix * vertexPosition;
+  vec4 pos = structureUniforms.modelMatrix * structureUniforms.boxMatrix * vertexPosition;
   vs_out.position = pos.xyz;
   vs_out.UV =  vertexPosition.xyz;
   vs_out.clipPosition = frameUniforms.mvpMatrix * pos;
@@ -478,8 +466,7 @@ void main()
   // Calculate light vector
   vec4 dir = lightUniforms.lights[0].position - P*lightUniforms.lights[0].position.w;
 
-
-  gl_Position = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * pos;
+  gl_Position = frameUniforms.mvpMatrix * pos;
 }
 )foo";
 
@@ -550,7 +537,7 @@ void main()
   vec3 numberOfReplicas = structureUniforms.numberOfReplicas.xyz;
   vec3 direction = normalize(fs_in.position.xyz - frameUniforms.cameraPosition.xyz);
   vec4 dir = vec4(direction.x,direction.y,direction.z,0.0);
-  vec3 ray_direction = (isosurfaceUniforms.inverseBoxMatrix * dir).xyz;
+  vec3 ray_direction = (structureUniforms.inverseBoxMatrix * structureUniforms.inverseModelMatrix * dir).xyz;
 
   vec3 ray_origin = fs_in.UV;
 
@@ -579,7 +566,7 @@ void main()
   for (int i=0; i < numSamples && ray_length > 0 && colour.a < 1.0; i++)
   {
     vec4 values = texture(volume,numberOfReplicas * position);
-    vec3 normal = normalize(values.gba);
+    vec3 normal = normalize((structureUniforms.modelMatrix * transpose(structureUniforms.inverseBoxMatrix) * vec4(values.gba,0.0)).rgb);
 
     //vec4 c = colour_transfer(values.r);
     vec4 c = texture(transferFunction,values.r);

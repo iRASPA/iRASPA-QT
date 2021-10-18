@@ -31,18 +31,31 @@ class CrystalEllipsoidPrimitive: public Primitive, public RKRenderCrystalPrimiti
 public:
   CrystalEllipsoidPrimitive();
   CrystalEllipsoidPrimitive(const CrystalEllipsoidPrimitive &crystalEllipsoidPrimitive);
-  CrystalEllipsoidPrimitive(std::shared_ptr<Structure> s);
+
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class Crystal> structure);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class MolecularCrystal> structure);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class Molecule> structure);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class ProteinCrystal> structure);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class Protein> structure);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  CrystalEllipsoidPrimitive(const std::shared_ptr<const class GridVolume> volume);
+
   ~CrystalEllipsoidPrimitive() {}
+
+  std::shared_ptr<Object> shallowClone() override final;
 
   bool drawAtoms() const override {return _drawAtoms;}
 
-  std::shared_ptr<Structure> clone() override final;
-
   bool hasSymmetry() override final {return true;}
 
-  std::shared_ptr<Structure> superCell() const override final;
-  std::shared_ptr<Structure> flattenHierarchy() const override final;
-  std::shared_ptr<Structure> appliedCellContentShift() const override final;
+  std::shared_ptr<Primitive> superCell() const override final;
+  std::shared_ptr<Primitive> flattenHierarchy() const override final;
+  std::shared_ptr<Primitive> appliedCellContentShift() const override final;
 
   ObjectType structureType() override final { return ObjectType::crystalEllipsoidPrimitive; }
 

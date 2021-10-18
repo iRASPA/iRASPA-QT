@@ -39,7 +39,7 @@ public:
 private:
   MainWindow *_mainWindow;
   AtomTreeViewModel *_model;
-  std::shared_ptr<iRASPAObject> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaObject;
   std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> _moves;
   std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> _reverseMoves;
   AtomSelectionIndexPaths _oldSelection;

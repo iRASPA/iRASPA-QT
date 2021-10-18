@@ -23,14 +23,14 @@
 #include <QDebug>
 #include <algorithm>
 
-AtomTreeViewDropMoveCommand::AtomTreeViewDropMoveCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAObject> iraspaStructure,
+AtomTreeViewDropMoveCommand::AtomTreeViewDropMoveCommand(MainWindow *mainWindow, AtomTreeViewModel *model, std::shared_ptr<iRASPAObject> iraspaObject,
                                                          std::vector<std::tuple<std::shared_ptr<SKAtomTreeNode>, std::shared_ptr<SKAtomTreeNode>, size_t>> moves,
                                                          AtomSelectionIndexPaths oldSelection,
                                                          QUndoCommand *undoParent):
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
   _model(model),
-  _iraspaStructure(iraspaStructure),
+  _iraspaObject(iraspaObject),
   _moves(moves),
   _reverseMoves({}),
   _oldSelection(oldSelection)
@@ -40,12 +40,12 @@ AtomTreeViewDropMoveCommand::AtomTreeViewDropMoveCommand(MainWindow *mainWindow,
 
 void AtomTreeViewDropMoveCommand::redo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<Structure>(_iraspaObject->object()))
   {
     _reverseMoves.clear();
     _newSelection.second.clear();
 
-    if(_model->isActive(_iraspaStructure))
+    if(_model->isActive(_iraspaObject))
     {
       emit _model->layoutAboutToBeChanged();
       for(const auto &[atom, parentNode, insertionRow]  : _moves)
@@ -65,7 +65,7 @@ void AtomTreeViewDropMoveCommand::redo()
 
         whileBlocking(_model)->insertRow(insertionRow, parentNode,atom);
       }
-      structure->atomsTreeController()->setTags();
+      atomViewer->atomsTreeController()->setTags();
       emit _model->layoutChanged();
 
       // update selection of moved nodes _after_ all is moved
@@ -77,7 +77,7 @@ void AtomTreeViewDropMoveCommand::redo()
 
 
 
-      structure->atomsTreeController()->setSelectionIndexPaths(_newSelection);
+      atomViewer->atomsTreeController()->setSelectionIndexPaths(_newSelection);
       emit _model->updateSelection();
     }
     else
@@ -87,7 +87,7 @@ void AtomTreeViewDropMoveCommand::redo()
         atom->parent()->removeChild(atom->row());
         parentNode->insertChild(insertionRow, atom);
       }
-      structure->atomsTreeController()->setTags();
+      atomViewer->atomsTreeController()->setTags();
 
       // update selection of moved nodes _after_ all is moved
       // (indexPaths have been changed, including the indexPath of the parentNode)
@@ -96,7 +96,7 @@ void AtomTreeViewDropMoveCommand::redo()
         _newSelection.second.insert(projectTreeNode->indexPath());
       }
 
-      structure->atomsTreeController()->setSelectionIndexPaths(_newSelection);
+      atomViewer->atomsTreeController()->setSelectionIndexPaths(_newSelection);
     }
 
     _mainWindow->documentWasModified();
@@ -105,9 +105,9 @@ void AtomTreeViewDropMoveCommand::redo()
 
 void AtomTreeViewDropMoveCommand::undo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaObject->object()))
   {
-    if(_model->isActive(_iraspaStructure))
+    if(_model->isActive(_iraspaObject))
     {
       emit _model->layoutAboutToBeChanged();
       for(const auto &[atom, parentNode, insertionRow]  : _reverseMoves)
@@ -123,10 +123,10 @@ void AtomTreeViewDropMoveCommand::undo()
 
         whileBlocking(_model)->insertRow(insertionRow, parentNode, atom);
       }
-      structure->atomsTreeController()->setTags();
+      atomViewer->atomsTreeController()->setTags();
       emit _model->layoutChanged();
 
-      structure->atomsTreeController()->setSelectionIndexPaths(_oldSelection);
+      atomViewer->atomsTreeController()->setSelectionIndexPaths(_oldSelection);
       emit _model->updateSelection();
     }
     else
@@ -136,7 +136,7 @@ void AtomTreeViewDropMoveCommand::undo()
         atom->parent()->removeChild(atom->row());
         parentNode->insertChild(insertionRow, atom);
       }
-      structure->atomsTreeController()->setTags();
+      atomViewer->atomsTreeController()->setTags();
     }
 
     _mainWindow->documentWasModified();

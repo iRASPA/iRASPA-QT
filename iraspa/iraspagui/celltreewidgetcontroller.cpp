@@ -86,7 +86,12 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   _cellCellForm->cellStructureTypeComboBox->insertItem(13, tr("Ellipsoid"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(14, tr("Cylinder"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(15, tr("Polygonal Prism"));
-  _cellCellForm->cellStructureTypeComboBox->insertItem(16, tr("VTK Density Volume"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(16, tr("Density Volume"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(17, tr("RASPA Density Volume"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(18, tr("VTK Density Volume"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(19, tr("VASP Density Volume"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(20, tr("Gaussian Density Volume"));
+
   QStandardItemModel *model = qobject_cast<QStandardItemModel *>( _cellCellForm->cellStructureTypeComboBox->model());
   QStandardItem *itemEmpty = model->item(0);
   itemEmpty->setFlags(itemEmpty->flags() & ~Qt::ItemIsEnabled);
@@ -98,21 +103,39 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   itemCrystalSolvent->setFlags(itemCrystalSolvent->flags() & ~Qt::ItemIsEnabled);
   QStandardItem *itemMolecularCrystalSolvent = model->item(9);
   itemMolecularCrystalSolvent->setFlags(itemMolecularCrystalSolvent->flags() & ~Qt::ItemIsEnabled);
+  QStandardItem *itemDensityVolume = model->item(16);
+  itemDensityVolume->setFlags(itemDensityVolume->flags() & ~Qt::ItemIsEnabled);
+  QStandardItem *itemVASPDensityVolume = model->item(19);
+  itemVASPDensityVolume->setFlags(itemVASPDensityVolume->flags() & ~Qt::ItemIsEnabled);
+  QStandardItem *itemGaussianDensityVolume = model->item(20);
+  itemGaussianDensityVolume->setFlags(itemGaussianDensityVolume->flags() & ~Qt::ItemIsEnabled);
+
   QObject::connect(_cellCellForm->cellStructureTypeComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CellTreeWidgetController::setStructureType);
 
-  _cellCellForm->cellBoundingBoxMaxXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellBoundingBoxMaxYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellBoundingBoxMaxZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellBoundingBoxMinXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellBoundingBoxMinYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellBoundingBoxMinZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cellCellForm->cellBoundingBoxMaxXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->cellBoundingBoxMaxYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->cellBoundingBoxMaxZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->cellBoundingBoxMinXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->cellBoundingBoxMinYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->cellBoundingBoxMinZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
 
+  _cellCellForm->unitCellADoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->unitCellADoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->unitCellBDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->unitCellBDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->unitCellCDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->unitCellCDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->unitCellAlphaDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->unitCellAlphaDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->unitCellBetaDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->unitCellBetaDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->unitCellGammaDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->unitCellGammaDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
   QObject::connect(_cellCellForm->unitCellADoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CellTreeWidgetController::setUnitCellLengthA);
@@ -123,45 +146,59 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QObject::connect(_cellCellForm->unitCellBetaDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CellTreeWidgetController::setUnitCellAngleBeta);
   QObject::connect(_cellCellForm->unitCellGammaDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CellTreeWidgetController::setUnitCellAngleGamma);
 
-  _cellCellForm->unitCellAXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->unitCellAYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->unitCellAZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->unitCellBXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->unitCellBYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->unitCellBZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->unitCellCXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->unitCellCYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->unitCellCZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cellCellForm->unitCellAXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->unitCellAYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->unitCellAZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->unitCellBXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->unitCellBYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->unitCellBZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->unitCellCXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->unitCellCYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellCellForm->unitCellCZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
-  _cellCellForm->volumeDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cellCellForm->volumeDoubleSpinBox->setKeyboardTracking(false);
+  _cellCellForm->volumeDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
-  _cellCellForm->perpendicularWidthXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->perpendicularWidthYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->perpendicularWidthZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cellCellForm->perpendicularWidthXDoubleSpinBox->setKeyboardTracking(false);
+  _cellCellForm->perpendicularWidthXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
-  _cellCellForm->cellMaximumReplicaX->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMaximumReplicaX->setSpecialValueText(tr("Mult.Val."));
-  _cellCellForm->cellMaximumReplicaY->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMaximumReplicaY->setSpecialValueText(tr("Mult.Val."));
-  _cellCellForm->cellMaximumReplicaZ->setRange(-INT_MAX,INT_MAX);
-  _cellCellForm->cellMaximumReplicaZ->setSpecialValueText(tr("Mult.Val."));
+  _cellCellForm->perpendicularWidthYDoubleSpinBox->setKeyboardTracking(false);
+  _cellCellForm->perpendicularWidthYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+
+  _cellCellForm->perpendicularWidthZDoubleSpinBox->setKeyboardTracking(false);
+  _cellCellForm->perpendicularWidthZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+
 
   _cellCellForm->cellMinimumReplicaX->setRange(-INT_MAX,INT_MAX);
   _cellCellForm->cellMinimumReplicaX->setSpecialValueText(tr("Mult.Val."));
+  _cellCellForm->cellMinimumReplicaX->setKeyboardTracking(false);
+  _cellCellForm->cellMinimumReplicaX->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _cellCellForm->cellMinimumReplicaY->setRange(-INT_MAX,INT_MAX);
   _cellCellForm->cellMinimumReplicaY->setSpecialValueText(tr("Mult.Val."));
+  _cellCellForm->cellMinimumReplicaY->setKeyboardTracking(false);
+  _cellCellForm->cellMinimumReplicaY->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _cellCellForm->cellMinimumReplicaZ->setRange(-INT_MAX,INT_MAX);
   _cellCellForm->cellMinimumReplicaZ->setSpecialValueText(tr("Mult.Val."));
-
-
-
-
-  _cellCellForm->cellMaximumReplicaX->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellMaximumReplicaY->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellMaximumReplicaZ->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellMinimumReplicaX->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->cellMinimumReplicaY->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cellCellForm->cellMinimumReplicaZ->setKeyboardTracking(false);
   _cellCellForm->cellMinimumReplicaZ->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->cellMaximumReplicaX->setRange(-INT_MAX,INT_MAX);
+  _cellCellForm->cellMaximumReplicaX->setSpecialValueText(tr("Mult.Val."));
+  _cellCellForm->cellMaximumReplicaX->setKeyboardTracking(false);
+  _cellCellForm->cellMaximumReplicaX->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->cellMaximumReplicaY->setRange(-INT_MAX,INT_MAX);
+  _cellCellForm->cellMaximumReplicaY->setSpecialValueText(tr("Mult.Val."));
+  _cellCellForm->cellMaximumReplicaY->setKeyboardTracking(false);
+  _cellCellForm->cellMaximumReplicaY->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->cellMaximumReplicaZ->setRange(-INT_MAX,INT_MAX);
+  _cellCellForm->cellMaximumReplicaZ->setSpecialValueText(tr("Mult.Val."));
+  _cellCellForm->cellMaximumReplicaZ->setKeyboardTracking(false);
+  _cellCellForm->cellMaximumReplicaZ->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
 
   QObject::connect(_cellCellForm->cellMaximumReplicaX, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),this,&CellTreeWidgetController::setMaximumReplicasX);
   QObject::connect(_cellCellForm->cellMaximumReplicaY, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),this,&CellTreeWidgetController::setMaximumReplicasY);
@@ -171,46 +208,57 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QObject::connect(_cellCellForm->cellMinimumReplicaZ, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),this,&CellTreeWidgetController::setMinimumReplicasZ);
 
   _cellCellForm->rotationAngleDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->EulerAngleXDoubleSpinBox->setRange(-180.0,180.0);
+  _cellCellForm->EulerAngleXDoubleSpinBox->setDecimals(5);
+  _cellCellForm->EulerAngleXDoubleSpinBox->setSingleStep(1.0);
+  _cellCellForm->EulerAngleXDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->EulerAngleXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->EulerAngleYDoubleSpinBox->setRange(-90.0, 90.0);
+  _cellCellForm->EulerAngleYDoubleSpinBox->setDecimals(5);
+  _cellCellForm->EulerAngleYDoubleSpinBox->setSingleStep(1.0);
+  _cellCellForm->EulerAngleYDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->EulerAngleYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->EulerAngleZDoubleSpinBox->setRange(-180.0, 180.0);
+  _cellCellForm->EulerAngleZDoubleSpinBox->setDecimals(5);
+  _cellCellForm->EulerAngleZDoubleSpinBox->setSingleStep(1.0);
+  _cellCellForm->EulerAngleZDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->EulerAngleZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
- // _cellCellForm->EulerAngleXDial->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
+
+  _cellCellForm->EulerAngleXDial->setDoubleMinimum(-180.0);
+  _cellCellForm->EulerAngleXDial->setDoubleMaximum(180.0);
+  _cellCellForm->EulerAngleXDial->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->EulerAngleYSlider->setDoubleMinimum(-90.0);
+  _cellCellForm->EulerAngleYSlider->setDoubleMaximum(90.0);
   _cellCellForm->EulerAngleYSlider->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellCellForm->EulerAngleZDial->setDoubleMinimum(-180.0);
+  _cellCellForm->EulerAngleZDial->setDoubleMaximum(180.0);
   _cellCellForm->EulerAngleZDial->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
-  _cellCellForm->originXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->originYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-  _cellCellForm->originZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
   _cellCellForm->originXDoubleSpinBox->setMinimum(-DBL_MAX);
   _cellCellForm->originXDoubleSpinBox->setMaximum(DBL_MAX);
   _cellCellForm->originXDoubleSpinBox->setDecimals(5);
   _cellCellForm->originXDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->originXDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _cellCellForm->originYDoubleSpinBox->setMinimum(-DBL_MAX);
   _cellCellForm->originYDoubleSpinBox->setMaximum(DBL_MAX);
   _cellCellForm->originYDoubleSpinBox->setDecimals(5);
   _cellCellForm->originYDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->originYDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+
   _cellCellForm->originZDoubleSpinBox->setMinimum(-DBL_MAX);
   _cellCellForm->originZDoubleSpinBox->setMaximum(DBL_MAX);
   _cellCellForm->originZDoubleSpinBox->setDecimals(5);
   _cellCellForm->originZDoubleSpinBox->setKeyboardTracking(false);
   _cellCellForm->originZDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
-  _cellCellForm->EulerAngleXDoubleSpinBox->setMinimum(-180);
-  _cellCellForm->EulerAngleXDoubleSpinBox->setMaximum(180);
-  _cellCellForm->EulerAngleXDial->setDoubleMinimum(-180);
-  _cellCellForm->EulerAngleXDial->setDoubleMaximum(180);
 
-  _cellCellForm->EulerAngleYDoubleSpinBox->setMinimum(-90.0);
-  _cellCellForm->EulerAngleYDoubleSpinBox->setMaximum(90.0);
-  _cellCellForm->EulerAngleYSlider->setDoubleMinimum(-90.0);
-  _cellCellForm->EulerAngleYSlider->setDoubleMaximum(90.0);
-
-  _cellCellForm->EulerAngleZDoubleSpinBox->setMinimum(-180.0);
-  _cellCellForm->EulerAngleZDoubleSpinBox->setMaximum(180.0);
-  _cellCellForm->EulerAngleZDial->setDoubleMinimum(-180);
-  _cellCellForm->EulerAngleZDial->setDoubleMaximum(180);
 
   QObject::connect(_cellCellForm->rotationAngleDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &CellTreeWidgetController::setRotationAngle);
   QObject::connect(_cellCellForm->rotatePlusXPushButton, &QPushButton::clicked, this, &CellTreeWidgetController::rotateYawPlus);
@@ -317,6 +365,81 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   _cellStructuralForm->probeMoleculeComboBox->insertItem(8, tr("Argon"));
   QObject::connect(_cellStructuralForm->probeMoleculeComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CellTreeWidgetController::setFrameworkProbeMolecule);
 
+  _cellStructuralForm->massDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->massDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->massDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->massDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->massDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->densityDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->densityDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->densityDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->densityDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->densityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->specificVolumeDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->specificVolumeDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->specificVolumeDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->specificVolumeDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->specificVolumeDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->numberOfChannelSystemsSpinBox->setMinimum(0);
+  _cellStructuralForm->numberOfChannelSystemsSpinBox->setMaximum(10000);
+  _cellStructuralForm->numberOfChannelSystemsSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->numberOfChannelSystemsSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->numberOfInaccessiblePocketsSpinBox->setMinimum(0);
+  _cellStructuralForm->numberOfInaccessiblePocketsSpinBox->setMaximum(10000);
+  _cellStructuralForm->numberOfInaccessiblePocketsSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->numberOfInaccessiblePocketsSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setMinimum(0);
+  _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setMaximum(3);
+  _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _cellStructuralForm->computeGravimetricSurfaceAreaPushButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   _cellStructuralForm->computeVolumetricSurfaceAreaPushButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
@@ -378,6 +501,28 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
 
   QTreeWidgetItem *childSymmetryItem = new QTreeWidgetItem(symmetryItem);
   this->setItemWidget(childSymmetryItem,0, _cellSymmetryForm);
+
+  _cellSymmetryForm->holohedryLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->qualifierLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->centeringLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->centerintVector1LineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->centerintVector2LineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->centerintVector3LineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->centerintVector4LineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->inversionCenterLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->inversionLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->centrosymmetricLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->enantiomorphicLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->LaueGroupLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->pointGroupLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->SchoenfliesLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  _cellSymmetryForm->symmorphicityLineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+
+  _cellSymmetryForm->precisionDoubleSpinBox->setMinimum(0.0);
+  _cellSymmetryForm->precisionDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellSymmetryForm->precisionDoubleSpinBox->setDecimals(5);
+  _cellSymmetryForm->precisionDoubleSpinBox->setKeyboardTracking(false);
+  _cellSymmetryForm->precisionDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
   pushButtonSymmetry->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   pushButtonSymmetry->resize(size().width(), fm.height());
@@ -617,8 +762,6 @@ void CellTreeWidgetController::reloadBoundingBox()
       _cellCellForm->cellBoundingBoxMinZDoubleSpinBox->setReadOnly(true);
 
       SKBoundingBox overAllBoundingBox = boundingBox();
-
-      qDebug() << "CEHCK2" << overAllBoundingBox;
 
       whileBlocking(_cellCellForm->cellBoundingBoxMaxXDoubleSpinBox)->setValue(overAllBoundingBox.maximum().x);
       whileBlocking(_cellCellForm->cellBoundingBoxMaxYDoubleSpinBox)->setValue(overAllBoundingBox.maximum().y);
@@ -2435,7 +2578,7 @@ std::optional<double> CellTreeWidgetController::EulerAngleY()
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
     simd_quatd orientation = iraspa_structure->object()->orientation();
-    int EulerAngle = orientation.EulerAngles().y * 180.0 / M_PI;
+    double EulerAngle = orientation.EulerAngles().y * 180.0 / M_PI;
     set.insert(EulerAngle);
   }
 
@@ -2469,8 +2612,8 @@ void CellTreeWidgetController::setEulerAngleYIntermediate(double angle)
     emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
-    reloadBoundingBox();
     reloadEulerAngles();
+    reloadBoundingBox();
 
     _mainWindow->documentWasModified();
   }
@@ -2502,8 +2645,8 @@ void CellTreeWidgetController::setEulerAngleY(double angle)
     emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
-    reloadBoundingBox();
     reloadEulerAngles();
+    reloadBoundingBox();
 
     _mainWindow->documentWasModified();
   }
@@ -2521,7 +2664,7 @@ std::optional<double> CellTreeWidgetController::EulerAngleZ()
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
     simd_quatd orientation = iraspa_structure->object()->orientation();
-    int EulerAngle = orientation.EulerAngles().z * 180.0 / M_PI;
+    double EulerAngle = orientation.EulerAngles().z * 180.0 / M_PI;
     set.insert(EulerAngle);
   }
 
@@ -2589,8 +2732,8 @@ void CellTreeWidgetController::setEulerAngleZ(double angle)
     emit rendererReloadBoundingBoxData();
     emit rendererReloadData();
 
-    reloadBoundingBox();
     reloadEulerAngles();
+    reloadBoundingBox();
 
     _mainWindow->documentWasModified();
   }
@@ -2606,7 +2749,6 @@ std::optional<double>  CellTreeWidgetController::originX()
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    qDebug() << "ORIGIN X: " << iraspa_structure->object()->origin();
     set.insert(iraspa_structure->object()->origin().x);
   }
 
@@ -2875,11 +3017,8 @@ std::optional<bool> CellTreeWidgetController::flipAxisA()
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      bool value = iraspa_structure->object()->cell()->contentFlip().x;
-      set.insert(value);
-    }
+    bool value = iraspa_structure->object()->cell()->contentFlip().x;
+    set.insert(value);
   }
 
   if(set.size() == 1)
@@ -2899,6 +3038,9 @@ void CellTreeWidgetController::setFlipAxisA(bool state)
     }
   }
   reloadTransformContentProperties();
+
+  emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+  emit invalidateCachedIsoSurfaces({_iraspa_structures});
   emit rendererReloadData();
 
   _mainWindow->documentWasModified();
@@ -2913,11 +3055,8 @@ std::optional<bool> CellTreeWidgetController::flipAxisB()
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      bool value = iraspa_structure->object()->cell()->contentFlip().y;
-      set.insert(value);
-    }
+    bool value = iraspa_structure->object()->cell()->contentFlip().y;
+    set.insert(value);
   }
 
   if(set.size() == 1)
@@ -2931,12 +3070,12 @@ void CellTreeWidgetController::setFlipAxisB(bool state)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      iraspa_structure->object()->cell()->setContentFlipY(state);
-    }
+    iraspa_structure->object()->cell()->setContentFlipY(state);
   }
   reloadTransformContentProperties();
+
+  emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+  emit invalidateCachedIsoSurfaces({_iraspa_structures});
   emit rendererReloadData();
 
   _mainWindow->documentWasModified();
@@ -2951,11 +3090,8 @@ std::optional<bool> CellTreeWidgetController::flipAxisC()
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      bool value = iraspa_structure->object()->cell()->contentFlip().z;
-      set.insert(value);
-    }
+    bool value = iraspa_structure->object()->cell()->contentFlip().z;
+    set.insert(value);
   }
 
   if(set.size() == 1)
@@ -2969,12 +3105,12 @@ void CellTreeWidgetController::setFlipAxisC(bool state)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      iraspa_structure->object()->cell()->setContentFlipZ(state);
-    }
+    iraspa_structure->object()->cell()->setContentFlipZ(state);
   }
   reloadTransformContentProperties();
+
+  emit invalidateCachedAmbientOcclusionTextures({_iraspa_structures});
+  emit invalidateCachedIsoSurfaces({_iraspa_structures});
   emit rendererReloadData();
 
   _mainWindow->documentWasModified();
@@ -2989,11 +3125,8 @@ std::optional<double> CellTreeWidgetController::shiftAxisA()
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      double value = iraspa_structure->object()->cell()->contentShift().x;
-      set.insert(value);
-    }
+    double value = iraspa_structure->object()->cell()->contentShift().x;
+    set.insert(value);
   }
 
   if(set.size() == 1)
@@ -3009,10 +3142,7 @@ void CellTreeWidgetController::setShiftAxisA(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-      {
-        iraspa_structure->object()->cell()->setContentShiftX(value);
-      }
+      iraspa_structure->object()->cell()->setContentShiftX(value);
     }
     reloadTransformContentProperties();
     emit rendererReloadData();
@@ -3030,11 +3160,8 @@ std::optional<double> CellTreeWidgetController::shiftAxisB()
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      double value = iraspa_structure->object()->cell()->contentShift().y;
-      set.insert(value);
-    }
+    double value = iraspa_structure->object()->cell()->contentShift().y;
+    set.insert(value);
   }
 
   if(set.size() == 1)
@@ -3050,10 +3177,7 @@ void CellTreeWidgetController::setShiftAxisB(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-      {
-        iraspa_structure->object()->cell()->setContentShiftY(value);
-      }
+      iraspa_structure->object()->cell()->setContentShiftY(value);
     }
     reloadTransformContentProperties();
     emit rendererReloadData();
@@ -3071,11 +3195,8 @@ std::optional<double> CellTreeWidgetController::shiftAxisC()
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      double value = iraspa_structure->object()->cell()->contentShift().z;
-      set.insert(value);
-    }
+    double value = iraspa_structure->object()->cell()->contentShift().z;
+    set.insert(value);
   }
 
   if(set.size() == 1)
@@ -3091,10 +3212,7 @@ void CellTreeWidgetController::setShiftAxisC(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-      {
-        iraspa_structure->object()->cell()->setContentShiftZ(value);
-      }
+      iraspa_structure->object()->cell()->setContentShiftZ(value);
     }
     reloadTransformContentProperties();
     emit rendererReloadData();
@@ -3160,16 +3278,19 @@ void CellTreeWidgetController::reloadStructuralMass()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->massDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->massDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structuralMass(); values)
+      {
+        _cellStructuralForm->massDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->massDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structuralMass())
-      {
-        whileBlocking(_cellStructuralForm->massDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->massDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->massDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->massDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3183,16 +3304,19 @@ void CellTreeWidgetController::reloadStructuralDensity()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->densityDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->densityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structuralDensity(); values)
+      {
+        _cellStructuralForm->densityDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->densityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structuralDensity())
-      {
-        whileBlocking(_cellStructuralForm->densityDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->densityDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->densityDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->densityDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3206,16 +3330,19 @@ void CellTreeWidgetController::reloadStructuralHeliumVoidFraction()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structureHeliumVoidFraction(); values)
+      {
+        _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structureHeliumVoidFraction())
-      {
-        whileBlocking(_cellStructuralForm->heliumVoidFractionDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->heliumVoidFractionDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->heliumVoidFractionDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->heliumVoidFractionDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3229,16 +3356,19 @@ void CellTreeWidgetController::reloadStructuralSpecificVolume()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->specificVolumeDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->specificVolumeDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structureSpecificVolume(); values)
+      {
+        _cellStructuralForm->specificVolumeDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->specificVolumeDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structureSpecificVolume())
-      {
-        whileBlocking(_cellStructuralForm->specificVolumeDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->specificVolumeDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->specificVolumeDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->specificVolumeDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3252,16 +3382,19 @@ void CellTreeWidgetController::reloadStructuralAccessiblePoreVolume()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structureAccessiblePoreVolume(); values)
+      {
+        _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->accessiblePoreVolumeDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structureAccessiblePoreVolume())
-      {
-        whileBlocking(_cellStructuralForm->accessiblePoreVolumeDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->accessiblePoreVolumeDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->accessiblePoreVolumeDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->accessiblePoreVolumeDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3275,30 +3408,33 @@ void CellTreeWidgetController::reloadFrameworkProbeMoleculePopupBox()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->probeMoleculeComboBox->setEnabled(_projectTreeNode->isEditable());
-
-      if (std::optional<ProbeMolecule> type=frameworkProbeMolecule())
+      if (std::optional<std::unordered_set<ProbeMolecule, enum_hash>> values = frameworkProbeMolecule(); values)
       {
-        if(int index = _cellStructuralForm->probeMoleculeComboBox->findText("Mult. Val."); index>=0)
+        _cellStructuralForm->probeMoleculeComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
         {
-          whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->removeItem(index);
-        }
-        if(int(*type)<0)
-        {
-         whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->setCurrentIndex(int(ProbeMolecule::multiple_values));
+          if(int index = _cellStructuralForm->probeMoleculeComboBox->findText("Mult. Val."); index>=0)
+          {
+            whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->removeItem(index);
+          }
+          if(int(*(values->begin()))<0)
+          {
+           whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->setCurrentIndex(int(ProbeMolecule::multiple_values));
+          }
+          else
+          {
+            whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->setCurrentIndex(int(*(values->begin())));
+          }
         }
         else
         {
-          whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->setCurrentIndex(int(*type));
+          if(int index = _cellStructuralForm->probeMoleculeComboBox->findText("Mult. Val."); index<0)
+          {
+            whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->addItem("Mult. Val.");
+          }
+          whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->setCurrentText("Mult. Val.");
         }
-      }
-      else
-      {
-        if(int index = _cellStructuralForm->probeMoleculeComboBox->findText("Mult. Val."); index<0)
-        {
-          whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->addItem("Mult. Val.");
-        }
-        whileBlocking(_cellStructuralForm->probeMoleculeComboBox)->setCurrentText("Mult. Val.");
       }
     }
   }
@@ -3312,16 +3448,19 @@ void CellTreeWidgetController::reloadStructuralVolumetricSurfaceArea()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structureVolumetricNitrogenSurfaceArea(); values)
+      {
+        _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structureVolumetricNitrogenSurfaceArea())
-      {
-        whileBlocking(_cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3335,16 +3474,19 @@ void CellTreeWidgetController::reloadStructuralGravimetricSurfaceArea()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structureGravimetricNitrogenSurfaceArea(); values)
+      {
+        _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structureGravimetricNitrogenSurfaceArea())
-      {
-        whileBlocking(_cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3358,16 +3500,19 @@ void CellTreeWidgetController::reloadStructuralNumberOfChannelSystems()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->numberOfChannelSystemsSpinBox->setEnabled(true);
-      _cellStructuralForm->numberOfChannelSystemsSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<int>> values = structureNumberOfChannelSystems(); values)
+      {
+        _cellStructuralForm->numberOfChannelSystemsSpinBox->setEnabled(true);
+        _cellStructuralForm->numberOfChannelSystemsSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<int> value = structureNumberOfChannelSystems())
-      {
-        whileBlocking(_cellStructuralForm->numberOfChannelSystemsSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->numberOfChannelSystemsSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->numberOfChannelSystemsSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->numberOfChannelSystemsSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3381,16 +3526,19 @@ void CellTreeWidgetController::reloadStructuralNumberOfInaccessiblePockets()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->numberOfInaccessiblePocketsSpinBox->setEnabled(true);
-      _cellStructuralForm->numberOfInaccessiblePocketsSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<int>> values = structureNumberOfInaccessiblePockets(); values)
+      {
+        _cellStructuralForm->numberOfInaccessiblePocketsSpinBox->setEnabled(true);
+        _cellStructuralForm->numberOfInaccessiblePocketsSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<int> value = structureNumberOfInaccessiblePockets())
-      {
-        whileBlocking(_cellStructuralForm->numberOfInaccessiblePocketsSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->numberOfInaccessiblePocketsSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->numberOfInaccessiblePocketsSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->numberOfInaccessiblePocketsSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3404,16 +3552,19 @@ void CellTreeWidgetController::reloadStructuralDimensionalityOfPoreSystem()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setEnabled(true);
-      _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<int>> values = structureDimensionalityOfPoreSystem(); values)
+      {
+        _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setEnabled(true);
+        _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<int> value = structureDimensionalityOfPoreSystem())
-      {
-        whileBlocking(_cellStructuralForm->dimensionalityOfPoreSystemSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->dimensionalityOfPoreSystemSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->dimensionalityOfPoreSystemSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->dimensionalityOfPoreSystemSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3427,16 +3578,19 @@ void CellTreeWidgetController::reloadStructuralLargestOverallCavityDiameter()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structureLargestCavityDiameter(); values)
+      {
+        _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structureLargestCavityDiameter())
-      {
-        whileBlocking(_cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->largestOverallCavityDiameterDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3450,16 +3604,19 @@ void CellTreeWidgetController::reloadStructuralRestrictingPoreDiameter()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structureRestrictingPoreLimitingDiameter(); values)
+      {
+        _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->restrictingPoreDiameterDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structureRestrictingPoreLimitingDiameter())
-      {
-        whileBlocking(_cellStructuralForm->restrictingPoreDiameterDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->restrictingPoreDiameterDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->restrictingPoreDiameterDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->restrictingPoreDiameterDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
@@ -3473,23 +3630,26 @@ void CellTreeWidgetController::reloadStructuralLargestDiamtereAlongAViablePath()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setEnabled(true);
-      _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+      if (std::optional<std::unordered_set<double>> values = structureLargestCavityDiameterAlongAviablePath(); values)
+      {
+        _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
 
-      if (std::optional<double> value = structureLargestCavityDiameterAlongAviablePath())
-      {
-        whileBlocking(_cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox)->setValue(*value);
-      }
-      else
-      {
-        whileBlocking(_cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox)->setText("Mult. Val.");
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox)->setText("Mult. Val.");
+        }
       }
     }
   }
 }
 
 
-std::optional<double> CellTreeWidgetController::structuralMass()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structuralMass()
 {
   if(_iraspa_structures.empty())
   {
@@ -3505,14 +3665,14 @@ std::optional<double> CellTreeWidgetController::structuralMass()
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
-std::optional<double> CellTreeWidgetController::structuralDensity()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structuralDensity()
 {
   if(_iraspa_structures.empty())
   {
@@ -3528,14 +3688,14 @@ std::optional<double> CellTreeWidgetController::structuralDensity()
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
-std::optional<double> CellTreeWidgetController::structureHeliumVoidFraction()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureHeliumVoidFraction()
 {
   if(_iraspa_structures.empty())
   {
@@ -3551,15 +3711,15 @@ std::optional<double> CellTreeWidgetController::structureHeliumVoidFraction()
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
 
-std::optional<double> CellTreeWidgetController::structureSpecificVolume()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureSpecificVolume()
 {
   if(_iraspa_structures.empty())
   {
@@ -3575,14 +3735,14 @@ std::optional<double> CellTreeWidgetController::structureSpecificVolume()
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
-std::optional<double> CellTreeWidgetController::structureAccessiblePoreVolume()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureAccessiblePoreVolume()
 {
   if(_iraspa_structures.empty())
   {
@@ -3598,9 +3758,9 @@ std::optional<double> CellTreeWidgetController::structureAccessiblePoreVolume()
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3634,7 +3794,7 @@ void CellTreeWidgetController::setFrameworkProbeMolecule(int value)
   }
 }
 
-std::optional<ProbeMolecule> CellTreeWidgetController::frameworkProbeMolecule()
+std::optional<std::unordered_set<ProbeMolecule, enum_hash>> CellTreeWidgetController::frameworkProbeMolecule()
 {
   if(_iraspa_structures.empty())
   {
@@ -3650,14 +3810,14 @@ std::optional<ProbeMolecule> CellTreeWidgetController::frameworkProbeMolecule()
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
-std::optional<double> CellTreeWidgetController::structureVolumetricNitrogenSurfaceArea()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureVolumetricNitrogenSurfaceArea()
 {
   if(_iraspa_structures.empty())
   {
@@ -3673,14 +3833,14 @@ std::optional<double> CellTreeWidgetController::structureVolumetricNitrogenSurfa
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
-std::optional<double> CellTreeWidgetController::structureGravimetricNitrogenSurfaceArea()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureGravimetricNitrogenSurfaceArea()
 {
   if(_iraspa_structures.empty())
   {
@@ -3696,14 +3856,14 @@ std::optional<double> CellTreeWidgetController::structureGravimetricNitrogenSurf
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
 
-std::optional<int> CellTreeWidgetController::structureNumberOfChannelSystems()
+std::optional<std::unordered_set<int>> CellTreeWidgetController::structureNumberOfChannelSystems()
 {
   if(_iraspa_structures.empty())
   {
@@ -3719,9 +3879,9 @@ std::optional<int> CellTreeWidgetController::structureNumberOfChannelSystems()
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3739,7 +3899,7 @@ void CellTreeWidgetController::setStructureNumberOfChannelSystems(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<int> CellTreeWidgetController::structureNumberOfInaccessiblePockets()
+std::optional<std::unordered_set<int>> CellTreeWidgetController::structureNumberOfInaccessiblePockets()
 {
   if(_iraspa_structures.empty())
   {
@@ -3755,9 +3915,9 @@ std::optional<int> CellTreeWidgetController::structureNumberOfInaccessiblePocket
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3774,7 +3934,7 @@ void CellTreeWidgetController::setStructureNumberOfInaccessiblePockets(int value
   _mainWindow->documentWasModified();
 }
 
-std::optional<int> CellTreeWidgetController::structureDimensionalityOfPoreSystem()
+std::optional<std::unordered_set<int>> CellTreeWidgetController::structureDimensionalityOfPoreSystem()
 {
   if(_iraspa_structures.empty())
   {
@@ -3790,9 +3950,9 @@ std::optional<int> CellTreeWidgetController::structureDimensionalityOfPoreSystem
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3809,7 +3969,7 @@ void CellTreeWidgetController::setStructureDimensionalityOfPoreSystem(int value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> CellTreeWidgetController::structureLargestCavityDiameter()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureLargestCavityDiameter()
 {
   if(_iraspa_structures.empty())
   {
@@ -3825,9 +3985,9 @@ std::optional<double> CellTreeWidgetController::structureLargestCavityDiameter()
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3844,7 +4004,7 @@ void CellTreeWidgetController::setStructureLargestCavityDiameter(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> CellTreeWidgetController::structureRestrictingPoreLimitingDiameter()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureRestrictingPoreLimitingDiameter()
 {
   if(_iraspa_structures.empty())
   {
@@ -3860,9 +4020,9 @@ std::optional<double> CellTreeWidgetController::structureRestrictingPoreLimiting
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }
@@ -3879,7 +4039,7 @@ void CellTreeWidgetController::setStructureRestrictingPoreLimitingDiameter(doubl
   _mainWindow->documentWasModified();
 }
 
-std::optional<double> CellTreeWidgetController::structureLargestCavityDiameterAlongAviablePath()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureLargestCavityDiameterAlongAviablePath()
 {
   if(_iraspa_structures.empty())
   {
@@ -3895,9 +4055,9 @@ std::optional<double> CellTreeWidgetController::structureLargestCavityDiameterAl
     }
   }
 
-  if(set.size() == 1)
+  if(!set.empty())
   {
-    return *set.begin();
+    return set;
   }
   return std::nullopt;
 }

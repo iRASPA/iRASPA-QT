@@ -44,7 +44,7 @@ private:
   MainWindow *_mainWindow;
   AtomTreeView *_atomTreeView;
   std::shared_ptr<iRASPAObject> _iraspaStructure;
-  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<Object> _object;
   std::shared_ptr<SKAtomTreeNode> _parentTreeNode;
   std::shared_ptr<SKAtomTreeNode> _newAtomtreeNode;
   int _row;

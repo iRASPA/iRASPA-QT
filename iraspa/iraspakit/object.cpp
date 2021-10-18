@@ -7,7 +7,7 @@ Object::Object(): _cell(std::make_shared<SKCell>())
 }
 
 
-Object::Object(std::shared_ptr<SKStructure> frame): _cell(frame->cell)
+Object::Object(const std::shared_ptr<const SKStructure> frame): _cell(frame->cell)
 {
   std::optional<QString> displayName = frame->displayName;
   if(displayName)
@@ -20,26 +20,53 @@ Object::Object(std::shared_ptr<SKStructure> frame): _cell(frame->cell)
   }
 }
 
-// shallow copy, atoms/bonds are empty, spacegroup no symmetry
-Object::Object(const Structure &structure): _cell(std::make_shared<SKCell>())
+std::shared_ptr<Object> Object::shallowClone()
 {
-  _displayName = structure._displayName;
+  return std::make_shared<Object>(static_cast<const Object&>(*this));
+}
 
-  _cell = std::make_shared<SKCell>(*structure._cell);
-  _isVisible = structure._isVisible;
 
-  _origin = structure._origin;
-  _scaling = structure._scaling;
-  _orientation = structure._orientation;
-  _rotationDelta = structure._rotationDelta;
-  _periodic = structure._periodic;
+// shallow copy, atoms/bonds are empty, spacegroup no symmetry
+Object::Object(const Object &object): _cell(std::make_shared<SKCell>())
+{
+  _displayName = object._displayName;
+
+  _cell = std::make_shared<SKCell>(*object._cell);
+  _isVisible = object._isVisible;
+
+  _origin = object._origin;
+  _scaling = object._scaling;
+  _orientation = object._orientation;
+  _rotationDelta = object._rotationDelta;
+  _periodic = object._periodic;
 
   // unit cell
-  _drawUnitCell = structure._drawUnitCell;
-  _unitCellScaleFactor = structure._unitCellScaleFactor;
-  _unitCellDiffuseColor = structure._unitCellDiffuseColor;
-  _unitCellDiffuseIntensity = structure._unitCellDiffuseIntensity;
+  _drawUnitCell = object._drawUnitCell;
+  _unitCellScaleFactor = object._unitCellScaleFactor;
+  _unitCellDiffuseColor = object._unitCellDiffuseColor;
+  _unitCellDiffuseIntensity = object._unitCellDiffuseIntensity;
 }
+
+Object::Object(const std::shared_ptr<const Object> object)
+{
+  _displayName = object->_displayName;
+
+  _cell = std::make_shared<SKCell>(*object->_cell);
+  _isVisible = object->_isVisible;
+
+  _origin = object->_origin;
+  _scaling = object->_scaling;
+  _orientation = object->_orientation;
+  _rotationDelta = object->_rotationDelta;
+  _periodic = object->_periodic;
+
+  // unit cell
+  _drawUnitCell = object->_drawUnitCell;
+  _unitCellScaleFactor = object->_unitCellScaleFactor;
+  _unitCellDiffuseColor = object->_unitCellDiffuseColor;
+  _unitCellDiffuseIntensity = object->_unitCellDiffuseIntensity;
+}
+
 
 // MARK: Bounding box
 // =====================================================================
@@ -64,55 +91,88 @@ void Object::reComputeBoundingBox()
 
 }
 
-QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Object> &structure)
+QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Object> &object)
 {
-  stream << structure->_versionNumber;
-  stream << structure->_displayName;
-  stream << structure->_isVisible;
+  stream << object->_versionNumber;
+  stream << object->_displayName;
+  stream << object->_isVisible;
 
-  stream << structure->_cell;
-  stream << structure->_periodic;
-  stream << structure->_origin;
-  stream << structure->_scaling;
-  stream << structure->_orientation;
-  stream << structure->_rotationDelta;
+  stream << object->_cell;
+  stream << object->_periodic;
+  stream << object->_origin;
+  stream << object->_scaling;
+  stream << object->_orientation;
+  stream << object->_rotationDelta;
 
-  stream << structure->_drawUnitCell;
-  stream << structure->_unitCellScaleFactor;
-  stream << structure->_unitCellDiffuseColor;
-  stream << structure->_unitCellDiffuseIntensity;
+  stream << object->_drawUnitCell;
+  stream << object->_unitCellScaleFactor;
+  stream << object->_unitCellDiffuseColor;
+  stream << object->_unitCellDiffuseIntensity;
 
-  stream << structure->_localAxes;
+  stream << object->_localAxes;
+
+  stream << object->_authorFirstName;
+  stream << object->_authorMiddleName;
+  stream << object->_authorLastName;
+  stream << object->_authorOrchidID;
+  stream << object->_authorResearcherID;
+  stream << object->_authorAffiliationUniversityName;
+  stream << object->_authorAffiliationFacultyName;
+  stream << object->_authorAffiliationInstituteName;
+  stream << object->_authorAffiliationCityName;
+  stream << object->_authorAffiliationCountryName;
+
+  stream << uint16_t(object->_creationDate.day());
+  stream << uint16_t(object->_creationDate.month());
+  stream << uint32_t(object->_creationDate.year());
 
   return stream;
 }
 
-QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Object> &structure)
+QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Object> &object)
 {
+  uint16_t day,month;
+  uint32_t year;
   qint64 versionNumber;
   stream >> versionNumber;
 
-  if(versionNumber > structure->_versionNumber)
+  if(versionNumber > object->_versionNumber)
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "Object");
   }
 
-  stream >> structure->_displayName;
-  stream >> structure->_isVisible;
+  stream >> object->_displayName;
+  stream >> object->_isVisible;
 
-  stream >> structure->_cell;
-  stream >> structure->_periodic;
-  stream >> structure->_origin;
-  stream >> structure->_scaling;
-  stream >> structure->_orientation;
-  stream >> structure->_rotationDelta;
+  stream >> object->_cell;
+  stream >> object->_periodic;
+  stream >> object->_origin;
+  stream >> object->_scaling;
+  stream >> object->_orientation;
+  stream >> object->_rotationDelta;
 
-  stream >> structure->_drawUnitCell;
-  stream >> structure->_unitCellScaleFactor;
-  stream >> structure->_unitCellDiffuseColor;
-  stream >> structure->_unitCellDiffuseIntensity;
+  stream >> object->_drawUnitCell;
+  stream >> object->_unitCellScaleFactor;
+  stream >> object->_unitCellDiffuseColor;
+  stream >> object->_unitCellDiffuseIntensity;
 
-  stream >> structure->_localAxes;
+  stream >> object->_localAxes;
+
+  stream >> object->_authorFirstName;
+  stream >> object->_authorMiddleName;
+  stream >> object->_authorLastName;
+  stream >> object->_authorOrchidID;
+  stream >> object->_authorResearcherID;
+  stream >> object->_authorAffiliationUniversityName;
+  stream >> object->_authorAffiliationFacultyName;
+  stream >> object->_authorAffiliationInstituteName;
+  stream >> object->_authorAffiliationCityName;
+  stream >> object->_authorAffiliationCountryName;
+
+  stream >> day;
+  stream >> month;
+  stream >> year;
+  object->_creationDate = QDate(int(year),int(month),int(day));
 
   return stream;
 }

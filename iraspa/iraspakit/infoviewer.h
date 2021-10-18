@@ -24,6 +24,7 @@
 #include <QString>
 #include <QDate>
 
+/*
 class BasicInfoViewer
 {
 public:
@@ -48,9 +49,9 @@ public:
   virtual void setAuthorAffiliationCityName(QString name) = 0;
   virtual QString authorAffiliationCountryName() = 0;
   virtual void setAuthorAffiliationCountryName(QString name) = 0;
-};
+};*/
 
-class InfoViewer: public BasicInfoViewer
+class InfoViewer
 {
 public:
   enum class TemperatureScale: qint64
@@ -86,8 +87,8 @@ public:
   };
 
   virtual ~InfoViewer() = 0;
-  virtual QDate creationDate() = 0;
-  virtual void setCreationDate(QDate date) = 0;
+  //virtual QDate creationDate() = 0;
+  //virtual void setCreationDate(QDate date) = 0;
   virtual QString creationTemperature() = 0;
   virtual void setCreationTemperature(QString name) = 0;
   virtual TemperatureScale creationTemperatureScale() = 0;

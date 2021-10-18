@@ -30,4 +30,11 @@ class BondViewer
 public:
   virtual ~BondViewer() = 0;
   virtual std::shared_ptr<SKBondSetController> bondSetController() = 0;
+  virtual void computeBonds() = 0;
+
+  virtual void setBondSelection(int asymmetricBondId) = 0;
+  virtual void addBondToSelection(int asymmetricBondId) = 0;
+  virtual void toggleBondSelection(int asymmetricAtomId) = 0;
+
+  virtual std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &) = 0;
 };

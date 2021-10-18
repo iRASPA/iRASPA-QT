@@ -29,10 +29,23 @@ public:
   Protein();
   Protein(const Protein &protein);
   Protein(std::shared_ptr<SKStructure> frame);
-  Protein(std::shared_ptr<Structure> s);
+
+  Protein(const std::shared_ptr<const class Crystal> structure);
+  Protein(const std::shared_ptr<const class MolecularCrystal> structure);
+  Protein(const std::shared_ptr<const class Molecule> structure);
+  Protein(const std::shared_ptr<const class ProteinCrystal> structure);
+  Protein(const std::shared_ptr<const class Protein> structure);
+  Protein(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  Protein(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  Protein(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  Protein(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  Protein(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  Protein(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  Protein(const std::shared_ptr<const class GridVolume> volume);
+
   ~Protein() {}
 
-  std::shared_ptr<Structure> clone() override final;
+  std::shared_ptr<Object> shallowClone() override final;
   ObjectType structureType() override final  { return ObjectType::protein; }
 
   std::shared_ptr<Structure> flattenHierarchy() const override final;

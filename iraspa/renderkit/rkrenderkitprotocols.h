@@ -342,11 +342,22 @@ class RKRenderDensityVolumeSource
 {
 public:
   virtual ~RKRenderDensityVolumeSource() = 0;
-  virtual std::vector<float4> data() = 0;
-  virtual int3 dimension() = 0;  
-  virtual double3 spacing() = 0;
-  virtual double3 aspectRatio() = 0;
-  virtual std::pair<double, double> range() = 0;
+
+  virtual QByteArray data() const = 0;
+  virtual int3 dimension() const = 0;
+  virtual double3 spacing() const = 0;
+};
+
+class RKRenderRASPADensityVolumeSource: public RKRenderDensityVolumeSource
+{
+public:
+  virtual ~RKRenderRASPADensityVolumeSource() = 0;
+};
+
+class RKRenderVTKDensityVolumeSource: public RKRenderDensityVolumeSource
+{
+public:
+  virtual ~RKRenderVTKDensityVolumeSource() = 0;
 };
 
 class RKRenderDataSource

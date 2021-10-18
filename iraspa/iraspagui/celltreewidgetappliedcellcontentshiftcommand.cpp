@@ -46,8 +46,11 @@ void CellTreeWidgetAppliedCellContentShiftCommand::redo()
 {
   for(std::shared_ptr<iRASPAObject> iraspa_structure: _iraspa_structures)
   {
-    std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->appliedCellContentShift();
-    iraspa_structure->setObject(structure);
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      std::shared_ptr<Structure> newStructure = structure->appliedCellContentShift();
+      iraspa_structure->setObject(newStructure);
+    }
   }
 
   emit _controller->invalidateCachedAmbientOcclusionTextures(_projectStructure->sceneList()->allIRASPAStructures());

@@ -42,6 +42,8 @@
 #include "bondvisualappearanceviewer.h"
 #include "adsorptionsurfacevisualappearanceviewer.h"
 #include "atomtextvisualappearanceviewer.h"
+#include "primitive.h"
+#include "gridvolume.h"
 
 struct enum_hash
 {
@@ -64,11 +66,15 @@ public:
   Structure();
   Structure(std::shared_ptr<SKAtomTreeController> atomTreeController);
   Structure(std::shared_ptr<SKStructure> structure);
-  Structure(std::shared_ptr<Structure> clone);
   Structure(const Structure &structure);
+
+  Structure(const std::shared_ptr<const Structure> structure);
+  Structure(const std::shared_ptr<const Primitive> primitive);
+  Structure(const std::shared_ptr<const GridVolume> volume);
+
   virtual ~Structure() {}
 
-  virtual std::shared_ptr<Structure> clone() override {return nullptr;}
+  std::shared_ptr<Object> shallowClone() override;
 
   virtual bool hasSymmetry() {return false;}
   virtual std::shared_ptr<Structure> superCell() const {return nullptr;}
@@ -111,15 +117,15 @@ public:
   virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedInternalBonds() const override;
   virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedExternalBonds() const override;
 
-  virtual std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &);
-  virtual std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &);
+  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override;
+  std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &) override;
 
   virtual std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const override;
 
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
 
   SKBoundingBox boundingBox() const override;
   SKBoundingBox transformedBoundingBox() const final override;
@@ -128,7 +134,7 @@ public:
   void expandSymmetry() override;
   virtual double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
   virtual double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
-  void recomputeSelectionBodyFixedBasis();
+  void recomputeSelectionBodyFixedBasis() override;
 
   virtual double bondLength(std::shared_ptr<SKBond> bond) const;
   virtual double3 bondVector(std::shared_ptr<SKBond> bond) const;
@@ -140,22 +146,22 @@ public:
 
 
 
-  void clearSelection();
-  void setAtomSelection(int asymmetricAtomId);
-  void setBondSelection(int asymmetricBondId);
-  void addAtomToSelection(int asymmetricAtomId);
-  void addBondToSelection(int asymmetricBondId);
-  void toggleAtomSelection(int asymmetricAtomId);
-  void toggleBondSelection(int asymmetricAtomId);
-  void setAtomSelection(std::set<int>& atomIds);
-  void addToAtomSelection(std::set<int>& atomIds);
+  void clearSelection() override final;
+  void setAtomSelection(int asymmetricAtomId) override final;
+  void setBondSelection(int asymmetricBondId) override final;
+  void addAtomToSelection(int asymmetricAtomId) override final;
+  void addBondToSelection(int asymmetricBondId) override final;
+  void toggleAtomSelection(int asymmetricAtomId) override final;
+  void toggleBondSelection(int asymmetricAtomId) override final;
+  void setAtomSelection(std::set<int>& atomIds) override final;
+  void addToAtomSelection(std::set<int>& atomIds) override final;
 
 
 
   virtual double3 CartesianPosition(double3 position, int3 replicaPosition) const {Q_UNUSED(position); Q_UNUSED(replicaPosition); return double(); }
   virtual double3 FractionalPosition(double3 position, int3 replicaPosition) const {Q_UNUSED(position); Q_UNUSED(replicaPosition); return double(); }
-  void convertAsymmetricAtomsToCartesian();
-  void convertAsymmetricAtomsToFractional();
+  void convertAsymmetricAtomsToCartesian() override;
+  void convertAsymmetricAtomsToFractional() override;
 
   int numberOfAtoms() const override {return 0;}
   int numberOfInternalBonds() const override {return 0;}
@@ -163,11 +169,11 @@ public:
 
   void setAtomTreeController(std::shared_ptr<SKAtomTreeController> controller) {_atomsTreeController = controller;}
   std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
+  const std::shared_ptr<SKAtomTreeController> &atomsTreeController() const {return _atomsTreeController;}
   std::shared_ptr<SKBondSetController> bondSetController() override final {return _bondSetController;}
 
-
-  // primitive
-  /*
+  // ==========================================================================================
+  // Legacy for reading primitive from 'Structure' (Remove in the future)
   simd_quatd primitiveOrientation() const {return _primitiveOrientation;}
   void setPrimitiveOrientation(simd_quatd orientation) {_primitiveOrientation = orientation;}
   double primitiveRotationDelta() const {return _primitiveRotationDelta;}
@@ -242,7 +248,8 @@ public:
   void setBackPrimitiveSpecularColor(QColor color)  {_primitiveBackSideSpecularColor = color;}
   double backPrimitiveShininess() const  {return _primitiveBackSideShininess;}
   void setBackPrimitiveShininess(double value)  {_primitiveBackSideShininess = value;}
-*/
+  // ==========================================================================================
+
   // atoms
   bool drawAtoms() const override {return _drawAtoms;}
   void setDrawAtoms(bool drawAtoms) override {_drawAtoms = drawAtoms;}
@@ -473,29 +480,34 @@ public:
   void setRenderTextOffsetZ(double value) override {_atomTextOffset.z = value;}
 
   // info
-  QString authorFirstName() override final {return _authorFirstName;}
-  void setAuthorFirstName(QString name) override final {_authorFirstName = name;}
-  QString authorMiddleName() override final {return _authorMiddleName;}
-  void setAuthorMiddleName(QString name) override final {_authorMiddleName = name;}
-  QString authorLastName() override final {return _authorLastName;}
-  void setAuthorLastName(QString name) override final  {_authorLastName = name;}
-  QString authorOrchidID() override final {return _authorOrchidID;}
-  void setAuthorOrchidID(QString name) override final {_authorOrchidID = name;}
-  QString authorResearcherID() override final {return _authorResearcherID;}
-  void setAuthorResearcherID(QString name) override final {_authorResearcherID = name;}
-  QString authorAffiliationUniversityName() override final {return _authorAffiliationUniversityName;}
-  void setAuthorAffiliationUniversityName(QString name) override final {_authorAffiliationUniversityName = name;}
-  QString authorAffiliationFacultyName() override final {return _authorAffiliationFacultyName;}
-  void setAuthorAffiliationFacultyName(QString name) override final {_authorAffiliationFacultyName = name;}
-  QString authorAffiliationInstituteName() override final {return _authorAffiliationInstituteName;}
-  void setAuthorAffiliationInstituteName(QString name) override final {_authorAffiliationInstituteName = name;}
-  QString authorAffiliationCityName() override final {return _authorAffiliationCityName;}
-  void setAuthorAffiliationCityName(QString name) override final {_authorAffiliationCityName = name;}
-  QString authorAffiliationCountryName() override final {return _authorAffiliationCountryName;}
-  void setAuthorAffiliationCountryName(QString name) override final {_authorAffiliationCountryName = name;}
+  //=================================================================================================
+  // remove in future version
+  QString authorFirstName()  {return _authorFirstName;}
+  void setAuthorFirstName(QString name) {_authorFirstName = name;}
+  QString authorMiddleName() {return _authorMiddleName;}
+  void setAuthorMiddleName(QString name)  {_authorMiddleName = name;}
+  QString authorLastName() {return _authorLastName;}
+  void setAuthorLastName(QString name)  {_authorLastName = name;}
+  QString authorOrchidID()  {return _authorOrchidID;}
+  void setAuthorOrchidID(QString name)  {_authorOrchidID = name;}
+  QString authorResearcherID()  {return _authorResearcherID;}
+  void setAuthorResearcherID(QString name)  {_authorResearcherID = name;}
+  QString authorAffiliationUniversityName()  {return _authorAffiliationUniversityName;}
+  void setAuthorAffiliationUniversityName(QString name)  {_authorAffiliationUniversityName = name;}
+  QString authorAffiliationFacultyName()  {return _authorAffiliationFacultyName;}
+  void setAuthorAffiliationFacultyName(QString name) {_authorAffiliationFacultyName = name;}
+  QString authorAffiliationInstituteName()  {return _authorAffiliationInstituteName;}
+  void setAuthorAffiliationInstituteName(QString name)  {_authorAffiliationInstituteName = name;}
+  QString authorAffiliationCityName()  {return _authorAffiliationCityName;}
+  void setAuthorAffiliationCityName(QString name)  {_authorAffiliationCityName = name;}
+  QString authorAffiliationCountryName()  {return _authorAffiliationCountryName;}
+  void setAuthorAffiliationCountryName(QString name)  {_authorAffiliationCountryName = name;}
 
-  QDate creationDate() override final {return _creationDate;}
-  void setCreationDate(QDate date) override final {_creationDate = date;}
+
+  QDate creationDate() {return _creationDate;}
+  void setCreationDate(QDate date) {_creationDate = date;}
+  //=================================================================================================
+
   QString creationTemperature() override final {return _creationTemperature;}
   void setCreationTemperature(QString name) override final {_creationTemperature = name;}
   TemperatureScale creationTemperatureScale() override final {return _creationTemperatureScale;}
@@ -628,14 +640,10 @@ protected:
   std::shared_ptr<SKAtomTreeController> _atomsTreeController;
   std::shared_ptr<SKBondSetController> _bondSetController;
 
-  SKSpaceGroup _spaceGroup;
-  //std::shared_ptr<SKCell> _cell;
+  SKSpaceGroup _spaceGroup = SKSpaceGroup(1);
 
-  //double3 _origin = double3(0.0, 0.0, 0.0);
-  //double3 _scaling = double3(1.0, 1.0, 1.0);
-  //simd_quatd _orientation = simd_quatd(1.0, double3(0.0, 0.0, 0.0));
-  //double _rotationDelta = 5.0;
-
+  // ==========================================================================================
+  // Legacy for reading primitive from 'Structure' (Remove in the future)
   double3x3 _primitiveTransformationMatrix = double3x3(1.0,0.0,0.0, 0.0,1.0,0.0, 0.0,0.0,1.0);
   simd_quatd _primitiveOrientation = simd_quatd(0.0,0.0,0.0,1.0);
   double _primitiveRotationDelta = 5.0;
@@ -679,7 +687,7 @@ protected:
   double _primitiveBackSideDiffuseIntensity = 1.0;
   double _primitiveBackSideSpecularIntensity = 0.2;
   double _primitiveBackSideShininess = 4.0;
-
+  // ==========================================================================================
 
   double _minimumGridEnergyValue = 0.0f;
 
@@ -825,18 +833,22 @@ protected:
   double _structureRestrictingPoreLimitingDiameter = 0.0;
   double _structureLargestCavityDiameterAlongAViablePath = 0.0;
 
-  QString _authorFirstName = QString("");
-  QString _authorMiddleName = QString("");
-  QString _authorLastName = QString("");
-  QString _authorOrchidID = QString("");
-  QString _authorResearcherID = QString("");
-  QString _authorAffiliationUniversityName = QString("");
-  QString _authorAffiliationFacultyName = QString("");
-  QString _authorAffiliationInstituteName = QString("");
-  QString _authorAffiliationCityName = QString("");
-  QString _authorAffiliationCountryName = QString("Netherlands");
+  // ================================================================
+  // remove in future version
+  //QString _authorFirstName = QString("");
+  //QString _authorMiddleName = QString("");
+  //QString _authorLastName = QString("");
+  //QString _authorOrchidID = QString("");
+  //QString _authorResearcherID = QString("");
+  //QString _authorAffiliationUniversityName = QString("");
+  //QString _authorAffiliationFacultyName = QString("");
+  //QString _authorAffiliationInstituteName = QString("");
+  //QString _authorAffiliationCityName = QString("");
+  //QString _authorAffiliationCountryName = QString("Netherlands");
+  //
+  //QDate _creationDate = QDate().currentDate();
+  // ================================================================
 
-  QDate _creationDate = QDate().currentDate();
   QString _creationTemperature = QString();
   TemperatureScale _creationTemperatureScale = TemperatureScale::Kelvin;
   QString _creationPressure = QString("");
@@ -884,8 +896,6 @@ protected:
   QString _citationDOI = QString("");
   QDate _citationPublicationDate = QDate().currentDate();
   QString _citationDatebaseCodes = QString();
-
-
 };
 
 struct FrameConsumer

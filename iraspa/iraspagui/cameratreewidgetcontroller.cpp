@@ -359,18 +359,42 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QTreeWidgetItem *childLightsItem = new QTreeWidgetItem(lightsItem);
   this->setItemWidget(childLightsItem,0, _cameraLightsForm);
 
+
+  _cameraLightsForm->ambientLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _cameraLightsForm->ambientLightIntensityDoubleSpinBox->setDecimals(5);
+  _cameraLightsForm->ambientLightIntensityDoubleSpinBox->setSingleStep(0.1);
+  _cameraLightsForm->ambientLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _cameraLightsForm->ambientLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cameraLightsForm->ambientLightIntensityDoubleSlider->setMinimum(0);
+  _cameraLightsForm->ambientLightIntensityDoubleSlider->setMaximum(1000);
+
+  _cameraLightsForm->diffuseLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _cameraLightsForm->diffuseLightIntensityDoubleSpinBox->setDecimals(5);
+  _cameraLightsForm->diffuseLightIntensityDoubleSpinBox->setSingleStep(0.1);
+  _cameraLightsForm->diffuseLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _cameraLightsForm->diffuseLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cameraLightsForm->diffuseLightIntensityDoubleSlider->setMinimum(0);
+  _cameraLightsForm->diffuseLightIntensityDoubleSlider->setMaximum(1000);
+
+  _cameraLightsForm->specularLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _cameraLightsForm->specularLightIntensityDoubleSpinBox->setDecimals(5);
+  _cameraLightsForm->specularLightIntensityDoubleSpinBox->setSingleStep(0.1);
+  _cameraLightsForm->specularLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _cameraLightsForm->specularLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _cameraLightsForm->specularLightIntensityDoubleSlider->setMinimum(0);
+  _cameraLightsForm->specularLightIntensityDoubleSlider->setMaximum(1000);
+
   QObject::connect(_cameraLightsForm->ambientLightIntensityDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setAmbientLightIntensity);
-  QObject::connect(_cameraLightsForm->ambientLightIntensityDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&CameraTreeWidgetController::setAmbientLightIntensity);
+  QObject::connect(_cameraLightsForm->ambientLightIntensityDoubleSlider,static_cast<void (QSlider::*)(int)>(&QSlider::valueChanged),this,&CameraTreeWidgetController::setAmbientLightIntensity);
   QObject::connect(_cameraLightsForm->ambientLightPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::setAmbientColor);
 
   QObject::connect(_cameraLightsForm->diffuseLightIntensityDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setDiffuseLightIntensity);
-  QObject::connect(_cameraLightsForm->diffuseLightIntensityDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&CameraTreeWidgetController::setDiffuseLightIntensity);
+  QObject::connect(_cameraLightsForm->diffuseLightIntensityDoubleSlider,static_cast<void (QSlider::*)(int)>(&QSlider::valueChanged),this,&CameraTreeWidgetController::setDiffuseLightIntensity);
   QObject::connect(_cameraLightsForm->diffuseLightPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::setDiffuseColor);
 
   QObject::connect(_cameraLightsForm->specularLightIntensityDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&CameraTreeWidgetController::setSpecularLightIntensity);
-  QObject::connect(_cameraLightsForm->specularLightIntensityDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&CameraTreeWidgetController::setSpecularLightIntensity);
-  QObject::connect(_cameraLightsForm->specularLightPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::setSpecularColor);
-
+  QObject::connect(_cameraLightsForm->specularLightIntensityDoubleSlider,static_cast<void (QSlider::*)(int)>(&QSlider::valueChanged),this,&CameraTreeWidgetController::setSpecularLightIntensity);
+  QObject::connect(_cameraLightsForm->specularLightPushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::setSpecularColor);  
 
   pushButtonLights->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   pushButtonLights->resize(size().width(), fm.height());
@@ -1885,17 +1909,25 @@ void CameraTreeWidgetController::reloadLightsProperties()
     _cameraLightsForm->specularLightIntensityDoubleSlider->setEnabled(true);
     _cameraLightsForm->specularLightPushButton->setEnabled(true);
 
-    whileBlocking(_cameraLightsForm->ambientLightIntensityDoubleSpinBox)->setValue(_project->renderLights().front()->ambientIntensity());
-    whileBlocking(_cameraLightsForm->ambientLightIntensityDoubleSlider)->setDoubleValue(_project->renderLights().front()->ambientIntensity());
-    whileBlocking(_cameraLightsForm->ambientLightPushButton)->setColor(_project->renderLights().front()->ambientColor());
+    double ambientIntensity = _project->renderLights().front()->ambientIntensity();
+    double diffuseIntensity = _project->renderLights().front()->diffuseIntensity();
+    double specularIntensity = _project->renderLights().front()->specularIntensity();
 
-    whileBlocking(_cameraLightsForm->diffuseLightIntensityDoubleSpinBox)->setValue(_project->renderLights().front()->diffuseIntensity());
-    whileBlocking(_cameraLightsForm->diffuseLightIntensityDoubleSlider)->setDoubleValue(_project->renderLights().front()->diffuseIntensity());
-    whileBlocking(_cameraLightsForm->diffuseLightPushButton)->setColor(_project->renderLights().front()->diffuseColor());
+    QColor ambientColor = _project->renderLights().front()->ambientColor();
+    QColor diffuseColor = _project->renderLights().front()->diffuseColor();
+    QColor specularColor = _project->renderLights().front()->specularColor();
 
-    whileBlocking(_cameraLightsForm->specularLightIntensityDoubleSpinBox)->setValue(_project->renderLights().front()->specularIntensity());
-    whileBlocking(_cameraLightsForm->specularLightIntensityDoubleSlider)->setDoubleValue(_project->renderLights().front()->specularIntensity());
-    whileBlocking(_cameraLightsForm->specularLightPushButton)->setColor(_project->renderLights().front()->specularColor());
+    whileBlocking(_cameraLightsForm->ambientLightIntensityDoubleSpinBox)->setValue(ambientIntensity);
+    whileBlocking(_cameraLightsForm->ambientLightIntensityDoubleSlider)->setValue(ambientIntensity * 1000.0);
+    whileBlocking(_cameraLightsForm->ambientLightPushButton)->setColor(ambientColor);
+
+    whileBlocking(_cameraLightsForm->diffuseLightIntensityDoubleSpinBox)->setValue(diffuseIntensity);
+    whileBlocking(_cameraLightsForm->diffuseLightIntensityDoubleSlider)->setValue(diffuseIntensity * 1000.0);
+    whileBlocking(_cameraLightsForm->diffuseLightPushButton)->setColor(diffuseColor);
+
+    whileBlocking(_cameraLightsForm->specularLightIntensityDoubleSpinBox)->setValue(specularIntensity);
+    whileBlocking(_cameraLightsForm->specularLightIntensityDoubleSlider)->setValue(specularIntensity * 1000.0);
+    whileBlocking(_cameraLightsForm->specularLightPushButton)->setColor(specularColor);
   }
 }
 
@@ -1903,9 +1935,9 @@ void CameraTreeWidgetController::setAmbientLightIntensity(double intensity)
 {
   if (_project)
   {
-    _project->renderLights().front()->setAmbientIntensity(intensity);
-    whileBlocking(_cameraLightsForm->ambientLightIntensityDoubleSpinBox)->setValue(intensity);
-    whileBlocking(_cameraLightsForm->ambientLightIntensityDoubleSlider)->setDoubleValue(intensity);
+    _project->renderLights().front()->setAmbientIntensity(intensity / 1000.0);
+    reloadLightsProperties();
+
     emit updateRenderer();
 
     _mainWindow->documentWasModified();
@@ -1916,9 +1948,8 @@ void CameraTreeWidgetController::setDiffuseLightIntensity(double intensity)
 {
   if (_project)
   {
-    _project->renderLights().front()->setDiffuseIntensity(intensity);
-    whileBlocking(_cameraLightsForm->diffuseLightIntensityDoubleSpinBox)->setValue(intensity);
-    whileBlocking(_cameraLightsForm->diffuseLightIntensityDoubleSlider)->setDoubleValue(intensity);
+    _project->renderLights().front()->setDiffuseIntensity(intensity / 1000.0);
+    reloadLightsProperties();
     emit updateRenderer();
 
     _mainWindow->documentWasModified();
@@ -1929,9 +1960,8 @@ void CameraTreeWidgetController::setSpecularLightIntensity(double intensity)
 {
   if (_project)
   {
-    _project->renderLights().front()->setSpecularIntensity(intensity);
-    whileBlocking(_cameraLightsForm->specularLightIntensityDoubleSpinBox)->setValue(intensity);
-    whileBlocking(_cameraLightsForm->specularLightIntensityDoubleSlider)->setDoubleValue(intensity);
+    _project->renderLights().front()->setSpecularIntensity(intensity / 1000.0);
+    reloadLightsProperties();
     emit updateRenderer();
 
     _mainWindow->documentWasModified();

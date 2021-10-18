@@ -9,93 +9,108 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="37"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="67"/>
         <source>Show Adsorption Surface</source>
         <translation>흡착 표면 표시</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="51"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="24"/>
         <source>Isocontour Value</source>
         <translation>Isocontour 값&quot;</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="58"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="109"/>
+        <source>Rendering Method</source>
+        <translation>렌더링 방법</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="116"/>
         <source>Probe Particle</source>
         <translation>프로브 입자</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="104"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="136"/>
         <source>Opacity</source>
         <translation>불투명</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="201"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="143"/>
+        <source>Transfer Function</source>
+        <translation>전달 함수</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="196"/>
+        <source>Step Length</source>
+        <translation>단계 길이</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="326"/>
         <source>Value</source>
         <translation>값</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="208"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="333"/>
         <source>Hue</source>
         <translation>색조</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="215"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="340"/>
         <source>Saturation</source>
         <translation>채도</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="282"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="407"/>
         <source>Inside Surface</source>
         <translation>뒷면</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="290"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="510"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="415"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="635"/>
         <source>High Dynamic Range</source>
         <translation>높은 동적 범위</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="310"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="530"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="435"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="655"/>
         <source>Exposure</source>
         <translation>노출</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="365"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="372"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="414"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="585"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="592"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="634"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="490"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="497"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="539"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="710"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="717"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="759"/>
         <source>Color</source>
         <translation>색깔</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="379"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="599"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="504"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="724"/>
         <source>Shininess</source>
         <translation>광택</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="386"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="606"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="511"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="731"/>
         <source>Specular Light Intensity</source>
         <translation>반사광 강도</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="400"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="620"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="525"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="745"/>
         <source>Diffuse Light Intensity</source>
         <translation>확산 광 강도</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="407"/>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="627"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="532"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="752"/>
         <source>Ambient Light Intensity</source>
         <translation>주변 광 강도</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="502"/>
+        <location filename="../iraspagui/appearanceadsorptionsurfaceform.ui" line="627"/>
         <source>Outside Surface</source>
         <translation>전면</translation>
     </message>
@@ -578,343 +593,354 @@
 <context>
     <name>AppearanceTreeWidgetController</name>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="57"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="61"/>
         <source>Primitive Properties</source>
         <translation>기본 속성</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="317"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="321"/>
         <source>Atoms</source>
         <translation>원자들</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="325"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="329"/>
         <source>Ball and Stick</source>
         <translation>볼과 스틱</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="326"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="330"/>
         <source>Van der Waals</source>
         <translation>판데르 발스 (van der Waals)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="327"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="331"/>
         <source>Unity</source>
         <translation>단일성</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="329"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="343"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="548"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="333"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="347"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="552"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="625"/>
         <source>Default</source>
         <translation>기본</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="330"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="334"/>
         <source>Fancy</source>
         <translation>멋지게</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="331"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="335"/>
         <source>Licorice</source>
         <translation>Licorice</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="332"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="336"/>
         <source>Objects</source>
         <translation>사물</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="334"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="338"/>
         <source>Jmol</source>
         <translation>Jmol</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="335"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="339"/>
         <source>Rasmol Modern</source>
         <translation>Rasmol Modern</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="336"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="340"/>
         <source>Rasmol</source>
         <translation>Rasmol</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="337"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="341"/>
         <source>Vesta</source>
         <translation>Vesta</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="339"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="345"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="343"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="349"/>
         <source>Element</source>
         <translation>원소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="340"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="346"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="344"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="350"/>
         <source>Force Field First</source>
         <translation>역장 우선</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="341"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="347"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="345"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="351"/>
         <source>Force Field Only</source>
         <translation>역장만</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="349"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="448"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="542"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="715"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="353"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="452"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="546"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="736"/>
         <source>None</source>
         <translation>없음</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="350"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="449"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="354"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="453"/>
         <source>Worley Noise 3D</source>
         <translation>Worley Noise 3D</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="351"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="450"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="355"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="454"/>
         <source>Striped</source>
         <translation>스트라이프</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="352"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="451"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="356"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="455"/>
         <source>Glow</source>
         <translation>훤하게</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="436"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="440"/>
         <source>Bonds</source>
         <translation>결합</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="444"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="448"/>
         <source>Uniform</source>
         <translation>고르게</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="445"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="449"/>
         <source>Split</source>
         <translation>스플릿</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="446"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="450"/>
         <source>Gradient</source>
         <translation>점층</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="514"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="518"/>
         <source>Unit Cell</source>
         <translation>단위 결정 구조</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="534"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="538"/>
         <source>Local Axes</source>
         <translation>로컬 축</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="543"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="547"/>
         <source>Origin</source>
         <translation>기원</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="544"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="548"/>
         <source>Origin Bounding-Box</source>
         <translation>원점 경계 상자</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="546"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="550"/>
         <source>Center Bounding-Box</source>
         <translation>중심 경계 상자</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="549"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="553"/>
         <source>Default RGB</source>
         <translation>기본 RGB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="550"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="554"/>
         <source>Cylinder</source>
         <translation>실린더</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="551"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="555"/>
         <source>Cylinder RGB</source>
         <translation>실린더 RGB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="553"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="557"/>
         <source>Absolute</source>
         <translation>순수한</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="554"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="558"/>
         <source>Relative</source>
         <translation>비교적</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="610"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="614"/>
         <source>Adsorption Surface</source>
         <translation>흡착면</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="618"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="622"/>
+        <source>Isosurface</source>
+        <translation>등가면</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="623"/>
+        <source>Volume Rendering</source>
+        <translation>볼륨 렌더링</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="627"/>
         <source>Helium</source>
         <translation>헬륨</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="619"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="628"/>
         <source>Methane</source>
         <translation>메탄</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="620"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="629"/>
         <source>Nitrogen</source>
         <translation>질소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="621"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="630"/>
         <source>Hydrogen</source>
         <translation>수소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="622"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="631"/>
         <source>Water</source>
         <translation>물</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="623"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="632"/>
         <source>CO₂</source>
         <translation>이산화탄소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="624"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="633"/>
         <source>Xenon</source>
         <translation>제논</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="625"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="634"/>
         <source>Krypton</source>
         <translation>크립톤</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="626"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="635"/>
         <source>Argon</source>
         <translation>아르곤</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="706"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="727"/>
         <source>Annotation</source>
         <translation>주석</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="716"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="737"/>
         <source>Display Name</source>
         <translation>이름 표시하기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="717"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="738"/>
         <source>Identifier</source>
         <translation>식별자</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="718"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="739"/>
         <source>Chemical Element</source>
         <translation>화학 원소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="719"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="740"/>
         <source>Force Field Type</source>
         <translation>역장 유형</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="720"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="741"/>
         <source>Position</source>
         <translation>위치</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="721"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="742"/>
         <source>Charge</source>
         <translation>전하</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="545"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="724"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="549"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="745"/>
         <source>Center</source>
         <translation>중앙</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="725"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="746"/>
         <source>Left</source>
         <translation>왼쪽</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="726"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="747"/>
         <source>Right</source>
         <translation>오른쪽</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="727"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="748"/>
         <source>Top</source>
         <translation>상단</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="728"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="749"/>
         <source>Bottom</source>
         <translation>하단</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="729"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="750"/>
         <source>Top-Left</source>
         <translation>왼쪽 상단</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="730"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="751"/>
         <source>Top-Right</source>
         <translation>맨 위 오른쪽</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="731"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="752"/>
         <source>Bottom-Left</source>
         <translation>왼쪽 하단</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="732"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="753"/>
         <source>Bottom-Right</source>
         <translation>오른쪽 하단</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="734"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="755"/>
         <source>Flat Billboard</source>
         <translation>평평한 빌보드</translation>
     </message>
     <message>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1507"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1544"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1581"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1696"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1733"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1770"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4146"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4183"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4220"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5603"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5640"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="5677"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6527"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7501"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7538"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7575"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7688"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7725"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7762"/>
-        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="8780"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1616"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1659"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1702"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1832"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1875"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="1918"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4674"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4717"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="4760"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6448"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6491"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="6534"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="7577"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="8749"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="8792"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="8835"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="8963"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="9006"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="9049"/>
+        <location filename="../iraspagui/appearancetreewidgetcontroller.cpp" line="10385"/>
         <source>Color</source>
         <translation>색깔</translation>
     </message>
@@ -950,138 +976,138 @@
 <context>
     <name>AtomTreeView</name>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="793"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="857"/>
         <source>Add Atom</source>
         <translation>원자 추가</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="800"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="864"/>
         <source>Add Atom Group</source>
         <translation>원자 그룹 추가</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="807"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="871"/>
         <source>Flatten Hierarchy</source>
         <translation>계층 평면화</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="812"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="876"/>
         <source>Make Super-Cell</source>
         <translation>슈퍼 셀 만들기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="817"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="881"/>
         <source>Symmetry</source>
         <translation>대칭</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="819"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="883"/>
         <source>Remove Symmetry</source>
         <translation>대칭 제거</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="824"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="888"/>
         <source>Wrap Atoms to Cell</source>
         <translation>원자를 셀로 감싸기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="829"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="893"/>
         <source>Find Niggli</source>
         <translation>니글리 찾기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="834"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="898"/>
         <source>Find Primitive</source>
         <translation>원시 세포  찾기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="840"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="904"/>
         <source>Find and Impose Symmetry</source>
         <translation>대칭 찾기 및 적용하기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="846"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="910"/>
         <source>Selection</source>
         <translation>선택</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="848"/>
-        <location filename="../iraspagui/atomtreeview.cpp" line="871"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="912"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="935"/>
         <source>Invert</source>
         <translation>반전</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="853"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="917"/>
         <source>CopyToNewMovie</source>
         <translation>새로운 무비로 복사</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="858"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="922"/>
         <source>MoveToNewMovie</source>
         <translation>새로운 무비로 이동</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="864"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="928"/>
         <source>Visibility</source>
         <translation>투명도</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="866"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="930"/>
         <source>Match Selection</source>
         <translation>선택된 것 찾기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="877"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="941"/>
         <source>Scroll To</source>
         <translation>스크롤</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="879"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="943"/>
         <source>Top</source>
         <translation>상단</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="884"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="948"/>
         <source>Bottom</source>
         <translation>하단</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="889"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="953"/>
         <source>First Selected</source>
         <translation>처음 선택</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="894"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="958"/>
         <source>Last Selected</source>
         <translation>마지막 선택</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="901"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="965"/>
         <source>Export To</source>
         <translation>다른 이름으로 내보내기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="903"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="967"/>
         <source>PDB</source>
         <translation>PDB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="908"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="972"/>
         <source>mmCIF</source>
         <translation>mmCIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="913"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="977"/>
         <source>CIF</source>
         <translation>CIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="918"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="982"/>
         <source>XYZ</source>
         <translation>XYZ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/atomtreeview.cpp" line="923"/>
+        <location filename="../iraspagui/atomtreeview.cpp" line="987"/>
         <source>VASP POSCAR</source>
         <translation>VASP POSCAR</translation>
     </message>
@@ -1622,59 +1648,59 @@
         <translation>둥근 사각형</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="365"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="354"/>
         <source>Lights</source>
         <translation>빛</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="394"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="383"/>
         <source>Pictures/Movies</source>
         <translation>사진 / 무비</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="443"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="432"/>
         <source>Background</source>
         <translation>배경</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="768"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="769"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="770"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1087"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1088"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1089"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="757"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="758"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="759"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1196"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1197"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1198"/>
         <source>Rotate +%1</source>
         <translation>회전 +%1</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="771"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="772"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="773"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1090"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1091"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1092"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="760"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="761"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="762"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1199"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1200"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="1201"/>
         <source>Rotate -%1</source>
         <translation>회전 -%1</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2378"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2498"/>
         <source>Open Background Picture</source>
         <translation>배경 그림 열기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2379"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2499"/>
         <source>png or jpg files (*.png *.jpg)</source>
         <translation>png or jpg files (*.png *.jpg)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2236"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2384"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2356"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2504"/>
         <source>Select Picture</source>
         <translation>사진 선택</translation>
     </message>
     <message>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2237"/>
-        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2385"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2357"/>
+        <location filename="../iraspagui/cameratreewidgetcontroller.cpp" line="2505"/>
         <source>Image Placeholder</source>
         <translation>이미지 자리 표시자</translation>
     </message>
@@ -2086,211 +2112,236 @@
 <context>
     <name>CellTreeWidgetController</name>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="59"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="61"/>
         <source>Cell/Boundingbox Properties</source>
         <translation>셀 / 경계 상자 속성</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="71"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="73"/>
         <source>Empty</source>
         <translation>빈</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="72"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="74"/>
         <source>Structure</source>
         <translation>구조</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="73"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="75"/>
         <source>Crystal</source>
         <translation>결정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="74"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="76"/>
         <source>Molecular Crystal</source>
         <translation>분자 결정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="75"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="77"/>
         <source>Molecule</source>
         <translation>분자</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="76"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="78"/>
         <source>Protein</source>
         <translation>단백질</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="77"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="79"/>
         <source>Protein Crystal</source>
         <translation>단백질 결정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="78"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="80"/>
         <source>Protein Crystal Solvent</source>
         <translation>단백질 결정 용매</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="79"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="81"/>
         <source>Crystal Solvent</source>
         <translation>결정 용매</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="80"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="82"/>
         <source>Molecular Crystal Solvent</source>
         <translation>분자 결정 용매</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="81"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="83"/>
         <source>Crystal Ellipsoid</source>
         <translation>Crystal Ellipsoid</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="82"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="84"/>
         <source>Crystal Cylinder</source>
         <translation>결정 실린더</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="83"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="85"/>
         <source>Crystal Polygonal Prism</source>
         <translation>결정 다각형 프리즘</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="84"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="86"/>
         <source>Ellipsoid</source>
         <translation>타원체</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="85"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="87"/>
         <source>Cylinder</source>
         <translation>실린더</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="86"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="88"/>
         <source>Polygonal Prism</source>
         <translation>다각형 프리즘</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="140"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="142"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="144"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="147"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="149"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="151"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="89"/>
+        <source>Density Volume</source>
+        <translation>밀도 볼륨</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="90"/>
+        <source>RASPA Density Volume</source>
+        <translation>RASPA 밀도 볼륨</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="91"/>
+        <source>VTK Density Volume</source>
+        <translation>VTK 밀도 볼륨</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="92"/>
+        <source>VASP Density Volume</source>
+        <translation>VASP 밀도 볼륨</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="93"/>
+        <source>Gaussian Density Volume</source>
+        <translation>Gaussian 밀도 볼륨</translation>
+    </message>
+    <message>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="148"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="150"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="152"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="155"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="157"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="159"/>
         <source>Mult.Val.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="222"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="249"/>
         <source>Tranform Content</source>
         <translation>내용 변환</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="272"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="299"/>
         <source>Structural Properties</source>
         <translation>구조 속성</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="287"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="314"/>
         <source>Helium</source>
         <translation>헬륨</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="288"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="315"/>
         <source>Methane</source>
         <translation>메탄</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="289"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="316"/>
         <source>Nitrogen</source>
         <translation>질소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="290"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="317"/>
         <source>Hydrogen</source>
         <translation>수소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="291"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="318"/>
         <source>Water</source>
         <translation>물</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="292"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="319"/>
         <source>CO₂</source>
         <translation>이산화탄소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="293"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="320"/>
         <source>Xenon</source>
         <translation>제논</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="294"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="321"/>
         <source>Krypton</source>
         <translation>크립톤</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="295"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="322"/>
         <source>Argon</source>
         <translation>아르곤</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="337"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="364"/>
         <source>Unspecified</source>
         <translation>지정되지 않음</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="338"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="365"/>
         <source>Silica</source>
         <translation>실리카</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="339"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="366"/>
         <source>Aluminosilicate</source>
         <translation>규산 알루미늄</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="340"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="367"/>
         <source>Metallophosphate</source>
         <translation>금속 인산화물</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="341"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="368"/>
         <source>Silicialinophosphate</source>
         <translation>실리코 알루미노 포스페이트</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="342"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="369"/>
         <source>Zeolite</source>
         <translation>제올라이트</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="343"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="370"/>
         <source>MOF</source>
         <translation>금속유기골격체 (MOF)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="344"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="371"/>
         <source>ZIF</source>
         <translation>제올라이트 이미다졸레이트 구조체 (ZIF)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="352"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="379"/>
         <source>Symmetry Properties</source>
         <translation>대칭 속성</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1074"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1075"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1076"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1103"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1104"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1105"/>
         <source>Rotate +%1</source>
         <translation>회전 +%1</translation>
     </message>
     <message>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1077"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1078"/>
-        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1079"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1106"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1107"/>
+        <location filename="../iraspagui/celltreewidgetcontroller.cpp" line="1108"/>
         <source>Rotate -%1</source>
         <translation>회전 -%1</translation>
     </message>
@@ -2314,7 +2365,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:28pt; font-style:italic;&quot;&gt;iRASPA&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:9pt;&quot;&gt;Version 2.1.0 (build 110)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:9pt;&quot;&gt;Version 2.2.0 (build 130)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;.SF NS Text&apos;;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; text-decoration: underline; color:#999999;&quot;&gt;Creators:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:11pt; color:#999999;&quot;&gt;David Dubbeldam (University of Amsterdam)&lt;/span&gt;&lt;/p&gt;
@@ -2678,7 +2729,7 @@ p, li { white-space: pre-wrap; }
         <translation>R 인덱스 (모든 데이터)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="488"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="555"/>
         <source>Details</source>
         <translation>자세히</translation>
     </message>
@@ -2711,47 +2762,47 @@ p, li { white-space: pre-wrap; }
         <translation>A-0000-0000</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="90"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="94"/>
         <source>ORCHID ID</source>
         <translation>ORCHID ID</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="97"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="101"/>
         <source>Affiliation</source>
         <translation>소속</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="107"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="111"/>
         <source>University or Company Name</source>
         <translation>대학 또는 회사 이름</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="114"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="118"/>
         <source>Researcher ID</source>
         <translation>Researcher ID</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="124"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="128"/>
         <source>Last Name</source>
         <translation>성</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="134"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="138"/>
         <source>0000-0000-0000-0000</source>
         <translation>0000-0000-0000-0000</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="144"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="148"/>
         <source>Faculty</source>
         <translation>교원</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="154"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="158"/>
         <source>Institute Name</source>
         <translation>기관 이름</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infocreatorform.ui" line="164"/>
+        <location filename="../iraspagui/infocreatorform.ui" line="171"/>
         <source>City</source>
         <translation>도시</translation>
     </message>
@@ -2759,311 +2810,311 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>InfoTreeWidgetController</name>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="57"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="55"/>
         <source>Creator</source>
         <translation>제작자</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="331"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="342"/>
         <source>Creation</source>
         <translation>제작</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="355"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="366"/>
         <source>Kelvin</source>
         <translation>Kelvin</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="356"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="367"/>
         <source>Celsius</source>
         <translation>섭씨</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="358"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="369"/>
         <source>Pascal</source>
         <translation>Pascal</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="359"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="370"/>
         <source>Bar</source>
         <translation>Bar</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="361"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="366"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="374"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="383"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="395"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="405"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="412"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="414"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="372"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="377"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="385"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="394"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="406"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="416"/>
         <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="423"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="439"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="446"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="425"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="434"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="450"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="457"/>
         <source>Unknown</source>
         <translation>알 수 없음</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="362"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="373"/>
         <source>Simulation</source>
         <translation>시뮬레이션</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="363"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="374"/>
         <source>Experiment</source>
         <translation>Experiment</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="367"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="378"/>
         <source>Cell and Edge-Lengths Free</source>
         <translation>셀 및 가장자리 길이 변경</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="368"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="379"/>
         <source>Fixed Angles; Isotropic Edge-Lengths Free</source>
         <translation>고정 각도; 등방성 가장자리 길이 변경</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="369"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="380"/>
         <source>Fixed Angles; Anisotropic Edge-Lengths Free</source>
         <translation>고정 각도; 이방성 가장자리 길이 변경</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="370"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="381"/>
         <source>Fixed α-, β- and γ-Angles and Edge-Lengths Free</source>
         <translation>고정 𝝰- 𝝱; 및 𝝲- 각도 및 가장자리 길이 변경</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="371"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="382"/>
         <source>Fixed Volume; Shape Free</source>
         <translation>고정 부피; 모양 변경</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="372"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="383"/>
         <source>Fixed Cell</source>
         <translation>셀 고정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="375"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="415"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="386"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="426"/>
         <source>Experimental</source>
         <translation>Experimental</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="376"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="416"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="387"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="427"/>
         <source>Gaussian</source>
         <translation>Gaussian</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="377"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="417"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="388"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="428"/>
         <source>Turbomol</source>
         <translation>Turbomol</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="378"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="418"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="389"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="429"/>
         <source>VASP</source>
         <translation>VASP</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="379"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="419"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="390"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="430"/>
         <source>Spartan</source>
         <translation>Spartan</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="380"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="420"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="391"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="431"/>
         <source>CP2K</source>
         <translation>CP2K</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="381"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="421"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="392"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="432"/>
         <source>Classical</source>
         <translation>Classical</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="384"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="396"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="395"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="407"/>
         <source>None</source>
         <translation>없음</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="385"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="396"/>
         <source>Simplex</source>
         <translation>심플렉스</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="386"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="397"/>
         <source>Simulated Annealing</source>
         <translation>담금질 기법</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="387"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="398"/>
         <source>Genetic Algorithm</source>
         <translation>유전 알고리즘</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="388"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="399"/>
         <source>Steepest Descent</source>
         <translation>경사하강</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="389"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="400"/>
         <source>Conjugate Gradient</source>
         <translation>켤레 기울기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="390"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="401"/>
         <source>Quasi-Newton</source>
         <translation>Quasi-Newton</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="391"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="402"/>
         <source>Newton-Rhapson</source>
         <translation>Newton-Rhapson</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="392"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="403"/>
         <source>Mode Following</source>
         <translation>Mode Following</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="397"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="408"/>
         <source>All Positive</source>
         <translation>모두 양의 값</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="398"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="409"/>
         <source>First Order Sadle-Point</source>
         <translation>First Order Sadle-Point</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="399"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="410"/>
         <source>Second Order Sadle-Point</source>
         <translation>Second Order Sadle-Point</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="400"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="411"/>
         <source>Some Small Negative Eigenvalues</source>
         <translation>작은 음수 값들</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="401"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="412"/>
         <source>Some Significant Negative Eigenvalues</source>
         <translation>일부 값이 큰 음수값</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="402"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="413"/>
         <source>Many Negative Eigenvalues</source>
         <translation>많은 음의 고유 값</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="406"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="440"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="417"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="451"/>
         <source>Ab Initio</source>
         <translation>순이론적 (ab Initio)</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="407"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="441"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="418"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="452"/>
         <source>UFF</source>
         <translation>UFF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="408"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="442"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="419"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="453"/>
         <source>DREIDING</source>
         <translation>DREIDING</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="409"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="443"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="420"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="454"/>
         <source>MM3</source>
         <translation>MM3</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="410"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="444"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="421"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="455"/>
         <source>MM4</source>
         <translation>MM4</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="424"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="435"/>
         <source>REPEAT</source>
         <translation>REPEAT</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="425"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="436"/>
         <source>CHELPG</source>
         <translation>CHELPG</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="426"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="437"/>
         <source>CHELP</source>
         <translation>CHELP</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="427"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="438"/>
         <source>RESP</source>
         <translation>RESP</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="428"/>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="431"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="439"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="442"/>
         <source>Mulliken</source>
         <translation>Mulliken</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="429"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="440"/>
         <source>Merz-Kollman</source>
         <translation>Merz-Kollman</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="430"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="441"/>
         <source>Hirshfeld</source>
         <translation>Hirshfeld</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="432"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="443"/>
         <source>Natural Bond Orbital</source>
         <translation>Natural Bond Orbital</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="433"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="444"/>
         <source>Qeq - Rappe and Goddard 1991</source>
         <translation>Qeq - Rappe and Goddard 1991</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="434"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="445"/>
         <source>Qeq - Rick, Stuart and Berne 1994</source>
         <translation>Qeq - Rick, Stuart and Berne 1994</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="435"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="446"/>
         <source>Qeq - York and Yang 1996</source>
         <translation>Qeq - York and Yang 1996</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="436"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="447"/>
         <source>Qeq - Itskoqitz and Berkowitz 1997</source>
         <translation>Qeq - Itskoqitz and Berkowitz 1997</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="437"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="448"/>
         <source>Qeq - Wilmer, Kim, Snurr 2012</source>
         <translation>Qeq - Wilmer, Kim, Snurr 2012</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="453"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="504"/>
         <source>Chemical Information</source>
         <translation>화학 정보</translation>
     </message>
     <message>
-        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="469"/>
+        <location filename="../iraspagui/infotreewidgetcontroller.cpp" line="525"/>
         <source>Citation</source>
         <translation>피인용</translation>
     </message>
@@ -3146,173 +3197,173 @@ p, li { white-space: pre-wrap; }
         <translation>결합</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="454"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="460"/>
         <source>&amp;File</source>
         <translation>파일</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="455"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="461"/>
         <source>&amp;About iRASPA</source>
         <translation>iRASPA 정보</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="459"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="465"/>
         <source>&amp;New</source>
         <translation>새로운</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="460"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="466"/>
         <source>&amp;Structure Project</source>
         <translation>구조 프로젝트</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="463"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="469"/>
         <source>&amp;Project Group</source>
         <translation>프로젝트 그룹</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="468"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="474"/>
         <source>&amp;Crystal</source>
         <translation>결정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="471"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="477"/>
         <source>&amp;Molecular Crystal</source>
         <translation>분자 결정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="474"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="480"/>
         <source>&amp;Protein Crystal</source>
         <translation>단백질 결정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="477"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="483"/>
         <source>&amp;Molecule</source>
         <translation>분자</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="480"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="486"/>
         <source>&amp;Protein</source>
         <translation>단백질</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="484"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="490"/>
         <source>&amp;Objects</source>
         <translation>사물</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="485"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="491"/>
         <source>&amp;Crystal Ellipsoid</source>
         <translation>Crystal Ellipsoid</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="488"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="494"/>
         <source>&amp;Crystal Cylinder</source>
         <translation>결정 실린더</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="491"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="497"/>
         <source>&amp;Crystal Polygonal Prism</source>
         <translation>결정 다각형 프리즘</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="494"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="500"/>
         <source>&amp;Ellipsoid</source>
         <translation>타원체</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="497"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="503"/>
         <source>&amp;Cylinder</source>
         <translation>실린더</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="500"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="506"/>
         <source>&amp;Polygonal Prism</source>
         <translation>다각형 프리즘</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="505"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="511"/>
         <source>&amp;Workspace</source>
         <translation>작업 공간</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="509"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="515"/>
         <source>&amp;Import</source>
         <translation>불러오기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="512"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="518"/>
         <source>&amp;Open</source>
         <translation>열기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="514"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="520"/>
         <source>Open an Existing Document</source>
         <translation>기존 문서 열기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="517"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="523"/>
         <source>&amp;Save</source>
         <translation>저장</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="519"/>
-        <location filename="../iraspagui/mainwindow.cpp" line="524"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="525"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="530"/>
         <source>Save the Document to Disk</source>
         <translation>문서를 디스크에 저장</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="522"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="528"/>
         <source>Save &amp;As</source>
         <translation>다른 이름으로 저장</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="528"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="534"/>
         <source>&amp;Undo</source>
         <translation>실행 취소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="531"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="537"/>
         <source>&amp;Redo</source>
         <translation>다시 하다</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="534"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="540"/>
         <source>&amp;Copy</source>
         <translation>복사</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="537"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="543"/>
         <source>&amp;Paste</source>
         <translation>붙이기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="540"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="546"/>
         <source>&amp;Cut</source>
         <translation>자르기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="548"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="554"/>
         <source>&amp;Edit</source>
         <translation>편집하다</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="559"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="565"/>
         <source>&amp;Contents</source>
         <translation>내용물</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="560"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="566"/>
         <source>&amp;Help</source>
         <translation>도움말</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="1098"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="1104"/>
         <source>Application</source>
         <translation>응용 프로그램</translation>
     </message>
     <message>
-        <location filename="../iraspagui/mainwindow.cpp" line="1099"/>
+        <location filename="../iraspagui/mainwindow.cpp" line="1105"/>
         <source>The Document Has Been Modified.
 Do You Want to Save Your Changes?</source>
         <translation>문서가 수정되었습니다.
@@ -3355,24 +3406,24 @@ Do You Want to Save Your Changes?</source>
 <context>
     <name>ProjectTreeView</name>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="131"/>
-        <location filename="../iraspagui/projecttreeview.cpp" line="149"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="157"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="175"/>
         <source>&amp;Undo</source>
         <translation>실행 취소</translation>
     </message>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="134"/>
-        <location filename="../iraspagui/projecttreeview.cpp" line="152"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="160"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="178"/>
         <source>&amp;Redo</source>
         <translation>다시 하다</translation>
     </message>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="423"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="448"/>
         <source>Add Structure Project</source>
         <translation>구조 프로젝트 추가</translation>
     </message>
     <message>
-        <location filename="../iraspagui/projecttreeview.cpp" line="431"/>
+        <location filename="../iraspagui/projecttreeview.cpp" line="456"/>
         <source>Add Group Project</source>
         <translation>그룹 프로젝트 추가</translation>
     </message>
@@ -3380,82 +3431,82 @@ Do You Want to Save Your Changes?</source>
 <context>
     <name>RenderStackedWidget</name>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="635"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="687"/>
         <source>Reset Camera Distance</source>
         <translation>카메라 거리 재설정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="639"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="691"/>
         <source>Reset Camera To</source>
         <translation>카메라 재설정</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="641"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="693"/>
         <source>Z-Direction</source>
         <translation>Z 방향</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="645"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="697"/>
         <source>Y-Direction</source>
         <translation>Y 방향</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="649"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="701"/>
         <source>X-Direction</source>
         <translation>X 방향</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="655"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="707"/>
         <source>Camera Projection</source>
         <translation>카메라 투영방식</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="657"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="709"/>
         <source>Orthographic</source>
         <translation>직교</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="663"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="715"/>
         <source>Perspective</source>
         <translation>원근</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="670"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="722"/>
         <source>Show Bounding Box</source>
         <translation>경계 상자 표시</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="676"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="728"/>
         <source>Compute AO High Quality</source>
         <translation>고품질 AO 계산</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="680"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="732"/>
         <source>Export To</source>
         <translation>내보내기</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="682"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="734"/>
         <source>PDB</source>
         <translation>PDB</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="686"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="738"/>
         <source>mmCIF</source>
         <translation>mmCIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="690"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="742"/>
         <source>CIF</source>
         <translation>CIF</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="694"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="746"/>
         <source>XYZ</source>
         <translation>XYZ</translation>
     </message>
     <message>
-        <location filename="../iraspagui/renderstackedwidget.cpp" line="698"/>
+        <location filename="../iraspagui/renderstackedwidget.cpp" line="750"/>
         <source>VASP POSCAR</source>
         <translation>VASP POSCAR</translation>
     </message>

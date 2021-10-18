@@ -47,7 +47,7 @@ private:
   std::weak_ptr<AtomTreeViewModel> _atomModel;
   std::weak_ptr<BondListViewModel> _bondModel;
   std::shared_ptr<iRASPAObject> _iraspaStructure;
-  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<Object> _object;
   AtomSelectionIndexPaths _atomSelection;
   AtomSelectionIndexPaths _previousAtomSelection;
   BondSelectionIndexSet _bondSelection;

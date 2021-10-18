@@ -33,7 +33,7 @@ AtomTreeViewChangeSelectionCommand::AtomTreeViewChangeSelectionCommand(MainWindo
   _atomModel(atomModel),
   _bondModel(bondModel),
   _iraspaStructure(iraspaStructure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
+  _object(iraspaStructure->object()),
   _atomSelection(atomSelection),
   _previousAtomSelection(previousAtomSelection),
   _bondSelection(bondSelection),
@@ -46,10 +46,14 @@ AtomTreeViewChangeSelectionCommand::AtomTreeViewChangeSelectionCommand(MainWindo
 
 void AtomTreeViewChangeSelectionCommand::redo()
 {
-  if(std::shared_ptr<Structure> structure = _structure)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    structure->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
-    structure->bondSetController()->setSelectionIndexSet(_bondSelection);
+    atomViewer->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
+  }
+
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    bondViewer->bondSetController()->setSelectionIndexSet(_bondSelection);
   }
 
   if(std::shared_ptr<AtomTreeViewModel> atomModel = _atomModel.lock(); atomModel->isActive(_iraspaStructure))
@@ -71,10 +75,14 @@ void AtomTreeViewChangeSelectionCommand::redo()
 
 void AtomTreeViewChangeSelectionCommand::undo()
 {
-  if(std::shared_ptr<Structure> structure = _structure)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    structure->atomsTreeController()->setSelectionIndexPaths(_previousAtomSelection);
-    structure->bondSetController()->setSelectionIndexSet(_previousBondSelection);
+    atomViewer->atomsTreeController()->setSelectionIndexPaths(_previousAtomSelection);
+  }
+
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    bondViewer->bondSetController()->setSelectionIndexSet(_previousBondSelection);
   }
 
   if(std::shared_ptr<AtomTreeViewModel> atomModel = _atomModel.lock(); atomModel->isActive(_iraspaStructure))

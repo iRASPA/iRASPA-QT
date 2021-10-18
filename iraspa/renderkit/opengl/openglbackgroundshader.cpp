@@ -172,7 +172,7 @@ out vec2 texcoord;
 void main()
 {
   gl_Position = vertexPosition;
-  texcoord = vertexPosition.xy * vec2(0.5) + vec2(0.5);
+  texcoord = vec2(vertexPosition.x, -vertexPosition.y) * vec2(0.5) + vec2(0.5);
 }
 )foo");
 

@@ -45,7 +45,7 @@ private:
   [[maybe_unused]] AtomTreeViewModel* _atomTreeViewModel;
   SceneTreeViewModel* _sceneTreeViewModel;
   std::shared_ptr<SceneList> _sceneList;
-  std::shared_ptr<iRASPAObject> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaObject;
   AtomSelectionIndexPaths _atomSelection;
   BondSelectionIndexSet _bondSelection;
   std::shared_ptr<Scene> _scene;

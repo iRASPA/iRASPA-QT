@@ -34,35 +34,48 @@ RenderViewRotatePositionsCartesianSubCommand::RenderViewRotatePositionsCartesian
 
   setText(QString("Rotate atom selection"));
 
-  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->atomsTreeController()->selectedObjects();
-  std::transform(atoms.begin(), atoms.end(), std::back_inserter(_oldPositions),
-                   [](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
-                     {return std::make_pair(atom, atom->position());});
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
+  {
+    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = atomViewer->atomsTreeController()->selectedObjects();
+    std::transform(atoms.begin(), atoms.end(), std::back_inserter(_oldPositions),
+                     [](std::shared_ptr<SKAsymmetricAtom> atom) -> std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>
+                       {return std::make_pair(atom, atom->position());});
+  }
 }
 
 void RenderViewRotatePositionsCartesianSubCommand::redo()
 {
-
-  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->atomsTreeController()->selectedObjects();
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->rotatedPositionsSelectionCartesian(atoms, _rotation);
-
-  for(const auto &[atom, translatedPosition] : translatedPositions)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
   {
-    atom->setPosition(translatedPosition);
+    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = atomViewer->atomsTreeController()->selectedObjects();
+    std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositions = atomViewer->rotatedPositionsSelectionCartesian(atoms, _rotation);
+
+    for(const auto &[atom, translatedPosition] : translatedPositions)
+    {
+      atom->setPosition(translatedPosition);
+    }
+    atomViewer->expandSymmetry();
   }
-  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->expandSymmetry();
-  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->computeBonds();
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspaStructure->object()))
+  {
+    bondViewer->computeBonds();
+  }
 }
 
 void RenderViewRotatePositionsCartesianSubCommand::undo()
 {
-
-  for(const auto &[atom, translatedPosition] : _oldPositions)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
   {
-    atom->setPosition(translatedPosition);
+    for(const auto &[atom, translatedPosition] : _oldPositions)
+    {
+      atom->setPosition(translatedPosition);
+    }
+    atomViewer->expandSymmetry();
   }
-  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->expandSymmetry();
-  std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->computeBonds();
 
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspaStructure->object()))
+  {
+    bondViewer->computeBonds();
+  }
   emit _mainWindow->rendererReloadData();
 }

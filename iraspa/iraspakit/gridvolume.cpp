@@ -19,85 +19,60 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "densityvolume.h"
+#include "gridvolume.h"
 #include <symmetrykit.h>
 #include <qmath.h>
 #include <QRegularExpression>
 #include <math.h>
 #include <cmath>
+#include "structure.h"
+#include "primitive.h"
 
-DensityVolume::DensityVolume()
+GridVolume::GridVolume()
 {
 
 }
 
-//std::shared_ptr<Object> DensityVolume::clone()
+std::shared_ptr<Object> GridVolume::shallowClone()
+{
+  return std::make_shared<GridVolume>(static_cast<const GridVolume&>(*this));
+}
+
+GridVolume::GridVolume(const std::shared_ptr<const Structure> structure): Object(structure)
+{
+
+}
+
+GridVolume::GridVolume(const std::shared_ptr<const Primitive> primitive): Object(primitive)
+{
+
+}
+
+GridVolume::GridVolume(const std::shared_ptr<const GridVolume> volume): Object(volume)
+{
+
+}
+
+
+GridVolume::GridVolume(std::shared_ptr<SKStructure> frame)
+{
+
+}
+
+//double3 GridVolume::aspectRatio()
 //{
-//  return std::make_shared<DensityVolume>(static_cast<const DensityVolume&>(*this));
+//  double max = std::max({_dimensions.x * _spacing.x, _dimensions.y*  _spacing.y, _dimensions.z * _spacing.z});
+//  return _spacing/max;
 //}
 
-
-DensityVolume::DensityVolume(std::shared_ptr<SKStructure> frame)
-{
-  std::optional<QString> displayName = frame->displayName;
-  if(displayName)
-  {
-    _displayName = *displayName;
-  }
-  _dimensions = frame->dimensions;
-  _spacing = frame->spacing;
-  _origin = frame->origin;
-  _cell = frame->cell;
-
-  auto *p = reinterpret_cast<uint16_t*>(frame->byteData.data());
-  _data.clear();
-  for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
-  {
-    _data.push_back(float4(float(p[i])/float(65535),0.0,0.0,0.0));
-  }
-
-  for(int z=0;z<_dimensions.z;z++)
-  {
-    for(int y=0;y<_dimensions.y;y++)
-    {
-      for(int x=0;x<_dimensions.x;x++)
-      {
-        float value = Images(x,y,z);
-
-        // Sobel 3D gradient (finite difference leads to anisotropic gradients)
-        float gx = Images(x+1,y+1,z+1)+2*Images(x,y+1,z+1)+Images(x-1,y+1,z+1) +2*Images(x+1,y+1,z)+4*Images(x,y+1,z)+ 2*Images(x-1,y+1,z) +
-                   Images(x+1,y+1,z-1)+2*Images(x,y+1,z-1)+Images(x-1,y+1,z-1) - (Images(x+1,y-1,z+1)+2*Images(x,y-1,z+1)+Images(x-1,y-1,z+1) +
-                   2*Images(x+1,y-1,z)+4*Images(x,y-1,z)+ 2*Images(x-1,y-1,z) +Images(x+1,y-1,z-1)+2*Images(x,y-1,z-1)+Images(x-1,y-1,z-1)) ;
-
-        float gy = Images(x+1,y+1,z+1)+2*Images(x+1,y+1,z)+Images(x+1,y+1,z-1) +2*Images(x+1,y,z+1)+4*Images(x+1,y,z)+ 2*Images(x+1,y,z-1) +
-                   Images(x+1,y-1,z+1)+2*Images(x+1,y-1,z)+Images(x+1,y-1,z-1) -(Images(x-1,y+1,z+1)+2*Images(x-1,y+1,z)+Images(x-1,y+1,z-1) +
-                   2*Images(x-1,y,z+1)+4*Images(x-1,y,z)+ 2*Images(x-1,y,z-1) + Images(x-1,y-1,z+1)+2*Images(x-1,y-1,z)+Images(x-1,y-1,z-1));
-
-        float gz = Images(x+1,y+1,z+1)+2*Images(x,y+1,z+1)+Images(x-1,y+1,z+1) +2*Images(x+1,y,z+1)+4*Images(x,y,z+1)+2*Images(x-1,y,z+1) +
-                   Images(x+1,y-1,z+1)+2*Images(x,y-1,z+1)+Images(x-1,y-1,z+1) -(Images(x+1,y+1,z-1)+2*Images(x,y+1,z-1)+Images(x-1,y+1,z-1) +
-                   2*Images(x+1,y,z-1)+4*Images(x,y,z-1)+ 2*Images(x-1,y,z-1) +Images(x+1,y-1,z-1)+2*Images(x,y-1,z-1)+Images(x-1,y-1,z-1));
-
-        _data[x+y*_dimensions.y+z*_dimensions.x*_dimensions.y] = float4(value, gx, gy, gz);
-
-      }
-    }
-  }
-}
-
-double3 DensityVolume::aspectRatio()
-{
-  double max = std::max({_dimensions.x * _spacing.x, _dimensions.y*  _spacing.y, _dimensions.z * _spacing.z});
-  return _spacing/max;
-}
-
-SKBoundingBox DensityVolume::boundingBox() const
+SKBoundingBox GridVolume::boundingBox() const
 {
   return SKBoundingBox(double3(0,0,0), double3(_dimensions.x * _spacing.x,_dimensions.y * _spacing.y,_dimensions.z * _spacing.z));
 }
 
 
 
-void DensityVolume::reComputeBoundingBox()
+void GridVolume::reComputeBoundingBox()
 {
   //SKBoundingBox boundingBox = this->boundingBox();
 
@@ -106,7 +81,7 @@ void DensityVolume::reComputeBoundingBox()
 }
 
 
-std::vector<RKInPerInstanceAttributesAtoms> DensityVolume::renderUnitCellSpheres() const
+std::vector<RKInPerInstanceAttributesAtoms> GridVolume::renderUnitCellSpheres() const
 {
   int minimumReplicaX = _cell->minimumReplicaX();
   int minimumReplicaY = _cell->minimumReplicaY();
@@ -140,7 +115,7 @@ std::vector<RKInPerInstanceAttributesAtoms> DensityVolume::renderUnitCellSpheres
   return data;
 }
 
-std::vector<RKInPerInstanceAttributesBonds> DensityVolume::renderUnitCellCylinders() const
+std::vector<RKInPerInstanceAttributesBonds> GridVolume::renderUnitCellCylinders() const
 {
   int minimumReplicaX = _cell->minimumReplicaX();
   int minimumReplicaY = _cell->minimumReplicaY();
@@ -206,25 +181,16 @@ std::vector<RKInPerInstanceAttributesBonds> DensityVolume::renderUnitCellCylinde
   return data;
 }
 
-QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<DensityVolume> &volume)
+QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<GridVolume> &volume)
 {
   stream << volume->_versionNumber;
 
   stream << volume->_dimensions;
   stream << volume->_spacing;
   stream << volume->_range;
- // stream << volume->_data;
+  stream << volume->_data;
 
-  stream << volume->_authorFirstName;
-  stream << volume->_authorMiddleName;
-  stream << volume->_authorLastName;
-  stream << volume->_authorOrchidID;
-  stream << volume->_authorResearcherID;
-  stream << volume->_authorAffiliationUniversityName;
-  stream << volume->_authorAffiliationFacultyName;
-  stream << volume->_authorAffiliationInstituteName;
-  stream << volume->_authorAffiliationCityName;
-  stream << volume->_authorAffiliationCountryName;
+
 
   // handle super class
   stream << std::static_pointer_cast<Object>(volume);
@@ -232,7 +198,7 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<DensityVolume
   return stream;
 }
 
-QDataStream &operator>>(QDataStream &stream, std::shared_ptr<DensityVolume> &volume)
+QDataStream &operator>>(QDataStream &stream, std::shared_ptr<GridVolume> &volume)
 {
   qint64 versionNumber;
   stream >> versionNumber;
@@ -244,18 +210,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<DensityVolume> &vol
   stream >> volume->_dimensions;
   stream >> volume->_spacing;
   stream >> volume->_range;
-  //stream >> volume->_data;
+  stream >> volume->_data;
 
-  stream >> volume->_authorFirstName;
-  stream >> volume->_authorMiddleName;
-  stream >> volume->_authorLastName;
-  stream >> volume->_authorOrchidID;
-  stream >> volume->_authorResearcherID;
-  stream >> volume->_authorAffiliationUniversityName;
-  stream >> volume->_authorAffiliationFacultyName;
-  stream >> volume->_authorAffiliationInstituteName;
-  stream >> volume->_authorAffiliationCityName;
-  stream >> volume->_authorAffiliationCountryName;
+
 
   std::shared_ptr<Object> object = std::static_pointer_cast<Object>(volume);
   stream >> object;

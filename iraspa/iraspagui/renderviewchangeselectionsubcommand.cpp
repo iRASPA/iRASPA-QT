@@ -23,11 +23,11 @@
 #include <QDebug>
 #include <algorithm>
 
-RenderViewChangeSelectionSubCommand::RenderViewChangeSelectionSubCommand(std::shared_ptr<Structure> structure,
+RenderViewChangeSelectionSubCommand::RenderViewChangeSelectionSubCommand(std::shared_ptr<Object> object,
                                                                        AtomSelectionIndexPaths atomSelection, AtomSelectionIndexPaths previousAtomSelection,
                                                                        BondSelectionIndexSet bondSelection, BondSelectionIndexSet previousBondSelection, QUndoCommand *parent):
   QUndoCommand(parent),
-  _structure(structure),
+  _object(object),
   _atomSelection(atomSelection),
   _previousAtomSelection(previousAtomSelection),
   _bondSelection(bondSelection),
@@ -40,21 +40,29 @@ RenderViewChangeSelectionSubCommand::RenderViewChangeSelectionSubCommand(std::sh
 
 void RenderViewChangeSelectionSubCommand::redo()
 {
-  if(std::shared_ptr<Structure> structure = _structure)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    structure->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
-    structure->bondSetController()->setSelectionIndexSet(_bondSelection);
-    _structure->recomputeSelectionBodyFixedBasis();
+    atomViewer->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
+
+    atomViewer->recomputeSelectionBodyFixedBasis();
+  }
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+     bondViewer->bondSetController()->setSelectionIndexSet(_bondSelection);
   }
 }
 
 void RenderViewChangeSelectionSubCommand::undo()
 {
-  if(std::shared_ptr<Structure> structure = _structure)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    structure->atomsTreeController()->setSelectionIndexPaths(_previousAtomSelection);
-    structure->bondSetController()->setSelectionIndexSet(_previousBondSelection);
-    _structure->recomputeSelectionBodyFixedBasis();
+    atomViewer->atomsTreeController()->setSelectionIndexPaths(_previousAtomSelection);
+
+    atomViewer->recomputeSelectionBodyFixedBasis();
+  }
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    bondViewer->bondSetController()->setSelectionIndexSet(_previousBondSelection);
   }
 }
 

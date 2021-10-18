@@ -35,28 +35,11 @@
 
 #include "openglshader.h"
 
-// Ray
-struct Ray
-{
-  double3 origin;
-  double3 direction;
 
-  Ray(double3 origin, double3 direction): origin(origin), direction(direction) {}
-};
-
-// Axis-aligned bounding box
-struct AABB
-{
-  double3 top;
-  double3 bottom;
-
-  AABB(double3 top, double3 bottom): top(top), bottom(bottom) {}
-};
-
-class OpenGLDensityVolumeShader: public OpenGLShader
+class OpenGLRASPADensityVolumeShader: public OpenGLShader
 {
 public:
-  OpenGLDensityVolumeShader();
+  OpenGLRASPADensityVolumeShader();
 
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
   void paintGL(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);

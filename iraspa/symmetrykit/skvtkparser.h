@@ -52,6 +52,7 @@ private:
 
   std::shared_ptr<SKStructure> _frame;
 
+  int _numberOfScalarsPerPoint=1;
   int3 _dimensions;
   double3 _origin;
   double3 _spacing;

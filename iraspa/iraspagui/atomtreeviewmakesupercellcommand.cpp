@@ -31,28 +31,32 @@ AtomTreeViewMakeSuperCellCommand::AtomTreeViewMakeSuperCellCommand(MainWindow *m
   _mainWindow(mainWindow),
   _model(model),
   _iraspa_structure(iraspa_structure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+  _object(iraspa_structure->object())
 {
   setText(QString("Make super cell"));
 }
 
 void AtomTreeViewMakeSuperCellCommand::redo()
 {
-  std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structure->object())->superCell();
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structure->object()))
+  {
+    _iraspa_structure->setObject(structure->superCell());
 
-  _iraspa_structure->setObject(structure);
+    _mainWindow->resetData();
 
-  _mainWindow->resetData();
-
-  _mainWindow->documentWasModified();
+    _mainWindow->documentWasModified();
+  }
 }
 
 void AtomTreeViewMakeSuperCellCommand::undo()
 {
-  _iraspa_structure->setObject(_structure);
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspa_structure->object()))
+  {
+    _iraspa_structure->setObject(_object);
 
-  _mainWindow->resetData();
+    _mainWindow->resetData();
 
-  _mainWindow->documentWasModified();
+    _mainWindow->documentWasModified();
+  }
 }
 

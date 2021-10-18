@@ -43,6 +43,6 @@ private:
   CellTreeWidgetController *_controller;
   std::shared_ptr<ProjectStructure> _projectStructure;
   std::vector<std::shared_ptr<iRASPAObject> > _iraspa_structures;
-  std::vector<std::pair<std::shared_ptr<iRASPAObject>, std::shared_ptr<Structure>>> _old_iraspa_structures;
+  std::vector<std::pair<std::shared_ptr<iRASPAObject>, std::shared_ptr<Object>>> _old_iraspa_structures;
   int _value;
 };

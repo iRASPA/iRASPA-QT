@@ -27,15 +27,14 @@
 #include "skcell.h"
 #include "displayable.h"
 
-class Structure;
 
 enum class ObjectType : qint64
 {
-  none = 0, structure = 1, crystal = 2, molecularCrystal = 3, molecule = 4, protein = 5, proteinCrystal = 6,
+  none = -1, object = 0, structure = 1, crystal = 2, molecularCrystal = 3, molecule = 4, protein = 5, proteinCrystal = 6,
   proteinCrystalSolvent = 7, crystalSolvent = 8, molecularCrystalSolvent = 9,
   crystalEllipsoidPrimitive = 10, crystalCylinderPrimitive = 11, crystalPolygonalPrismPrimitive = 12,
   ellipsoidPrimitive = 13, cylinderPrimitive = 14, polygonalPrismPrimitive = 15,
-  densityVolume = 16, object=17
+  gridVolume = 16, RASPADensityVolume = 17, VTKDensityVolume = 18, VASPDensityVolume = 19, GaussianCubeVolume = 20
 };
 
 class Object: public DisplayableProtocol, public RKRenderStructure
@@ -44,10 +43,13 @@ public:
   Object();
   virtual ~Object() {;}
 
+  virtual std::shared_ptr<Object> shallowClone();
+
   virtual ObjectType structureType()  {return ObjectType::object;}
 
-  Object(std::shared_ptr<SKStructure> structure);
-  Object(const Structure &structure);
+  Object(const std::shared_ptr<const SKStructure> structure);
+  Object(const Object &object);
+  Object(const std::shared_ptr<const Object> object);
 
   QString displayName() const override final {return _displayName;}
   void setDisplayName(QString name) override final {_displayName = name;}
@@ -86,10 +88,33 @@ public:
   // local axes
   RKLocalAxes &renderLocalAxes() override {return _localAxes;}
 
-  virtual std::shared_ptr<Structure> clone() {return nullptr;}
-
   std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const override  {return {};}
   std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const override {return {};}
+
+  // info
+  QString authorFirstName() {return _authorFirstName;}
+  void setAuthorFirstName(QString name) {_authorFirstName = name;}
+  QString authorMiddleName() {return _authorMiddleName;}
+  void setAuthorMiddleName(QString name) {_authorMiddleName = name;}
+  QString authorLastName()  {return _authorLastName;}
+  void setAuthorLastName(QString name) {_authorLastName = name;}
+  QString authorOrchidID() {return _authorOrchidID;}
+  void setAuthorOrchidID(QString name) {_authorOrchidID = name;}
+  QString authorResearcherID() {return _authorResearcherID;}
+  void setAuthorResearcherID(QString name) {_authorResearcherID = name;}
+  QString authorAffiliationUniversityName() {return _authorAffiliationUniversityName;}
+  void setAuthorAffiliationUniversityName(QString name) {_authorAffiliationUniversityName = name;}
+  QString authorAffiliationFacultyName() {return _authorAffiliationFacultyName;}
+  void setAuthorAffiliationFacultyName(QString name) {_authorAffiliationFacultyName = name;}
+  QString authorAffiliationInstituteName()  {return _authorAffiliationInstituteName;}
+  void setAuthorAffiliationInstituteName(QString name) {_authorAffiliationInstituteName = name;}
+  QString authorAffiliationCityName() {return _authorAffiliationCityName;}
+  void setAuthorAffiliationCityName(QString name) {_authorAffiliationCityName = name;}
+  QString authorAffiliationCountryName() {return _authorAffiliationCountryName;}
+  void setAuthorAffiliationCountryName(QString name) {_authorAffiliationCountryName = name;}
+
+  QDate creationDate() {return _creationDate;}
+  void setCreationDate(QDate date) {_creationDate = date;}
 protected:
   QString _displayName;
   bool _isVisible = true;
@@ -107,10 +132,23 @@ protected:
   double _unitCellDiffuseIntensity = 1.0;
 
   RKLocalAxes _localAxes;
+
+  QString _authorFirstName = QString("");
+  QString _authorMiddleName = QString("");
+  QString _authorLastName = QString("");
+  QString _authorOrchidID = QString("");
+  QString _authorResearcherID = QString("");
+  QString _authorAffiliationUniversityName = QString("");
+  QString _authorAffiliationFacultyName = QString("");
+  QString _authorAffiliationInstituteName = QString("");
+  QString _authorAffiliationCityName = QString("");
+  QString _authorAffiliationCountryName = QString("Netherlands");
+
+  QDate _creationDate = QDate().currentDate();
 private:
   qint64 _versionNumber{1};
 
 
-  friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Object> &);
-  friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Object> &);
+  friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Object> &object);
+  friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Object> &object);
 };

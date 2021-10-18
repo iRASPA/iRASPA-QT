@@ -39,26 +39,31 @@ CellTreeWidgetChangeSpaceGroupCommand::CellTreeWidgetChangeSpaceGroupCommand(Mai
   setText(QString("Change space group"));
 
   std::transform(iraspa_structures.begin(), iraspa_structures.end(), std::back_inserter(_old_iraspa_structures),
-                 [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::pair<std::shared_ptr<iRASPAObject>, std::shared_ptr<Structure>>
-                  {return std::make_pair(iraspastructure, std::dynamic_pointer_cast<Structure>(iraspastructure->object()));});
+                 [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::pair<std::shared_ptr<iRASPAObject>, std::shared_ptr<Object>>
+                  {return std::make_pair(iraspastructure, iraspastructure->object());});
 }
 
 void CellTreeWidgetChangeSpaceGroupCommand::redo()
 {
   for(std::shared_ptr<iRASPAObject> iraspa_structure: _iraspa_structures)
   {
-    std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->clone();
+    std::shared_ptr<Object> object = iraspa_structure->object()->shallowClone();
 
-    QByteArray byteArray = QByteArray();
-    QDataStream stream(&byteArray, QIODevice::WriteOnly);
-    stream << std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->atomsTreeController();
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(object))
+    {
+      QByteArray byteArray = QByteArray();
+      QDataStream stream(&byteArray, QIODevice::WriteOnly);
+      stream << std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->atomsTreeController();
 
-    std::shared_ptr<SKAtomTreeController> atomTreeController;
-    QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
-    streamRead >> structure->atomsTreeController();
+      std::shared_ptr<SKAtomTreeController> atomTreeController;
+      QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
+      streamRead >> structure->atomsTreeController();
 
-    structure->setSpaceGroupHallNumber(_value);
-    iraspa_structure->setObject(structure);
+      structure->setSpaceGroupHallNumber(_value);
+      structure->expandSymmetry();
+      structure->computeBonds();
+      iraspa_structure->setObject(structure);
+    }
   }
 
   emit _controller->invalidateCachedAmbientOcclusionTextures(_projectStructure->sceneList()->allIRASPAStructures());

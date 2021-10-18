@@ -35,33 +35,27 @@ FrameListViewChangeDisplayNameCommand::FrameListViewChangeDisplayNameCommand(Mai
 
 void FrameListViewChangeDisplayNameCommand::redo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+  _oldValue = _iraspaStructure->object()->displayName();
+  _iraspaStructure->object()->setDisplayName(_newValue);
+
+  if(_model)
   {
-    _oldValue = structure->displayName();
-    structure->setDisplayName(_newValue);
+    QModelIndex index = _model->indexForNode(_iraspaStructure.get(), 0);
+    emit _model->dataChanged(index,index);
 
-    if(_model)
-    {
-      QModelIndex index = _model->indexForNode(_iraspaStructure.get(), 0);
-      emit _model->dataChanged(index,index);
-
-      _mainWindow->documentWasModified();
-    }
+    _mainWindow->documentWasModified();
   }
 }
 
 void FrameListViewChangeDisplayNameCommand::undo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+  _iraspaStructure->object()->setDisplayName(_oldValue);
+
+  if(_model)
   {
-    structure->setDisplayName(_oldValue);
+    QModelIndex index = _model->indexForNode(_iraspaStructure.get(), 0);
+    emit _model->dataChanged(index,index);
 
-    if(_model)
-    {
-      QModelIndex index = _model->indexForNode(_iraspaStructure.get(), 0);
-      emit _model->dataChanged(index,index);
-
-      _mainWindow->documentWasModified();
-    }
+    _mainWindow->documentWasModified();
   }
 }

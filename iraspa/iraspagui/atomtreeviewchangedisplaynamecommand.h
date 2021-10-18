@@ -41,7 +41,7 @@ public:
 private:
   MainWindow *_mainWindow;
   AtomTreeViewModel *_model;
-  std::shared_ptr<iRASPAObject> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaObject;
   std::shared_ptr<SKAtomTreeNode> _atomTreeNode;
   QString _newValue;
   QString _oldValue;

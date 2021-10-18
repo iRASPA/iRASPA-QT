@@ -94,8 +94,8 @@ macx{
 
   contains(DEFINES,USE_OPENGL) {
     #QMAKE_CXXFLAGS += -Wl,--stack,4194304
-    INCLUDEPATH += $$system(python-config --include | sed -e 's:-I::g')
-    QMAKE_LFLAGS +=  -framework OpenCL -framework Python -framework Accelerate
+    INCLUDEPATH += $$system(/usr/local/bin/python3-config --include | sed -e 's:-I::g')
+    QMAKE_LFLAGS +=  -framework OpenCL -framework Accelerate /usr/local/Cellar/python@3.10/3.10.0_2/Frameworks/Python.framework/Versions/3.10/lib/libpython3.10.dylib
 
     CONFIG(debug, debug|release){
       QMAKE_CXXFLAGS += -g -O0 -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct  -fsanitize=address
@@ -147,7 +147,7 @@ win32{
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/swscale.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/libx264.lib"
     LIBS += "C:/vcpkg/installed/x64-windows/debug/lib/x265-static.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/vpxd.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/vpx.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/python27_d.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/lzmad.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/zlibd.lib"

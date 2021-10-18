@@ -28,7 +28,7 @@ AtomTreeViewChangeChargeCommand::AtomTreeViewChangeChargeCommand(MainWindow *mai
   QUndoCommand(undoParent),
   _mainWindow(mainWindow),
   _model(model),
-  _iraspaStructure(iraspaStructure),
+  _iraspaObject(iraspaStructure),
   _atomTreeNode(atomTreeNode),
   _newValue(newValue),
   _oldValue(_atomTreeNode->representedObject()->charge())
@@ -42,9 +42,10 @@ void AtomTreeViewChangeChargeCommand::redo()
 
   if(_model)
   {
-    if(_model->isActive(_iraspaStructure))
+    // check if the current object is loaded in the atom-viewer
+    if(_model->isActive(_iraspaObject))
     {
-      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),6);
+      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),8);
       emit _model->dataChanged(index,index);
     }
 
@@ -62,9 +63,10 @@ void AtomTreeViewChangeChargeCommand::undo()
 
   if(_model)
   {
-    if(_model->isActive(_iraspaStructure))
+    // check if the current object is loaded in the atom-viewer
+    if(_model->isActive(_iraspaObject))
     {
-      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),6);
+      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),8);
       emit _model->dataChanged(index,index);
     }
 

@@ -39,12 +39,12 @@ public:
 
   enum class Kind: qint64
   {
-    unknown = 0, structure = 1,
+    none = -1, object = 0, structure = 1,
     crystal = 2, molecularCrystal = 3, molecule = 4, protein = 5, proteinCrystal = 6,
     proteinCrystalSolvent = 7, crystalSolvent = 8, molecularCrystalSolvent = 9,
     crystalEllipsoidPrimitive = 10, crystalCylinderPrimitive = 11, crystalPolygonalPrismPrimitive = 12,
     ellipsoidPrimitive = 13, cylinderPrimitive = 14, polygonalPrismPrimitive = 15,
-    densityVolume = 16
+    gridVolume = 16, RASPADensityVolume = 17, VTKDensityVolume = 18, VASPDensityVolume = 19, GaussianCubeVolume = 20
   };
 
   Kind kind = Kind::crystal;

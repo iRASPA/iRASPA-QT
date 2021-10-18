@@ -25,23 +25,47 @@
 #include "structure.h"
 #include "primitive.h"
 #include "iraspakitprotocols.h"
+#include "primitive.h"
+#include "molecularcrystal.h"
+#include "molecule.h"
+#include "protein.h"
+#include "proteincrystal.h"
+#include "crystalcylinderprimitive.h"
+#include "crystalellipsoidprimitive.h"
+#include "crystalpolygonalprismprimitive.h"
+#include "cylinderprimitive.h"
+#include "ellipsoidprimitive.h"
+#include "polygonalprismprimitive.h"
 
 class CrystalCylinderPrimitive: public Primitive, public RKRenderCrystalPrimitiveCylinderObjectsSource
 {
 public:
   CrystalCylinderPrimitive();
   CrystalCylinderPrimitive(const CrystalCylinderPrimitive &crystalCylinderPrimitive);
-  CrystalCylinderPrimitive(std::shared_ptr<Structure> s);
+
+  CrystalCylinderPrimitive(const std::shared_ptr<const class Crystal> structure);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class MolecularCrystal> structure);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class Molecule> structure);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class ProteinCrystal> structure);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class Protein> structure);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  CrystalCylinderPrimitive(const std::shared_ptr<const class GridVolume> volume);
+
   ~CrystalCylinderPrimitive() {}
+
+  std::shared_ptr<Object> shallowClone() override final;
 
   bool drawAtoms() const override {return _drawAtoms;}
 
-  std::shared_ptr<Structure> clone() override final;
-
   bool hasSymmetry() override final {return true;}
-  std::shared_ptr<Structure> superCell() const override final;
-  std::shared_ptr<Structure> flattenHierarchy() const override final;
-  std::shared_ptr<Structure> appliedCellContentShift() const override final;
+  std::shared_ptr<Primitive> superCell() const override final;
+  std::shared_ptr<Primitive> flattenHierarchy() const override final;
+  std::shared_ptr<Primitive> appliedCellContentShift() const override final;
 
   ObjectType structureType() override final { return ObjectType::crystalCylinderPrimitive; }
 

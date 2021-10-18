@@ -28,7 +28,7 @@ AtomTreeViewMoveSelectionToNewMovieCommand::AtomTreeViewMoveSelectionToNewMovieC
                                                                                        BondListViewModel *bondListViewModel,
                                                                                        SceneTreeViewModel *sceneTreeViewModel,
                                                                                        std::shared_ptr<SceneList> sceneList,
-                                                                                       std::shared_ptr<iRASPAObject> iraspaStructure,
+                                                                                       std::shared_ptr<iRASPAObject> iraspaObject,
                                                                                        AtomSelectionNodesAndIndexPaths atomSelection,
                                                                                        BondSelectionNodesAndIndexSet bondSelection,
                                                                                        QUndoCommand *undoParent):
@@ -38,9 +38,7 @@ AtomTreeViewMoveSelectionToNewMovieCommand::AtomTreeViewMoveSelectionToNewMovieC
   _bondListViewModel(bondListViewModel),
   _sceneTreeViewModel(sceneTreeViewModel),
   _sceneList(sceneList),
-  _iraspaStructure(iraspaStructure),
-  _atomTreeController(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->atomsTreeController()),
-  _bondSetController(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->bondSetController()),
+  _iraspaObject(iraspaObject),
   _atomSelection(atomSelection),
   _reversedAtomSelection({}),
   _bondSelection(bondSelection),
@@ -51,161 +49,177 @@ AtomTreeViewMoveSelectionToNewMovieCommand::AtomTreeViewMoveSelectionToNewMovieC
 {
   setText(QString("Move atoms to new movie"));
 
-  _reversedAtomSelection.first = _atomSelection.first;
-  std::reverse_copy(_atomSelection.second.begin(), _atomSelection.second.end(), std::inserter(_reversedAtomSelection.second, _reversedAtomSelection.second.begin()));
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaObject->object()))
+  {
+    _atomTreeController = structure->atomsTreeController();
+    _bondSetController = structure->bondSetController();
 
-  std::reverse_copy(bondSelection.begin(), bondSelection.end(), std::back_inserter(_reverseBondSelection));
+    _reversedAtomSelection.first = _atomSelection.first;
+    std::reverse_copy(_atomSelection.second.begin(), _atomSelection.second.end(), std::inserter(_reversedAtomSelection.second, _reversedAtomSelection.second.begin()));
+
+    std::reverse_copy(bondSelection.begin(), bondSelection.end(), std::back_inserter(_reverseBondSelection));
+  }
 }
 
 void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
 {
-  if(std::shared_ptr<Movie> movie = _iraspaStructure->parent().lock())
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaObject->object()))
   {
-    if((_scene = movie->parent().lock()))
+    if(std::shared_ptr<Movie> movie = _iraspaObject->parent().lock())
     {
-      _row = int(_scene->movies().size());
-
-      std::shared_ptr<iRASPAObject> newiRASPAStructure = _iraspaStructure->clone();
-      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->setSpaceGroupHallNumber(std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->spaceGroup().spaceGroupSetting().HallNumber());
-      _newMovie = Movie::create(newiRASPAStructure);
-
-      for(const auto &[atomNode, indexPath] : _atomSelection.second)
+      if((_scene = movie->parent().lock()))
       {
-        const std::shared_ptr<SKAtomTreeNode> atomTreeNode = _atomTreeController->nodeAtIndexPath(indexPath);
-        if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = atomTreeNode->representedObject())
+        _row = int(_scene->movies().size());
+
+        std::shared_ptr<iRASPAObject> newiRASPAStructure = _iraspaObject->shallowClone();
+
+        if(std::shared_ptr<Structure> newStructure = std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object()))
         {
-          std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
-          std::shared_ptr<SKAtomTreeNode> newAtomTreeNode = std::make_shared<SKAtomTreeNode>(newAsymmetricAtom);
-          std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->atomsTreeController()->appendToRootnodes(newAtomTreeNode);
+          newStructure->setSpaceGroupHallNumber(structure->spaceGroup().spaceGroupSetting().HallNumber());
+          _newMovie = Movie::create(newiRASPAStructure);
+
+          for(const auto &[atomNode, indexPath] : _atomSelection.second)
+          {
+            const std::shared_ptr<SKAtomTreeNode> atomTreeNode = _atomTreeController->nodeAtIndexPath(indexPath);
+            if(const std::shared_ptr<SKAsymmetricAtom> asymmetricAtom = atomTreeNode->representedObject())
+            {
+              std::shared_ptr<SKAsymmetricAtom> newAsymmetricAtom = std::make_shared<SKAsymmetricAtom>(*asymmetricAtom);
+              std::shared_ptr<SKAtomTreeNode> newAtomTreeNode = std::make_shared<SKAtomTreeNode>(newAsymmetricAtom);
+              newStructure->atomsTreeController()->appendToRootnodes(newAtomTreeNode);
+            }
+
+          }
+          newStructure->expandSymmetry();
+          newStructure->reComputeBoundingBox();
+          newStructure->computeBonds();
+          newStructure->atomsTreeController()->setTags();
+          newStructure->bondSetController()->setTags();
+
+          _sceneTreeViewModel->insertRow(_row, _scene, _newMovie);
+          _sceneList->setSelection(_sceneSelection);
+
+          // delete selection
+          // ======================
+
+          if(_bondListViewModel->isActive(_iraspaObject))
+          {
+            emit _bondListViewModel->layoutAboutToBeChanged();
+            for(const auto &[bondItem, row] : _reverseBondSelection)
+            {
+              whileBlocking(_bondListViewModel)->removeRow(row);
+            }
+            emit _bondListViewModel->layoutChanged();
+
+            _bondSetController->setSelection(BondSelectionNodesAndIndexSet());
+            emit _bondListViewModel->updateSelection();
+          }
+          else
+          {
+            for(const auto &[bondItem, row] : _reverseBondSelection)
+            {
+              _bondSetController->removeBond(row);
+            }
+          }
+
+
+          if(_atomTreeViewModel->isActive(_iraspaObject))
+          {
+            emit _atomTreeViewModel->layoutAboutToBeChanged();
+            for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
+            {
+              int row = int(indexPath.lastIndex());
+              std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
+              whileBlocking(_atomTreeViewModel)->removeRow(row, parentNode);
+            }
+            emit _atomTreeViewModel->layoutChanged();
+
+            _atomTreeController->clearSelection();
+            emit _atomTreeViewModel->updateSelection();
+          }
+          else
+          {
+            for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
+            {
+              atomNode->removeFromParent();
+            }
+            _atomTreeController->setSelectionIndexPaths(AtomSelectionIndexPaths());
+          }
+
+          _atomTreeController->setTags();
+          _bondSetController->setTags();
+
+          emit _mainWindow->rendererReloadData();
+
+          emit _sceneTreeViewModel->updateSelection();
+
+          _mainWindow->documentWasModified();
         }
-
       }
-      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->expandSymmetry();
-      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->reComputeBoundingBox();
-      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->computeBonds();
-      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->atomsTreeController()->setTags();
-      std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object())->bondSetController()->setTags();
-
-      _sceneTreeViewModel->insertRow(_row, _scene, _newMovie);
-      _sceneList->setSelection(_sceneSelection);
-
-      // delete selection
-      // ======================
-
-      if(_bondListViewModel->isActive(_iraspaStructure))
-      {
-        emit _bondListViewModel->layoutAboutToBeChanged();
-        for(const auto &[bondItem, row] : _reverseBondSelection)
-        {
-          whileBlocking(_bondListViewModel)->removeRow(row);
-        }
-        emit _bondListViewModel->layoutChanged();
-
-        _bondSetController->setSelection(BondSelectionNodesAndIndexSet());
-        emit _bondListViewModel->updateSelection();
-      }
-      else
-      {
-        for(const auto &[bondItem, row] : _reverseBondSelection)
-        {
-          _bondSetController->removeBond(row);
-        }
-      }
-
-
-      if(_atomTreeViewModel->isActive(_iraspaStructure))
-      {
-        emit _atomTreeViewModel->layoutAboutToBeChanged();
-        for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
-        {
-          int row = int(indexPath.lastIndex());
-          std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-          whileBlocking(_atomTreeViewModel)->removeRow(row, parentNode);
-        }
-        emit _atomTreeViewModel->layoutChanged();
-
-        _atomTreeController->clearSelection();
-        emit _atomTreeViewModel->updateSelection();
-      }
-      else
-      {
-        for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
-        {
-          atomNode->removeFromParent();
-        }
-        _atomTreeController->setSelectionIndexPaths(AtomSelectionIndexPaths());
-      }
-
-      _atomTreeController->setTags();
-      _bondSetController->setTags();
-
-      emit _mainWindow->rendererReloadData();
-
-      emit _sceneTreeViewModel->updateSelection();
-
-      _mainWindow->documentWasModified();
     }
   }
 }
 
 void AtomTreeViewMoveSelectionToNewMovieCommand::undo()
 {
-  _sceneTreeViewModel->removeRow(_row, _scene, _newMovie);
-
-  // insert selection
-  //=====================================
-
-  if(_atomTreeViewModel->isActive(_iraspaStructure))
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaObject->object()))
   {
-    emit _atomTreeViewModel->layoutAboutToBeChanged();
-    for(const auto &[atomNode, indexPath] : _atomSelection.second)
+    _sceneTreeViewModel->removeRow(_row, _scene, _newMovie);
+
+    // insert selection
+    //=====================================
+
+    if(_atomTreeViewModel->isActive(_iraspaObject))
     {
-      std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-      whileBlocking(_atomTreeViewModel)->insertRow(int(indexPath.lastIndex()), parentNode, atomNode);
-    }
-    emit _atomTreeViewModel->layoutChanged();
+      emit _atomTreeViewModel->layoutAboutToBeChanged();
+      for(const auto &[atomNode, indexPath] : _atomSelection.second)
+      {
+        std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
+        whileBlocking(_atomTreeViewModel)->insertRow(int(indexPath.lastIndex()), parentNode, atomNode);
+      }
+      emit _atomTreeViewModel->layoutChanged();
 
-    _atomTreeController->setSelectionIndexPaths(_atomSelection);
-    emit _atomTreeViewModel->updateSelection();
-  }
-  else
-  {
-    for(const auto &[atomNode, indexPath] : _atomSelection.second)
+      _atomTreeController->setSelectionIndexPaths(_atomSelection);
+      emit _atomTreeViewModel->updateSelection();
+    }
+    else
     {
-      int row = int(indexPath.lastIndex());
-      std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-      parentNode->insertChild(row, atomNode);
+      for(const auto &[atomNode, indexPath] : _atomSelection.second)
+      {
+        int row = int(indexPath.lastIndex());
+        std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
+        parentNode->insertChild(row, atomNode);
+      }
+      _atomTreeController->setSelectionIndexPaths(_atomSelection);
     }
-    _atomTreeController->setSelectionIndexPaths(_atomSelection);
-  }
 
-  if(_bondListViewModel->isActive(_iraspaStructure))
-  {
-    emit _bondListViewModel->layoutAboutToBeChanged();
-    for(const auto &[bondItem, row] : _bondSelection)
+    if(_bondListViewModel->isActive(_iraspaObject))
     {
-      whileBlocking(_bondListViewModel)->insertRow(row, bondItem);
-    }
-    emit _bondListViewModel->layoutChanged();
+      emit _bondListViewModel->layoutAboutToBeChanged();
+      for(const auto &[bondItem, row] : _bondSelection)
+      {
+        whileBlocking(_bondListViewModel)->insertRow(row, bondItem);
+      }
+      emit _bondListViewModel->layoutChanged();
 
-    _bondSetController->setSelection(_bondSelection);
-    emit _bondListViewModel->updateSelection();
-  }
-  else
-  {
-    for(const auto &[bondItem, row] : _bondSelection)
+      _bondSetController->setSelection(_bondSelection);
+      emit _bondListViewModel->updateSelection();
+    }
+    else
     {
-      std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->insertBond(bondItem, row);
+      for(const auto &[bondItem, row] : _bondSelection)
+      {
+        structure->bondSetController()->insertBond(bondItem, row);
+      }
     }
+
+    _atomTreeController->setTags();
+    _bondSetController->setTags();
+
+
+    emit _atomTreeViewModel->rendererReloadData();
+    _sceneList->setSelection(_sceneSelection);
+    emit _sceneTreeViewModel->updateSelection();
+
+    _mainWindow->documentWasModified();
   }
-
-  _atomTreeController->setTags();
-  _bondSetController->setTags();
-
-
-  emit _atomTreeViewModel->rendererReloadData();
-  _sceneList->setSelection(_sceneSelection);
-  emit _sceneTreeViewModel->updateSelection();
-
-  _mainWindow->documentWasModified();
 }

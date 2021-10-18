@@ -30,7 +30,7 @@ AtomTreeViewInsertAtomCommand::AtomTreeViewInsertAtomCommand(MainWindow *mainWin
   _mainWindow(mainWindow),
   _atomTreeView(atomTreeView),
   _iraspaStructure(iraspaStructure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
+  _object(iraspaStructure->object()),
   _parentTreeNode(parentTreeNode),
   _row(row),
   _selection(selection)
@@ -43,70 +43,84 @@ AtomTreeViewInsertAtomCommand::AtomTreeViewInsertAtomCommand(MainWindow *mainWin
 
 void AtomTreeViewInsertAtomCommand::redo()
 {
-  if(_atomTreeView)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(_atomTreeView->model()))
+    if(_atomTreeView)
     {
-      if(pModel->isActive(_iraspaStructure))
+      if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(_atomTreeView->model()))
       {
-        pModel->insertRow(_row, _parentTreeNode, _newAtomtreeNode);
+        if(pModel->isActive(_iraspaStructure))
+        {
+          pModel->insertRow(_row, _parentTreeNode, _newAtomtreeNode);
 
-        AtomSelectionIndexPaths newSelection = _structure->atomsTreeController()->updateIndexPathsFromNodes(_selection);
-        _structure->atomsTreeController()->setSelectionIndexPaths(newSelection);
-        _atomTreeView->reloadSelection();
-      }
-      else
-      {
-        _parentTreeNode->insertChild(_row, _newAtomtreeNode);
+          AtomSelectionIndexPaths newSelection = atomViewer->atomsTreeController()->updateIndexPathsFromNodes(_selection);
+          atomViewer->atomsTreeController()->setSelectionIndexPaths(newSelection);
+          _atomTreeView->reloadSelection();
+        }
+        else
+        {
+          _parentTreeNode->insertChild(_row, _newAtomtreeNode);
 
-        AtomSelectionIndexPaths newSelection = _structure->atomsTreeController()->updateIndexPathsFromNodes(_selection);
-        _structure->atomsTreeController()->setSelectionIndexPaths(newSelection);
+          AtomSelectionIndexPaths newSelection = atomViewer->atomsTreeController()->updateIndexPathsFromNodes(_selection);
+          atomViewer->atomsTreeController()->setSelectionIndexPaths(newSelection);
+        }
       }
     }
-  }
-  _structure->expandSymmetry();
-  _structure->atomsTreeController()->setTags();
-  _structure->reComputeBoundingBox();
-  _structure->computeBonds();
-  _structure->setRepresentationColorSchemeIdentifier(_structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
-  _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
-  if(_atomTreeView)
-    emit _atomTreeView->rendererReloadData();
+    atomViewer->expandSymmetry();
+    atomViewer->atomsTreeController()->setTags();
 
-  _mainWindow->documentWasModified();
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+    {
+      structure->reComputeBoundingBox();
+      structure->computeBonds();
+      structure->setRepresentationColorSchemeIdentifier(structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
+      structure->setRepresentationStyle(structure->atomRepresentationStyle(), _mainWindow->colorSets());
+    }
+    if(_atomTreeView)
+      emit _atomTreeView->rendererReloadData();
+
+    _mainWindow->documentWasModified();
+  }
 }
 
 void AtomTreeViewInsertAtomCommand::undo()
 {
-  if(_atomTreeView)
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(_atomTreeView->model()))
+    if(_atomTreeView)
     {
-      if(pModel->isActive(_iraspaStructure))
+      if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(_atomTreeView->model()))
       {
-        pModel->removeRow(_row, _parentTreeNode);
+        if(pModel->isActive(_iraspaStructure))
+        {
+          pModel->removeRow(_row, _parentTreeNode);
 
-        _structure->atomsTreeController()->setSelectionIndexPaths(_selection);
+          atomViewer->atomsTreeController()->setSelectionIndexPaths(_selection);
 
-        _atomTreeView->reloadSelection();
-      }
-      else
-      {
-        _parentTreeNode->removeChild(_row);
+          _atomTreeView->reloadSelection();
+        }
+        else
+        {
+          _parentTreeNode->removeChild(_row);
 
-        _structure->atomsTreeController()->setSelectionIndexPaths(_selection);
+          atomViewer->atomsTreeController()->setSelectionIndexPaths(_selection);
+        }
       }
     }
-  }
-  _structure->expandSymmetry();
-  _structure->atomsTreeController()->setTags();
-  _structure->reComputeBoundingBox();
-  _structure->computeBonds();
-  _structure->setRepresentationColorSchemeIdentifier(_structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
-  if(_mainWindow)
-    _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
-  if(_atomTreeView)
-    emit _atomTreeView->rendererReloadData();
+    atomViewer->expandSymmetry();
+    atomViewer->atomsTreeController()->setTags();
 
-  _mainWindow->documentWasModified();
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+    {
+      structure->reComputeBoundingBox();
+      structure->computeBonds();
+      structure->setRepresentationColorSchemeIdentifier(structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
+      if(_mainWindow)
+        structure->setRepresentationStyle(structure->atomRepresentationStyle(), _mainWindow->colorSets());
+    }
+    if(_atomTreeView)
+      emit _atomTreeView->rendererReloadData();
+
+    _mainWindow->documentWasModified();
+  }
 }

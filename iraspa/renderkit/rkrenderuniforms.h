@@ -312,7 +312,12 @@ struct RKStructureUniforms
 
   //----------------------------------------  384 bytes boundary
 
+  float4x4 inverseModelMatrix = float4x4(double4x4());
   float4x4 boxMatrix = float4x4();
+
+  //----------------------------------------  512 bytes boundary
+
+  float4x4 inverseBoxMatrix = float4x4(double4x4());
   float atomSelectionStripesDensity = 0.25f;
   float atomSelectionStripesFrequency = 12.0f;
   float atomSelectionWorleyNoise3DFrequency = 2.0f;
@@ -325,10 +330,12 @@ struct RKStructureUniforms
   float bondSelectionScaling = 1.25f;
   int32_t colorAtomsWithBondColor = false;
 
-  //----------------------------------------  512 bytes boundary
+  //----------------------------------------  640 bytes boundary
 
-  float4x4 transformationMatrix = float4x4();
-  float4x4 transformationNormalMatrix = float4x4();
+  float4x4 primitiveTransformationMatrix = float4x4();
+  float4x4 primitiveTransformationNormalMatrix = float4x4();
+
+  //----------------------------------------  768 bytes boundary
 
   float4 primitiveAmbientFrontSide = float4(0.0,0.0,0.0,1.0);
   float4 primitiveDiffuseFrontSide = float4(0.0,0.0,0.0,1.0);
@@ -346,7 +353,7 @@ struct RKStructureUniforms
   float pad6 = 0.0f;
   float primitiveShininessBackSide = 4.0f;
 
-  //----------------------------------------  768 bytes boundary
+  //----------------------------------------  896 bytes boundary
 
   float bondSelectionStripesDensity = 0.25f;
   float bondSelectionStripesFrequency = 12.0f;
@@ -372,8 +379,7 @@ struct RKStructureUniforms
   float4 numberOfReplicas = float4(0.0f,0.0f,0.0f,0.0f);
   float4 pad11 = float4(0.0f,0.0f,0.0f,0.0f);
   float4 pad12 = float4(0.0f,0.0f,0.0f,0.0f);
-  float4x4 pad13 = float4x4(double4x4());
-  float4x4 pad14 = float4x4(double4x4());
+
 
   RKStructureUniforms() {}
   RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure);
@@ -443,7 +449,12 @@ layout (std140) uniform StructureUniformBlock
 
   //----------------------------------------  384 bytes boundary
 
+  mat4 inverseModelMatrix;
   mat4 boxMatrix;
+
+  //----------------------------------------  512 bytes boundary
+
+  mat4 inverseBoxMatrix;
   float atomSelectionStripesDensity;
   float atomSelectionStripesFrequency;
   float atomSelectionWorleyNoise3DFrequency;
@@ -456,10 +467,12 @@ layout (std140) uniform StructureUniformBlock
   float bondSelectionScaling;
   bool colorAtomsWithBondColor;
 
-  //----------------------------------------  512 bytes boundary
+  //----------------------------------------  640 bytes boundary
 
   mat4 transformationMatrix;
   mat4 transformationNormalMatrix;
+
+  //----------------------------------------  768 bytes boundary
 
   vec4 primitiveAmbientFrontSide;
   vec4 primitiveDiffuseFrontSide;
@@ -477,7 +490,7 @@ layout (std140) uniform StructureUniformBlock
   float pad6;
   float primitiveShininessBackSide;
 
-  //----------------------------------------  768 bytes boundary
+  //----------------------------------------  896 bytes boundary
 
   float bondSelectionStripesDensity;
   float bondSelectionStripesFrequency;
@@ -504,8 +517,9 @@ layout (std140) uniform StructureUniformBlock
   vec4 pad11;
   vec4 pad12;
 
-  mat4 pad13;
-  mat4 pad14;
+
+  //----------------------------------------  1024 bytes boundary
+
 } structureUniforms;
 )foo";
 

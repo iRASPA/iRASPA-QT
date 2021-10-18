@@ -22,6 +22,7 @@
 #include "skopenclmarchingcubes.h"
 #include <iostream>
 #include <QDebug>
+#include <QApplication>
 
 SKOpenCLMarchingCubes::SKOpenCLMarchingCubes(): _isOpenCLInitialized(false), _isOpenCLReady(false)
 {
@@ -75,105 +76,110 @@ void SKOpenCLMarchingCubes::initialize(bool isOpenCLInitialized, cl_context cont
     }
     return;
   }
+
 }
 
 void SKOpenCLMarchingCubes::callBack(cl_program program, void *user_data)
 {
-  cl_int err;
+  // invoke on the main thread
+  QMetaObject::invokeMethod(qApp, [program, user_data]{
 
-  SKOpenCLMarchingCubes *ptr = reinterpret_cast<SKOpenCLMarchingCubes*>(user_data);
+    cl_int err;
 
-  if(ptr)
-  {
-    size_t len;
-    char buffer[2048];
-    cl_build_status bldstatus;
-    clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_STATUS, sizeof(bldstatus), (void *)&bldstatus, &len);
+    SKOpenCLMarchingCubes *ptr = reinterpret_cast<SKOpenCLMarchingCubes*>(user_data);
 
-    switch(bldstatus)
+    if(ptr)
     {
-      case CL_BUILD_NONE:
-        if(ptr->_logReporter)
-        {
-          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL energy surface: No build was performed");
-        }
-        break;
-      case CL_BUILD_ERROR:
-        {
-          clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
-          QString message = QString("OpenCL energy surface: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
+      size_t len;
+      char buffer[2048];
+      cl_build_status bldstatus;
+      clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_STATUS, sizeof(bldstatus), (void *)&bldstatus, &len);
+
+      switch(bldstatus)
+      {
+        case CL_BUILD_NONE:
           if(ptr->_logReporter)
           {
-            ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+            ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL energy surface: No build was performed");
           }
-        }
-        break;
-      case CL_BUILD_SUCCESS:
+          break;
+        case CL_BUILD_ERROR:
+          {
+            clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+            QString message = QString("OpenCL energy surface: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
+            if(ptr->_logReporter)
+            {
+              ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+            }
+          }
+          break;
+        case CL_BUILD_SUCCESS:
+          if(ptr->_logReporter)
+          {
+            ptr->_logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL energy surface: Build success");
+          }
+          break;
+        case CL_BUILD_IN_PROGRESS:
+          if(ptr->_logReporter)
+          {
+            ptr->_logReporter->logMessage(LogReporting::ErrorLevel::warning, "OpenCL energy surface: Build still in progress");
+          }
+          break;
+      }
+
+      ptr->_constructHPLevelKernel = clCreateKernel(program, "constructHPLevel", &err);
+      if (err != CL_SUCCESS)
+      {
+        QString message = QString("OpenCL energy surface: Failed to create OpenCL constructHPLevel kernel (error: %1)").arg(QString::number(err));
         if(ptr->_logReporter)
         {
-          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL energy surface: Build success");
+          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
         }
-        break;
-      case CL_BUILD_IN_PROGRESS:
+        return;
+      }
+
+      ptr->_classifyCubesKernel = clCreateKernel(program, "classifyCubes", &err);
+      if (err != CL_SUCCESS)
+      {
+        QString message = QString("OpenCL energy surface: Failed to create OpenCL classifyCubes kernel (error: %1)").arg(QString::number(err));
         if(ptr->_logReporter)
         {
-          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::warning, "OpenCL energy surface: Build still in progress");
+          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
         }
-        break;
-    }
+        return;
+      }
 
-    ptr->_constructHPLevelKernel = clCreateKernel(program, "constructHPLevel", &err);
-    if (err != CL_SUCCESS)
-    {
-      QString message = QString("OpenCL energy surface: Failed to create OpenCL constructHPLevel kernel (error: %1)").arg(QString::number(err));
+      ptr->_traverseHPKernel = clCreateKernel(program, "traverseHP", &err);
+      if (err != CL_SUCCESS)
+      {
+        QString message = QString("OpenCL energy surface: Failed to create OpenCL traverseHP kernel (error: %1)").arg(QString::number(err));
+        if(ptr->_logReporter)
+        {
+          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+        }
+        return;
+      }
+
+      err = clGetKernelWorkGroupInfo(ptr->_constructHPLevelKernel, ptr->_clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &ptr->_workGroupSize, nullptr);
+      if (err != CL_SUCCESS)
+      {
+        QString message = QString("OpenCL energy surface: Failed in clGetKernelWorkGroupInfo (error: %1)").arg(QString::number(err));
+        if(ptr->_logReporter)
+        {
+          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+        }
+        return;
+      }
+
+      QString message = QString("OpenCL energy surface: work-group size set to %1").arg(QString::number(ptr->_workGroupSize));
       if(ptr->_logReporter)
       {
-        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::verbose, message);
       }
-      return;
-    }
 
-    ptr->_classifyCubesKernel = clCreateKernel(program, "classifyCubes", &err);
-    if (err != CL_SUCCESS)
-    {
-      QString message = QString("OpenCL energy surface: Failed to create OpenCL classifyCubes kernel (error: %1)").arg(QString::number(err));
-      if(ptr->_logReporter)
-      {
-        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-      }
-      return;
+      ptr->_isOpenCLReady = true;
     }
-
-    ptr->_traverseHPKernel = clCreateKernel(program, "traverseHP", &err);
-    if (err != CL_SUCCESS)
-    {
-      QString message = QString("OpenCL energy surface: Failed to create OpenCL traverseHP kernel (error: %1)").arg(QString::number(err));
-      if(ptr->_logReporter)
-      {
-        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-      }
-      return;
-    }
-
-    err = clGetKernelWorkGroupInfo(ptr->_constructHPLevelKernel, ptr->_clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &ptr->_workGroupSize, nullptr);
-    if (err != CL_SUCCESS)
-    {
-      QString message = QString("OpenCL energy surface: Failed in clGetKernelWorkGroupInfo (error: %1)").arg(QString::number(err));
-      if(ptr->_logReporter)
-      {
-        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-      }
-      return;
-    }
-
-    QString message = QString("OpenCL energy surface: work-group size set to %1").arg(QString::number(ptr->_workGroupSize));
-    if(ptr->_logReporter)
-    {
-      ptr->_logReporter->logMessage(LogReporting::ErrorLevel::verbose, message);
-    }
-
-    ptr->_isOpenCLReady = true;
-  }
+  });
 }
 
 int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> *voxels, double isoValue, cl_GLuint OpenGLVertextBufferObject)

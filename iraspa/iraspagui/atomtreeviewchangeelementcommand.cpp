@@ -30,7 +30,7 @@ AtomTreeViewChangeElementCommand::AtomTreeViewChangeElementCommand(MainWindow *m
   _mainWindow(mainWindow),
   _model(model),
   _iraspaStructure(iraspaStructure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
+  _object(iraspaStructure->object()),
   _atomTreeNode(atomTreeNode),
   _newValue(newValue),
   _structures()
@@ -41,53 +41,59 @@ AtomTreeViewChangeElementCommand::AtomTreeViewChangeElementCommand(MainWindow *m
 
 void AtomTreeViewChangeElementCommand::redo()
 {
-  _oldValue = _atomTreeNode->representedObject()->elementIdentifier();
-  _atomTreeNode->representedObject()->setElementIdentifier(_newValue);
-
-  if(_model)
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
   {
-    if(_model->isActive(_iraspaStructure))
+    _oldValue = _atomTreeNode->representedObject()->elementIdentifier();
+    _atomTreeNode->representedObject()->setElementIdentifier(_newValue);
+
+    if(_model)
     {
-      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),2);
-      emit _model->dataChanged(index,index);
+      if(_model->isActive(_iraspaStructure))
+      {
+        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),2);
+        emit _model->dataChanged(index,index);
+      }
     }
-  }
 
-  _structure->setRepresentationColorSchemeIdentifier(_structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
-  _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
+    structure->setRepresentationColorSchemeIdentifier(structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
+    structure->setRepresentationStyle(structure->atomRepresentationStyle(), _mainWindow->colorSets());
 
-  if(_mainWindow)
-  {
-    emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
-    emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
-    emit _mainWindow->rendererReloadData();
+    if(_mainWindow)
+    {
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
+      emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
+      emit _mainWindow->rendererReloadData();
 
-    _mainWindow->documentWasModified();
+      _mainWindow->documentWasModified();
+    }
   }
 }
 
 void AtomTreeViewChangeElementCommand::undo()
 {
-  _atomTreeNode->representedObject()->setElementIdentifier(_oldValue);
-
-  if(_model)
+  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
   {
-    if(_model->isActive(_iraspaStructure))
+    _atomTreeNode->representedObject()->setElementIdentifier(_oldValue);
+
+    if(_model)
     {
-      QModelIndex index = _model->indexForNode(_atomTreeNode.get(),2);
-      emit _model->dataChanged(index,index);
+      if(_model->isActive(_iraspaStructure))
+      {
+        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),2);
+        emit _model->dataChanged(index,index);
+      }
     }
-  }
 
-  _structure->setRepresentationColorSchemeIdentifier(_structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
-  _structure->setRepresentationStyle(_structure->atomRepresentationStyle(), _mainWindow->colorSets());
+    structure->setRepresentationColorSchemeIdentifier(structure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
+    structure->setRepresentationStyle(structure->atomRepresentationStyle(), _mainWindow->colorSets());
 
-  if(_mainWindow)
-  {
-    emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
-    emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
-    emit _mainWindow->rendererReloadData();
+    if(_mainWindow)
+    {
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(_structures);
+      emit _mainWindow->invalidateCachedIsoSurfaces(_structures);
+      emit _mainWindow->rendererReloadData();
 
-    _mainWindow->documentWasModified();
+      _mainWindow->documentWasModified();
+    }
   }
 }

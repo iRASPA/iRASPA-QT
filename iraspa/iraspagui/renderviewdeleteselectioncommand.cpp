@@ -43,10 +43,17 @@ RenderViewDeleteSelectionCommand::RenderViewDeleteSelectionCommand(MainWindow *m
   {
     for(const std::shared_ptr<iRASPAObject> &iraspaStructure : scene)
     {
-      AtomSelectionIndexPaths atomSelection = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->atomsTreeController()->selectionIndexPaths();
-      BondSelectionNodesAndIndexSet bondSelection = std::dynamic_pointer_cast<Structure>(iraspaStructure->object())->bondSetController()->selectionNodesAndIndexSet();
-      new RenderViewDeleteSelectionSubCommand(_mainWindow, atomModel, bondModel,iraspaStructure,
-                                              atomSelection, bondSelection, this);
+      if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(iraspaStructure->object()))
+      {
+        AtomSelectionIndexPaths atomSelection = atomViewer->atomsTreeController()->selectionIndexPaths();
+        BondSelectionNodesAndIndexSet bondSelection{};
+        if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(iraspaStructure->object()))
+        {
+          bondSelection = bondViewer->bondSetController()->selectionNodesAndIndexSet();
+        }
+        new RenderViewDeleteSelectionSubCommand(_mainWindow, atomModel, bondModel,iraspaStructure,
+                                                atomSelection, bondSelection, this);
+      }
     }
   }
 }

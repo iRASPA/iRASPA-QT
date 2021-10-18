@@ -29,10 +29,23 @@ public:
   Molecule();
   Molecule(const Molecule &molecule);
   Molecule(std::shared_ptr<SKStructure> frame);
-  Molecule(std::shared_ptr<Structure> s);
+
+  Molecule(const std::shared_ptr<const class Crystal> structure);
+  Molecule(const std::shared_ptr<const class MolecularCrystal> structure);
+  Molecule(const std::shared_ptr<const class Molecule> structure);
+  Molecule(const std::shared_ptr<const class ProteinCrystal> structure);
+  Molecule(const std::shared_ptr<const class Protein> structure);
+  Molecule(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  Molecule(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  Molecule(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  Molecule(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  Molecule(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  Molecule(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  Molecule(const std::shared_ptr<const class GridVolume> volume);
+
   ~Molecule() {}
 
-  std::shared_ptr<Structure> clone() override final;
+  std::shared_ptr<Object> shallowClone() override final;
 
   ObjectType structureType() override final { return ObjectType::molecule; }
 

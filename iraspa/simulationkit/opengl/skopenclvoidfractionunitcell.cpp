@@ -23,6 +23,7 @@
 #include <iostream>
 #include <algorithm>
 #include <QDebug>
+#include <QApplication>
 
 SKOpenCLVoidFractionUnitCell::SKOpenCLVoidFractionUnitCell(): _isOpenCLInitialized(false), _isOpenCLReady(false)
 {
@@ -82,79 +83,84 @@ void SKOpenCLVoidFractionUnitCell::initialize(bool isOpenCLInitialized, cl_conte
 
 void SKOpenCLVoidFractionUnitCell::callBack(cl_program program, void *user_data)
 {
-  cl_int err;
+  // invoke on the main thread
+  QMetaObject::invokeMethod(qApp, [program, user_data]{
 
-  SKOpenCLVoidFractionUnitCell *ptr = reinterpret_cast<SKOpenCLVoidFractionUnitCell*>(user_data);
+    cl_int err;
 
-  if(ptr)
-  {
-    size_t len;
-    char buffer[2048];
-    cl_build_status bldstatus;
-    clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_STATUS, sizeof(bldstatus), (void *)&bldstatus, &len);
+    SKOpenCLVoidFractionUnitCell *ptr = reinterpret_cast<SKOpenCLVoidFractionUnitCell*>(user_data);
 
-    switch(bldstatus)
+    if(ptr)
     {
-      case CL_BUILD_NONE:
-        if(ptr->_logReporter)
-        {
-          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL voidfraction: No build was performed");
-        }
-        break;
-      case CL_BUILD_ERROR:
-        {
-          clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
-          QString message = QString("OpenCL voidfraction: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
+      size_t len;
+      char buffer[2048];
+      cl_build_status bldstatus;
+      clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_STATUS, sizeof(bldstatus), (void *)&bldstatus, &len);
+
+      switch(bldstatus)
+      {
+        case CL_BUILD_NONE:
           if(ptr->_logReporter)
           {
-            ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+            ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, "OpenCL voidfraction: No build was performed");
           }
-        }
-        break;
-      case CL_BUILD_SUCCESS:
+          break;
+        case CL_BUILD_ERROR:
+          {
+            clGetProgramBuildInfo(program, ptr->_clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+            QString message = QString("OpenCL voidfraction: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
+            if(ptr->_logReporter)
+            {
+              ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+            }
+          }
+          break;
+        case CL_BUILD_SUCCESS:
+          if(ptr->_logReporter)
+          {
+            ptr->_logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL voidfraction: Build success");
+          }
+          break;
+        case CL_BUILD_IN_PROGRESS:
+          if(ptr->_logReporter)
+          {
+            ptr->_logReporter->logMessage(LogReporting::ErrorLevel::warning, "OpenCL voidfraction: Build still in progress");
+          }
+          break;
+      }
+
+      ptr->_kernel = clCreateKernel(program, "ComputeVoidFraction", &err);
+      if (err != CL_SUCCESS)
+      {
+        QString message = QString("OpenCL voidfraction: Failed to create OpenCL ComputeVoidFraction kernel (error: %1)").arg(QString::number(err));
         if(ptr->_logReporter)
         {
-          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::info, "OpenCL voidfraction: Build success");
+          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
         }
-        break;
-      case CL_BUILD_IN_PROGRESS:
+        return;
+      }
+
+      err = clGetKernelWorkGroupInfo(ptr->_kernel, ptr->_clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &ptr->_workGroupSize, nullptr);
+      if (err != CL_SUCCESS)
+      {
+        QString message = QString("OpenCL voidfraction: Failed in clGetKernelWorkGroupInfo (error: %1)").arg(QString::number(err));
         if(ptr->_logReporter)
         {
-          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::warning, "OpenCL voidfraction: Build still in progress");
+          ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
         }
-        break;
-    }
+        return;
+      }
 
-    ptr->_kernel = clCreateKernel(program, "ComputeVoidFraction", &err);
-    if (err != CL_SUCCESS)
-    {
-      QString message = QString("OpenCL voidfraction: Failed to create OpenCL ComputeVoidFraction kernel (error: %1)").arg(QString::number(err));
+      QString message = QString("OpenCL voidfraction: work-group size set to %1").arg(QString::number(ptr->_workGroupSize));
       if(ptr->_logReporter)
       {
-        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::verbose, message);
       }
-      return;
+
+      ptr->_isOpenCLReady = true;
     }
 
-    err = clGetKernelWorkGroupInfo(ptr->_kernel, ptr->_clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &ptr->_workGroupSize, nullptr);
-    if (err != CL_SUCCESS)
-    {
-      QString message = QString("OpenCL voidfraction: Failed in clGetKernelWorkGroupInfo (error: %1)").arg(QString::number(err));
-      if(ptr->_logReporter)
-      {
-        ptr->_logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-      }
-      return;
-    }
-
-    QString message = QString("OpenCL voidfraction: work-group size set to %1").arg(QString::number(ptr->_workGroupSize));
-    if(ptr->_logReporter)
-    {
-      ptr->_logReporter->logMessage(LogReporting::ErrorLevel::verbose, message);
-    }
-
-    ptr->_isOpenCLReady = true;
-  }
+  });
 }
 
 double SKOpenCLVoidFractionUnitCell::computeVoidFraction(std::vector<cl_float>* voxels)

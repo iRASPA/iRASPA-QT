@@ -64,20 +64,20 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(renderStructure->orientation()),centerOfRotation, renderStructure->origin());
 
     this->modelMatrix = float4x4(currentModelMatrix);
+    this->inverseModelMatrix = float4x4(double4x4::inverse(currentModelMatrix));
 
     this->unitCellScaling =  float(renderStructure->unitCellScaleFactor());
     this->unitCellDiffuseColor = float(renderStructure->unitCellDiffuseIntensity()) * float4(renderStructure->unitCellDiffuseColor().redF(),renderStructure->unitCellDiffuseColor().greenF(),
                                                                                              renderStructure->unitCellDiffuseColor().blueF(),renderStructure->unitCellDiffuseColor().alphaF());
 
-
     double3 offset = renderStructure->renderLocalAxes().offset();
     double3x3 box = renderStructure->cell()->box();
-    double3 boxAspectRatio = boundingbox.aspectRatio();
 
     double3 numberOfReplicas = renderStructure->cell()->numberOfReplicas();
     this->numberOfReplicas = float4(numberOfReplicas.x,numberOfReplicas.y,numberOfReplicas.z,1.0);
 
     this->boxMatrix = float4x4(box);
+    this->inverseBoxMatrix = float4x4(double4x4::inverse(box));
     double3 shift = renderStructure->cell()->unitCell() * double3(renderStructure->cell()->minimumReplicas());
     this->boxMatrix[3][0] = float(shift.x);
     this->boxMatrix[3][1] = float(shift.y);
@@ -207,8 +207,8 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       float4x4 primitiveModelMatrix = float4x4(double4x4(source->primitiveOrientation()));
       float4x4 primitiveNormalMatrix = float4x4(double3x3(source->primitiveOrientation()).inverse().transpose());  // tranpose
 
-      this->transformationMatrix = primitiveModelMatrix * float4x4(source->primitiveTransformationMatrix());
-      this->transformationNormalMatrix = primitiveNormalMatrix * float4x4(source->primitiveTransformationMatrix().inverse().transpose()); // tranpose
+      this->primitiveTransformationMatrix = primitiveModelMatrix * float4x4(source->primitiveTransformationMatrix());
+      this->primitiveTransformationNormalMatrix = primitiveNormalMatrix * float4x4(source->primitiveTransformationMatrix().inverse().transpose());
 
       this->primitiveOpacity = source->primitiveOpacity();
 

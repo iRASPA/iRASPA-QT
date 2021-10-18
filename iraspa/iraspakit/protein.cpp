@@ -30,6 +30,8 @@
 #include "crystalellipsoidprimitive.h"
 #include "crystalcylinderprimitive.h"
 #include "crystalpolygonalprismprimitive.h"
+#include "primitive.h"
+#include "gridvolume.h"
 
 Protein::Protein()
 {
@@ -46,25 +48,117 @@ Protein::Protein(std::shared_ptr<SKStructure> frame): Structure(frame)
   _atomsTreeController->setTags();
 }
 
-Protein::Protein(std::shared_ptr<Structure> s): Structure(s)
+Protein::Protein(const std::shared_ptr<const Crystal> structure): Structure(structure)
 {
-  _cell = std::make_shared<SKCell>(*s->cell());
-
-  if(dynamic_cast<Crystal*>(s.get()) ||
-     dynamic_cast<CrystalEllipsoidPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalCylinderPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalPolygonalPrismPrimitive*>(s.get()))
-  {
-    convertAsymmetricAtomsToCartesian();
-  }
-
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  convertAsymmetricAtomsToCartesian();
   expandSymmetry();
   _atomsTreeController->setTags();
   reComputeBoundingBox();
   computeBonds();
 }
 
-std::shared_ptr<Structure> Protein::clone()
+Protein::Protein(const std::shared_ptr<const MolecularCrystal> structure): Structure(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const Molecule> structure): Structure(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const ProteinCrystal> structure): Structure(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const Protein> structure): Structure(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const CrystalCylinderPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToCartesian();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const CrystalEllipsoidPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToCartesian();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const CrystalPolygonalPrismPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToCartesian();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const CylinderPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const EllipsoidPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const PolygonalPrismPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+Protein::Protein(const std::shared_ptr<const GridVolume> volume): Structure(volume)
+{
+
+}
+
+
+
+std::shared_ptr<Object> Protein::shallowClone()
 {
   return std::make_shared<Protein>(static_cast<const Protein&>(*this));
 }

@@ -22,19 +22,36 @@
 #pragma  once
 
 #include <symmetrykit.h>
-#include "structure.h"
 #include "iraspakitprotocols.h"
-#include "structure.h"
+#include "object.h"
+#include "atomviewer.h"
+#include "primitivevisualappearanceviewer.h"
+#include "rkrenderkitprotocols.h"
 
-// Primitive is a subclass of Structure for now, to allow writing and reading the primitive data.
-// Will be changed in future versions to a subclass of Object
-
-class Primitive: public Structure, public PrimitiveVisualAppearanceViewer, public RKRenderPrimitiveObjectsSource
+class Primitive: public Object, public AtomViewer, public PrimitiveVisualAppearanceViewer, public RKRenderPrimitiveObjectsSource
 {
 public:
   Primitive();
   Primitive(const Primitive &primitive);
-  Primitive(std::shared_ptr<Structure> s);
+
+  Primitive(const std::shared_ptr<const class Structure> structure);
+  Primitive(const std::shared_ptr<const class Primitive> primitive);
+  Primitive(const std::shared_ptr<const class GridVolume> volume);
+
+  std::shared_ptr<Object> shallowClone() override;
+
+  bool drawAtoms() const override {return _drawAtoms;}
+  void setDrawAtoms(bool draw) { _drawAtoms = draw;}
+
+  void clearSelection() override final;
+  void setAtomSelection(int asymmetricAtomId) override final;
+  void addAtomToSelection(int asymmetricAtomId) override final;
+  void toggleAtomSelection(int asymmetricAtomId) override final;
+  void setAtomSelection(std::set<int>& atomIds) override final;
+  void addToAtomSelection(std::set<int>& atomIds) override final;
+
+  std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
+  void setAtomTreeController(std::shared_ptr<SKAtomTreeController> controller) {_atomsTreeController = controller;}
 
   simd_quatd primitiveOrientation() const override final {return _primitiveOrientation;}
   void setPrimitiveOrientation(simd_quatd orientation) override final  {_primitiveOrientation = orientation;}
@@ -114,9 +131,87 @@ public:
   double primitiveBackSideShininess() const override final {return _primitiveBackSideShininess;}
   void setPrimitiveBackSideShininess(double value) override final {_primitiveBackSideShininess = value;}
 
-private:
+  virtual bool hasSymmetry() {return false;}
+  virtual std::shared_ptr<Primitive> superCell() const {return nullptr;}
+  virtual std::shared_ptr<Primitive> flattenHierarchy() const {return nullptr;}
+  virtual std::shared_ptr<Primitive> appliedCellContentShift() const {return nullptr;}
+  virtual std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override;
+
+  virtual std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions();
+  virtual std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions();
+  virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToFractionalPositions();
+  virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToCartesianPositions();
+  virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToFractionalPositions();
+  virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToCartesianPositions();
+
+  virtual void expandSymmetry() override;
+  virtual double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
+  virtual double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
+  void recomputeSelectionBodyFixedBasis() override;
+
+  void convertAsymmetricAtomsToFractional() override;
+  void convertAsymmetricAtomsToCartesian() override;
+
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
+
+protected:
   qint64 _versionNumber{1};
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Primitive> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Primitive> &);
+
+  SKSpaceGroup _spaceGroup = SKSpaceGroup(1);
+  double3 _selectionCOMTranslation = double3(0.0, 0.0, 0.0);
+  int _selectionRotationIndex = 0;
+  double3x3 _selectionBodyFixedBasis = double3x3();
+
+  bool _drawAtoms =  true;
+  std::shared_ptr<SKAtomTreeController> _atomsTreeController;
+
+  double3x3 _primitiveTransformationMatrix = double3x3(1.0,0.0,0.0, 0.0,1.0,0.0, 0.0,0.0,1.0);
+  simd_quatd _primitiveOrientation = simd_quatd(0.0,0.0,0.0,1.0);
+  double _primitiveRotationDelta = 5.0;
+
+  double _primitiveOpacity = 1.0;
+  bool _primitiveIsCapped = false;
+  bool _primitiveIsFractional = true;
+  qint64 _primitiveNumberOfSides = 6;
+  double _primitiveThickness = 0.05;
+
+  double _primitiveHue = 1.0;
+  double _primitiveSaturation = 1.0;
+  double _primitiveValue = 1.0;
+
+  RKSelectionStyle _primitiveSelectionStyle = RKSelectionStyle::striped;
+  double _primitiveSelectionStripesDensity = 0.25;
+  double _primitiveSelectionStripesFrequency = 12.0;
+  double _primitiveSelectionWorleyNoise3DFrequency = 2.0;
+  double _primitiveSelectionWorleyNoise3DJitter = 1.0;
+  double _primitiveSelectionScaling = 1.0;
+  double _primitiveSelectionIntensity = 1.0;
+
+
+  bool _primitiveFrontSideHDR = true;
+  double _primitiveFrontSideHDRExposure = 2.0;
+  QColor _primitiveFrontSideAmbientColor = QColor(255, 255, 255, 255);
+  QColor _primitiveFrontSideDiffuseColor = QColor(255, 255, 0, 255);
+  QColor _primitiveFrontSideSpecularColor = QColor(255, 255, 255, 255);
+  double _primitiveFrontSideAmbientIntensity = 0.1;
+  double _primitiveFrontSideDiffuseIntensity = 1.0;
+  double _primitiveFrontSideSpecularIntensity = 0.2;
+  double _primitiveFrontSideShininess = 4.0;
+
+  bool _primitiveBackSideHDR = true;
+  double _primitiveBackSideHDRExposure = 2.0;
+  QColor _primitiveBackSideAmbientColor = QColor(255, 255, 255, 255);
+  QColor _primitiveBackSideDiffuseColor = QColor(0, 140, 255, 255);
+  QColor _primitiveBackSideSpecularColor = QColor(255, 255, 255, 255);
+  double _primitiveBackSideAmbientIntensity = 0.1;
+  double _primitiveBackSideDiffuseIntensity = 1.0;
+  double _primitiveBackSideSpecularIntensity = 0.2;
+  double _primitiveBackSideShininess = 4.0;
+
 };
 

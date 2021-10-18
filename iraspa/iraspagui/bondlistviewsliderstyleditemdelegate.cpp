@@ -44,6 +44,7 @@ BondListViewSliderStyledItemDelegate::BondListViewSliderStyledItemDelegate(QWidg
 
   slider = new QDoubleSlider(Qt::Horizontal, treeView);
   slider->hide();
+  slider->setDisabled(true);
   slider->setDoubleMinimum(0.0);
   slider->setDoubleMaximum(3.0);
   slider->setAutoFillBackground(true);
@@ -126,6 +127,7 @@ QWidget * BondListViewSliderStyledItemDelegate::createEditor(QWidget *parent,
     double bondLength = treeView->model()->data(bondLengthIndex).toDouble();
 
     QDoubleSlider *realSlider = new QDoubleSlider(Qt::Horizontal, parent);
+    realSlider->setDisabled(true);
     realSlider->setDoubleMinimum(0);
     realSlider->setDoubleMaximum(3.0);
     realSlider->setDoubleValue(bondLength);

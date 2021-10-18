@@ -29,7 +29,7 @@ AtomTreeViewChangePositionZCommand::AtomTreeViewChangePositionZCommand(MainWindo
   _mainWindow(mainWindow),
   _model(model),
   _iraspaStructure(iraspaStructure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
+  _object(iraspaStructure->object()),
   _atomTreeNode(atomTreeNode),
   _newValue(newValue)
 {        
@@ -39,19 +39,28 @@ AtomTreeViewChangePositionZCommand::AtomTreeViewChangePositionZCommand(MainWindo
 
 void AtomTreeViewChangePositionZCommand::redo()
 {
-  if(_structure)
+  if(_object)
   {
     _oldValue = _atomTreeNode->representedObject()->position().z;
     _atomTreeNode->representedObject()->setPositionZ(_newValue);
-    _structure->expandSymmetry();
-    _structure->computeBonds();
+
+    if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
+    {
+      atomViewer->expandSymmetry();
+    }
+    if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+    {
+      bondViewer->computeBonds();
+    }
 
     if(_model)
     {
       if(_model->isActive(_iraspaStructure))
       {
-        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),5);
+        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),7);
         emit _model->dataChanged(index,index);
+
+        emit _model->updateNetCharge();
       }
     }
 
@@ -68,18 +77,27 @@ void AtomTreeViewChangePositionZCommand::redo()
 
 void AtomTreeViewChangePositionZCommand::undo()
 {
-  if(_structure)
+  if(_object)
   {
     _atomTreeNode->representedObject()->setPositionZ(_oldValue);
-    _structure->expandSymmetry();
-    _structure->computeBonds();
+
+    if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
+    {
+      atomViewer->expandSymmetry();
+    }
+    if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+    {
+      bondViewer->computeBonds();
+    }
 
     if(_model)
     {
       if(_model->isActive(_iraspaStructure))
       {
-        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),5);
+        QModelIndex index = _model->indexForNode(_atomTreeNode.get(),7);
         emit _model->dataChanged(index,index);
+
+        emit _model->updateNetCharge();
       }
     }
 

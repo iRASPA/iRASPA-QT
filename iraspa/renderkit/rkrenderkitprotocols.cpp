@@ -77,6 +77,16 @@ RKRenderDensityVolumeSource::~RKRenderDensityVolumeSource()
   // Compulsory virtual destructor definition
 }
 
+RKRenderRASPADensityVolumeSource::~RKRenderRASPADensityVolumeSource()
+{
+  // Compulsory virtual destructor definition
+}
+
+RKRenderVTKDensityVolumeSource::~RKRenderVTKDensityVolumeSource()
+{
+  // Compulsory virtual destructor definition
+}
+
 RKRenderDataSource::~RKRenderDataSource()
 {
   // Compulsory virtual destructor definition

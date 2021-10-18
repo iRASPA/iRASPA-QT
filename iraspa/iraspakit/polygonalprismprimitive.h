@@ -31,16 +31,29 @@ class PolygonalPrismPrimitive: public Primitive, public RKRenderPrimitivePolygon
 public:
   PolygonalPrismPrimitive();
   PolygonalPrismPrimitive(const PolygonalPrismPrimitive &polygonalPrismPrimitive);
-  PolygonalPrismPrimitive(std::shared_ptr<Structure> s);
+
+  PolygonalPrismPrimitive(const std::shared_ptr<const class Crystal> structure);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class MolecularCrystal> structure);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class Molecule> structure);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class ProteinCrystal> structure);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class Protein> structure);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  PolygonalPrismPrimitive(const std::shared_ptr<const class GridVolume> volume);
+
   ~PolygonalPrismPrimitive() {}
+
+  std::shared_ptr<Object> shallowClone() override final;
 
   bool drawAtoms() const override {return _drawAtoms;}
 
-  std::shared_ptr<Structure> clone() override final;
-
   ObjectType structureType() override final { return ObjectType::polygonalPrismPrimitive; }
 
-  std::shared_ptr<Structure> flattenHierarchy() const override final;
+  std::shared_ptr<Primitive> flattenHierarchy() const override final;
 
   std::vector<RKInPerInstanceAttributesAtoms> renderPrimitivePolygonalPrismObjects() const override final;
   std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitivePolygonalPrismObjects() const override final;

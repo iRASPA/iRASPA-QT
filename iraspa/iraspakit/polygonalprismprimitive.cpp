@@ -30,6 +30,8 @@
 #include "crystalellipsoidprimitive.h"
 #include "crystalcylinderprimitive.h"
 #include "crystalpolygonalprismprimitive.h"
+#include "primitive.h"
+#include "gridvolume.h"
 
 PolygonalPrismPrimitive::PolygonalPrismPrimitive()
 {
@@ -40,30 +42,107 @@ PolygonalPrismPrimitive::PolygonalPrismPrimitive(const PolygonalPrismPrimitive &
 {
 }
 
-PolygonalPrismPrimitive::PolygonalPrismPrimitive(std::shared_ptr<Structure> s): Primitive(s)
-{
-  _cell = std::make_shared<SKCell>(*s->cell());
-
-  if(dynamic_cast<Crystal*>(s.get()) ||
-     dynamic_cast<CrystalEllipsoidPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalCylinderPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalPolygonalPrismPrimitive*>(s.get()))
-  {
-    convertAsymmetricAtomsToFractional();
-  }
-
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-std::shared_ptr<Structure> PolygonalPrismPrimitive::clone()
+std::shared_ptr<Object> PolygonalPrismPrimitive::shallowClone()
 {
   return std::make_shared<PolygonalPrismPrimitive>(static_cast<const PolygonalPrismPrimitive&>(*this));
 }
 
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const Crystal> structure): Primitive(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  convertAsymmetricAtomsToCartesian();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
 
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const MolecularCrystal> structure): Primitive(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const Molecule> structure): Primitive(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const ProteinCrystal> structure): Primitive(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const Protein> structure): Primitive(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const CrystalCylinderPrimitive> primitive): Primitive(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToFractional();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const CrystalEllipsoidPrimitive> primitive): Primitive(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToFractional();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const CrystalPolygonalPrismPrimitive> primitive): Primitive(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToFractional();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const CylinderPrimitive> primitive): Primitive(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const EllipsoidPrimitive> primitive): Primitive(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const PolygonalPrismPrimitive> primitive): Primitive(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+}
+
+PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<const GridVolume> volume): Primitive(volume)
+{
+
+}
 
 
 // MARK: Rendering
@@ -273,7 +352,7 @@ void PolygonalPrismPrimitive::expandSymmetry()
   }
 }
 
-std::shared_ptr<Structure> PolygonalPrismPrimitive::flattenHierarchy() const
+std::shared_ptr<Primitive> PolygonalPrismPrimitive::flattenHierarchy() const
 {
   std::shared_ptr<PolygonalPrismPrimitive> polygonalPrism = std::make_shared<PolygonalPrismPrimitive>(static_cast<const PolygonalPrismPrimitive&>(*this));
 
@@ -296,7 +375,7 @@ std::shared_ptr<Structure> PolygonalPrismPrimitive::flattenHierarchy() const
 
   polygonalPrism->atomsTreeController()->setTags();
   polygonalPrism->reComputeBoundingBox();
-  polygonalPrism->computeBonds();
+ // polygonalPrism->computeBonds();
 
   return polygonalPrism;
 }
@@ -524,7 +603,7 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<PolygonalPris
   stream << primitive->_versionNumber;
 
   // handle super class
-  stream << std::static_pointer_cast<Structure>(primitive);
+  stream << std::static_pointer_cast<Primitive>(primitive);
 
   return stream;
 }
@@ -538,8 +617,91 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<PolygonalPrismPrimi
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "PolygonalPrismPrimitive");
   }
 
-  std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(primitive);
-  stream >> structure;
+  // Legacy reading of the primitive from a 'Structure' (remove in the future)
+  if(versionNumber <= 1)
+  {
+    std::shared_ptr<Structure> structure = std::make_shared<Structure>();
+    stream >> structure;
+
+    primitive->_authorFirstName = structure->authorFirstName();
+    primitive->_authorMiddleName = structure->authorMiddleName();
+    primitive->_authorLastName = structure->authorLastName();
+    primitive->_authorOrchidID = structure->authorOrchidID();
+    primitive->_authorResearcherID = structure->authorResearcherID();
+    primitive->_authorAffiliationUniversityName = structure->authorAffiliationUniversityName();
+    primitive->_authorAffiliationFacultyName = structure->authorAffiliationFacultyName();
+    primitive->_authorAffiliationInstituteName = structure->authorAffiliationInstituteName();
+    primitive->_authorAffiliationCityName = structure->authorAffiliationCityName();
+    primitive->_authorAffiliationCountryName = structure->authorAffiliationCountryName();
+    primitive->_creationDate = structure->creationDate();
+
+    primitive->_displayName = structure->displayName();
+    primitive->_isVisible = structure->isVisible();
+
+    primitive->_cell = structure->cell();
+    primitive->_periodic = true;
+    primitive->_origin = structure->origin();
+    primitive->_scaling = double3(1.0, 1.0, 1.0);
+    primitive->_orientation = structure->orientation();
+    primitive->_rotationDelta = structure->rotationDelta();
+
+    primitive->_drawUnitCell = structure->drawUnitCell();
+    primitive->_unitCellScaleFactor = structure->unitCellScaleFactor();
+    primitive->_unitCellDiffuseColor = structure->unitCellDiffuseColor();
+    primitive->_unitCellDiffuseIntensity = structure->unitCellDiffuseIntensity();
+
+    primitive->_localAxes = structure->renderLocalAxes();
+
+    primitive->_drawAtoms = structure->drawAtoms();
+    primitive->_atomsTreeController = structure->atomsTreeController();
+
+    primitive->_primitiveTransformationMatrix = structure->transformationMatrix();
+    primitive->_primitiveOrientation = structure->primitiveOrientation();
+    primitive->_primitiveRotationDelta = structure->primitiveRotationDelta();
+
+    primitive->_primitiveOpacity = structure->primitiveOpacity();
+    primitive->_primitiveIsCapped = structure->primitiveIsCapped();
+    primitive->_primitiveIsFractional = true;
+    primitive->_primitiveNumberOfSides = structure->primitiveNumberOfSides();
+    primitive->_primitiveThickness = 0.05;
+
+    primitive->_primitiveHue = structure->primitiveHue();
+    primitive->_primitiveSaturation = structure->primitiveSaturation();
+    primitive->_primitiveValue = structure->primitiveValue();
+
+    primitive->_primitiveSelectionStyle = structure->primitiveSelectionStyle();
+    primitive->_primitiveSelectionStripesDensity = structure->primitiveSelectionStripesDensity();
+    primitive->_primitiveSelectionStripesFrequency = structure->primitiveSelectionStripesFrequency();
+    primitive->_primitiveSelectionWorleyNoise3DFrequency = structure->primitiveSelectionWorleyNoise3DFrequency();
+    primitive->_primitiveSelectionWorleyNoise3DJitter = structure->primitiveSelectionWorleyNoise3DJitter();
+    primitive->_primitiveSelectionScaling = structure->primitiveSelectionScaling();
+    primitive->_primitiveSelectionIntensity = structure->primitiveSelectionIntensity();
+
+    primitive->_primitiveFrontSideHDR = structure->frontPrimitiveHDR();
+    primitive->_primitiveFrontSideHDRExposure = structure->frontPrimitiveHDRExposure();
+    primitive->_primitiveFrontSideAmbientColor = structure->frontPrimitiveAmbientColor();
+    primitive->_primitiveFrontSideDiffuseColor = structure->frontPrimitiveDiffuseColor();
+    primitive->_primitiveFrontSideSpecularColor = structure->frontPrimitiveSpecularColor();
+    primitive->_primitiveFrontSideAmbientIntensity = structure->frontPrimitiveAmbientIntensity();
+    primitive->_primitiveFrontSideDiffuseIntensity = structure->frontPrimitiveDiffuseIntensity();
+    primitive->_primitiveFrontSideSpecularIntensity = structure->frontPrimitiveSpecularIntensity();
+    primitive->_primitiveFrontSideShininess = structure->frontPrimitiveShininess();
+
+    primitive->_primitiveBackSideHDR = structure->backPrimitiveHDR();
+    primitive->_primitiveBackSideHDRExposure = structure->backPrimitiveHDRExposure();
+    primitive->_primitiveBackSideAmbientColor = structure->backPrimitiveAmbientColor();
+    primitive->_primitiveBackSideDiffuseColor = structure->backPrimitiveDiffuseColor();
+    primitive->_primitiveBackSideSpecularColor = structure->backPrimitiveSpecularColor();
+    primitive->_primitiveBackSideAmbientIntensity = structure->backPrimitiveAmbientIntensity();
+    primitive->_primitiveBackSideDiffuseIntensity = structure->backPrimitiveDiffuseIntensity();
+    primitive->_primitiveBackSideSpecularIntensity = structure->backPrimitiveSpecularIntensity();
+    primitive->_primitiveBackSideShininess = structure->backPrimitiveShininess();
+  }
+  else
+  {
+    std::shared_ptr<Primitive> structure = std::static_pointer_cast<Primitive>(primitive);
+    stream >> structure;
+  }
 
   return stream;
 }

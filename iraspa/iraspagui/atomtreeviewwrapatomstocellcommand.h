@@ -41,5 +41,5 @@ private:
   MainWindow *_mainWindow;
   [[maybe_unused]] AtomTreeViewModel *_model;
   std::shared_ptr<iRASPAObject> _iraspa_structure;
-  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<Object> _object;
 };

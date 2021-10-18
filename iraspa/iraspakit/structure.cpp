@@ -28,6 +28,8 @@
 #include <QFontInfo>
 #include "skatomtreecontroller.h"
 #include "skbondsetcontroller.h"
+#include "gridvolume.h"
+#include "object.h"
 
 Structure::Structure(): _atomsTreeController(std::make_shared<SKAtomTreeController>()),
                         _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
@@ -37,6 +39,11 @@ Structure::Structure(): _atomsTreeController(std::make_shared<SKAtomTreeControll
 Structure::Structure(std::shared_ptr<SKAtomTreeController> atomTreeController): _atomsTreeController(atomTreeController),
                      _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
 {
+}
+
+std::shared_ptr<Object> Structure::shallowClone()
+{
+  return std::make_shared<Structure>(static_cast<const Structure&>(*this));
 }
 
 Structure::Structure(std::shared_ptr<SKStructure> frame): Object(frame), _atomsTreeController(std::make_shared<SKAtomTreeController>()),
@@ -304,258 +311,261 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
   */
 }
 
-Structure::Structure(std::shared_ptr<Structure> clone): _atomsTreeController(std::make_shared<SKAtomTreeController>()),
+
+Structure::Structure(const std::shared_ptr<const Structure> structure): Object(structure), _atomsTreeController(std::make_shared<SKAtomTreeController>()),
    _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
 {
   qDebug() << "Copy constructor Structure";
-  _displayName = clone->_displayName;
+  /*
+  _displayName = structure->_displayName;
 
-  _origin = clone->_origin;
-  _scaling = clone->_scaling;
-  _orientation = clone->_orientation;
-  _rotationDelta = clone->_rotationDelta;
-  _periodic = clone->_periodic;
-  _isVisible = clone->_isVisible;
-  _cell = std::make_shared<SKCell>(*clone->_cell);
-  _minimumGridEnergyValue = clone->_minimumGridEnergyValue;
-  _spaceGroup = clone->_spaceGroup;
+  _origin = structure->_origin;
+  _scaling = structure->_scaling;
+  _orientation = structure->_orientation;
+  _rotationDelta = structure->_rotationDelta;
+  _periodic = structure->_periodic;
+  _isVisible = structure->_isVisible;
+  _cell = std::make_shared<SKCell>(*structure->_cell);
+  */
+  _minimumGridEnergyValue = structure->_minimumGridEnergyValue;
+  _spaceGroup = structure->_spaceGroup;
 
-  _selectionCOMTranslation = clone->_selectionCOMTranslation;
-  _selectionRotationIndex = clone->_selectionRotationIndex;
-  _selectionBodyFixedBasis = clone->_selectionBodyFixedBasis;
+  _selectionCOMTranslation = structure->_selectionCOMTranslation;
+  _selectionRotationIndex = structure->_selectionRotationIndex;
+  _selectionBodyFixedBasis = structure->_selectionBodyFixedBasis;
 
-  _structureType = clone->_structureType;
-  _structureMaterialType = clone->_structureMaterialType;
-  _structureMass = clone->_structureMass;
-  _structureDensity = clone->_structureDensity;
-  _structureHeliumVoidFraction = clone->_structureHeliumVoidFraction;
-  _structureSpecificVolume = clone->_structureSpecificVolume;
-  _structureAccessiblePoreVolume = clone->_structureAccessiblePoreVolume;
-  _structureVolumetricNitrogenSurfaceArea = clone->_structureVolumetricNitrogenSurfaceArea;
-  _structureGravimetricNitrogenSurfaceArea = clone->_structureGravimetricNitrogenSurfaceArea;
-  _structureNumberOfChannelSystems = clone->_structureNumberOfChannelSystems;
-  _structureNumberOfInaccessiblePockets = clone->_structureNumberOfInaccessiblePockets;
-  _structureDimensionalityOfPoreSystem = clone->_structureDimensionalityOfPoreSystem;
-  _structureLargestCavityDiameter = clone->_structureLargestCavityDiameter;
-  _structureRestrictingPoreLimitingDiameter = clone->_structureRestrictingPoreLimitingDiameter;
-  _structureLargestCavityDiameterAlongAViablePath = clone->_structureLargestCavityDiameterAlongAViablePath;
+  _structureType = structure->_structureType;
+  _structureMaterialType = structure->_structureMaterialType;
+  _structureMass = structure->_structureMass;
+  _structureDensity = structure->_structureDensity;
+  _structureHeliumVoidFraction = structure->_structureHeliumVoidFraction;
+  _structureSpecificVolume = structure->_structureSpecificVolume;
+  _structureAccessiblePoreVolume = structure->_structureAccessiblePoreVolume;
+  _structureVolumetricNitrogenSurfaceArea = structure->_structureVolumetricNitrogenSurfaceArea;
+  _structureGravimetricNitrogenSurfaceArea = structure->_structureGravimetricNitrogenSurfaceArea;
+  _structureNumberOfChannelSystems = structure->_structureNumberOfChannelSystems;
+  _structureNumberOfInaccessiblePockets = structure->_structureNumberOfInaccessiblePockets;
+  _structureDimensionalityOfPoreSystem = structure->_structureDimensionalityOfPoreSystem;
+  _structureLargestCavityDiameter = structure->_structureLargestCavityDiameter;
+  _structureRestrictingPoreLimitingDiameter = structure->_structureRestrictingPoreLimitingDiameter;
+  _structureLargestCavityDiameterAlongAViablePath = structure->_structureLargestCavityDiameterAlongAViablePath;
 
-  _authorFirstName = clone->_authorFirstName;
-  _authorMiddleName = clone->_authorMiddleName;
-  _authorLastName = clone->_authorLastName;
-  _authorOrchidID = clone->_authorOrchidID;
-  _authorResearcherID = clone->_authorResearcherID;
-  _authorAffiliationUniversityName = clone->_authorAffiliationUniversityName;
-  _authorAffiliationFacultyName = clone->_authorAffiliationFacultyName;
-  _authorAffiliationInstituteName = clone->_authorAffiliationInstituteName;
-  _authorAffiliationCityName = clone->_authorAffiliationCityName;
-  _authorAffiliationCountryName = clone->_authorAffiliationCountryName;
+  _authorFirstName = structure->_authorFirstName;
+  _authorMiddleName = structure->_authorMiddleName;
+  _authorLastName = structure->_authorLastName;
+  _authorOrchidID = structure->_authorOrchidID;
+  _authorResearcherID = structure->_authorResearcherID;
+  _authorAffiliationUniversityName = structure->_authorAffiliationUniversityName;
+  _authorAffiliationFacultyName = structure->_authorAffiliationFacultyName;
+  _authorAffiliationInstituteName = structure->_authorAffiliationInstituteName;
+  _authorAffiliationCityName = structure->_authorAffiliationCityName;
+  _authorAffiliationCountryName = structure->_authorAffiliationCountryName;
 
   // primitive properties
-  _primitiveTransformationMatrix = clone->_primitiveTransformationMatrix;
-  _primitiveOrientation = clone->_primitiveOrientation;
-  _primitiveRotationDelta = clone->_primitiveRotationDelta;
+  _primitiveTransformationMatrix = structure->_primitiveTransformationMatrix;
+  _primitiveOrientation = structure->_primitiveOrientation;
+  _primitiveRotationDelta = structure->_primitiveRotationDelta;
 
-  _primitiveOpacity = clone->_primitiveOpacity;
-  _primitiveIsCapped = clone->_primitiveIsCapped;
-  _primitiveIsFractional = clone->_primitiveIsFractional;
-  _primitiveNumberOfSides = clone->_primitiveNumberOfSides;
-  _primitiveThickness = clone->_primitiveThickness;
+  _primitiveOpacity = structure->_primitiveOpacity;
+  _primitiveIsCapped = structure->_primitiveIsCapped;
+  _primitiveIsFractional = structure->_primitiveIsFractional;
+  _primitiveNumberOfSides = structure->_primitiveNumberOfSides;
+  _primitiveThickness = structure->_primitiveThickness;
 
-  _primitiveFrontSideHDR = clone->_primitiveFrontSideHDR;
-  _primitiveFrontSideHDRExposure = clone->_primitiveFrontSideHDRExposure;
-  _primitiveFrontSideAmbientColor = clone->_primitiveFrontSideAmbientColor;
-  _primitiveFrontSideDiffuseColor = clone->_primitiveFrontSideDiffuseColor;
-  _primitiveFrontSideSpecularColor = clone->_primitiveFrontSideSpecularColor;
-  _primitiveFrontSideAmbientIntensity = clone->_primitiveFrontSideAmbientIntensity;
-  _primitiveFrontSideDiffuseIntensity = clone->_primitiveFrontSideDiffuseIntensity;
-  _primitiveFrontSideSpecularIntensity = clone->_primitiveFrontSideSpecularIntensity;
-  _primitiveFrontSideShininess = clone->_primitiveFrontSideShininess;
+  _primitiveFrontSideHDR = structure->_primitiveFrontSideHDR;
+  _primitiveFrontSideHDRExposure = structure->_primitiveFrontSideHDRExposure;
+  _primitiveFrontSideAmbientColor = structure->_primitiveFrontSideAmbientColor;
+  _primitiveFrontSideDiffuseColor = structure->_primitiveFrontSideDiffuseColor;
+  _primitiveFrontSideSpecularColor = structure->_primitiveFrontSideSpecularColor;
+  _primitiveFrontSideAmbientIntensity = structure->_primitiveFrontSideAmbientIntensity;
+  _primitiveFrontSideDiffuseIntensity = structure->_primitiveFrontSideDiffuseIntensity;
+  _primitiveFrontSideSpecularIntensity = structure->_primitiveFrontSideSpecularIntensity;
+  _primitiveFrontSideShininess = structure->_primitiveFrontSideShininess;
 
-  _primitiveBackSideHDR = clone->_primitiveBackSideHDR;
-  _primitiveBackSideHDRExposure = clone->_primitiveBackSideHDRExposure;
-  _primitiveBackSideAmbientColor = clone->_primitiveBackSideAmbientColor;
-  _primitiveBackSideDiffuseColor = clone->_primitiveBackSideDiffuseColor;
-  _primitiveBackSideSpecularColor = clone->_primitiveBackSideSpecularColor;
-  _primitiveBackSideAmbientIntensity = clone->_primitiveBackSideAmbientIntensity;
-  _primitiveBackSideDiffuseIntensity = clone->_primitiveBackSideDiffuseIntensity;
-  _primitiveBackSideSpecularIntensity = clone->_primitiveBackSideSpecularIntensity;
-  _primitiveBackSideShininess = clone->_primitiveBackSideShininess;
+  _primitiveBackSideHDR = structure->_primitiveBackSideHDR;
+  _primitiveBackSideHDRExposure = structure->_primitiveBackSideHDRExposure;
+  _primitiveBackSideAmbientColor = structure->_primitiveBackSideAmbientColor;
+  _primitiveBackSideDiffuseColor = structure->_primitiveBackSideDiffuseColor;
+  _primitiveBackSideSpecularColor = structure->_primitiveBackSideSpecularColor;
+  _primitiveBackSideAmbientIntensity = structure->_primitiveBackSideAmbientIntensity;
+  _primitiveBackSideDiffuseIntensity = structure->_primitiveBackSideDiffuseIntensity;
+  _primitiveBackSideSpecularIntensity = structure->_primitiveBackSideSpecularIntensity;
+  _primitiveBackSideShininess = structure->_primitiveBackSideShininess;
 
   // atoms
-  _drawAtoms = clone->_drawAtoms;
+  _drawAtoms = structure->_drawAtoms;
 
-  _atomRepresentationType = clone->_atomRepresentationType;
-  _atomRepresentationStyle = clone->_atomRepresentationStyle;
-  _atomForceFieldIdentifier = clone->_atomForceFieldIdentifier;
-  _atomForceFieldOrder = clone->_atomForceFieldOrder;
-  _atomColorSchemeIdentifier = clone->_atomColorSchemeIdentifier;
-  _atomColorSchemeOrder = clone->_atomColorSchemeOrder;
+  _atomRepresentationType = structure->_atomRepresentationType;
+  _atomRepresentationStyle = structure->_atomRepresentationStyle;
+  _atomForceFieldIdentifier = structure->_atomForceFieldIdentifier;
+  _atomForceFieldOrder = structure->_atomForceFieldOrder;
+  _atomColorSchemeIdentifier = structure->_atomColorSchemeIdentifier;
+  _atomColorSchemeOrder = structure->_atomColorSchemeOrder;
 
-  _atomSelectionStyle = clone->_atomSelectionStyle;
-  _atomSelectionStripesDensity = clone->_atomSelectionStripesDensity;
-  _atomSelectionStripesFrequency = clone->_atomSelectionStripesFrequency;
-  _atomSelectionWorleyNoise3DFrequency = clone->_atomSelectionWorleyNoise3DFrequency;
-  _atomSelectionWorleyNoise3DJitter = clone->_atomSelectionWorleyNoise3DJitter;
-  _atomSelectionScaling = clone->_atomSelectionScaling;
-  _atomSelectionIntensity = clone->_atomSelectionIntensity;
+  _atomSelectionStyle = structure->_atomSelectionStyle;
+  _atomSelectionStripesDensity = structure->_atomSelectionStripesDensity;
+  _atomSelectionStripesFrequency = structure->_atomSelectionStripesFrequency;
+  _atomSelectionWorleyNoise3DFrequency = structure->_atomSelectionWorleyNoise3DFrequency;
+  _atomSelectionWorleyNoise3DJitter = structure->_atomSelectionWorleyNoise3DJitter;
+  _atomSelectionScaling = structure->_atomSelectionScaling;
+  _atomSelectionIntensity = structure->_atomSelectionIntensity;
 
-  _atomHue = clone->_atomHue;
-  _atomSaturation = clone->_atomSaturation;
-  _atomValue = clone->_atomValue;
-  _atomScaleFactor = clone->_atomScaleFactor;
+  _atomHue = structure->_atomHue;
+  _atomSaturation = structure->_atomSaturation;
+  _atomValue = structure->_atomValue;
+  _atomScaleFactor = structure->_atomScaleFactor;
 
-  _atomAmbientOcclusion = clone->_atomAmbientOcclusion;
-  _atomAmbientOcclusionPatchNumber = clone->_atomAmbientOcclusionPatchNumber;
-  _atomAmbientOcclusionTextureSize = clone->_atomAmbientOcclusionTextureSize;
-  _atomAmbientOcclusionPatchSize = clone->_atomAmbientOcclusionPatchSize;
+  _atomAmbientOcclusion = structure->_atomAmbientOcclusion;
+  _atomAmbientOcclusionPatchNumber = structure->_atomAmbientOcclusionPatchNumber;
+  _atomAmbientOcclusionTextureSize = structure->_atomAmbientOcclusionTextureSize;
+  _atomAmbientOcclusionPatchSize = structure->_atomAmbientOcclusionPatchSize;
   //_atomCacheAmbientOcclusionTexture = clone->_atomCacheAmbientOcclusionTexture;
 
-  _atomHDR = clone->_atomHDR;
-  _atomHDRExposure = clone->_atomHDRExposure;
-  _atomSelectionIntensity = clone->_atomSelectionIntensity;
+  _atomHDR = structure->_atomHDR;
+  _atomHDRExposure = structure->_atomHDRExposure;
+  _atomSelectionIntensity = structure->_atomSelectionIntensity;
 
-  _atomAmbientColor = clone->_atomAmbientColor;
-  _atomDiffuseColor = clone->_atomDiffuseColor;
-  _atomSpecularColor = clone->_atomSpecularColor;
-  _atomAmbientIntensity = clone->_atomAmbientIntensity;
-  _atomDiffuseIntensity = clone->_atomDiffuseIntensity;
-  _atomSpecularIntensity = clone->_atomSpecularIntensity;
-  _atomShininess = clone->_atomShininess;
+  _atomAmbientColor = structure->_atomAmbientColor;
+  _atomDiffuseColor = structure->_atomDiffuseColor;
+  _atomSpecularColor = structure->_atomSpecularColor;
+  _atomAmbientIntensity = structure->_atomAmbientIntensity;
+  _atomDiffuseIntensity = structure->_atomDiffuseIntensity;
+  _atomSpecularIntensity = structure->_atomSpecularIntensity;
+  _atomShininess = structure->_atomShininess;
 
   // bonds
-  _drawBonds = clone->_drawBonds;
+  _drawBonds = structure->_drawBonds;
 
-  _bondScaleFactor = clone->_bondScaleFactor;
-  _bondColorMode = clone->_bondColorMode;
+  _bondScaleFactor = structure->_bondScaleFactor;
+  _bondColorMode = structure->_bondColorMode;
 
-  _bondAmbientColor = clone->_bondAmbientColor;
-  _bondDiffuseColor = clone->_bondDiffuseColor;
-  _bondSpecularColor = clone->_bondSpecularColor;
-  _bondAmbientIntensity = clone->_bondAmbientIntensity;
-  _bondDiffuseIntensity = clone->_bondDiffuseIntensity;
-  _bondSpecularIntensity = clone->_bondSpecularIntensity;
-  _bondShininess = clone->_bondShininess;
+  _bondAmbientColor = structure->_bondAmbientColor;
+  _bondDiffuseColor = structure->_bondDiffuseColor;
+  _bondSpecularColor = structure->_bondSpecularColor;
+  _bondAmbientIntensity = structure->_bondAmbientIntensity;
+  _bondDiffuseIntensity = structure->_bondDiffuseIntensity;
+  _bondSpecularIntensity = structure->_bondSpecularIntensity;
+  _bondShininess = structure->_bondShininess;
 
-  _bondHDR = clone->_bondHDR;
-  _bondHDRExposure = clone->_bondHDRExposure;
-  _bondSelectionIntensity = clone->_bondSelectionIntensity;
+  _bondHDR = structure->_bondHDR;
+  _bondHDRExposure = structure->_bondHDRExposure;
+  _bondSelectionIntensity = structure->_bondSelectionIntensity;
 
-  _bondHue = clone->_bondHue;
-  _bondSaturation = clone->_bondSaturation;
-  _bondValue = clone->_bondValue;
+  _bondHue = structure->_bondHue;
+  _bondSaturation = structure->_bondSaturation;
+  _bondValue = structure->_bondValue;
 
-  _bondAmbientOcclusion = clone->_bondAmbientOcclusion;
+  _bondAmbientOcclusion = structure->_bondAmbientOcclusion;
 
   // text properties
-  _atomTextType = clone->_atomTextType;
-  _atomTextFont = clone->_atomTextFont;
-  _atomTextScaling = clone->_atomTextScaling;
-  _atomTextColor = clone->_atomTextColor;
-  _atomTextGlowColor = clone->_atomTextGlowColor;
-  _atomTextStyle = clone->_atomTextStyle;
-  _atomTextEffect = clone->_atomTextEffect;
-  _atomTextAlignment = clone->_atomTextAlignment;
-  _atomTextOffset = clone->_atomTextOffset;
+  _atomTextType = structure->_atomTextType;
+  _atomTextFont = structure->_atomTextFont;
+  _atomTextScaling = structure->_atomTextScaling;
+  _atomTextColor = structure->_atomTextColor;
+  _atomTextGlowColor = structure->_atomTextGlowColor;
+  _atomTextStyle = structure->_atomTextStyle;
+  _atomTextEffect = structure->_atomTextEffect;
+  _atomTextAlignment = structure->_atomTextAlignment;
+  _atomTextOffset = structure->_atomTextOffset;
 
   // unit cell
-  _drawUnitCell = clone->_drawUnitCell;
-  _unitCellScaleFactor = clone->_unitCellScaleFactor;
-  _unitCellDiffuseColor = clone->_unitCellDiffuseColor;
-  _unitCellDiffuseIntensity = clone->_unitCellDiffuseIntensity;
+  _drawUnitCell = structure->_drawUnitCell;
+  _unitCellScaleFactor = structure->_unitCellScaleFactor;
+  _unitCellDiffuseColor = structure->_unitCellDiffuseColor;
+  _unitCellDiffuseIntensity = structure->_unitCellDiffuseIntensity;
 
   // adsorption surface
-  _frameworkProbeMolecule = clone->_frameworkProbeMolecule;
+  _frameworkProbeMolecule = structure->_frameworkProbeMolecule;
 
-  _drawAdsorptionSurface = clone->_drawAdsorptionSurface;
-  _adsorptionSurfaceOpacity = clone->_adsorptionSurfaceOpacity;
-  _adsorptionSurfaceIsoValue = clone->_adsorptionSurfaceIsoValue;
+  _drawAdsorptionSurface = structure->_drawAdsorptionSurface;
+  _adsorptionSurfaceOpacity = structure->_adsorptionSurfaceOpacity;
+  _adsorptionSurfaceIsoValue = structure->_adsorptionSurfaceIsoValue;
 
-  _adsorptionSurfaceSize = clone->_adsorptionSurfaceSize;
-  _adsorptionSurfaceNumberOfTriangles = clone->_adsorptionSurfaceNumberOfTriangles;
+  _adsorptionSurfaceSize = structure->_adsorptionSurfaceSize;
+  _adsorptionSurfaceNumberOfTriangles = structure->_adsorptionSurfaceNumberOfTriangles;
 
-  _adsorptionSurfaceProbeMolecule = clone->_adsorptionSurfaceProbeMolecule;
+  _adsorptionSurfaceProbeMolecule = structure->_adsorptionSurfaceProbeMolecule;
 
-  _adsorptionSurfaceHue = clone->_adsorptionSurfaceHue;
-  _adsorptionSurfaceSaturation = clone->_adsorptionSurfaceSaturation;
-  _adsorptionSurfaceValue = clone->_adsorptionSurfaceValue;
+  _adsorptionSurfaceHue = structure->_adsorptionSurfaceHue;
+  _adsorptionSurfaceSaturation = structure->_adsorptionSurfaceSaturation;
+  _adsorptionSurfaceValue = structure->_adsorptionSurfaceValue;
 
-  _adsorptionSurfaceFrontSideHDR = clone->_adsorptionSurfaceFrontSideHDR;
-  _adsorptionSurfaceFrontSideHDRExposure = clone->_adsorptionSurfaceFrontSideHDRExposure;
-  _adsorptionSurfaceFrontSideAmbientColor = clone->_adsorptionSurfaceFrontSideAmbientColor;
-  _adsorptionSurfaceFrontSideDiffuseColor = clone->_adsorptionSurfaceFrontSideDiffuseColor;
-  _adsorptionSurfaceFrontSideSpecularColor = clone->_adsorptionSurfaceFrontSideSpecularColor;
-  _adsorptionSurfaceFrontSideDiffuseIntensity = clone->_adsorptionSurfaceFrontSideDiffuseIntensity;
-  _adsorptionSurfaceFrontSideAmbientIntensity = clone->_adsorptionSurfaceFrontSideAmbientIntensity;
-  _adsorptionSurfaceFrontSideSpecularIntensity = clone->_adsorptionSurfaceFrontSideSpecularIntensity;
-  _adsorptionSurfaceFrontSideShininess = clone->_adsorptionSurfaceFrontSideShininess;
+  _adsorptionSurfaceFrontSideHDR = structure->_adsorptionSurfaceFrontSideHDR;
+  _adsorptionSurfaceFrontSideHDRExposure = structure->_adsorptionSurfaceFrontSideHDRExposure;
+  _adsorptionSurfaceFrontSideAmbientColor = structure->_adsorptionSurfaceFrontSideAmbientColor;
+  _adsorptionSurfaceFrontSideDiffuseColor = structure->_adsorptionSurfaceFrontSideDiffuseColor;
+  _adsorptionSurfaceFrontSideSpecularColor = structure->_adsorptionSurfaceFrontSideSpecularColor;
+  _adsorptionSurfaceFrontSideDiffuseIntensity = structure->_adsorptionSurfaceFrontSideDiffuseIntensity;
+  _adsorptionSurfaceFrontSideAmbientIntensity = structure->_adsorptionSurfaceFrontSideAmbientIntensity;
+  _adsorptionSurfaceFrontSideSpecularIntensity = structure->_adsorptionSurfaceFrontSideSpecularIntensity;
+  _adsorptionSurfaceFrontSideShininess = structure->_adsorptionSurfaceFrontSideShininess;
 
-  _adsorptionSurfaceBackSideHDR = clone->_adsorptionSurfaceBackSideHDR;
-  _adsorptionSurfaceBackSideHDRExposure = clone->_adsorptionSurfaceBackSideHDRExposure;
-  _adsorptionSurfaceBackSideAmbientColor = clone->_adsorptionSurfaceBackSideAmbientColor;
-  _adsorptionSurfaceBackSideDiffuseColor = clone->_adsorptionSurfaceBackSideDiffuseColor;
-  _adsorptionSurfaceBackSideSpecularColor = clone->_adsorptionSurfaceBackSideSpecularColor;
-  _adsorptionSurfaceBackSideDiffuseIntensity = clone->_adsorptionSurfaceBackSideDiffuseIntensity;
-  _adsorptionSurfaceBackSideAmbientIntensity = clone->_adsorptionSurfaceBackSideAmbientIntensity;
-  _adsorptionSurfaceBackSideSpecularIntensity = clone->_adsorptionSurfaceBackSideSpecularIntensity;
-  _adsorptionSurfaceBackSideShininess = clone->_adsorptionSurfaceBackSideShininess;
-
-
-  _creationDate = clone->_creationDate;
-  _creationTemperature = clone->_creationTemperature;
-  _creationTemperatureScale = clone->_creationTemperatureScale;
-  _creationPressure = clone->_creationPressure;
-  _creationPressureScale = clone->_creationPressureScale;
-  _creationMethod = clone->_creationMethod;
-  _creationUnitCellRelaxationMethod = clone->_creationUnitCellRelaxationMethod;
-  _creationAtomicPositionsSoftwarePackage = clone->_creationAtomicPositionsSoftwarePackage;
-  _creationAtomicPositionsIonsRelaxationAlgorithm = clone->_creationAtomicPositionsIonsRelaxationAlgorithm;
-  _creationAtomicPositionsIonsRelaxationCheck = clone->_creationAtomicPositionsIonsRelaxationCheck;
-  _creationAtomicPositionsForcefield = clone->_creationAtomicPositionsForcefield;
-  _creationAtomicPositionsForcefieldDetails = clone->_creationAtomicPositionsForcefieldDetails;
-  _creationAtomicChargesSoftwarePackage = clone->_creationAtomicChargesSoftwarePackage;
-  _creationAtomicChargesAlgorithms = clone->_creationAtomicChargesAlgorithms;
-  _creationAtomicChargesForcefield = clone->_creationAtomicChargesForcefield;
-  _creationAtomicChargesForcefieldDetails = clone->_creationAtomicChargesForcefieldDetails;
-
-  _chemicalFormulaMoiety = clone->_chemicalFormulaMoiety;
-  _chemicalFormulaSum = clone->_chemicalFormulaSum;
-  _chemicalNameSystematic = clone->_chemicalNameSystematic;
-  _cellFormulaUnitsZ = clone->_cellFormulaUnitsZ;
+  _adsorptionSurfaceBackSideHDR = structure->_adsorptionSurfaceBackSideHDR;
+  _adsorptionSurfaceBackSideHDRExposure = structure->_adsorptionSurfaceBackSideHDRExposure;
+  _adsorptionSurfaceBackSideAmbientColor = structure->_adsorptionSurfaceBackSideAmbientColor;
+  _adsorptionSurfaceBackSideDiffuseColor = structure->_adsorptionSurfaceBackSideDiffuseColor;
+  _adsorptionSurfaceBackSideSpecularColor = structure->_adsorptionSurfaceBackSideSpecularColor;
+  _adsorptionSurfaceBackSideDiffuseIntensity = structure->_adsorptionSurfaceBackSideDiffuseIntensity;
+  _adsorptionSurfaceBackSideAmbientIntensity = structure->_adsorptionSurfaceBackSideAmbientIntensity;
+  _adsorptionSurfaceBackSideSpecularIntensity = structure->_adsorptionSurfaceBackSideSpecularIntensity;
+  _adsorptionSurfaceBackSideShininess = structure->_adsorptionSurfaceBackSideShininess;
 
 
-  _citationArticleTitle = clone->_citationArticleTitle;
-  _citationJournalTitle = clone->_citationJournalTitle;
-  _citationAuthors = clone->_citationAuthors;
-  _citationJournalVolume = clone->_citationJournalVolume;
-  _citationJournalNumber = clone->_citationJournalNumber;
-  _citationJournalPageNumbers = clone->_citationJournalPageNumbers;
-  _citationDOI = clone->_citationDOI;
-  _citationPublicationDate = clone->_citationPublicationDate;
-  _citationDatebaseCodes = clone->_citationDatebaseCodes;
+  _creationDate = structure->_creationDate;
+  _creationTemperature = structure->_creationTemperature;
+  _creationTemperatureScale = structure->_creationTemperatureScale;
+  _creationPressure = structure->_creationPressure;
+  _creationPressureScale = structure->_creationPressureScale;
+  _creationMethod = structure->_creationMethod;
+  _creationUnitCellRelaxationMethod = structure->_creationUnitCellRelaxationMethod;
+  _creationAtomicPositionsSoftwarePackage = structure->_creationAtomicPositionsSoftwarePackage;
+  _creationAtomicPositionsIonsRelaxationAlgorithm = structure->_creationAtomicPositionsIonsRelaxationAlgorithm;
+  _creationAtomicPositionsIonsRelaxationCheck = structure->_creationAtomicPositionsIonsRelaxationCheck;
+  _creationAtomicPositionsForcefield = structure->_creationAtomicPositionsForcefield;
+  _creationAtomicPositionsForcefieldDetails = structure->_creationAtomicPositionsForcefieldDetails;
+  _creationAtomicChargesSoftwarePackage = structure->_creationAtomicChargesSoftwarePackage;
+  _creationAtomicChargesAlgorithms = structure->_creationAtomicChargesAlgorithms;
+  _creationAtomicChargesForcefield = structure->_creationAtomicChargesForcefield;
+  _creationAtomicChargesForcefieldDetails = structure->_creationAtomicChargesForcefieldDetails;
 
-  _experimentalMeasurementRadiation = clone->_experimentalMeasurementRadiation;
-  _experimentalMeasurementWaveLength = clone->_experimentalMeasurementWaveLength;
-  _experimentalMeasurementThetaMin = clone->_experimentalMeasurementThetaMin;
-  _experimentalMeasurementThetaMax = clone->_experimentalMeasurementThetaMax;
-  _experimentalMeasurementIndexLimitsHmin = clone->_experimentalMeasurementIndexLimitsHmin;
-  _experimentalMeasurementIndexLimitsHmax = clone->_experimentalMeasurementIndexLimitsHmax;
-  _experimentalMeasurementIndexLimitsKmin = clone->_experimentalMeasurementIndexLimitsKmin;
-  _experimentalMeasurementIndexLimitsKmax = clone->_experimentalMeasurementIndexLimitsKmax;
-  _experimentalMeasurementIndexLimitsLmin = clone->_experimentalMeasurementIndexLimitsLmin;
-  _experimentalMeasurementIndexLimitsLmax = clone->_experimentalMeasurementIndexLimitsLmax;
-  _experimentalMeasurementNumberOfSymmetryIndependentReflections = clone->_experimentalMeasurementNumberOfSymmetryIndependentReflections;
-  _experimentalMeasurementSoftware = clone->_experimentalMeasurementSoftware;
-  _experimentalMeasurementRefinementDetails = clone->_experimentalMeasurementRefinementDetails;
-  _experimentalMeasurementGoodnessOfFit = clone->_experimentalMeasurementGoodnessOfFit;
-  _experimentalMeasurementRFactorGt = clone->_experimentalMeasurementRFactorGt;
-  _experimentalMeasurementRFactorAll = clone->_experimentalMeasurementRFactorAll;
+  _chemicalFormulaMoiety = structure->_chemicalFormulaMoiety;
+  _chemicalFormulaSum = structure->_chemicalFormulaSum;
+  _chemicalNameSystematic = structure->_chemicalNameSystematic;
+  _cellFormulaUnitsZ = structure->_cellFormulaUnitsZ;
 
-  clone->atomsTreeController()->setTags();
+
+  _citationArticleTitle = structure->_citationArticleTitle;
+  _citationJournalTitle = structure->_citationJournalTitle;
+  _citationAuthors = structure->_citationAuthors;
+  _citationJournalVolume = structure->_citationJournalVolume;
+  _citationJournalNumber = structure->_citationJournalNumber;
+  _citationJournalPageNumbers = structure->_citationJournalPageNumbers;
+  _citationDOI = structure->_citationDOI;
+  _citationPublicationDate = structure->_citationPublicationDate;
+  _citationDatebaseCodes = structure->_citationDatebaseCodes;
+
+  _experimentalMeasurementRadiation = structure->_experimentalMeasurementRadiation;
+  _experimentalMeasurementWaveLength = structure->_experimentalMeasurementWaveLength;
+  _experimentalMeasurementThetaMin = structure->_experimentalMeasurementThetaMin;
+  _experimentalMeasurementThetaMax = structure->_experimentalMeasurementThetaMax;
+  _experimentalMeasurementIndexLimitsHmin = structure->_experimentalMeasurementIndexLimitsHmin;
+  _experimentalMeasurementIndexLimitsHmax = structure->_experimentalMeasurementIndexLimitsHmax;
+  _experimentalMeasurementIndexLimitsKmin = structure->_experimentalMeasurementIndexLimitsKmin;
+  _experimentalMeasurementIndexLimitsKmax = structure->_experimentalMeasurementIndexLimitsKmax;
+  _experimentalMeasurementIndexLimitsLmin = structure->_experimentalMeasurementIndexLimitsLmin;
+  _experimentalMeasurementIndexLimitsLmax = structure->_experimentalMeasurementIndexLimitsLmax;
+  _experimentalMeasurementNumberOfSymmetryIndependentReflections = structure->_experimentalMeasurementNumberOfSymmetryIndependentReflections;
+  _experimentalMeasurementSoftware = structure->_experimentalMeasurementSoftware;
+  _experimentalMeasurementRefinementDetails = structure->_experimentalMeasurementRefinementDetails;
+  _experimentalMeasurementGoodnessOfFit = structure->_experimentalMeasurementGoodnessOfFit;
+  _experimentalMeasurementRFactorGt = structure->_experimentalMeasurementRFactorGt;
+  _experimentalMeasurementRFactorAll = structure->_experimentalMeasurementRFactorAll;
+
+  structure->atomsTreeController()->setTags();
 
   QByteArray byteArray = QByteArray();
   QDataStream stream(&byteArray, QIODevice::WriteOnly);
-  stream << clone->_atomsTreeController;
+  stream << structure->_atomsTreeController;
 
   QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
   streamRead >> _atomsTreeController;
@@ -566,6 +576,15 @@ Structure::Structure(std::shared_ptr<Structure> clone): _atomsTreeController(std
 
   _atomsTreeController->setTags();
   _bondSetController->setTags();
+}
+
+Structure::Structure(const std::shared_ptr<const Primitive> primitive): Object(primitive)
+{
+
+}
+Structure:: Structure(const std::shared_ptr<const GridVolume> volume): Object(volume)
+{
+
 }
 
 void Structure::convertAsymmetricAtomsToCartesian()
@@ -1884,6 +1903,10 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << structure->_adsorptionSurfaceIsoValue;
   stream << structure->_adsorptionSurfaceMinimumValue;
 
+  stream << static_cast<typename std::underlying_type<RKEnergySurfaceType>::type>(structure->_adsorptionSurfaceRenderingMethod);
+  stream << static_cast<typename std::underlying_type<RKPredefinedVolumeRenderingTransferFunction>::type>(structure->_adsorptionVolumeTransferFunction);
+  stream << structure->_adsorptionVolumeStepLength;
+
   stream << structure->_adsorptionSurfaceSize;
   stream << structure->_adsorptionSurfaceNumberOfTriangles;
 
@@ -1929,6 +1952,7 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << structure->_structureRestrictingPoreLimitingDiameter;
   stream << structure->_structureLargestCavityDiameterAlongAViablePath;
 
+  /*
   stream << structure->_authorFirstName;
   stream << structure->_authorMiddleName;
   stream << structure->_authorLastName;
@@ -1943,6 +1967,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << uint16_t(structure->_creationDate.day());
   stream << uint16_t(structure->_creationDate.month());
   stream << uint32_t(structure->_creationDate.year());
+  */
+
   stream << structure->_creationTemperature;
   stream << static_cast<typename std::underlying_type<Structure::TemperatureScale>::type>(structure->_creationTemperatureScale);
   stream << structure->_creationPressure;
@@ -2258,6 +2284,17 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
   stream >> structure->_adsorptionSurfaceIsoValue;
   stream >> structure->_adsorptionSurfaceMinimumValue;
 
+  if(versionNumber >= 9) // introduced in version 9
+  {
+    qint64 adsorptionSurfaceRenderingMethod;
+    stream >> adsorptionSurfaceRenderingMethod;
+    structure->_adsorptionSurfaceRenderingMethod = RKEnergySurfaceType(adsorptionSurfaceRenderingMethod);
+    qint64 adsorptionVolumeTransferFunction;
+    stream >> adsorptionVolumeTransferFunction;
+    structure->_adsorptionVolumeTransferFunction = RKPredefinedVolumeRenderingTransferFunction(adsorptionVolumeTransferFunction);
+    stream >> structure->_adsorptionVolumeStepLength;
+  }
+
   stream >> structure->_adsorptionSurfaceSize;
   stream >> structure->_adsorptionSurfaceNumberOfTriangles;
 
@@ -2310,23 +2347,26 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
   stream >> structure->_structureRestrictingPoreLimitingDiameter;
   stream >> structure->_structureLargestCavityDiameterAlongAViablePath;
 
-  stream >> structure->_authorFirstName;
-  stream >> structure->_authorMiddleName;
-  stream >> structure->_authorLastName;
-  stream >> structure->_authorOrchidID;
-  stream >> structure->_authorResearcherID;
-  stream >> structure->_authorAffiliationUniversityName;
-  stream >> structure->_authorAffiliationFacultyName;
-  stream >> structure->_authorAffiliationInstituteName;
-  stream >> structure->_authorAffiliationCityName;
-  stream >> structure->_authorAffiliationCountryName;
 
+  if(versionNumber < 9)
+  {
+    stream >> structure->_authorFirstName;
+    stream >> structure->_authorMiddleName;
+    stream >> structure->_authorLastName;
+    stream >> structure->_authorOrchidID;
+    stream >> structure->_authorResearcherID;
+    stream >> structure->_authorAffiliationUniversityName;
+    stream >> structure->_authorAffiliationFacultyName;
+    stream >> structure->_authorAffiliationInstituteName;
+    stream >> structure->_authorAffiliationCityName;
+    stream >> structure->_authorAffiliationCountryName;
 
+    stream >> day;
+    stream >> month;
+    stream >> year;
+    structure->_creationDate = QDate(int(year),int(month),int(day));
+  }
 
-  stream >> day;
-  stream >> month;
-  stream >> year;
-  structure->_creationDate = QDate(int(year),int(month),int(day));
   stream >> structure->_creationTemperature;
   qint64 creationTemperatureScale;
   stream >> creationTemperatureScale;

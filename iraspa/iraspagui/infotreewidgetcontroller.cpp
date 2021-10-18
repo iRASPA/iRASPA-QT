@@ -961,11 +961,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorFirstName()
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorFirstName();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorFirstName();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -979,10 +976,7 @@ void InfoTreeWidgetController::setAuthorFirstName(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorFirstName(name);
-    }
+    iraspa_structure->object()->setAuthorFirstName(name);
   }
 
   _mainWindow->documentWasModified();
@@ -997,11 +991,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorMiddleName()
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorMiddleName();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorMiddleName();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1015,10 +1006,7 @@ void InfoTreeWidgetController::setAuthorMiddleName(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorMiddleName(name);
-    }
+    iraspa_structure->object()->setAuthorMiddleName(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1033,11 +1021,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorLastName()
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorLastName();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorLastName();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1051,10 +1036,7 @@ void InfoTreeWidgetController::setAuthorLastName(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorLastName(name);
-    }
+    iraspa_structure->object()->setAuthorLastName(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1069,11 +1051,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorOrchidID()
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorOrchidID();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorOrchidID();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1087,10 +1066,7 @@ void InfoTreeWidgetController::setAuthorOrchidID(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorOrchidID(name);
-    }
+    iraspa_structure->object()->setAuthorOrchidID(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1105,11 +1081,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorResearcherID()
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorResearcherID();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorResearcherID();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1123,10 +1096,7 @@ void InfoTreeWidgetController::setAuthorResearcherID(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorResearcherID(name);
-    }
+    iraspa_structure->object()->setAuthorResearcherID(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1141,11 +1111,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationUniv
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorAffiliationUniversityName();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorAffiliationUniversityName();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1159,10 +1126,7 @@ void InfoTreeWidgetController::setAuthorAffiliationUniversityName(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorAffiliationUniversityName(name);
-    }
+    iraspa_structure->object()->setAuthorAffiliationUniversityName(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1177,11 +1141,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationFacu
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorAffiliationFacultyName();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorAffiliationFacultyName();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1195,10 +1156,7 @@ void InfoTreeWidgetController::setAuthorAffiliationFacultyName(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorAffiliationFacultyName(name);
-    }
+    iraspa_structure->object()->setAuthorAffiliationFacultyName(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1213,11 +1171,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationInst
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorAffiliationInstituteName();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorAffiliationInstituteName();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1231,10 +1186,7 @@ void InfoTreeWidgetController::setAuthorAffiliationInstituteName(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorAffiliationInstituteName(name);
-    }
+    iraspa_structure->object()->setAuthorAffiliationInstituteName(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1249,11 +1201,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationCity
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorAffiliationCityName();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorAffiliationCityName();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1267,10 +1216,7 @@ void InfoTreeWidgetController::setAuthorAffiliationCityName(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorAffiliationCityName(name);
-    }
+    iraspa_structure->object()->setAuthorAffiliationCityName(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1285,11 +1231,8 @@ std::optional<std::set<QString>> InfoTreeWidgetController::authorAffiliationCoun
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      QString value = infoViewer->authorAffiliationCountryName();
-      set.insert(value);
-    }
+    QString value = iraspa_structure->object()->authorAffiliationCountryName();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1303,10 +1246,7 @@ void InfoTreeWidgetController::setAuthorAffiliationCountryName(const QString nam
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BasicInfoViewer> infoViewer = std::dynamic_pointer_cast<BasicInfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setAuthorAffiliationCountryName(name);
-    }
+    iraspa_structure->object()->setAuthorAffiliationCountryName(name);
   }
 
   _mainWindow->documentWasModified();
@@ -1871,11 +1811,8 @@ std::optional<std::set<QDate>> InfoTreeWidgetController::creationDate()
   std::set<QDate> set = std::set<QDate>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
-    {
-      QDate value = infoViewer->creationDate();
-      set.insert(value);
-    }
+    QDate value = iraspa_structure->object()->creationDate();
+    set.insert(value);
   }
 
   if(!set.empty())
@@ -1889,10 +1826,7 @@ void InfoTreeWidgetController::setCreationDate(const QDate &date)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
-    {
-      infoViewer->setCreationDate(date);
-    }
+    iraspa_structure->object()->setCreationDate(date);
   }
 
   _mainWindow->documentWasModified();

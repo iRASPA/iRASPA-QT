@@ -44,6 +44,8 @@ private:
   MainWindow *_mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
   std::vector<std::shared_ptr<iRASPAObject>> _old_iraspa_structures;
-  std::vector<std::tuple<std::shared_ptr<iRASPAObject>, std::shared_ptr<Structure>, ObjectType>> _old_structures;
+  std::vector<std::tuple<std::shared_ptr<iRASPAObject>, std::shared_ptr<Object>, ObjectType>> _old_structures;
   int _value;
+
+  template<typename T> std::shared_ptr<Object> createiRASPAObject(std::shared_ptr<iRASPAObject> iraspa_structure);
 };

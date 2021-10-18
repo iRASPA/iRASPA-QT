@@ -45,7 +45,7 @@ private:
   AtomTreeViewModel *_atomModel;
   BondListViewModel *_bondModel;
   std::shared_ptr<iRASPAObject> _iraspaStructure;
-  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<Object> _object;
   AtomSelectionNodesAndIndexPaths _atomSelection;
   ReversedAtomSelectionNodesAndIndexPaths _reversedAtomSelection;
   BondSelectionNodesAndIndexSet _bondSelection;

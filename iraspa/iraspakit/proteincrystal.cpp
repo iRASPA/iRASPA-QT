@@ -30,6 +30,8 @@
 #include "crystalellipsoidprimitive.h"
 #include "crystalcylinderprimitive.h"
 #include "crystalpolygonalprismprimitive.h"
+#include "primitive.h"
+#include "gridvolume.h"
 
 ProteinCrystal::ProteinCrystal()
 {
@@ -46,37 +48,116 @@ ProteinCrystal::ProteinCrystal(std::shared_ptr<SKStructure> frame): Structure(fr
   _atomsTreeController->setTags();
 }
 
-ProteinCrystal::ProteinCrystal(std::shared_ptr<Structure> s): Structure(s)
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const Crystal> structure): Structure(structure)
 {
-  if(dynamic_cast<Molecule*>(s.get()) ||
-     dynamic_cast<Protein*>(s.get()) ||
-     dynamic_cast<EllipsoidPrimitive*>(s.get()) ||
-     dynamic_cast<CylinderPrimitive*>(s.get()) ||
-     dynamic_cast<PolygonalPrismPrimitive*>(s.get()))
-  {
-    // create a periodic cell based on the bounding-box
-    _cell = std::make_shared<SKCell>(s->boundingBox());
-  }
-  else
-  {
-    _cell = std::make_shared<SKCell>(*s->cell());
-  }
-
-  if(dynamic_cast<Crystal*>(s.get()) ||
-     dynamic_cast<CrystalEllipsoidPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalCylinderPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalPolygonalPrismPrimitive*>(s.get()))
-  {
-    convertAsymmetricAtomsToCartesian();
-  }
-
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  convertAsymmetricAtomsToCartesian();
   expandSymmetry();
   _atomsTreeController->setTags();
   reComputeBoundingBox();
   computeBonds();
 }
 
-std::shared_ptr<Structure> ProteinCrystal::clone()
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const MolecularCrystal> structure): Structure(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const Molecule> structure): Structure(structure)
+{
+  _cell = std::make_shared<SKCell>(structure->boundingBox());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const ProteinCrystal> structure): Structure(structure)
+{
+  _cell = std::make_shared<SKCell>(*structure->cell());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const Protein> structure): Structure(structure)
+{
+  _cell = std::make_shared<SKCell>(structure->boundingBox());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const CrystalCylinderPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToCartesian();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const CrystalEllipsoidPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToCartesian();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const CrystalPolygonalPrismPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(*primitive->cell());
+  convertAsymmetricAtomsToCartesian();
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const CylinderPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(primitive->boundingBox());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const EllipsoidPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(primitive->boundingBox());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const PolygonalPrismPrimitive> primitive): Structure(primitive)
+{
+  _cell = std::make_shared<SKCell>(primitive->boundingBox());
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+}
+
+ProteinCrystal::ProteinCrystal(const std::shared_ptr<const GridVolume> volume): Structure(volume)
+{
+
+}
+
+
+std::shared_ptr<Object> ProteinCrystal::shallowClone()
 {
   return std::make_shared<ProteinCrystal>(static_cast<const ProteinCrystal&>(*this));
 }
@@ -1028,16 +1109,16 @@ std::shared_ptr<Structure> ProteinCrystal::removeSymmetry() const
 std::shared_ptr<Structure> ProteinCrystal::wrapAtomsToCell() const
 {
   // use the copy constructor
-  std::shared_ptr<ProteinCrystal> crystal = std::make_shared<ProteinCrystal>(static_cast<const ProteinCrystal&>(*this));
+  std::shared_ptr<ProteinCrystal> proteinCrystal = std::make_shared<ProteinCrystal>(static_cast<const ProteinCrystal&>(*this));
 
   // copy all atoms
   QByteArray byteArray = QByteArray();
   QDataStream stream(&byteArray, QIODevice::WriteOnly);
   stream << _atomsTreeController;
   QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
-  streamRead >> crystal->_atomsTreeController;
+  streamRead >> proteinCrystal->_atomsTreeController;
 
-  const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = crystal->atomsTreeController()->flattenedLeafNodes();
+  const std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = proteinCrystal->atomsTreeController()->flattenedLeafNodes();
 
   double3x3 unitCell = _cell->unitCell();
   double3x3 inverseUnitcell = _cell->inverseUnitCell();
@@ -1045,6 +1126,8 @@ std::shared_ptr<Structure> ProteinCrystal::wrapAtomsToCell() const
   {
     if(const std::shared_ptr<SKAsymmetricAtom> &asymmetricAtom = node->representedObject())
     {
+      double3 asymmetricAtomPosition = unitCell * double3::fract(inverseUnitcell * asymmetricAtom->position());
+      asymmetricAtom->setPosition(asymmetricAtomPosition);
       for(const std::shared_ptr<SKAtomCopy> &atomCopy : asymmetricAtom->copies())
       {
         double3 position = unitCell * double3::fract(inverseUnitcell * atomCopy->position());
@@ -1053,11 +1136,11 @@ std::shared_ptr<Structure> ProteinCrystal::wrapAtomsToCell() const
     }
   }
 
-  crystal->atomsTreeController()->setTags();
-  crystal->reComputeBoundingBox();
-  crystal->computeBonds();
+  proteinCrystal->atomsTreeController()->setTags();
+  proteinCrystal->reComputeBoundingBox();
+  proteinCrystal->computeBonds();
 
-  return crystal;
+  return proteinCrystal;
 }
 
 
@@ -1119,6 +1202,9 @@ std::vector<double3> ProteinCrystal::atomUnitCellPositions() const
 
   std::vector<double3> atomData = std::vector<double3>();
 
+  double3 contentShift = _cell->contentShift();
+  bool3 contentFlip = _cell->contentFlip();
+
   for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
@@ -1127,7 +1213,10 @@ std::vector<double3> ProteinCrystal::atomUnitCellPositions() const
       {
         if (copy->type() == SKAtomCopy::AtomCopyType::copy)
         {
-          atomData.push_back(copy->position());
+          double3 fractionalPosition = _cell->inverseUnitCell() * (copy->position()  + contentShift);
+          double3 position = double3::flip(fractionalPosition, contentFlip, double3(0.0,0.0,0.0));
+
+          atomData.push_back(double3::fract(position));
         }
       }
     }

@@ -31,17 +31,31 @@ class CrystalPolygonalPrismPrimitive: public Primitive, public RKRenderCrystalPr
 public:
   CrystalPolygonalPrismPrimitive();
   CrystalPolygonalPrismPrimitive(const CrystalPolygonalPrismPrimitive &crystalPolygonalPrismPrimitive);
-  CrystalPolygonalPrismPrimitive(std::shared_ptr<Structure> s);
+
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class Crystal> structure);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class MolecularCrystal> structure);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class Molecule> structure);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class ProteinCrystal> structure);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class Protein> structure);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  CrystalPolygonalPrismPrimitive(const std::shared_ptr<const class GridVolume> volume);
+
   ~CrystalPolygonalPrismPrimitive() {}
+
+  std::shared_ptr<Object> shallowClone() override final;
 
   bool drawAtoms() const override {return _drawAtoms;}
 
-  std::shared_ptr<Structure> clone() override final;
-  std::shared_ptr<Structure> appliedCellContentShift() const override final;
+  std::shared_ptr<Primitive> appliedCellContentShift() const override final;
 
   bool hasSymmetry() override final {return true;}
-  std::shared_ptr<Structure> superCell() const override final;
-  std::shared_ptr<Structure> flattenHierarchy() const override final;
+  std::shared_ptr<Primitive> superCell() const override final;
+  std::shared_ptr<Primitive> flattenHierarchy() const override final;
 
   ObjectType structureType() override final { return ObjectType::crystalPolygonalPrismPrimitive; }
 

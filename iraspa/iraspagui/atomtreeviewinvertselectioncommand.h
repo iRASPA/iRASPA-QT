@@ -35,14 +35,14 @@
 class AtomTreeViewInvertSelectionCommand : public QUndoCommand
 {
 public:
-  AtomTreeViewInvertSelectionCommand(MainWindow *main_window, std::shared_ptr<Structure> structure,
+  AtomTreeViewInvertSelectionCommand(MainWindow *main_window, std::shared_ptr<Object> object,
                          AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection,
                          QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
   MainWindow *_main_window;
-  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<Object> _object;
   AtomSelectionIndexPaths _atomSelection;
   BondSelectionNodesAndIndexSet _bondSelection;
   AtomSelectionIndexPaths _invertedAtomSelection;

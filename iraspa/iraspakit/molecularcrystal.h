@@ -24,6 +24,7 @@
 #include <symmetrykit.h>
 #include "structure.h"
 #include "spacegroupviewer.h"
+#include "molecularcrystal.h"
 
 class MolecularCrystal: public Structure, public SpaceGroupViewer
 {
@@ -31,10 +32,23 @@ public:
   MolecularCrystal();
   MolecularCrystal(const MolecularCrystal &molecularCrystal);
   MolecularCrystal(std::shared_ptr<SKStructure> frame);
-  MolecularCrystal(std::shared_ptr<Structure> s);
+
+  MolecularCrystal(const std::shared_ptr<const class Crystal> structure);
+  MolecularCrystal(const std::shared_ptr<const class MolecularCrystal> structure);
+  MolecularCrystal(const std::shared_ptr<const class Molecule> structure);
+  MolecularCrystal(const std::shared_ptr<const class ProteinCrystal> structure);
+  MolecularCrystal(const std::shared_ptr<const class Protein> structure);
+  MolecularCrystal(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  MolecularCrystal(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  MolecularCrystal(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  MolecularCrystal(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  MolecularCrystal(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  MolecularCrystal(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  MolecularCrystal(const std::shared_ptr<const class GridVolume> volume);
+
   ~MolecularCrystal() {}
 
-  std::shared_ptr<Structure> clone() override final;
+  std::shared_ptr<Object> shallowClone() override final;
 
   void setSpaceGroupHallNumber(int HallNumber) override final {Structure::setSpaceGroupHallNumber(HallNumber);}
   SKSpaceGroup& spaceGroup() override final {return Structure::spaceGroup();}

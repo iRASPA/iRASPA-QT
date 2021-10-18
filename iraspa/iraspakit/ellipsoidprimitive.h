@@ -31,17 +31,30 @@ class EllipsoidPrimitive: public Primitive, public RKRenderPrimitiveEllipsoidObj
 public:
   EllipsoidPrimitive();
   EllipsoidPrimitive(const EllipsoidPrimitive &ellipsoidPrimitive);
-  EllipsoidPrimitive(std::shared_ptr<Structure> s);
+
+  EllipsoidPrimitive(const std::shared_ptr<const class Crystal> structure);
+  EllipsoidPrimitive(const std::shared_ptr<const class MolecularCrystal> structure);
+  EllipsoidPrimitive(const std::shared_ptr<const class Molecule> structure);
+  EllipsoidPrimitive(const std::shared_ptr<const class ProteinCrystal> structure);
+  EllipsoidPrimitive(const std::shared_ptr<const class Protein> structure);
+  EllipsoidPrimitive(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  EllipsoidPrimitive(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  EllipsoidPrimitive(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  EllipsoidPrimitive(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  EllipsoidPrimitive(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  EllipsoidPrimitive(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  EllipsoidPrimitive(const std::shared_ptr<const class GridVolume> volume);
+
   ~EllipsoidPrimitive() {}
+
+  std::shared_ptr<Object> shallowClone() override final;
 
   bool drawAtoms() const override {return _drawAtoms;}
 
-  std::shared_ptr<Structure> clone() override final;
-
   ObjectType structureType() override final { return ObjectType::ellipsoidPrimitive; }
 
-  std::shared_ptr<Structure> flattenHierarchy() const override final;
-  std::shared_ptr<Structure> appliedCellContentShift() const override final;
+  std::shared_ptr<Primitive> flattenHierarchy() const override final;
+  std::shared_ptr<Primitive> appliedCellContentShift() const override final;
 
   std::vector<RKInPerInstanceAttributesAtoms> renderPrimitiveEllipsoidObjects() const override;
   std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitiveEllipsoidObjects() const override;

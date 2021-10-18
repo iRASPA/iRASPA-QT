@@ -66,7 +66,8 @@ OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGL
     _selectionShader(_atomShader, _bondShader, _objectShader),
     _pickingShader(_atomShader, _bondShader, _objectShader),
     _textShader(),
-    _densityVolumeShader(),
+    _RASPADensityVolumeShader(),
+    _VTKDensityVolumeShader(),
     _timer(new QTimer(parent))
 {
   connect(_timer, &QTimer::timeout, this, &OpenGLWindow::timeoutEventHandler);
@@ -156,7 +157,8 @@ void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<R
   _pickingShader.setRenderStructures(structures);
 
   _textShader.setRenderStructures(structures);
-  _densityVolumeShader.setRenderStructures(structures);
+  _RASPADensityVolumeShader.setRenderStructures(structures);
+  _VTKDensityVolumeShader.setRenderStructures(structures);
 }
 
 
@@ -230,7 +232,8 @@ void OpenGLWindow::initializeGL()
   _pickingShader.initializeEmbeddedOpenGLFunctions();
 
   _textShader.initializeOpenGLFunctions();
-  _densityVolumeShader.initializeOpenGLFunctions();
+  _RASPADensityVolumeShader.initializeOpenGLFunctions();
+  _VTKDensityVolumeShader.initializeOpenGLFunctions();
 
   if(_logReporter)
   {
@@ -496,7 +499,8 @@ void OpenGLWindow::initializeGL()
   _selectionShader.loadShader();
   _pickingShader.loadShader();
   _textShader.loadShader();
-  _densityVolumeShader.loadShader();
+  _RASPADensityVolumeShader.loadShader();
+  _VTKDensityVolumeShader.loadShader();
 
   _energySurfaceShader.generateBuffers();
   _energyVolumeRenderedSurface.generateBuffers();
@@ -522,7 +526,8 @@ void OpenGLWindow::initializeGL()
   _selectionShader.initializeVertexArrayObject();
   _pickingShader.initializeVertexArrayObject();
   _textShader.initializeVertexArrayObject();
-  _densityVolumeShader.initializeVertexArrayObject();
+  _RASPADensityVolumeShader.initializeVertexArrayObject();
+  _VTKDensityVolumeShader.initializeVertexArrayObject();
 
   initializeTransformUniforms();
   check_gl_error();
@@ -1689,7 +1694,8 @@ void OpenGLWindow::drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint 
   glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
   if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    _densityVolumeShader.paintGL(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture);
+    _RASPADensityVolumeShader.paintGL(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture);
+    _VTKDensityVolumeShader.paintGL(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture);
 
     _objectShader.paintGLTransparent(_structureUniformBuffer);
 
@@ -1927,7 +1933,9 @@ void OpenGLWindow::initializeTransformUniforms()
   check_gl_error();
   _textShader.initializeTransformUniforms();
   check_gl_error();
-  _densityVolumeShader.initializeTransformUniforms();
+  _RASPADensityVolumeShader.initializeTransformUniforms();
+  check_gl_error();
+  _VTKDensityVolumeShader.initializeTransformUniforms();
   check_gl_error();
 
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -1995,7 +2003,8 @@ void OpenGLWindow::initializeStructureUniforms()
   _selectionShader.initializeStructureUniforms();
   _pickingShader.initializeStructureUniforms();
   _textShader.initializeStructureUniforms();
-  _densityVolumeShader.initializeStructureUniforms();
+  _RASPADensityVolumeShader.initializeStructureUniforms();
+  _VTKDensityVolumeShader.initializeStructureUniforms();
 
   check_gl_error();
   std::vector<RKStructureUniforms> structureUniforms{RKStructureUniforms()};
@@ -2092,7 +2101,8 @@ void OpenGLWindow::initializeLightUniforms()
   _unitCellShader.initializeLightUniforms();
   _localAxesShader.initializeLightUniforms();
   _selectionShader.initializeLightUniforms();
-  _densityVolumeShader.initializeLightUniforms();
+  _RASPADensityVolumeShader.initializeLightUniforms();
+  _VTKDensityVolumeShader.initializeLightUniforms();
 
   std::vector<RKLightsUniforms> lightUniforms{RKLightsUniforms()};
   glBufferData(GL_UNIFORM_BUFFER, sizeof(RKLightsUniforms) * lightUniforms.size(), lightUniforms.data(), GL_DYNAMIC_DRAW);
@@ -2166,7 +2176,8 @@ void OpenGLWindow::reloadData()
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();
-  _densityVolumeShader.reloadData();
+  _RASPADensityVolumeShader.reloadData();
+  _VTKDensityVolumeShader.reloadData();
 
   updateStructureUniforms();
   updateIsosurfaceUniforms();
@@ -2194,7 +2205,8 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();
-  _densityVolumeShader.reloadData();
+  _RASPADensityVolumeShader.reloadData();
+  _VTKDensityVolumeShader.reloadData();
 
   update();
 
@@ -2223,7 +2235,8 @@ void OpenGLWindow::reloadRenderData()
   _selectionShader.reloadData();
   _pickingShader.reloadData();
   _textShader.reloadData();
-  _densityVolumeShader.reloadData();
+  _RASPADensityVolumeShader.reloadData();
+  _VTKDensityVolumeShader.reloadData();
 
   update();
 }

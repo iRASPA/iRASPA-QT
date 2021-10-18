@@ -21,10 +21,11 @@
 
 #include "infoviewer.h"
 
+/*
 BasicInfoViewer::~BasicInfoViewer()
 {
   // Compulsory virtual destructor definition
-}
+}*/
 
 InfoViewer::~InfoViewer()
 {

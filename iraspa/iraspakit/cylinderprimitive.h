@@ -31,17 +31,30 @@ class CylinderPrimitive: public Primitive, public RKRenderPrimitiveCylinderObjec
 public:
   CylinderPrimitive();
   CylinderPrimitive(const CylinderPrimitive &cylinderPrimitive);
-  CylinderPrimitive(std::shared_ptr<Structure> s);
+
+  CylinderPrimitive(const std::shared_ptr<const class Crystal> structure);
+  CylinderPrimitive(const std::shared_ptr<const class MolecularCrystal> structure);
+  CylinderPrimitive(const std::shared_ptr<const class Molecule> structure);
+  CylinderPrimitive(const std::shared_ptr<const class ProteinCrystal> structure);
+  CylinderPrimitive(const std::shared_ptr<const class Protein> structure);
+  CylinderPrimitive(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
+  CylinderPrimitive(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
+  CylinderPrimitive(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
+  CylinderPrimitive(const std::shared_ptr<const class CylinderPrimitive> primitive);
+  CylinderPrimitive(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
+  CylinderPrimitive(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
+  CylinderPrimitive(const std::shared_ptr<const class GridVolume> volume);
+
   ~CylinderPrimitive() {}
+
+  std::shared_ptr<Object> shallowClone() override final;
 
   bool drawAtoms() const override {return _drawAtoms;}
 
-  std::shared_ptr<Structure> clone() override final;
-
   ObjectType structureType() override final { return ObjectType::cylinderPrimitive; }
 
-  std::shared_ptr<Structure> flattenHierarchy() const override final;
-  std::shared_ptr<Structure> appliedCellContentShift() const override final;
+  std::shared_ptr<Primitive> flattenHierarchy() const override final;
+  std::shared_ptr<Primitive> appliedCellContentShift() const override final;
 
   std::vector<RKInPerInstanceAttributesAtoms> renderPrimitiveCylinderObjects() const override;
   std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitiveCylinderObjects() const override;

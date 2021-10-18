@@ -150,8 +150,12 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
       case SKStructure::Kind::proteinCrystal:
         iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<ProteinCrystal>(frame));
         break;
-      case SKStructure::Kind::densityVolume:
-        iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<DensityVolume>(frame));
+      case SKStructure::Kind::RASPADensityVolume:
+          qDebug() << "YEAAAHHH RASPADensityVolume";
+        iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<RASPADensityVolume>(frame));
+        break;
+      case SKStructure::Kind::VTKDensityVolume:
+        iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<VTKDensityVolume>(frame));
         break;
       default:
         if (log)

@@ -24,11 +24,11 @@
 
 char iRASPAObject::mimeType[] = "application/x-qt-iraspa-structure-mime";
 
-std::shared_ptr<iRASPAObject> iRASPAObject::clone()
+std::shared_ptr<iRASPAObject> iRASPAObject::shallowClone()
 {
   std::shared_ptr<iRASPAObject> structure = std::make_shared<iRASPAObject>();
   structure->_rawValue = this->_rawValue;
-  structure->_object = this->_object->clone();
+  structure->_object = this->_object->shallowClone();
   return structure;
 }
 
@@ -64,6 +64,8 @@ std::shared_ptr<iRASPAObject> iRASPAObject::create(ObjectType type)
   {
   case ObjectType::none:
     return nullptr;
+  case ObjectType::object:
+    return nullptr;
   case ObjectType::structure:
     return nullptr;
   case ObjectType::crystal:
@@ -94,8 +96,16 @@ std::shared_ptr<iRASPAObject> iRASPAObject::create(ObjectType type)
     return std::make_shared<iRASPAObject>(std::make_shared<CylinderPrimitive>());
   case ObjectType::polygonalPrismPrimitive:
     return std::make_shared<iRASPAObject>(std::make_shared<PolygonalPrismPrimitive>());
-  case ObjectType::densityVolume:
-    return std::make_shared<iRASPAObject>(std::make_shared<DensityVolume>());
+  case ObjectType::gridVolume:
+    return std::make_shared<iRASPAObject>(std::make_shared<GridVolume>());
+  case ObjectType::RASPADensityVolume:
+    return std::make_shared<iRASPAObject>(std::make_shared<RASPADensityVolume>());
+  case ObjectType::VTKDensityVolume:
+    return std::make_shared<iRASPAObject>(std::make_shared<VTKDensityVolume>());
+  case ObjectType::VASPDensityVolume:
+    return std::make_shared<iRASPAObject>(std::make_shared<VASPDensityVolume>());
+  case ObjectType::GaussianCubeVolume:
+    return std::make_shared<iRASPAObject>(std::make_shared<GaussianCubeVolume>());
   }
   return nullptr;
 }
@@ -106,6 +116,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<iRASPAObject>
   switch(iraspa_structure->_rawValue)
   {
   case ObjectType::none:
+    break;
+  case ObjectType::object:
     break;
   case ObjectType::structure:
     stream << iraspa_structure->_object;
@@ -149,8 +161,20 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<iRASPAObject>
   case ObjectType::polygonalPrismPrimitive:
     stream << std::static_pointer_cast<PolygonalPrismPrimitive>(iraspa_structure->_object);
     break;
-  case ObjectType::densityVolume:
-    stream << std::static_pointer_cast<DensityVolume>(iraspa_structure->_object);
+  case ObjectType::gridVolume:
+    stream << std::static_pointer_cast<GridVolume>(iraspa_structure->_object);
+    break;
+  case ObjectType::RASPADensityVolume:
+    stream << std::static_pointer_cast<RASPADensityVolume>(iraspa_structure->_object);
+    break;
+  case ObjectType::VTKDensityVolume:
+    stream << std::static_pointer_cast<VTKDensityVolume>(iraspa_structure->_object);
+    break;
+  case ObjectType::VASPDensityVolume:
+    stream << std::static_pointer_cast<VASPDensityVolume>(iraspa_structure->_object);
+    break;
+  case ObjectType::GaussianCubeVolume:
+    stream << std::static_pointer_cast<GaussianCubeVolume>(iraspa_structure->_object);
     break;
   }
 
@@ -166,6 +190,8 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<iRASPAObject> &iras
   switch(iraspa_structure->_rawValue)
   {
     case ObjectType::none:
+      break;
+    case ObjectType::object:
       break;
     case ObjectType::structure:
     {
@@ -257,9 +283,37 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<iRASPAObject> &iras
       iraspa_structure->_object = primitive;
       break;
     }
-    case ObjectType::densityVolume:
+    case ObjectType::gridVolume:
     {
-      std::shared_ptr<DensityVolume> densityVolume = std::make_shared<DensityVolume>();
+      std::shared_ptr<GridVolume> densityVolume = std::make_shared<GridVolume>();
+      stream >> densityVolume;
+      iraspa_structure->_object = densityVolume;
+      break;
+    }
+    case ObjectType::RASPADensityVolume:
+    {
+      std::shared_ptr<RASPADensityVolume> densityVolume = std::make_shared<RASPADensityVolume>();
+      stream >> densityVolume;
+      iraspa_structure->_object = densityVolume;
+      break;
+    }
+    case ObjectType::VTKDensityVolume:
+    {
+      std::shared_ptr<VTKDensityVolume> densityVolume = std::make_shared<VTKDensityVolume>();
+      stream >> densityVolume;
+      iraspa_structure->_object = densityVolume;
+      break;
+    }
+    case ObjectType::VASPDensityVolume:
+    {
+      std::shared_ptr<VASPDensityVolume> densityVolume = std::make_shared<VASPDensityVolume>();
+      stream >> densityVolume;
+      iraspa_structure->_object = densityVolume;
+      break;
+    }
+    case ObjectType::GaussianCubeVolume:
+    {
+      std::shared_ptr<GaussianCubeVolume> densityVolume = std::make_shared<GaussianCubeVolume>();
       stream >> densityVolume;
       iraspa_structure->_object = densityVolume;
       break;

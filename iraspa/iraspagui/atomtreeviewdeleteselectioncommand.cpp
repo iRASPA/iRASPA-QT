@@ -31,7 +31,7 @@ AtomTreeViewDeleteSelectionCommand::AtomTreeViewDeleteSelectionCommand(MainWindo
   _atomModel(atomModel),
   _bondModel(bondModel),
   _iraspaStructure(iraspaStructure),
-  _structure(std::dynamic_pointer_cast<Structure>(iraspaStructure->object())),
+  _object(iraspaStructure->object()),
   _atomSelection(atomSelection),
   _bondSelection(bondSelection),
   _reverseBondSelection({})
@@ -40,8 +40,14 @@ AtomTreeViewDeleteSelectionCommand::AtomTreeViewDeleteSelectionCommand(MainWindo
 
   setText(QString("Delete selected atoms"));
 
-  _atomTreeController = _structure->atomsTreeController();
-  _bondListController = _structure->bondSetController();
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
+  {
+    _atomTreeController = atomViewer->atomsTreeController();
+  }
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    _bondListController = bondViewer->bondSetController();
+  }
 
   _reversedAtomSelection.first = _atomSelection.first;
   std::reverse_copy(_atomSelection.second.begin(), _atomSelection.second.end(), std::inserter(_reversedAtomSelection.second, _reversedAtomSelection.second.begin()));
@@ -53,52 +59,61 @@ AtomTreeViewDeleteSelectionCommand::AtomTreeViewDeleteSelectionCommand(MainWindo
 
 void AtomTreeViewDeleteSelectionCommand::redo()
 {
-  if(_bondModel->isActive(_iraspaStructure))
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspaStructure->object()))
   {
-    emit _bondModel->layoutAboutToBeChanged();
-    for(const auto &[bondItem, row] : _reverseBondSelection)
+    if(_bondModel->isActive(_iraspaStructure))
     {
-      whileBlocking(_bondModel)->removeRow(row);
-    }
-    emit _bondModel->layoutChanged();
+      emit _bondModel->layoutAboutToBeChanged();
+      for(const auto &[bondItem, row] : _reverseBondSelection)
+      {
+        whileBlocking(_bondModel)->removeRow(row);
+      }
+      emit _bondModel->layoutChanged();
 
-    _bondListController->setSelection(BondSelectionNodesAndIndexSet());
-    emit _bondModel->updateSelection();
-  }
-  else
-  {
-    for(const auto &[bondItem, row] : _reverseBondSelection)
+      _bondListController->setSelection(BondSelectionNodesAndIndexSet());
+      emit _bondModel->updateSelection();
+    }
+    else
     {
-      std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->removeBond(row);
+      for(const auto &[bondItem, row] : _reverseBondSelection)
+      {
+        bondViewer->bondSetController()->removeBond(row);
+      }
     }
-  }
-
-
-  if(_atomModel->isActive(_iraspaStructure))
-  {
-    emit _atomModel->layoutAboutToBeChanged();
-    for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
-    {
-      int row = int(indexPath.lastIndex());
-      std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-      whileBlocking(_atomModel)->removeRow(row, parentNode);
-    }
-    emit _atomModel->layoutChanged();
-
-    _atomTreeController->clearSelection();
-    emit _atomModel->updateSelection();
-  }
-  else
-  {
-    for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
-    {
-      atomNode->removeFromParent();
-    }
-    _atomTreeController->setSelectionIndexPaths(AtomSelectionIndexPaths());
   }
 
-  _atomTreeController->setTags();
-  _bondListController->setTags();
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
+  {
+    if(_atomModel->isActive(_iraspaStructure))
+    {
+      emit _atomModel->layoutAboutToBeChanged();
+      for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
+      {
+        int row = int(indexPath.lastIndex());
+        std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
+        whileBlocking(_atomModel)->removeRow(row, parentNode);
+      }
+      emit _atomModel->layoutChanged();
+
+      _atomTreeController->clearSelection();
+      emit _atomModel->updateSelection();
+    }
+    else
+    {
+      for(const auto &[atomNode, indexPath] : _reversedAtomSelection.second)
+      {
+        atomNode->removeFromParent();
+      }
+      _atomTreeController->setSelectionIndexPaths(AtomSelectionIndexPaths());
+    }
+
+    _atomTreeController->setTags();
+  }
+
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    _bondListController->setTags();
+  }
 
   if(_mainWindow)
   {
@@ -113,52 +128,64 @@ void AtomTreeViewDeleteSelectionCommand::redo()
 
 void AtomTreeViewDeleteSelectionCommand::undo()
 {
-  if(_atomModel->isActive(_iraspaStructure))
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
   {
-    emit _atomModel->layoutAboutToBeChanged();
-    for(const auto &[atomNode, indexPath] : _atomSelection.second)
+    if(_atomModel->isActive(_iraspaStructure))
     {
-      std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-      whileBlocking(_atomModel)->insertRow(int(indexPath.lastIndex()), parentNode, atomNode);
-    }
-    emit _atomModel->layoutChanged();
+      emit _atomModel->layoutAboutToBeChanged();
+      for(const auto &[atomNode, indexPath] : _atomSelection.second)
+      {
+        std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
+        whileBlocking(_atomModel)->insertRow(int(indexPath.lastIndex()), parentNode, atomNode);
+      }
+      emit _atomModel->layoutChanged();
 
-    _atomTreeController->setSelectionIndexPaths(_atomSelection);
-    emit _atomModel->updateSelection();
-  }
-  else
-  {
-    for(const auto &[atomNode, indexPath] : _atomSelection.second)
-    {
-      int row = int(indexPath.lastIndex());
-      std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
-      parentNode->insertChild(row, atomNode);
+      _atomTreeController->setSelectionIndexPaths(_atomSelection);
+      emit _atomModel->updateSelection();
     }
-    _atomTreeController->setSelectionIndexPaths(_atomSelection);
-  }
-
-  if(_bondModel->isActive(_iraspaStructure))
-  {
-    emit _bondModel->layoutAboutToBeChanged();
-    for(const auto &[bondItem, row] : _bondSelection)
+    else
     {
-      whileBlocking(_bondModel)->insertRow(row, bondItem);
-    }
-    emit _bondModel->layoutChanged();
-
-    _bondListController->setSelection(_bondSelection);
-    emit _bondModel->updateSelection();
-  }
-  else
-  {
-    for(const auto &[bondItem, row] : _bondSelection)
-    {
-      std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->insertBond(bondItem, row);
+      for(const auto &[atomNode, indexPath] : _atomSelection.second)
+      {
+        int row = int(indexPath.lastIndex());
+        std::shared_ptr<SKAtomTreeNode> parentNode = _atomTreeController->nodeAtIndexPath(indexPath.removingLastIndex());
+        parentNode->insertChild(row, atomNode);
+      }
+      _atomTreeController->setSelectionIndexPaths(_atomSelection);
     }
   }
 
-  _atomTreeController->setTags();
-  _bondListController->setTags();
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspaStructure->object()))
+  {
+    if(_bondModel->isActive(_iraspaStructure))
+    {
+      emit _bondModel->layoutAboutToBeChanged();
+      for(const auto &[bondItem, row] : _bondSelection)
+      {
+        whileBlocking(_bondModel)->insertRow(row, bondItem);
+      }
+      emit _bondModel->layoutChanged();
+
+      _bondListController->setSelection(_bondSelection);
+      emit _bondModel->updateSelection();
+    }
+    else
+    {
+      for(const auto &[bondItem, row] : _bondSelection)
+      {
+        std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->insertBond(bondItem, row);
+      }
+    }
+  }
+
+  if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_object))
+  {
+    _atomTreeController->setTags();
+  }
+  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
+  {
+    _bondListController->setTags();
+  }
 
   if(_mainWindow)
   {

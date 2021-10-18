@@ -36,7 +36,7 @@ class BondListViewChangeSelectionCommand : public QUndoCommand
 {
 public:
   BondListViewChangeSelectionCommand(std::weak_ptr<SKBondSetController> bondListController,
-                         MainWindow *main_window, std::shared_ptr<Structure> structure,
+                         MainWindow *main_window, std::shared_ptr<Object> object,
                          std::set<int> bondSelection, std::set<int> previousBondSelection,
                          QUndoCommand *parent = nullptr);
   void undo() override final;
@@ -44,7 +44,7 @@ public:
 private:
   std::weak_ptr<SKBondSetController> _bondListController;
   MainWindow *_main_window;
-  std::shared_ptr<Structure> _structure;
+  std::shared_ptr<Object> _object;
   std::set<int> _bondSelection;
   std::set<int> _previousBondSelection;
 };
