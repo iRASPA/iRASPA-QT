@@ -42,7 +42,7 @@ public:
   void redo() override final;
 private:
   MainWindow *_mainWindow;
-  std::shared_ptr<iRASPAObject> _iraspaStructure;
+  std::shared_ptr<iRASPAObject> _iraspaObject;
   std::shared_ptr<Object> _object;
   AtomSelectionIndexPaths _atomSelection;
   BondSelectionNodesAndIndexSet _bondSelection;

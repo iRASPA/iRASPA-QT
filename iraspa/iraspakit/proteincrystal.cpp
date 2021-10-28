@@ -44,6 +44,11 @@ ProteinCrystal::ProteinCrystal(const ProteinCrystal &proteinCrystal): Structure(
 
 ProteinCrystal::ProteinCrystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
+  if(frame->spaceGroupHallNumber)
+  {
+    this->_spaceGroup = *(frame->spaceGroupHallNumber);
+  }
+
   expandSymmetry();
   _atomsTreeController->setTags();
 }
@@ -1674,6 +1679,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<ProteinCrysta
   // handle super class
   stream << std::static_pointer_cast<Structure>(proteinCrystal);
 
+  stream << proteinCrystal->_spaceGroup;
+
   return stream;
 }
 
@@ -1686,8 +1693,18 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<ProteinCrystal> &pr
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "ProteinCrystal");
   }
 
+  if(versionNumber >= 2) // introduced in version 2
+  {
+    stream >> proteinCrystal->_spaceGroup;
+  }
+
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(proteinCrystal);
   stream >> structure;
+
+  if(versionNumber <= 1)
+  {
+    proteinCrystal->_spaceGroup = structure->legacySpaceGroup();
+  }
 
   return stream;
 }

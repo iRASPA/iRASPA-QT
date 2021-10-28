@@ -32,12 +32,12 @@
 #include "object.h"
 
 Structure::Structure(): _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-                        _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
+                        _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
 {
 }
 
 Structure::Structure(std::shared_ptr<SKAtomTreeController> atomTreeController): _atomsTreeController(atomTreeController),
-                     _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
+                     _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
 {
 }
 
@@ -47,13 +47,8 @@ std::shared_ptr<Object> Structure::shallowClone()
 }
 
 Structure::Structure(std::shared_ptr<SKStructure> frame): Object(frame), _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-  _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
+  _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
 {
-  if(frame->spaceGroupHallNumber)
-  {
-    this->_spaceGroup = *(frame->spaceGroupHallNumber);
-  }
-
   for(std::shared_ptr<SKAsymmetricAtom> atom: frame->atoms)
   {
     std::shared_ptr<SKAtomTreeNode> node = std::make_shared<SKAtomTreeNode>(atom);
@@ -63,7 +58,7 @@ Structure::Structure(std::shared_ptr<SKStructure> frame): Object(frame), _atomsT
 
 // shallow copy, atoms/bonds are empty, spacegroup no symmetry
 Structure::Structure(const Structure &structure): Object(structure),  _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-  _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
+  _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
 {
   qDebug() << "Base-class Copy constructor";
 
@@ -313,7 +308,7 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
 
 
 Structure::Structure(const std::shared_ptr<const Structure> structure): Object(structure), _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-   _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _spaceGroup(1)
+   _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
 {
   qDebug() << "Copy constructor Structure";
   /*
@@ -328,7 +323,7 @@ Structure::Structure(const std::shared_ptr<const Structure> structure): Object(s
   _cell = std::make_shared<SKCell>(*structure->_cell);
   */
   _minimumGridEnergyValue = structure->_minimumGridEnergyValue;
-  _spaceGroup = structure->_spaceGroup;
+  //_legacySpaceGroup = structure->_legacySpaceGroup;
 
   _selectionCOMTranslation = structure->_selectionCOMTranslation;
   _selectionRotationIndex = structure->_selectionRotationIndex;
@@ -1736,12 +1731,9 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   {
     stream << structure->_displayName;
     stream << structure->_isVisible;
-  }
 
-  stream << structure->_spaceGroup;
+    stream << structure->_legacySpaceGroup;
 
-  if(structure->_versionNumber < 9)
-  {
     stream << structure->_cell;
     stream << structure->_periodic;
     stream << structure->_origin;
@@ -2041,13 +2033,9 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
   {
     stream >> structure->_displayName;
     stream >> structure->_isVisible;
-  }
 
-  stream >> structure->_spaceGroup;
+    stream >> structure->_legacySpaceGroup;
 
-
-  if(versionNumber < 9)
-  {
     stream >> structure->_cell;
     stream >> structure->_periodic;
     stream >> structure->_origin;

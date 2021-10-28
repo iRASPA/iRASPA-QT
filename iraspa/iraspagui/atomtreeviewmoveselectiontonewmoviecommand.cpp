@@ -63,6 +63,12 @@ AtomTreeViewMoveSelectionToNewMovieCommand::AtomTreeViewMoveSelectionToNewMovieC
 
 void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
 {
+  int HallNumber = 1;
+  if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_iraspaObject->object()))
+  {
+    HallNumber = spaceGroupViewer->spaceGroup().spaceGroupSetting().HallNumber();
+  }
+
   if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaObject->object()))
   {
     if(std::shared_ptr<Movie> movie = _iraspaObject->parent().lock())
@@ -75,7 +81,10 @@ void AtomTreeViewMoveSelectionToNewMovieCommand::redo()
 
         if(std::shared_ptr<Structure> newStructure = std::dynamic_pointer_cast<Structure>(newiRASPAStructure->object()))
         {
-          newStructure->setSpaceGroupHallNumber(structure->spaceGroup().spaceGroupSetting().HallNumber());
+          if(std::shared_ptr<SpaceGroupViewer> newSpaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(newStructure))
+          {
+            newSpaceGroupViewer->setSpaceGroupHallNumber(HallNumber);
+          }
           _newMovie = Movie::create(newiRASPAStructure);
 
           for(const auto &[atomNode, indexPath] : _atomSelection.second)

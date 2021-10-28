@@ -47,8 +47,8 @@ public:
 
   ~ProteinCrystal() {}
 
-  void setSpaceGroupHallNumber(int HallNumber) override final {Structure::setSpaceGroupHallNumber(HallNumber);}
-  SKSpaceGroup& spaceGroup() override final {return Structure::spaceGroup();}
+  void setSpaceGroupHallNumber(int HallNumber) override final {_spaceGroup = SKSpaceGroup(HallNumber);}
+  SKSpaceGroup& spaceGroup() override final  {return _spaceGroup;}
 
   bool drawAtoms() const override {return _drawAtoms;}
 
@@ -94,9 +94,9 @@ public:
   std::pair<double3, double3> computeChangedBondLength(std::shared_ptr<SKBond> bond, double bondlength) const override final;
   void computeBonds() final override;
 
-	std::vector<double3> atomPositions() const override final;
-	std::vector<double3> atomUnitCellPositions() const override final;
-	std::vector<double2> potentialParameters() const override final;
+  std::vector<double3> atomPositions() const override final;
+  std::vector<double3> atomUnitCellPositions() const override final;
+  std::vector<double2> potentialParameters() const override final;
 
   std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const override final;
 
@@ -107,7 +107,9 @@ public:
   std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
   std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
 private:
-  qint64 _versionNumber{1};
+  qint64 _versionNumber{2};
+
+  SKSpaceGroup _spaceGroup = SKSpaceGroup(1);
 
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<ProteinCrystal> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<ProteinCrystal> &);

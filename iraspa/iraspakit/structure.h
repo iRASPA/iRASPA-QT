@@ -627,8 +627,8 @@ public:
   void setStructureLargestCavityDiameterAlongAviablePath(double value) override final {_structureLargestCavityDiameterAlongAViablePath = value;}
 
   // spacegroup
-  void setSpaceGroupHallNumber(int HallNumber)  {_spaceGroup = SKSpaceGroup(HallNumber);}
-  SKSpaceGroup& spaceGroup() {return _spaceGroup;}
+  //void setSpaceGroupHallNumber(int HallNumber)  {_spaceGroup = SKSpaceGroup(HallNumber);}
+  SKSpaceGroup& legacySpaceGroup() {return _legacySpaceGroup;}
 
   void computeBonds() override {;}
 
@@ -640,7 +640,7 @@ protected:
   std::shared_ptr<SKAtomTreeController> _atomsTreeController;
   std::shared_ptr<SKBondSetController> _bondSetController;
 
-  SKSpaceGroup _spaceGroup = SKSpaceGroup(1);
+  SKSpaceGroup _legacySpaceGroup = SKSpaceGroup(1);
 
   // ==========================================================================================
   // Legacy for reading primitive from 'Structure' (Remove in the future)

@@ -1131,11 +1131,16 @@ void AtomTreeView::exportToPDB() const
 {
   if(_iraspaStructure)
   {
+    SKSpaceGroup spaceGroup = SKSpaceGroup(1);
+
     if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
       QString displayName = structure->displayName();
       std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->asymmetricAtomsCopiedAndTransformedToCartesianPositions();
-      SKSpaceGroup &spaceGroup = structure->spaceGroup();
+      if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_iraspaStructure->object()))
+      {
+        spaceGroup = spaceGroupViewer->spaceGroup();
+      }
       std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = structure->cellForCartesianPositions();
       std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
       double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
@@ -1170,11 +1175,16 @@ void AtomTreeView::exportToMMCIF() const
 {
   if(_iraspaStructure)
   {
+    SKSpaceGroup spaceGroup = SKSpaceGroup(1);
     if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
       QString displayName = structure->displayName();
       std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->asymmetricAtomsCopiedAndTransformedToCartesianPositions();
-      SKSpaceGroup &spaceGroup = structure->spaceGroup();
+
+      if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_iraspaStructure->object()))
+      {
+        spaceGroup = spaceGroupViewer->spaceGroup();
+      }
       std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = structure->cellForCartesianPositions();
       std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
       double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
@@ -1209,11 +1219,15 @@ void AtomTreeView::exportToCIF() const
 {
   if(_iraspaStructure)
   {
+    SKSpaceGroup spaceGroup = SKSpaceGroup(1);
     if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
       QString displayName = structure->displayName();
       std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->asymmetricAtomsCopiedAndTransformedToFractionalPositions();
-      SKSpaceGroup &spaceGroup = structure->spaceGroup();
+      if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_iraspaStructure->object()))
+      {
+        spaceGroup = spaceGroupViewer->spaceGroup();
+      }
       std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cell = structure->cellForFractionalPositions();
 
       SKCIFWriter writer = SKCIFWriter(displayName, spaceGroup, cell->first, cell->second, atoms);
@@ -1246,11 +1260,15 @@ void AtomTreeView::exportToXYZ() const
 {
   if(_iraspaStructure)
   {
+    SKSpaceGroup spaceGroup = SKSpaceGroup(1);
     if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
       QString displayName = structure->displayName();
       std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->atomsCopiedAndTransformedToCartesianPositions();
-      SKSpaceGroup &spaceGroup = structure->spaceGroup();
+      if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_iraspaStructure->object()))
+      {
+        spaceGroup = spaceGroupViewer->spaceGroup();
+      }
       std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellData = structure->cellForCartesianPositions();
       std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
       double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
@@ -1285,11 +1303,16 @@ void AtomTreeView::exportToPOSCAR() const
 {
   if(_iraspaStructure)
   {
+    SKSpaceGroup spaceGroup = SKSpaceGroup(1);
     if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
     {
      QString displayName = structure->displayName();
      std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = structure->atomsCopiedAndTransformedToFractionalPositions();
-     SKSpaceGroup &spaceGroup = structure->spaceGroup();
+
+     if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_iraspaStructure->object()))
+     {
+       spaceGroup = spaceGroupViewer->spaceGroup();
+     }
      std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cell = structure->cellForFractionalPositions();
 
      SKPOSCARWriter writer = SKPOSCARWriter(displayName, spaceGroup, cell->first, cell->second, atoms);

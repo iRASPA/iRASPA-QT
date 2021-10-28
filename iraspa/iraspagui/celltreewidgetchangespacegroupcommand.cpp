@@ -49,20 +49,23 @@ void CellTreeWidgetChangeSpaceGroupCommand::redo()
   {
     std::shared_ptr<Object> object = iraspa_structure->object()->shallowClone();
 
-    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(object))
+    if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(object))
     {
-      QByteArray byteArray = QByteArray();
-      QDataStream stream(&byteArray, QIODevice::WriteOnly);
-      stream << std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->atomsTreeController();
+      if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(object))
+      {
+        QByteArray byteArray = QByteArray();
+        QDataStream stream(&byteArray, QIODevice::WriteOnly);
+        stream << std::dynamic_pointer_cast<Structure>(iraspa_structure->object())->atomsTreeController();
 
-      std::shared_ptr<SKAtomTreeController> atomTreeController;
-      QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
-      streamRead >> structure->atomsTreeController();
+        std::shared_ptr<SKAtomTreeController> atomTreeController;
+        QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
+        streamRead >> structure->atomsTreeController();
 
-      structure->setSpaceGroupHallNumber(_value);
-      structure->expandSymmetry();
-      structure->computeBonds();
-      iraspa_structure->setObject(structure);
+        spaceGroupViewer->setSpaceGroupHallNumber(_value);
+        structure->expandSymmetry();
+        structure->computeBonds();
+        iraspa_structure->setObject(structure);
+      }
     }
   }
 

@@ -511,7 +511,6 @@ std::shared_ptr<Structure> Molecule::appliedCellContentShift() const
 {
   // use the copy constructor
   std::shared_ptr<Molecule> molecule = std::make_shared<Molecule>(static_cast<const Molecule&>(*this));
-  molecule->_spaceGroup = this->_spaceGroup;
 
   double3 contentShift = _cell->contentShift();
   bool3 contentFlip = _cell->contentFlip();

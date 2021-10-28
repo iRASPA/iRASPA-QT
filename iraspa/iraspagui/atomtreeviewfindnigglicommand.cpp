@@ -27,7 +27,7 @@
 AtomTreeViewFindNiggliCommand::AtomTreeViewFindNiggliCommand(MainWindow *mainWindow, std::shared_ptr<iRASPAObject> iraspaStructure,
                                      AtomSelectionIndexPaths atomSelection, BondSelectionNodesAndIndexSet bondSelection, QUndoCommand *parent):
   _mainWindow(mainWindow),
-  _iraspaStructure(iraspaStructure),
+  _iraspaObject(iraspaStructure),
   _object(iraspaStructure->object()),
   _atomSelection(atomSelection),
   _bondSelection(bondSelection)
@@ -39,44 +39,50 @@ AtomTreeViewFindNiggliCommand::AtomTreeViewFindNiggliCommand(MainWindow *mainWin
 
 void AtomTreeViewFindNiggliCommand::redo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+  if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_iraspaObject->object()))
   {
-    const std::vector<std::tuple<double3,int,double>> symmetryData = structure->atomSymmetryData();
-
-    double3x3 unitCell = _iraspaStructure->object()->cell()->unitCell();
-    double precision = _iraspaStructure->object()->cell()->precision();
-    std::optional<SKSpaceGroup::FoundNiggliCellInfo> foundSpaceGroup = SKSpaceGroup::findNiggliCell(unitCell,symmetryData,false,precision);
-    if(foundSpaceGroup)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaObject->object()))
     {
-      int HallNumber = foundSpaceGroup->HallNumber;
-      double3x3 newUnitCell = foundSpaceGroup->cell.unitCell();
+      const std::vector<std::tuple<double3,int,double>> symmetryData = structure->atomSymmetryData();
 
-      std::shared_ptr<Object> object = _iraspaStructure->object()->shallowClone();
-
-      if(std::shared_ptr<Structure> newStructure = std::dynamic_pointer_cast<Structure>(object))
+      double3x3 unitCell = _iraspaObject->object()->cell()->unitCell();
+      double precision = _iraspaObject->object()->cell()->precision();
+      std::optional<SKSpaceGroup::FoundNiggliCellInfo> foundSpaceGroup = SKSpaceGroup::findNiggliCell(unitCell,symmetryData,false,precision);
+      if(foundSpaceGroup)
       {
-        std::vector<std::tuple<double3, int, double>> primitiveAtoms = foundSpaceGroup->atoms;
+        int HallNumber = foundSpaceGroup->HallNumber;
+        double3x3 newUnitCell = foundSpaceGroup->cell.unitCell();
 
-        newStructure->setAtomSymmetryData(newUnitCell, primitiveAtoms);
+        std::shared_ptr<Object> newObject = _iraspaObject->object()->shallowClone();
 
-        newStructure->reComputeBoundingBox();
+        if(std::shared_ptr<Structure> newStructure = std::dynamic_pointer_cast<Structure>(newObject))
+        {
+          std::vector<std::tuple<double3, int, double>> primitiveAtoms = foundSpaceGroup->atoms;
 
-        newStructure->atomsTreeController()->setTags();
-        newStructure->setRepresentationColorSchemeIdentifier(newStructure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
-        newStructure->setRepresentationStyle(newStructure->atomRepresentationStyle(), _mainWindow->colorSets());
-        newStructure->updateForceField(_mainWindow->forceFieldSets());
+          newStructure->setAtomSymmetryData(newUnitCell, primitiveAtoms);
 
-        newStructure->setSpaceGroupHallNumber(HallNumber);
-        newStructure->expandSymmetry();
-        newStructure->atomsTreeController()->setTags();
-        newStructure->computeBonds();
-        _iraspaStructure->setObject(newStructure);
+          newStructure->reComputeBoundingBox();
 
-        // emit _controller->invalidateCachedAmbientOcclusionTexture(_projectStructure->sceneList()->allIRASPAStructures());
+          newStructure->atomsTreeController()->setTags();
+          newStructure->setRepresentationColorSchemeIdentifier(newStructure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
+          newStructure->setRepresentationStyle(newStructure->atomRepresentationStyle(), _mainWindow->colorSets());
+          newStructure->updateForceField(_mainWindow->forceFieldSets());
 
-        _mainWindow->resetData();
+          if(std::shared_ptr<SpaceGroupViewer> newSpaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(newStructure))
+          {
+            newSpaceGroupViewer->setSpaceGroupHallNumber(HallNumber);
+          }
+          newStructure->expandSymmetry();
+          newStructure->atomsTreeController()->setTags();
+          newStructure->computeBonds();
+          _iraspaObject->setObject(newStructure);
 
-        _mainWindow->documentWasModified();
+          // emit _controller->invalidateCachedAmbientOcclusionTexture(_projectStructure->sceneList()->allIRASPAStructures());
+
+          _mainWindow->resetData();
+
+          _mainWindow->documentWasModified();
+        }
       }
     }
   }
@@ -84,16 +90,19 @@ void AtomTreeViewFindNiggliCommand::redo()
 
 void AtomTreeViewFindNiggliCommand::undo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+  if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_object))
   {
-    _iraspaStructure->setObject(_object);
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+    {
+      _iraspaObject->setObject(_object);
 
-    structure->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
-    structure->bondSetController()->setSelection(_bondSelection);
+      structure->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
+      structure->bondSetController()->setSelection(_bondSelection);
 
-    _mainWindow->resetData();
+      _mainWindow->resetData();
 
-    _mainWindow->documentWasModified();
+      _mainWindow->documentWasModified();
+    }
   }
 }
 

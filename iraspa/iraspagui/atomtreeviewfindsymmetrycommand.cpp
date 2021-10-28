@@ -39,42 +39,49 @@ AtomTreeViewFindSymmetryCommand::AtomTreeViewFindSymmetryCommand(MainWindow *mai
 
 void AtomTreeViewFindSymmetryCommand::redo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+  if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_object))
   {
-    const std::vector<std::tuple<double3,int,double>> symmetryData = structure->atomSymmetryData();
-
-    double3x3 unitCell = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->cell()->unitCell();
-    double precision = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->cell()->precision();
-    std::optional<SKSpaceGroup::FoundSpaceGroupInfo> foundSpaceGroup = SKSpaceGroup::findSpaceGroup(unitCell,symmetryData,true,precision);
-    if(foundSpaceGroup)
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
     {
-      std::shared_ptr<Object> object = _iraspaStructure->object()->shallowClone();
+      const std::vector<std::tuple<double3,int,double>> symmetryData = structure->atomSymmetryData();
 
-      if(std::shared_ptr<Structure> newStructure = std::dynamic_pointer_cast<Structure>(object))
+      double3x3 unitCell = structure->cell()->unitCell();
+      double precision = structure->cell()->precision();
+      std::optional<SKSpaceGroup::FoundSpaceGroupInfo> foundSpaceGroup = SKSpaceGroup::findSpaceGroup(unitCell,symmetryData,true,precision);
+      if(foundSpaceGroup)
       {
-        double3x3 newUnitCell = foundSpaceGroup->cell.unitCell();
-        std::vector<std::tuple<double3, int, double>> asymmetricAtoms = foundSpaceGroup->asymmetricAtoms;
+        std::shared_ptr<Object> object = _iraspaStructure->object()->shallowClone();
 
-        newStructure->setAtomSymmetryData(newUnitCell, asymmetricAtoms);
+        if(std::shared_ptr<Structure> newStructure = std::dynamic_pointer_cast<Structure>(object))
+        {
+          int HallNumber = foundSpaceGroup->HallNumber;
+          double3x3 newUnitCell = foundSpaceGroup->cell.unitCell();
+          std::vector<std::tuple<double3, int, double>> asymmetricAtoms = foundSpaceGroup->asymmetricAtoms;
 
-        newStructure->reComputeBoundingBox();
+          newStructure->setAtomSymmetryData(newUnitCell, asymmetricAtoms);
 
-        newStructure->atomsTreeController()->setTags();
-        newStructure->setRepresentationColorSchemeIdentifier(newStructure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
-        newStructure->setRepresentationStyle(newStructure->atomRepresentationStyle(), _mainWindow->colorSets());
-        newStructure->updateForceField(_mainWindow->forceFieldSets());
+          newStructure->reComputeBoundingBox();
 
-        newStructure->setSpaceGroupHallNumber(foundSpaceGroup->HallNumber);
-        newStructure->expandSymmetry();
-        newStructure->atomsTreeController()->setTags();
-        newStructure->computeBonds();
-        _iraspaStructure->setObject(newStructure);
+          newStructure->atomsTreeController()->setTags();
+          newStructure->setRepresentationColorSchemeIdentifier(newStructure->atomColorSchemeIdentifier(), _mainWindow->colorSets());
+          newStructure->setRepresentationStyle(newStructure->atomRepresentationStyle(), _mainWindow->colorSets());
+          newStructure->updateForceField(_mainWindow->forceFieldSets());
 
-        // emit _controller->invalidateCachedAmbientOcclusionTexture(_projectStructure->sceneList()->allIRASPAStructures());
+          if(std::shared_ptr<SpaceGroupViewer> newSpaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(newStructure))
+          {
+            newSpaceGroupViewer->setSpaceGroupHallNumber(HallNumber);
+          }
+          newStructure->expandSymmetry();
+          newStructure->atomsTreeController()->setTags();
+          newStructure->computeBonds();
+          _iraspaStructure->setObject(newStructure);
 
-        _mainWindow->resetData();
+          // emit _controller->invalidateCachedAmbientOcclusionTexture(_projectStructure->sceneList()->allIRASPAStructures());
 
-        _mainWindow->documentWasModified();
+          _mainWindow->resetData();
+
+          _mainWindow->documentWasModified();
+        }
       }
     }
   }
@@ -82,16 +89,19 @@ void AtomTreeViewFindSymmetryCommand::redo()
 
 void AtomTreeViewFindSymmetryCommand::undo()
 {
-  if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+  if(std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(_object))
   {
-    _iraspaStructure->setObject(_object);
+    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_object))
+    {
+      _iraspaStructure->setObject(_object);
 
-    structure->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
-    structure->bondSetController()->setSelection(_bondSelection);
+      structure->atomsTreeController()->setSelectionIndexPaths(_atomSelection);
+      structure->bondSetController()->setSelection(_bondSelection);
 
-    _mainWindow->resetData();
+      _mainWindow->resetData();
 
-    _mainWindow->documentWasModified();
+      _mainWindow->documentWasModified();
+    }
   }
 }
 

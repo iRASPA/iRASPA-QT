@@ -45,6 +45,10 @@ MolecularCrystal::MolecularCrystal(const MolecularCrystal &molecularCrystal): St
 
 MolecularCrystal::MolecularCrystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
+  if(frame->spaceGroupHallNumber)
+  {
+    this->_spaceGroup = *(frame->spaceGroupHallNumber);
+  }
   expandSymmetry();
   _atomsTreeController->setTags();
 }
@@ -1678,6 +1682,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<MolecularCrys
 {
   stream << molecularCrystal->_versionNumber;
 
+  stream << molecularCrystal->_spaceGroup;
+
   // handle super class
   stream << std::static_pointer_cast<Structure>(molecularCrystal);
 
@@ -1693,8 +1699,18 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<MolecularCrystal> &
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "MolecularCrystal");
   }
 
+  if(versionNumber >= 2) // introduced in version 2
+  {
+    stream >> molecularCrystal->_spaceGroup;
+  }
+
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(molecularCrystal);
   stream >> structure;
+
+  if(versionNumber <= 1)
+  {
+    molecularCrystal->_spaceGroup = structure->legacySpaceGroup();
+  }
 
   return stream;
 }

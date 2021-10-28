@@ -54,6 +54,10 @@
 
 Crystal::Crystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
+  if(frame->spaceGroupHallNumber)
+  {
+    this->_spaceGroup = *(frame->spaceGroupHallNumber);
+  }
   expandSymmetry();
   _atomsTreeController->setTags();
 }
@@ -1861,6 +1865,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Crystal> &cry
 {
   stream << crystal->_versionNumber;
 
+  stream << crystal->_spaceGroup;
+
   // handle super class
   stream << std::static_pointer_cast<Structure>(crystal);
 
@@ -1876,8 +1882,18 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Crystal> &crystal)
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "Crystal");
   }
 
+  if(versionNumber >= 2) // introduced in version 2
+  {
+    stream >> crystal->_spaceGroup;
+  }
+
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(crystal);
   stream >> structure;
+
+  if(versionNumber <= 1)
+  {
+    crystal->_spaceGroup = structure->legacySpaceGroup();
+  }
 
   return stream;
 }
