@@ -116,7 +116,7 @@ public:
   QDate creationDate() {return _creationDate;}
   void setCreationDate(QDate date) {_creationDate = date;}
 protected:
-  QString _displayName;
+  QString _displayName = QString("object");
   bool _isVisible = true;
 
   double3 _origin = double3(0.0, 0.0, 0.0);

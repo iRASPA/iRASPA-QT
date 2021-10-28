@@ -658,6 +658,7 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> CylinderPrimi
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<CylinderPrimitive> &primitive)
 {
   stream << primitive->_versionNumber;
+  stream << qint64(0x6f6b6193);
 
   // handle super class
   stream << std::static_pointer_cast<Primitive>(primitive);
@@ -756,6 +757,13 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<CylinderPrimitive> 
   }
   else
   {
+    qint64 magicNumber;
+    stream >> magicNumber;
+    if(magicNumber != qint64(0x6f6b6193))
+    {
+      throw InvalidArchiveVersionException(__FILE__, __LINE__, "CylinderPrimitive invalid magic-number");
+    }
+
     std::shared_ptr<Primitive> structure = std::static_pointer_cast<Primitive>(primitive);
     stream >> structure;
   }

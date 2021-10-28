@@ -882,6 +882,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<CrystalCylind
 {
   stream << primitive->_versionNumber;
 
+  stream << qint64(0x6f6b6190);
+
   // handle super class
   stream << std::static_pointer_cast<Primitive>(primitive);
 
@@ -979,6 +981,13 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<CrystalCylinderPrim
   }
   else
   {
+    qint64 magicNumber;
+    stream >> magicNumber;
+    if(magicNumber != qint64(0x6f6b6190))
+    {
+      throw InvalidArchiveVersionException(__FILE__, __LINE__, "CrystalCylinderPrimitive invalid magic-number");
+    }
+
     std::shared_ptr<Primitive> structure = std::static_pointer_cast<Primitive>(primitive);
     stream >> structure;
   }

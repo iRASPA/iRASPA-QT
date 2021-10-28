@@ -27,6 +27,7 @@
 #include "iraspakitprotocols.h"
 #include <cmath>
 #include "spacegroupviewer.h"
+#include <QDataStream>
 
 class Crystal: public Structure, public SpaceGroupViewer
 {

@@ -209,6 +209,10 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
   _adsorptionSurfaceOpacity = structure._adsorptionSurfaceOpacity;
   _adsorptionSurfaceIsoValue = structure._adsorptionSurfaceIsoValue;
 
+  _adsorptionSurfaceRenderingMethod = structure._adsorptionSurfaceRenderingMethod;
+  _adsorptionVolumeTransferFunction = structure._adsorptionVolumeTransferFunction;
+  _adsorptionVolumeStepLength = structure._adsorptionVolumeStepLength;
+
   _adsorptionSurfaceSize = structure._adsorptionSurfaceSize;
   _adsorptionSurfaceNumberOfTriangles = structure._adsorptionSurfaceNumberOfTriangles;
 
@@ -475,6 +479,10 @@ Structure::Structure(const std::shared_ptr<const Structure> structure): Object(s
   _drawAdsorptionSurface = structure->_drawAdsorptionSurface;
   _adsorptionSurfaceOpacity = structure->_adsorptionSurfaceOpacity;
   _adsorptionSurfaceIsoValue = structure->_adsorptionSurfaceIsoValue;
+
+  _adsorptionSurfaceRenderingMethod = structure->_adsorptionSurfaceRenderingMethod;
+  _adsorptionVolumeTransferFunction = structure->_adsorptionVolumeTransferFunction;
+  _adsorptionVolumeStepLength = structure->_adsorptionVolumeStepLength;
 
   _adsorptionSurfaceSize = structure->_adsorptionSurfaceSize;
   _adsorptionSurfaceNumberOfTriangles = structure->_adsorptionSurfaceNumberOfTriangles;
@@ -2011,6 +2019,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << uint32_t(structure->_citationPublicationDate.year());
   stream << structure->_citationDatebaseCodes;
 
+  stream << qint64(0x6f6b6182);
+
   // handle super class
   stream << std::static_pointer_cast<Object>(structure);
 
@@ -2433,6 +2443,13 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
 
   if(versionNumber >= 9)
   {
+    qint64 magicNumber;
+    stream >> magicNumber;
+    if(magicNumber != qint64(0x6f6b6182))
+    {
+      throw InvalidArchiveVersionException(__FILE__, __LINE__, "Structure invalid magic-number");
+    }
+
     std::shared_ptr<Object> object = std::static_pointer_cast<Object>(structure);
     stream >> object;
   }

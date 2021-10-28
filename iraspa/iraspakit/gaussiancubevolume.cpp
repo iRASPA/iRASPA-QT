@@ -1,6 +1,6 @@
 #include "gaussiancubevolume.h"
 
-GaussianCubeVolume::GaussianCubeVolume()
+GaussianCubeVolume::GaussianCubeVolume(): GridVolume()
 {
 
 }
@@ -10,6 +10,8 @@ GaussianCubeVolume::GaussianCubeVolume()
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<GaussianCubeVolume> &volume)
 {
   stream << volume->_versionNumber;
+
+  stream << qint64(0x6f6b6199);
 
   // handle super class
   stream << std::static_pointer_cast<GridVolume>(volume);
@@ -26,8 +28,14 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<GaussianCubeVolume>
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "GaussianCubeVolume");
   }
 
+  qint64 magicNumber;
+  stream >> magicNumber;
+  if(magicNumber != qint64(0x6f6b6199))
+  {
+    throw InvalidArchiveVersionException(__FILE__, __LINE__, "VASPDensityVolume invalid magic-number");
+  }
 
-  std::shared_ptr<Object> object = std::static_pointer_cast<GridVolume>(volume);
+  std::shared_ptr<GridVolume> object = std::static_pointer_cast<GridVolume>(volume);
   stream >> object;
 
   return stream;

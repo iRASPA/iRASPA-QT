@@ -456,6 +456,8 @@ QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<ProjectStruct
 
   stream << node->_sceneList;
 
+  stream << qint64(0x6f6b6180);
+
   return stream;
 }
 
@@ -515,6 +517,16 @@ QDataStream &operator>>(QDataStream& stream, std::shared_ptr<ProjectStructure>& 
   }
 
   stream >> node->_sceneList;
+
+  if(versionNumber >= 4) // introduced in version 4
+  {
+    qint64 magicNumber;
+    stream >> magicNumber;
+    if(magicNumber != qint64(0x6f6b6180))
+    {
+      throw InvalidArchiveVersionException(__FILE__, __LINE__, "ProjectStructure invalid magic-number");
+    }
+  }
 
   return stream;
 }

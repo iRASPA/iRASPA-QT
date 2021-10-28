@@ -1,6 +1,6 @@
 #include "raspadensityvolume.h"
 
-RASPADensityVolume::RASPADensityVolume()
+RASPADensityVolume::RASPADensityVolume(): GridVolume()
 {
 
 }
@@ -158,6 +158,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<RASPADensityV
 {
   stream << volume->_versionNumber;
 
+  stream << qint64(0x6f6b6196);
+
   // handle super class
   stream << std::static_pointer_cast<GridVolume>(volume);
 
@@ -173,8 +175,14 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<RASPADensityVolume>
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "RASPADensityVolume");
   }
 
+  qint64 magicNumber;
+  stream >> magicNumber;
+  if(magicNumber != qint64(0x6f6b6196))
+  {
+    throw InvalidArchiveVersionException(__FILE__, __LINE__, "RASPADensityVolume invalid magic-number");
+  }
 
-  std::shared_ptr<Object> object = std::static_pointer_cast<GridVolume>(volume);
+  std::shared_ptr<GridVolume> object = std::static_pointer_cast<GridVolume>(volume);
   stream >> object;
 
   return stream;

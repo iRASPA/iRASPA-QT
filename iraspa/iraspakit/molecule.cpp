@@ -1074,6 +1074,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Molecule> &mo
 {
   stream << molecule->_versionNumber;
 
+  stream << qint64(0x6f6b6186);
+
   // handle super class
   stream << std::static_pointer_cast<Structure>(molecule);
 
@@ -1087,6 +1089,16 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Molecule> &molecule
   if(versionNumber > molecule->_versionNumber)
   {
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "Molecule");
+  }
+
+  if(versionNumber >= 2) // introduced in version 2
+  {
+    qint64 magicNumber;
+    stream >> magicNumber;
+    if(magicNumber != qint64(0x6f6b6186))
+    {
+      throw InvalidArchiveVersionException(__FILE__, __LINE__, "Molecule invalid magic-number");
+    }
   }
 
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(molecule);

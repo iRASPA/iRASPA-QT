@@ -126,6 +126,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Object> &obje
   stream << uint16_t(object->_creationDate.month());
   stream << uint32_t(object->_creationDate.year());
 
+  stream << qint64(0x6f6b6181);
+
   return stream;
 }
 
@@ -173,6 +175,13 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Object> &object)
   stream >> month;
   stream >> year;
   object->_creationDate = QDate(int(year),int(month),int(day));
+
+  qint64 magicNumber;
+  stream >> magicNumber;
+  if(magicNumber != qint64(0x6f6b6181))
+  {
+    throw InvalidArchiveVersionException(__FILE__, __LINE__, "Object invalid magic-number");
+  }
 
   return stream;
 }

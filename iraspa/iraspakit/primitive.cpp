@@ -412,7 +412,7 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Primitive> &p
   stream << primitive->_primitiveBackSideSpecularIntensity;
   stream << primitive->_primitiveBackSideShininess;
 
-  qDebug() << "CHECK writing primitive";
+  stream << qint64(0x6f6b6188);
 
   // handle super class
   stream << std::static_pointer_cast<Object>(primitive);
@@ -476,7 +476,15 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Primitive> &primiti
   stream >> primitive->_primitiveBackSideSpecularIntensity;
   stream >> primitive->_primitiveBackSideShininess;
 
-  qDebug() << "Reading primitive LInk to super";
+  if(versionNumber >= 2)
+  {
+    qint64 magicNumber;
+    stream >> magicNumber;
+    if(magicNumber != qint64(0x6f6b6188))
+    {
+      throw InvalidArchiveVersionException(__FILE__, __LINE__, "Primitive invalid magic-number");
+    }
+  }
   std::shared_ptr<Object> structure = std::static_pointer_cast<Object>(primitive);
   stream >> structure;
 

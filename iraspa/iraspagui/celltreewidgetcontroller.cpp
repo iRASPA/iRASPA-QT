@@ -3241,20 +3241,6 @@ void CellTreeWidgetController::reloadStructureProperties()
   reloadStructuralLargestOverallCavityDiameter();
   reloadStructuralRestrictingPoreDiameter();
   reloadStructuralLargestDiamtereAlongAViablePath();
-
-  _cellStructuralForm->computeGravimetricSurfaceAreaPushButton->setDisabled(true);
-  _cellStructuralForm->computeVolumetricSurfaceAreaPushButton->setDisabled(true);
-  _cellStructuralForm->computeHeliumVoidFractionPushButton->setDisabled(true);
-
-  if(_projectTreeNode)
-  {
-    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
-    {
-      _cellStructuralForm->computeGravimetricSurfaceAreaPushButton->setEnabled(_projectTreeNode->isEditable());
-      _cellStructuralForm->computeVolumetricSurfaceAreaPushButton->setEnabled(_projectTreeNode->isEditable());
-      _cellStructuralForm->computeHeliumVoidFractionPushButton->setEnabled(_projectTreeNode->isEditable());
-    }
-  }
 }
 
 void CellTreeWidgetController::reloadStructuralMaterialType()
@@ -3325,6 +3311,7 @@ void CellTreeWidgetController::reloadStructuralDensity()
 void CellTreeWidgetController::reloadStructuralHeliumVoidFraction()
 {
   _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setDisabled(true);
+  _cellStructuralForm->computeHeliumVoidFractionPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -3334,6 +3321,7 @@ void CellTreeWidgetController::reloadStructuralHeliumVoidFraction()
       {
         _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setEnabled(true);
         _cellStructuralForm->heliumVoidFractionDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _cellStructuralForm->computeHeliumVoidFractionPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -3443,6 +3431,7 @@ void CellTreeWidgetController::reloadFrameworkProbeMoleculePopupBox()
 void CellTreeWidgetController::reloadStructuralVolumetricSurfaceArea()
 {
   _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setDisabled(true);
+  _cellStructuralForm->computeVolumetricSurfaceAreaPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -3452,6 +3441,7 @@ void CellTreeWidgetController::reloadStructuralVolumetricSurfaceArea()
       {
         _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setEnabled(true);
         _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _cellStructuralForm->computeVolumetricSurfaceAreaPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -3469,6 +3459,7 @@ void CellTreeWidgetController::reloadStructuralVolumetricSurfaceArea()
 void CellTreeWidgetController::reloadStructuralGravimetricSurfaceArea()
 {
   _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setDisabled(true);
+  _cellStructuralForm->computeGravimetricSurfaceAreaPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -3478,6 +3469,7 @@ void CellTreeWidgetController::reloadStructuralGravimetricSurfaceArea()
       {
         _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setEnabled(true);
         _cellStructuralForm->gravimetricSurfaceAreaDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _cellStructuralForm->computeGravimetricSurfaceAreaPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {

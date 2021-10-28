@@ -1867,6 +1867,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Crystal> &cry
 
   stream << crystal->_spaceGroup;
 
+  stream << qint64(0x6f6b6183);
+
   // handle super class
   stream << std::static_pointer_cast<Structure>(crystal);
 
@@ -1885,6 +1887,13 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Crystal> &crystal)
   if(versionNumber >= 2) // introduced in version 2
   {
     stream >> crystal->_spaceGroup;
+
+    qint64 magicNumber;
+    stream >> magicNumber;
+    if(magicNumber != qint64(0x6f6b6183))
+    {
+      throw InvalidArchiveVersionException(__FILE__, __LINE__, "Crystal invalid magic-number");
+    }
   }
 
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(crystal);

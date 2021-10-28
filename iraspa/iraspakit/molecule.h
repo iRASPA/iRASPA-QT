@@ -93,7 +93,7 @@ public:
   std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
 
 private:
-  qint64 _versionNumber{1};
+  qint64 _versionNumber{2};
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Molecule> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Molecule> &);
 };

@@ -65,6 +65,10 @@ public:
   iRASPAObject(std::shared_ptr<CrystalCylinderPrimitive> crystalCylinderPrimitive):_rawValue(ObjectType::crystalCylinderPrimitive), _object(crystalCylinderPrimitive) {}
   iRASPAObject(std::shared_ptr<CrystalPolygonalPrismPrimitive> crystalPolygonalPrismPrimitive):_rawValue(ObjectType::crystalPolygonalPrismPrimitive), _object(crystalPolygonalPrismPrimitive) {}
   iRASPAObject(std::shared_ptr<GridVolume> densityVolume):_rawValue(ObjectType::gridVolume), _object(densityVolume) {}
+  iRASPAObject(std::shared_ptr<RASPADensityVolume> densityVolume):_rawValue(ObjectType::RASPADensityVolume), _object(densityVolume) {}
+  iRASPAObject(std::shared_ptr<VTKDensityVolume> densityVolume):_rawValue(ObjectType::VTKDensityVolume), _object(densityVolume) {}
+  iRASPAObject(std::shared_ptr<VASPDensityVolume> densityVolume):_rawValue(ObjectType::VASPDensityVolume), _object(densityVolume) {}
+  iRASPAObject(std::shared_ptr<GaussianCubeVolume> densityVolume):_rawValue(ObjectType::GaussianCubeVolume), _object(densityVolume) {}
 
   std::shared_ptr<iRASPAObject> shallowClone();
 

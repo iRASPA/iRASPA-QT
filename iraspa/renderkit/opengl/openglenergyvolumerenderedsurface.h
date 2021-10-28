@@ -35,6 +35,7 @@
 #include <foundationkit.h>
 #include <simulationkit.h>
 
+#define CL_TARGET_OPENCL_VERSION 120
 #ifdef Q_OS_MACOS
   #include <OpenCL/opencl.h>
   #include <OpenGL/OpenGL.h>

@@ -31,6 +31,7 @@
 #include <QOpenGLFunctions_3_3_Core>
 #include <foundationkit.h>
 
+#define CL_TARGET_OPENCL_VERSION 120
 #ifdef Q_OS_MACOS
   #include <OpenCL/opencl.h>
   #include <OpenGL/OpenGL.h>

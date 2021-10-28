@@ -943,26 +943,6 @@ void AppearanceTreeWidgetController::reloadPrimitiveProperties()
   reloadBackPrimitiveDiffuseLight();
   reloadBackPrimitiveSpecularLight();
   reloadBackPrimitiveShininess();
-
-  _appearancePrimitiveForm->frontAmbientColorPushButton->setDisabled(true);
-  _appearancePrimitiveForm->frontDiffuseColorPushButton->setDisabled(true);
-  _appearancePrimitiveForm->frontSpecularColorPushButton->setDisabled(true);
-  _appearancePrimitiveForm->backAmbientColorPushButton->setDisabled(true);
-  _appearancePrimitiveForm->backDiffuseColorPushButton->setDisabled(true);
-  _appearancePrimitiveForm->backSpecularColorPushButton->setDisabled(true);
-  if(_projectTreeNode)
-  {
-    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
-    {
-      _appearancePrimitiveForm->frontAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->frontDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->frontSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->backAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->backDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearancePrimitiveForm->backSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
-    }
-  }
-
 }
 
 void AppearanceTreeWidgetController::reloadRotationAngle()
@@ -1588,6 +1568,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveAmbientLight()
 {
   _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->frontAmbientIntensitySlider->setDisabled(true);
+  _appearancePrimitiveForm->frontAmbientColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -1598,6 +1579,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveAmbientLight()
         _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setEnabled(true);
         _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearancePrimitiveForm->frontAmbientIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->frontAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -1630,6 +1612,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveDiffuseLight()
 {
   _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->frontDiffuseIntensitySlider->setDisabled(true);
+  _appearancePrimitiveForm->frontDiffuseColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -1640,6 +1623,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveDiffuseLight()
         _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setEnabled(true);
         _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearancePrimitiveForm->frontDiffuseIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->frontDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -1673,6 +1657,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveSpecularLight()
 {
   _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->frontSpecularIntensitySlider->setDisabled(true);
+  _appearancePrimitiveForm->frontSpecularColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -1683,6 +1668,7 @@ void AppearanceTreeWidgetController::reloadFrontPrimitiveSpecularLight()
         _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setEnabled(true);
         _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearancePrimitiveForm->frontSpecularIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->frontSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -1803,6 +1789,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveAmbientLight()
 {
   _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->backAmbientIntensitySlider->setDisabled(true);
+  _appearancePrimitiveForm->backAmbientColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -1813,6 +1800,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveAmbientLight()
         _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setEnabled(true);
         _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearancePrimitiveForm->backAmbientIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->backAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -1846,6 +1834,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveDiffuseLight()
 {
   _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->backDiffuseIntensitySlider->setDisabled(true);
+  _appearancePrimitiveForm->backDiffuseColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -1856,6 +1845,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveDiffuseLight()
         _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setEnabled(true);
         _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearancePrimitiveForm->backDiffuseIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->backDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -1889,6 +1879,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveSpecularLight()
 {
   _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setDisabled(true);
   _appearancePrimitiveForm->backSpecularIntensitySlider->setDisabled(true);
+  _appearancePrimitiveForm->backSpecularColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -1899,6 +1890,7 @@ void AppearanceTreeWidgetController::reloadBackPrimitiveSpecularLight()
         _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setEnabled(true);
         _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearancePrimitiveForm->backSpecularIntensitySlider->setEnabled(_projectTreeNode->isEditable());
+        _appearancePrimitiveForm->backSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -4041,19 +4033,6 @@ void AppearanceTreeWidgetController::reloadAtomProperties()
   reloadAtomDiffuseLight();
   reloadAtomSpecularLight();
   reloadAtomShininess();
-
-  _appearanceAtomsForm->atomAmbientColorPushButton->setDisabled(true);
-  _appearanceAtomsForm->atomDiffuseColorPushButton->setDisabled(true);
-  _appearanceAtomsForm->atomSpecularColorPushButton->setDisabled(true);
-  if(_projectTreeNode)
-  {
-    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
-    {
-      _appearanceAtomsForm->atomAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceAtomsForm->atomSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
-    }
-  }
 }
 
 // reload atom properties
@@ -4645,6 +4624,7 @@ void AppearanceTreeWidgetController::reloadAtomAmbientLight()
 {
   _appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox->setDisabled(true);
   _appearanceAtomsForm->atomAmbientIntensityDoubleSlider->setDisabled(true);
+  _appearanceAtomsForm->atomAmbientColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -4655,6 +4635,7 @@ void AppearanceTreeWidgetController::reloadAtomAmbientLight()
         _appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox->setEnabled(true);
         _appearanceAtomsForm->atomAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAtomsForm->atomAmbientIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -4688,6 +4669,7 @@ void AppearanceTreeWidgetController::reloadAtomDiffuseLight()
 {
   _appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox->setDisabled(true);
   _appearanceAtomsForm->atomDiffuseIntensityDoubleSlider->setDisabled(true);
+  _appearanceAtomsForm->atomDiffuseColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -4698,6 +4680,7 @@ void AppearanceTreeWidgetController::reloadAtomDiffuseLight()
         _appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox->setEnabled(true);
         _appearanceAtomsForm->atomDiffuseItensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAtomsForm->atomDiffuseIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -4731,6 +4714,7 @@ void AppearanceTreeWidgetController::reloadAtomSpecularLight()
 {
   _appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox->setDisabled(true);
   _appearanceAtomsForm->atomSpecularIntensityDoubleSlider->setDisabled(true);
+  _appearanceAtomsForm->atomSpecularColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -4741,6 +4725,7 @@ void AppearanceTreeWidgetController::reloadAtomSpecularLight()
         _appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox->setEnabled(true);
         _appearanceAtomsForm->atomSpecularIntensityDoubleSpinBoxBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAtomsForm->atomSpecularIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAtomsForm->atomSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -6013,22 +5998,6 @@ void AppearanceTreeWidgetController::reloadBondProperties()
   reloadBondDiffuseLight();
   reloadBondSpecularLight();
   reloadBondShininess();
-
-  _appearanceBondsForm->bondAmbientColorPushButton->setDisabled(true);
-  _appearanceBondsForm->bondDiffuseColorPushButton->setDisabled(true);
-  _appearanceBondsForm->bondSpecularColorPushButton->setDisabled(true);
-  if(_projectTreeNode)
-  {
-    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
-    {
-     // if (std::optional<std::unordered_set<QColor>> values = bondAmbientLightColor(); values)
-      {
-      _appearanceBondsForm->bondAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceBondsForm->bondSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      }
-    }
-  }
 }
 
 void AppearanceTreeWidgetController::reloadDrawBondsCheckBox()
@@ -6419,6 +6388,7 @@ void AppearanceTreeWidgetController::reloadBondAmbientLight()
 {
   _appearanceBondsForm->bondAmbientIntensityDoubleSpinBox->setDisabled(true);
   _appearanceBondsForm->bondAmbientIntensityDoubleSlider->setDisabled(true);
+  _appearanceBondsForm->bondAmbientColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -6429,6 +6399,7 @@ void AppearanceTreeWidgetController::reloadBondAmbientLight()
         _appearanceBondsForm->bondAmbientIntensityDoubleSpinBox->setEnabled(true);
         _appearanceBondsForm->bondAmbientIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceBondsForm->bondAmbientIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -6462,6 +6433,7 @@ void AppearanceTreeWidgetController::reloadBondDiffuseLight()
 {
   _appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox->setDisabled(true);
   _appearanceBondsForm->bondDiffuseIntensityDoubleSlider->setDisabled(true);
+  _appearanceBondsForm->bondDiffuseColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -6472,6 +6444,7 @@ void AppearanceTreeWidgetController::reloadBondDiffuseLight()
         _appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox->setEnabled(true);
         _appearanceBondsForm->bondDiffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceBondsForm->bondDiffuseIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -6505,6 +6478,7 @@ void AppearanceTreeWidgetController::reloadBondSpecularLight()
 {
   _appearanceBondsForm->bondSpecularIntensityDoubleSpinBox->setDisabled(true);
   _appearanceBondsForm->bondSpecularIntensityDoubleSlider->setDisabled(true);
+  _appearanceBondsForm->bondSpecularColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -6515,6 +6489,7 @@ void AppearanceTreeWidgetController::reloadBondSpecularLight()
         _appearanceBondsForm->bondSpecularIntensityDoubleSpinBox->setEnabled(true);
         _appearanceBondsForm->bondSpecularIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceBondsForm->bondSpecularIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceBondsForm->bondSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -7486,15 +7461,6 @@ void AppearanceTreeWidgetController::reloadUnitCellProperties()
   reloadDrawUnitCell();
   reloadUnitCellSizeScaling();
   reloadUnitCellDiffuseLight();
-
-  _appearanceUnitCellForm->diffuseColorPushButton->setDisabled(true);
-  if(_projectTreeNode)
-  {
-    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
-    {
-      _appearanceUnitCellForm->diffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
-    }
-  }
 }
 
 
@@ -7553,6 +7519,7 @@ void AppearanceTreeWidgetController::reloadUnitCellDiffuseLight()
 {
   _appearanceUnitCellForm->diffuseIntensityDoubleSpinBox->setDisabled(true);
   _appearanceUnitCellForm->diffuseIntensityDoubleSlider->setDisabled(true);
+  _appearanceUnitCellForm->diffuseColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -7561,6 +7528,7 @@ void AppearanceTreeWidgetController::reloadUnitCellDiffuseLight()
       _appearanceUnitCellForm->diffuseIntensityDoubleSpinBox->setEnabled(true);
       _appearanceUnitCellForm->diffuseIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
       _appearanceUnitCellForm->diffuseIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+      _appearanceUnitCellForm->diffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
       if (std::optional<double> value = unitCellDiffuseLightIntensity())
       {
@@ -8312,26 +8280,6 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProperties()
   reloadAdsorptionSurfaceOutsideDiffuseLight();
   reloadAdsorptionSurfaceOutsideSpecularLight();
   reloadAdsorptionSurfaceOutsideShininess();
-
-  _appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton->setDisabled(true);
-  _appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton->setDisabled(true);
-  _appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton->setDisabled(true);
-  _appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton->setDisabled(true);
-  _appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton->setDisabled(true);
-  _appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton->setDisabled(true);
-
-  if(_projectTreeNode)
-  {
-    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
-    {
-      _appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
-      _appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
-    }
-  }
 }
 
 
@@ -8720,6 +8668,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideAmbientLight()
 {
   _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setDisabled(true);
   _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSlider->setDisabled(true);
+  _appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -8730,6 +8679,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideAmbientLight()
         _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setEnabled(true);
         _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->insideAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -8763,6 +8713,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideDiffuseLight()
 {
   _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setDisabled(true);
   _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSlider->setDisabled(true);
+  _appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -8773,6 +8724,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideDiffuseLight()
         _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setEnabled(true);
         _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->insideDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -8806,6 +8758,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideSpecularLight(
 {
   _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setDisabled(true);
   _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSlider->setDisabled(true);
+  _appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -8816,6 +8769,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceInsideSpecularLight(
         _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setEnabled(true);
         _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->insideSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -8934,6 +8888,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideAmbientLight(
 {
   _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setDisabled(true);
   _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSlider->setDisabled(true);
+  _appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -8944,6 +8899,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideAmbientLight(
         _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setEnabled(true);
         _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->outsideAmbientColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -8977,6 +8933,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideDiffuseLight(
 {
   _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setDisabled(true);
   _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSlider->setDisabled(true);
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -8987,6 +8944,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideDiffuseLight(
         _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setEnabled(true);
         _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->outsideDiffuseColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -9020,6 +8978,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideSpecularLight
 {
   _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setDisabled(true);
   _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSlider->setDisabled(true);
+  _appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -9030,6 +8989,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOutsideSpecularLight
         _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setEnabled(true);
         _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->outsideSpecularColorPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -10263,10 +10223,6 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
 
 void AppearanceTreeWidgetController::reloadAnnotationProperties()
 {
-  _appearanceAnnotationForm->colorPushButton->setEnabled(false);
-  _appearanceAnnotationForm->fontComboBox->setEnabled(false);
-  _appearanceAnnotationForm->fontSpecifierComboBox->setEnabled(false);
-
   reloadAnnotationType();
   reloadAnnotationFont();
   reloadAnnotationColor();

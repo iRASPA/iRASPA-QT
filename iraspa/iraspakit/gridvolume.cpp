@@ -28,7 +28,7 @@
 #include "structure.h"
 #include "primitive.h"
 
-GridVolume::GridVolume()
+GridVolume::GridVolume(): Object()
 {
 
 }
@@ -183,14 +183,16 @@ std::vector<RKInPerInstanceAttributesBonds> GridVolume::renderUnitCellCylinders(
 
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<GridVolume> &volume)
 {
+     qDebug() << "WRITE GRIDVOLUME";
   stream << volume->_versionNumber;
 
   stream << volume->_dimensions;
   stream << volume->_spacing;
   stream << volume->_range;
   stream << volume->_data;
+  qDebug() << "SIZE: " << volume->_data.size();
 
-
+  stream << qint64(0x6f6b6195);
 
   // handle super class
   stream << std::static_pointer_cast<Object>(volume);
@@ -212,7 +214,12 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<GridVolume> &volume
   stream >> volume->_range;
   stream >> volume->_data;
 
-
+  qint64 magicNumber;
+  stream >> magicNumber;
+  if(magicNumber != qint64(0x6f6b6195))
+  {
+    throw InvalidArchiveVersionException(__FILE__, __LINE__, "GridVolume invalid magic-number");
+  }
 
   std::shared_ptr<Object> object = std::static_pointer_cast<Object>(volume);
   stream >> object;

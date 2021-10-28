@@ -107,7 +107,7 @@ public:
   void setInitialSelectionIfNeeded() override final;
   std::shared_ptr<RKGlobalAxes> axes() const override final {return _renderAxes;}
 private:
-  qint64 _versionNumber{3};
+  qint64 _versionNumber{4};
 
   SKBoundingBox _boundingBox = SKBoundingBox();
   bool _showBoundingBox{false};
