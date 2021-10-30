@@ -290,6 +290,7 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
                       value=temp/65535.0;
                     }
 
+
                     // x
                     int xi = (int)(x + 0.5f);
                     float xf = x + 0.5f - xi;
@@ -314,6 +315,20 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
                     float zd2 =  Images(gridData,x,y,z+1);
                     float gz =  (zd1 - zd0) * (1.0f - zf) + (zd2 - zd1) * zf; // lerp
 
+/*
+                    // Sobel 3D gradient (finite difference leads to anisotropic gradients)
+                    float gx = Images(gridData,x+1,y+1,z+1)+2*Images(gridData,x,y+1,z+1)+Images(gridData,x-1,y+1,z+1) +2*Images(gridData,x+1,y+1,z)+4*Images(gridData,x,y+1,z)+ 2*Images(gridData,x-1,y+1,z) +
+                               Images(gridData,x+1,y+1,z-1)+2*Images(gridData,x,y+1,z-1)+Images(gridData,x-1,y+1,z-1) - (Images(gridData,x+1,y-1,z+1)+2*Images(gridData,x,y-1,z+1)+Images(gridData,x-1,y-1,z+1) +
+                               2*Images(gridData,x+1,y-1,z)+4*Images(gridData,x,y-1,z)+ 2*Images(gridData,x-1,y-1,z) +Images(gridData,x+1,y-1,z-1)+2*Images(gridData,x,y-1,z-1)+Images(gridData,x-1,y-1,z-1)) ;
+
+                    float gy = Images(gridData,x+1,y+1,z+1)+2*Images(gridData,x+1,y+1,z)+Images(gridData,x+1,y+1,z-1) +2*Images(gridData,x+1,y,z+1)+4*Images(gridData,x+1,y,z)+ 2*Images(gridData,x+1,y,z-1) +
+                               Images(gridData,x+1,y-1,z+1)+2*Images(gridData,x+1,y-1,z)+Images(gridData,x+1,y-1,z-1) -(Images(gridData,x-1,y+1,z+1)+2*Images(gridData,x-1,y+1,z)+Images(gridData,x-1,y+1,z-1) +
+                               2*Images(gridData,x-1,y,z+1)+4*Images(gridData,x-1,y,z)+ 2*Images(gridData,x-1,y,z-1) + Images(gridData,x-1,y-1,z+1)+2*Images(gridData,x-1,y-1,z)+Images(gridData,x-1,y-1,z-1));
+
+                    float gz = Images(gridData,x+1,y+1,z+1)+2*Images(gridData,x,y+1,z+1)+Images(gridData,x-1,y+1,z+1) +2*Images(gridData,x+1,y,z+1)+4*Images(gridData,x,y,z+1)+2*Images(gridData,x-1,y,z+1) +
+                               Images(gridData,x+1,y-1,z+1)+2*Images(gridData,x,y-1,z+1)+Images(gridData,x-1,y-1,z+1) -(Images(gridData,x+1,y+1,z-1)+2*Images(gridData,x,y+1,z-1)+Images(gridData,x-1,y+1,z-1) +
+                               2*Images(gridData,x+1,y,z-1)+4*Images(gridData,x,y,z-1)+ 2*Images(gridData,x-1,y,z-1) +Images(gridData,x+1,y-1,z-1)+2*Images(gridData,x,y-1,z-1)+Images(gridData,x-1,y-1,z-1));
+*/
                     (*textureData)[x+128*y+z*128*128] = float4(value, gx, gy, gz);
                   }
                 }
@@ -330,7 +345,7 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
             glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             check_gl_error();
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // The array on the host has 1 byte alignment
-            glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, 128, 128, 128, 0, GL_RGBA, GL_FLOAT, textureData->data());
+            glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA16F, 128, 128, 128, 0, GL_RGBA, GL_FLOAT, textureData->data());
             check_gl_error();
             glBindTexture(GL_TEXTURE_3D, 0);
             check_gl_error();
@@ -530,10 +545,30 @@ vec4 colour_transfer(float intensity)
   return vec4(intensity * high + (1.0 - intensity) * low, alpha);
 }
 
+vec3 rgb2hsv(vec3 c)
+{
+  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+  vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+  vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+  float d = q.x - min(q.w, q.y);
+  float e = 1.0e-10;
+  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsv2rgb(vec3 c)
+{
+  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+
 const int numSamples = 100000;
 
 void main()
 {
+  vec3 ambient, diffuse, specular;
   vec3 numberOfReplicas = structureUniforms.numberOfReplicas.xyz;
   vec3 direction = normalize(fs_in.position.xyz - frameUniforms.cameraPosition.xyz);
   vec4 dir = vec4(direction.x,direction.y,direction.z,0.0);
@@ -573,13 +608,41 @@ void main()
 
 
     vec3 R = reflect(-direction, normal);
-    vec3 ambient = vec3(0.3,0.3,0.3);
-    vec3 diffuse = vec3(max(abs(dot(normal, direction)),0.0));
-    vec3 specular = vec3(pow(max(dot(R, direction), 0.0), 0.4));
+    ambient = vec3(0.1,0.1,0.1);
+    float dotProduct = dot(normal, direction);
 
-    // Alpha-blending
-    colour.rgb = c.a * (ambient+diffuse+specular) * c.rgb + (1 - c.a) * colour.a * colour.rgb;
-    colour.a = c.a + (1 - c.a) * colour.a;
+    if(dotProduct < 0)
+    {
+      ambient = isosurfaceUniforms.ambientBackSide.rgb;
+      diffuse = vec3(max(abs(dotProduct),0.0)) * isosurfaceUniforms.diffuseBackSide.rgb;
+      specular = vec3(pow(max(dot(R, direction), 0.0), isosurfaceUniforms.shininessBackSide)) * isosurfaceUniforms.specularBackSide.rgb;
+      vec3 totalColor = (ambient+diffuse+specular).rgb;
+
+      if (isosurfaceUniforms.backHDR)
+      {
+        totalColor = 1.0 - exp2(-totalColor * isosurfaceUniforms.backHDRExposure);
+      }
+
+      // Alpha-blending
+      colour.rgb = c.a * totalColor * c.rgb + (1 - c.a) * colour.a * colour.rgb;
+      colour.a = c.a + (1 - c.a) * colour.a;
+    }
+    else
+    {
+      ambient = isosurfaceUniforms.ambientFrontSide.rgb;
+      diffuse = vec3(max(abs(dotProduct),0.0)) * isosurfaceUniforms.diffuseFrontSide.rgb;
+      specular = vec3(pow(max(dot(R, direction), 0.0), isosurfaceUniforms.shininessFrontSide)) * isosurfaceUniforms.specularFrontSide.rgb;
+      vec3 totalColor = (ambient+diffuse+specular).rgb;
+
+      if (isosurfaceUniforms.frontHDR)
+      {
+        totalColor = 1.0 - exp2(-totalColor * isosurfaceUniforms.frontHDRExposure);
+      }
+
+      // Alpha-blending
+      colour.rgb = c.a * totalColor * c.rgb + (1 - c.a) * colour.a * colour.rgb;
+      colour.a = c.a + (1 - c.a) * colour.a;
+    }
 
     position = position + step_vector;
     ray_length -= stepLength;
@@ -599,8 +662,11 @@ void main()
 
   gl_FragDepth = newDepth;
 
-  vFragColor.rgb = 1.0 - exp2(-colour.rgb * 1.5);
-  vFragColor.a=colour.a;
+  vec3 hsv = rgb2hsv(colour.xyz);
+  hsv.x = hsv.x * isosurfaceUniforms.hue;
+  hsv.y = hsv.y * isosurfaceUniforms.saturation;
+  hsv.z = hsv.z * isosurfaceUniforms.value;
+  vFragColor = vec4(hsv2rgb(hsv),colour.a);
 }
 )foo";
 

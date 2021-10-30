@@ -793,23 +793,23 @@ protected:
   double _adsorptionSurfaceValue = 1.0;
 
   bool _adsorptionSurfaceFrontSideHDR = true;
-  double _adsorptionSurfaceFrontSideHDRExposure = 1.5;
+  double _adsorptionSurfaceFrontSideHDRExposure = 2.0;
   QColor _adsorptionSurfaceFrontSideAmbientColor = QColor(0, 0, 0, 255);
-  QColor _adsorptionSurfaceFrontSideDiffuseColor = QColor(150, 171, 186, 255);
+  QColor _adsorptionSurfaceFrontSideDiffuseColor = QColor(255, 255, 255, 255);
   QColor _adsorptionSurfaceFrontSideSpecularColor = QColor(230, 230, 230, 1.0);
   double _adsorptionSurfaceFrontSideDiffuseIntensity = 1.0;
-  double _adsorptionSurfaceFrontSideAmbientIntensity = 0.2;
-  double _adsorptionSurfaceFrontSideSpecularIntensity = 1.0;
+  double _adsorptionSurfaceFrontSideAmbientIntensity = 0.0;
+  double _adsorptionSurfaceFrontSideSpecularIntensity = 0.5;
   double _adsorptionSurfaceFrontSideShininess = 4.0;
 
   bool _adsorptionSurfaceBackSideHDR = true;
-  double _adsorptionSurfaceBackSideHDRExposure = 1.5;
+  double _adsorptionSurfaceBackSideHDRExposure = 2.0;
   QColor _adsorptionSurfaceBackSideAmbientColor = QColor(0, 0, 0, 255);
-  QColor _adsorptionSurfaceBackSideDiffuseColor = QColor(150, 171, 186, 255);
+  QColor _adsorptionSurfaceBackSideDiffuseColor = QColor(255, 255, 255, 255);
   QColor _adsorptionSurfaceBackSideSpecularColor = QColor(230, 230, 230, 255);
   double _adsorptionSurfaceBackSideDiffuseIntensity = 1.0;
-  double _adsorptionSurfaceBackSideAmbientIntensity = 0.2;
-  double _adsorptionSurfaceBackSideSpecularIntensity = 1.0;
+  double _adsorptionSurfaceBackSideAmbientIntensity = 0.0;
+  double _adsorptionSurfaceBackSideSpecularIntensity = 0.5;
   double _adsorptionSurfaceBackSideShininess = 4.0;
 
   double3 _selectionCOMTranslation = double3(0.0, 0.0, 0.0);

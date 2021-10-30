@@ -66,6 +66,13 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem *childPrimitiveItem = new QTreeWidgetItem(PrimitiveItem);
   this->setItemWidget(childPrimitiveItem,0, _appearancePrimitiveForm);
 
+  _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setMinimum(-180.0);
+  _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setMaximum(180.0);
+  _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setDecimals(2);
+  _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setSingleStep(1.0);
+  _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->EulerAngleXDoubleSpinBox->setMinimum(-180);
   _appearancePrimitiveForm->EulerAngleXDoubleSpinBox->setMaximum(180);
   _appearancePrimitiveForm->EulerAngleXDial->setDoubleMinimum(-180);
@@ -181,52 +188,90 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearancePrimitiveForm->frontExposureDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->frontExposureDoubleSpinBox->setMaximum(3.0);
   _appearancePrimitiveForm->frontExposureDoubleSpinBox->setSingleStep(0.1);
+  _appearancePrimitiveForm->frontExposureDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->frontExposureDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->frontExposureSlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->frontExposureSlider->setDoubleMaximum(3.0);
+
   _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setMaximum(1.0);
   _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setSingleStep(0.1);
+  _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->frontAmbientIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->frontAmbientIntensitySlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->frontAmbientIntensitySlider->setDoubleMaximum(1.0);
+
   _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setMaximum(1.0);
   _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setSingleStep(0.1);
+  _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->frontDiffuseIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->frontDiffuseIntensitySlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->frontDiffuseIntensitySlider->setDoubleMaximum(1.0);
+
   _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setMaximum(1.0);
   _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setSingleStep(0.1);
+  _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->frontSpecularIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->frontSpecularIntensitySlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->frontSpecularIntensitySlider->setDoubleMaximum(1.0);
+
   _appearancePrimitiveForm->frontShininessDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->frontShininessDoubleSpinBox->setMaximum(128.0);
   _appearancePrimitiveForm->frontShininessDoubleSpinBox->setSingleStep(1.0);
+  _appearancePrimitiveForm->frontShininessDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->frontShininessDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->frontShininessSlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->frontShininessSlider->setDoubleMaximum(128.0);
 
   _appearancePrimitiveForm->backExposureDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->backExposureDoubleSpinBox->setMaximum(3.0);
   _appearancePrimitiveForm->backExposureDoubleSpinBox->setSingleStep(0.1);
+  _appearancePrimitiveForm->backExposureDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->backExposureDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->backExposureSlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->backExposureSlider->setDoubleMaximum(3.0);
+
   _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setMaximum(1.0);
   _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setSingleStep(0.1);
+  _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->backAmbientIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->backAmbientIntensitySlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->backAmbientIntensitySlider->setDoubleMaximum(1.0);
+
   _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setMaximum(1.0);
   _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setSingleStep(0.1);
+  _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->backDiffuseIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->backDiffuseIntensitySlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->backDiffuseIntensitySlider->setDoubleMaximum(1.0);
+
   _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setMaximum(1.0);
   _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setSingleStep(0.1);
+  _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->backSpecularIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->backSpecularIntensitySlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->backSpecularIntensitySlider->setDoubleMaximum(1.0);
+
   _appearancePrimitiveForm->backShininessDoubleSpinBox->setMinimum(0.0);
   _appearancePrimitiveForm->backShininessDoubleSpinBox->setMaximum(128.0);
   _appearancePrimitiveForm->backShininessDoubleSpinBox->setSingleStep(1.0);
+  _appearancePrimitiveForm->backShininessDoubleSpinBox->setKeyboardTracking(false);
+  _appearancePrimitiveForm->backShininessDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearancePrimitiveForm->backShininessSlider->setDoubleMinimum(0.0);
   _appearancePrimitiveForm->backShininessSlider->setDoubleMaximum(128.0);
 
@@ -619,6 +664,26 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem *childAdsorptionSurfaceItem = new QTreeWidgetItem(AdsorptionSurfaceItem);
   this->setItemWidget(childAdsorptionSurfaceItem,0, _appearanceAdsorptionSurfaceForm);
 
+  _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setSingleStep(0.1);
+  _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideHDRExposureDoubleSlider->setDoubleMaximum(2.5);
+
+
+  _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setSingleStep(0.1);
+  _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideHDRExposureDoubleSlider->setDoubleMaximum(2.5);
+
+
   _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(0, tr("Isosurface"));
   _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(1, tr("Volume Rendering"));
 
@@ -648,16 +713,21 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setMaximum(100000.0);
 
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setMaximum(10.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setDecimals(5);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setSingleStep(0.05);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setKeyboardTracking(false);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setMaximum(10.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setDecimals(5);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setSingleStep(0.05);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setKeyboardTracking(false);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setMaximum(10.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setDecimals(5);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setSingleStep(0.05);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSpinBox->setKeyboardTracking(false);
@@ -669,6 +739,80 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceSaturationDoubleSlider->setDoubleMaximum(1.5);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSlider->setDoubleMinimum(0.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceValueDoubleSlider->setDoubleMaximum(1.5);
+
+  _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setDecimals(5);
+  _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setSingleStep(0.05);
+  _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideAmbientLightIntensityDoubleSlider->setDoubleMaximum(1.5);
+
+  _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setDecimals(5);
+  _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setSingleStep(0.05);
+  _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideDiffuseLightIntensityDoubleSlider->setDoubleMaximum(1.5);
+
+  _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setDecimals(5);
+  _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setSingleStep(0.05);
+  _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideSpecularLightIntensityDoubleSlider->setDoubleMaximum(1.5);
+
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setDecimals(5);
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setSingleStep(0.05);
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSlider->setDoubleMaximum(1.5);
+
+
+  _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setDecimals(5);
+  _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setSingleStep(0.05);
+  _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideAmbientLightIntensityDoubleSlider->setDoubleMaximum(1.5);
+
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setDecimals(5);
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setSingleStep(0.05);
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideDiffuseLightIntensityDoubleSlider->setDoubleMaximum(1.5);
+
+  _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setDecimals(5);
+  _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setSingleStep(0.05);
+  _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideSpecularLightIntensityDoubleSlider->setDoubleMaximum(1.5);
+
+  _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setMaximum(10.0);
+  _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setDecimals(5);
+  _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setSingleStep(0.05);
+  _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSpinBox->setKeyboardTracking(false);
+  _appearanceAdsorptionSurfaceForm->insideShininessDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->outsideShininessDoubleSlider->setDoubleMaximum(1.5);
+
 
   QObject::connect(_appearanceAdsorptionSurfaceForm->renderingMethodComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceRenderingMethod);
   QObject::connect(_appearanceAdsorptionSurfaceForm->transferFunctionComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setAdsorptionVolumeTransferFunction);
@@ -1277,7 +1421,7 @@ void AppearanceTreeWidgetController::reloadIsCapped()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      if (std::optional<std::unordered_set<int>> values = primitiveNumberOfSides(); values)
+      if (std::optional<std::unordered_set<bool>> values = primitiveIsCapped(); values)
       {
         _appearancePrimitiveForm->primitiveCappedCheckBox->setEnabled(_projectTreeNode->isEditable());
 

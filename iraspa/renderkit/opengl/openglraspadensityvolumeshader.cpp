@@ -195,7 +195,7 @@ void OpenGLRASPADensityVolumeShader::initializeVertexArrayObject()
           glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
           check_gl_error();
           glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // The array on the host has 1 byte alignment
-          glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, object->dimension().x, object->dimension().y, object->dimension().z, 0, GL_RGBA, GL_FLOAT, object->data().data());
+          glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA16F, object->dimension().x, object->dimension().y, object->dimension().z, 0, GL_RGBA, GL_FLOAT, object->data().data());
           check_gl_error();
           glBindTexture(GL_TEXTURE_3D, 0);
           check_gl_error();

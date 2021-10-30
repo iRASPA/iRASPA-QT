@@ -1631,10 +1631,7 @@ void CellTreeWidgetController::setUnitCellLengthA(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-      {
-        iraspa_structure->object()->cell()->setLengthA(value);
-      }
+      iraspa_structure->object()->cell()->setLengthA(value);
       iraspa_structure->object()->reComputeBoundingBox();
     }
 
@@ -1676,10 +1673,7 @@ void CellTreeWidgetController::setUnitCellLengthB(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-      {
-        iraspa_structure->object()->cell()->setLengthB(value);
-      }
+      iraspa_structure->object()->cell()->setLengthB(value);
       iraspa_structure->object()->reComputeBoundingBox();
     }
 
@@ -3032,10 +3026,7 @@ void CellTreeWidgetController::setFlipAxisA(bool state)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
-    {
-      iraspa_structure->object()->cell()->setContentFlipX(state);
-    }
+    iraspa_structure->object()->cell()->setContentFlipX(state);
   }
   reloadTransformContentProperties();
 

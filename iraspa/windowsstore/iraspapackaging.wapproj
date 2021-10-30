@@ -126,10 +126,7 @@
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="iraspa\avutil-56.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\libx264-157.dll">
+    <Content Include="iraspa\libx265.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="iraspa\LibraryOfStructures.irspdoc">
@@ -171,37 +168,28 @@
     <Content Include="iraspa\Qt6Widgets.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\plugins\generic\qtuiotouchplugin.dll">
+    <Content Include="iraspa\iconengines\qsvgicon.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\plugins\iconengines\qsvgicon.dll">
+    <Content Include="iraspa\imageformats\qgif.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\plugins\imageformats\qgif.dll">
+    <Content Include="iraspa\imageformats\qico.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\plugins\imageformats\qico.dll">
+    <Content Include="iraspa\imageformats\qjpeg.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\plugins\imageformats\qjpeg.dll">
+    <Content Include="iraspa\imageformats\qsvg.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\plugins\imageformats\qsvg.dll">
+    <Content Include="iraspa\platforms\qwindows.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\plugins\platforms\qdirect2d.dll">
+    <Content Include="iraspa\styles\qwindowsvistastyle.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="iraspa\plugins\platforms\qminimal.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\plugins\platforms\qoffscreen.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\plugins\platforms\qwindows.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="iraspa\plugins\styles\qwindowsvistastyle.dll">
+    <Content Include="iraspa\vc_redist.x64.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
