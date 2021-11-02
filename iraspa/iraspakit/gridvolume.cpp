@@ -188,7 +188,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<GridVolume> &
 
   stream << volume->_dimensions;
   stream << volume->_spacing;
-  stream << volume->_range;
+  stream << volume->_range.first;
+  stream << volume->_range.second;
   stream << volume->_data;
   qDebug() << "SIZE: " << volume->_data.size();
 
@@ -211,7 +212,8 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<GridVolume> &volume
 
   stream >> volume->_dimensions;
   stream >> volume->_spacing;
-  stream >> volume->_range;
+  stream >> volume->_range.first;
+  stream >> volume->_range.second;
   stream >> volume->_data;
 
   qint64 magicNumber;

@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <QDebug>
 #include <QApplication>
+#include <QTimer>
 
 SKOpenCLVoidFractionUnitCell::SKOpenCLVoidFractionUnitCell(): _isOpenCLInitialized(false), _isOpenCLReady(false)
 {
@@ -84,8 +85,12 @@ void SKOpenCLVoidFractionUnitCell::initialize(bool isOpenCLInitialized, cl_conte
 void SKOpenCLVoidFractionUnitCell::callBack(cl_program program, void *user_data)
 {
   // invoke on the main thread
-  QMetaObject::invokeMethod(qApp, [program, user_data]{
-
+#if (QT_VERSION < QT_VERSION_CHECK(5,10,0))
+  QTimer::singleShot(0, qApp, [program, user_data]()
+#else
+  QMetaObject::invokeMethod(qApp, [program, user_data]
+#endif
+  {
     cl_int err;
 
     SKOpenCLVoidFractionUnitCell *ptr = reinterpret_cast<SKOpenCLVoidFractionUnitCell*>(user_data);

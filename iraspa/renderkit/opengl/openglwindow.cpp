@@ -749,7 +749,6 @@ void OpenGLWindow::initializeCL_Linux(cl_context &_clContext, cl_device_id &_clD
 
   // do not use OpenGL/OpenCL for linux
   _energySurfaceShader.setGLInteroperability(false);
-  _energyVolumeRenderedSurface.setGLInteroperability(false);
 
   // see first if there is a suitable GPU device for OpenCL
   std::optional<cl_device_id> bestGPUDevice = bestOpenCLDevice(CL_DEVICE_TYPE_GPU);

@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <QDebug>
 #include <QApplication>
+#include <QTimer>
 
 SKOpenCLEnergyGridUnitCell::SKOpenCLEnergyGridUnitCell(): _isOpenCLInitialized(false), _isOpenCLReady(false)
 {
@@ -84,8 +85,12 @@ void SKOpenCLEnergyGridUnitCell::initialize(bool isOpenCLInitialized, cl_context
 void SKOpenCLEnergyGridUnitCell::callBack(cl_program program, void *user_data)
 {
   // invoke on the main thread
-  QMetaObject::invokeMethod(qApp, [program, user_data]{
-
+#if (QT_VERSION < QT_VERSION_CHECK(5,10,0))
+  QTimer::singleShot(0, qApp, [program, user_data]()
+#else
+  QMetaObject::invokeMethod(qApp, [program, user_data]
+#endif
+  {
     cl_int err;
 
     SKOpenCLEnergyGridUnitCell *ptr = reinterpret_cast<SKOpenCLEnergyGridUnitCell*>(user_data);
