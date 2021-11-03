@@ -98,6 +98,7 @@ bool SKPDBParser::startParsing()
       int length = scannedLine.size();
 
       if(length < 3) continue;
+
       #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         QStringRef shortKeyword(&scannedLine, 0, 3);
       #else
@@ -119,12 +120,12 @@ bool SKPDBParser::startParsing()
       }
 
       if(length < 6) continue;
+
       #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         QStringRef keyword(&scannedLine, 0, 6);
       #else
         QStringView keyword(&scannedLine[0], 6);
       #endif
-
 
       if(keyword == QString("HEADER"))
       {
@@ -156,6 +157,7 @@ bool SKPDBParser::startParsing()
         currentMovie = 0;
 
         if(length <= 10) continue;
+
         #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
           QStringRef modelString(&scannedLine, 6, length - 6);
         #else
@@ -195,35 +197,37 @@ bool SKPDBParser::startParsing()
           QStringRef lengthAString{};
           QStringRef lengthBString{};
           QStringRef lengthCString{};
-          if(scannedLine.size()>=17)
-          {
-            lengthAString = QStringRef(&scannedLine, 6, 9);
-          }
-          if(scannedLine.size()>=24)
-          {
-            lengthBString = QStringRef(&scannedLine, 15, 9);
-          }
-          if(scannedLine.size()>=33)
-          {
-            lengthCString = QStringRef(&scannedLine, 24, 9);
-          }
         #else
           QStringView lengthAString{};
           QStringView lengthBString{};
           QStringView lengthCString{};
-          if(scannedLine.size()>=17)
-          {
-            lengthAString = QStringView(&scannedLine[6], 9);
-          }
-          if(scannedLine.size()>=24)
-          {
-            lengthBString = QStringView(&scannedLine[15], 9);
-          }
-          if(scannedLine.size()>=33)
-          {
-            lengthCString = QStringView(&scannedLine[24], 9);
-          }
         #endif
+
+        if(scannedLine.size()>=17)
+        {
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            lengthAString = QStringRef(&scannedLine, 6, 9);
+          #else
+            lengthAString = QStringView(&scannedLine[6], 9);
+          #endif
+        }
+        if(scannedLine.size()>=24)
+        {
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            lengthBString = QStringRef(&scannedLine, 15, 9);
+          #else
+            lengthBString = QStringView(&scannedLine[15], 9);
+          #endif
+        }
+        if(scannedLine.size()>=33)
+        {
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            lengthCString = QStringRef(&scannedLine, 24, 9);
+          #else
+            lengthCString = QStringView(&scannedLine[24], 9);
+          #endif
+        }
+
         bool succes = false;
         _a = lengthAString.toDouble(&succes);
         _b = lengthBString.toDouble(&succes);
@@ -238,35 +242,36 @@ bool SKPDBParser::startParsing()
             QStringRef alphaAngleString{};
             QStringRef betaAngleString{};
             QStringRef gammaAngleString{};
-            if(scannedLine.size()>=40)
-            {
-              alphaAngleString = QStringRef(&scannedLine, 33, 7);
-            }
-            if(scannedLine.size()>=47)
-            {
-              betaAngleString = QStringRef(&scannedLine, 40, 7);
-            }
-            if(scannedLine.size()>=54)
-            {
-              gammaAngleString = QStringRef(&scannedLine, 47, 7);
-            }
           #else
             QStringView alphaAngleString{};
             QStringView betaAngleString{};
             QStringView gammaAngleString{};
-            if(scannedLine.size()>=40)
-            {
-              alphaAngleString = QStringView(&scannedLine[33], 7);
-            }
-            if(scannedLine.size()>=47)
-            {
-              betaAngleString = QStringView(&scannedLine[40], 7);
-            }
-            if(scannedLine.size()>=54)
-            {
-              gammaAngleString = QStringView(&scannedLine[47], 7);
-            }
           #endif
+          if(scannedLine.size()>=40)
+          {
+            #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+              alphaAngleString = QStringRef(&scannedLine, 33, 7);
+            #else
+              alphaAngleString = QStringView(&scannedLine[33], 7);
+            #endif
+          }
+          if(scannedLine.size()>=47)
+          {
+            #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+              betaAngleString = QStringRef(&scannedLine, 40, 7);
+            #else
+              betaAngleString = QStringView(&scannedLine[40], 7);
+            #endif
+          }
+          if(scannedLine.size()>=54)
+          {
+            #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+              gammaAngleString = QStringRef(&scannedLine, 47, 7);
+            #else
+              gammaAngleString = QStringView(&scannedLine[47], 7);
+            #endif
+          }
+
           _alpha = alphaAngleString.toDouble(&succes);
           _beta = betaAngleString.toDouble(&succes);
           _gamma = gammaAngleString.toDouble(&succes);
@@ -314,121 +319,175 @@ bool SKPDBParser::startParsing()
 
       if(keyword == QString("ATOM  ") || keyword == QString("HETATM"))
       {
+         //  COLUMNS   LENGHT  DATA TYPE       CONTENTS
+         //  --------------------------------------------------------------------------------
+         //   0 -  5   6       Record name     "ATOM  "
+         //   6 - 10   5       Integer         Atom serial number.
+         //  11        1
+         //  12 - 15   4       Atom            Atom name.
+         //  16        1       Character       Alternate location indicator.
+         //  17 - 19   3       Residue name    Residue name.
+         //  20        1
+         //  21        1       Character       Chain identifier.
+         //  22 - 25   4       Integer         Residue sequence number.
+         //  26        1       AChar           Code for insertion of residues.
+         //  27 - 29   3
+         //  30 - 37   8       Real(8.3)       Orthogonal coordinates for X in Angstroms.
+         //  38 - 45   8       Real(8.3)       Orthogonal coordinates for Y in Angstroms.
+         //  46 - 53   8       Real(8.3)       Orthogonal coordinates for Z in Angstroms.
+         //  54 - 59   6       Real(6.2)       Occupancy.
+         //  60 - 65   6       Real(6.2)       Temperature factor (Default = 0.0).
+         //  66 - 71   6
+         //  72 - 75   4       LString(4)      Segment identifier, left-justified.
+         //  76 - 77   2       LString(2)      Element symbol, right-justified.
+         //  78 - 79   2       LString(2)      Charge on the atom.
+
         _numberOfAtoms += 1;
         std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
 
         #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-          QStringRef residueName{};
           QStringRef positionsX{};
           QStringRef positionsY{};
           QStringRef positionsZ{};
-          QStringRef chemicalElementString{};
-          if(scannedLine.size()>=16)
-          {
-            chemicalElementString = QStringRef(&scannedLine, 12, 4);
-          }
-          if(scannedLine.size()>=20)
-          {
-            residueName = QStringRef(&scannedLine, 17, 3);
-          }
-          if(scannedLine.size()>=38)
-          {
-            positionsX = QStringRef(&scannedLine, 30, 8);
-          }
-          if(scannedLine.size()>=46)
-          {
-            positionsY = QStringRef(&scannedLine, 38, 8);
-          }
-          if(scannedLine.size()>=54)
-          {
-            positionsZ = QStringRef(&scannedLine, 46, 8);
-          }
-          if(scannedLine.size()>=78)
-          {
-            chemicalElementString = QStringRef(&scannedLine, 76, 2);
-          }
         #else
-          QStringView residueName{};
           QStringView positionsX{};
           QStringView positionsY{};
           QStringView positionsZ{};
-          QStringView chemicalElementString{};
-          if(scannedLine.size()>=16)
+        #endif
+
+        if(scannedLine.size()>=11)
+        {
+          bool succes = false;
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QString atomSerialNumberString = QStringRef(&scannedLine, 6, 5).toString().simplified();
+          #else
+            QString atomSerialNumberString = QStringView(&scannedLine[6], 5).toString().simplified();
+          #endif
+          int atomSerialNumber = atomSerialNumberString.toInt(&succes);
+          if(succes)
           {
-            chemicalElementString = QStringView(&scannedLine[12], 4);
+            atom->setSerialNumber(atomSerialNumber);
           }
+        }
+
+        if(scannedLine.size()>=16)
+        {
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QString atomName = QStringRef(&scannedLine, 12, 4).toString().simplified();
+            atom->setDisplayName(atomName);
+            atom->setRemotenessIndicator(QStringRef(&scannedLine, 14, 1).toString().toUtf8().at(0));
+            atom->setBranchDesignator(QStringRef(&scannedLine, 15, 1).toString().toUtf8().at(0));
+          #else
+            QString atomName = QStringView(&scannedLine[12], 4).toString().simplified();
+            atom->setDisplayName(atomName);
+            atom->setRemotenessIndicator(QStringView(&scannedLine[14],1).toString().toUtf8().at(0));
+            atom->setBranchDesignator(QStringView(&scannedLine[15],1).toString().toUtf8().at(0));
+          #endif
+
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QString elementString = QStringRef(&scannedLine, 12, 2).toString().simplified().toLower();
+          #else
+            QString elementString = QStringView(&scannedLine[12], 2).toString().simplified().toLower();
+          #endif
+          if(!elementString.isEmpty())
+          {
+            elementString.replace(0, 1, elementString[0].toUpper());
+          }
+          if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(elementString); index != PredefinedElements::atomicNumberData.end())
+          {
+             atom->setElementIdentifier(index->second);
+          }
+
           if(scannedLine.size()>=20)
           {
-            residueName = QStringView(&scannedLine[17], 3);
-          }
-          if(scannedLine.size()>=38)
-          {
-            positionsX = QStringView(&scannedLine[30], 8);
-          }
-          if(scannedLine.size()>=46)
-          {
-            positionsY = QStringView(&scannedLine[38], 8);
-          }
-          if(scannedLine.size()>=54)
-          {
-            positionsZ = QStringView(&scannedLine[46], 8);
-          }
-          if(scannedLine.size()>=78)
-          {
-            chemicalElementString = QStringView(&scannedLine[76], 2);
-          }
-        #endif
+            #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+              QString residueName = QStringRef(&scannedLine, 17, 3).toString().simplified().toUpper();
+            #else
+              QString residueName = QStringView(&scannedLine[17], 3).toString().simplified().toUpper();
+            #endif
 
-        double occupancy = 1.0;
-        bool succes = false;
-        #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-          QStringRef occupancyString{};
-          if(scannedLine.size()>=60)
-          {
-            occupancyString = QStringRef(&scannedLine, 54, 6);
-          }
-        #else
-        QStringView occupancyString{};
-          if(scannedLine.size()>=60)
-          {
-            occupancyString = QStringView(&scannedLine[54], 6);
-          }
-        #endif
+            if(PredefinedElements::residueDefinitions.find(residueName) != PredefinedElements::residueDefinitions.end())
+            {
+              _numberOfAminoAcidAtoms += 1;
+            }
 
-        occupancy = occupancyString.toDouble(&succes);
-        if(succes)
+            auto it = PredefinedElements::residueDefinitionsElement.find(residueName + "+" + atomName.toUpper());
+            if(it !=  PredefinedElements::residueDefinitionsElement.end())
+            {
+              if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(it->second); index != PredefinedElements::atomicNumberData.end())
+              {
+                 atom->setElementIdentifier(index->second);
+              }
+            }
+          }
+        }
+        if(scannedLine.size()>=38)
         {
-          atom->setOccupancy(occupancy);
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            positionsX = QStringRef(&scannedLine, 30, 8);
+          #else
+            positionsX = QStringView(&scannedLine[30], 8);
+          #endif
+        }
+        if(scannedLine.size()>=46)
+        {
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            positionsY = QStringRef(&scannedLine, 38, 8);
+          #else
+            positionsY = QStringView(&scannedLine[38], 8);
+          #endif
+        }
+        if(scannedLine.size()>=54)
+        {
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            positionsZ = QStringRef(&scannedLine, 46, 8);
+          #else
+            positionsZ = QStringView(&scannedLine[46], 8);
+          #endif
+        }
+        if(scannedLine.size()>=60)
+        {
+          bool succes = false;
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QStringRef occupancyString = QStringRef(&scannedLine, 54, 6);
+          #else
+            QStringView occupancyString = QStringView(&scannedLine[54], 6);
+          #endif
+          double occupancy = occupancyString.toDouble(&succes);
+          if(succes)
+          {
+            atom->setOccupancy(occupancy);
+          }
+        }
+        if(scannedLine.size()>=78)
+        {
+          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QString chemicalElement = QStringRef(&scannedLine, 76, 2).toString().simplified().toLower();
+          #else
+            QString chemicalElement = QStringView(&scannedLine[76], 2).toString().simplified().toLower();
+          #endif
+
+          if(!chemicalElement.isEmpty())
+          {
+            chemicalElement.replace(0, 1, chemicalElement[0].toUpper());
+            if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(chemicalElement); index != PredefinedElements::atomicNumberData.end())
+            {
+               atom->setElementIdentifier(index->second);
+               atom->setDisplayName(chemicalElement);
+            }
+          }
         }
 
         double3 position;
-        succes = false;
+        bool succes = false;
         position.x = positionsX.toDouble(&succes);
         position.y = positionsY.toDouble(&succes);
         position.z = positionsZ.toDouble(&succes);
         atom->setPosition(position);
 
-        QString chemicalElement = chemicalElementString.toString().simplified().toLower();
-
-        if(!chemicalElement.isEmpty())
-        {
-          chemicalElement.replace(0, 1, chemicalElement[0].toUpper());
-          if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(chemicalElement); index != PredefinedElements::atomicNumberData.end())
-          {
-             atom->setElementIdentifier(index->second);
-             atom->setDisplayName(chemicalElement);
-          }
-        }
-
-        if(PredefinedElements::residueDefinitions.find(residueName.toString().toUpper()) != PredefinedElements::residueDefinitions.end())
-        {
-          _numberOfAminoAcidAtoms += 1;
-        }
-
         _frame->atoms.push_back(atom);
         continue;
       }
-
     }
   }
 
