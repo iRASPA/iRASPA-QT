@@ -411,14 +411,14 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
           #endif
 
-          int structureIdentifier = pixel[1];
+          int sceneIdentifier = pixel[1];
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
 
           switch(pixel[0])
           {
           case 1:
-            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
             {
               atomViewer->setAtomSelection(pickedObject);
               reloadData();
@@ -427,7 +427,7 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             }
             break;
           case 2:
-            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
             {
               bondViewer->setBondSelection(pickedObject);
               reloadData();
@@ -448,7 +448,7 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           #else
             pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
           #endif
-          int structureIdentifier = pixel[1];
+          int sceneIdentifier = pixel[1];
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
 
@@ -456,7 +456,7 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           switch(pixel[0])
           {
           case 1:
-            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
             {
               atomViewer->toggleAtomSelection(pickedObject);
               reloadData();
@@ -465,7 +465,7 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             }
             break;
           case 2:
-            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
             {
               bondViewer->toggleBondSelection(pickedObject);
               reloadData();
@@ -515,7 +515,7 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
           #endif
 
-          int structureIdentifier = pixel[1];
+          int sceneIdentifier = pixel[1];
           int movieIdentifier = pixel[2];
           int pickedObject  = pixel[3];
 
@@ -527,7 +527,8 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             emit updateBondSelection();
             break;
           case 1:
-            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+
+            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
             {
               atomViewer->setAtomSelection(pickedObject);
               reloadData();
@@ -536,7 +537,7 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             }
             break;
           case 2:
-            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[structureIdentifier][movieIdentifier]->object()))
+            if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
             {
               bondViewer->setBondSelection(pickedObject);
               reloadData();
@@ -760,22 +761,25 @@ void RenderStackedWidget::ShowContextMenu(const QPoint &pos)
 // reload-data but also injects the selected frames
 void RenderStackedWidget::reloadRenderData()
 {
-  _iraspa_structures = _project.lock()->sceneList()->selectediRASPAStructures();
-
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
-  for(std::vector<std::shared_ptr<iRASPAObject>> v : _iraspa_structures)
+  if(std::shared_ptr<ProjectStructure> project = _project.lock())
   {
-    std::vector<std::shared_ptr<RKRenderStructure>> r{};
-    std::transform(v.begin(),v.end(),std::back_inserter(r),
-                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
-    render_structures.push_back(r);
-  }
+    _iraspa_structures = project->sceneList()->selectediRASPAStructures();
 
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
-  {
-    widget->setRenderStructures(render_structures);
-    widget->reloadRenderData();
-    widget->redraw();
+    std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
+    for(std::vector<std::shared_ptr<iRASPAObject>> v : _iraspa_structures)
+    {
+      std::vector<std::shared_ptr<RKRenderStructure>> r{};
+      std::transform(v.begin(),v.end(),std::back_inserter(r),
+                     [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+      render_structures.push_back(r);
+    }
+
+    if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+    {
+      widget->setRenderStructures(render_structures);
+      widget->reloadRenderData();
+      widget->redraw();
+    }
   }
 }
 

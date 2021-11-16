@@ -186,11 +186,11 @@ std::vector<RKInPerInstanceAttributesAtoms> ProteinCrystal::renderAtoms() const
 
   std::vector<RKInPerInstanceAttributesAtoms> atomData = std::vector<RKInPerInstanceAttributesAtoms>();
 
-  uint32_t asymmetricAtomIndex = 0;
   for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
+      uint32_t asymmetricAtomIndex = atom->asymmetricIndex();
       bool isVisible = atom->isVisible();
       double w = isVisible ? 1.0 : -1.0;
 
@@ -226,7 +226,6 @@ std::vector<RKInPerInstanceAttributesAtoms> ProteinCrystal::renderAtoms() const
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;

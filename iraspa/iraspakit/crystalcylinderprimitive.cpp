@@ -196,7 +196,6 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalCylinderPrimitive::renderCrys
               {
                 for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
                 {
-
                   float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), 1.0);
 
                   RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
@@ -334,11 +333,11 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalCylinderPrimitive::renderSele
   double3 contentShift = _cell->contentShift();
   bool3 contentFlip = _cell->contentFlip();
 
-  uint32_t asymmetricAtomIndex = 0;
   for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
+      uint32_t asymmetricAtomIndex = atom->asymmetricIndex();
       bool isVisible = atom->isVisible();
 
       if(isVisible)
@@ -361,7 +360,6 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalCylinderPrimitive::renderSele
               {
                 for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
                 {
-
                   float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), 1.0);
 
                   RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
@@ -373,7 +371,6 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalCylinderPrimitive::renderSele
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;

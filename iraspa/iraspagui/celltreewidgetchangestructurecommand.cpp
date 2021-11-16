@@ -99,7 +99,6 @@ void CellTreeWidgetChangeStructureCommand::redo()
   {
     switch(_value)
     {
-
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::crystal):
       {
         iraspa_structure->setObject(createiRASPAObject<Crystal>(iraspa_structure), ObjectType::crystal);

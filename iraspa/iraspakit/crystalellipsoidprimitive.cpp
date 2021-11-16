@@ -331,11 +331,11 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderSel
   double3 contentShift = _cell->contentShift();
   bool3 contentFlip = _cell->contentFlip();
 
-  uint32_t asymmetricAtomIndex = 0;
   for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
+      uint32_t asymmetricAtomIndex = atom->asymmetricIndex();
       bool isVisible = atom->isVisible();
 
       if(isVisible)
@@ -369,7 +369,6 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderSel
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;

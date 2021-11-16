@@ -229,11 +229,11 @@ std::vector<RKInPerInstanceAttributesAtoms> CylinderPrimitive::renderSelectedPri
 
   std::set<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->selectedTreeNodes();
 
-  uint32_t asymmetricAtomIndex = 0;
   for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
+      uint32_t asymmetricAtomIndex = atom->asymmetricIndex();
       bool isVisible = atom->isVisible();
 
       if(isVisible)
@@ -261,7 +261,6 @@ std::vector<RKInPerInstanceAttributesAtoms> CylinderPrimitive::renderSelectedPri
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;

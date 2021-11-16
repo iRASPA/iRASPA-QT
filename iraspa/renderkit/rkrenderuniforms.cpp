@@ -104,12 +104,11 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       break;
     }
 
+    this->sceneIdentifier = int32_t(sceneIdentifier);
+    this->MovieIdentifier = int32_t(movieIdentifier);
+
     if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
     {
-      this->sceneIdentifier = int32_t(sceneIdentifier);
-      this->MovieIdentifier = int32_t(movieIdentifier);
-
-
       this->colorAtomsWithBondColor = source->colorAtomsWithBondColor();
       this->atomScaleFactor = float(source->atomScaleFactor());
 
