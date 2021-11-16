@@ -271,7 +271,7 @@
    <item>
     <layout class="QGridLayout" name="gridLayout_7">
      <item row="1" column="2">
-      <widget class="QSlider" name="primitiveNumberOfSidesSlider">
+      <widget class="QIntegerSlider" name="primitiveNumberOfSidesSlider">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -912,14 +912,19 @@
    <header>customdoublespinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>QDoubleSlider</class>
+   <class>QIntegerSlider</class>
    <extends>QSlider</extends>
-   <header>qdoubleslider.h</header>
+   <header>qintegerslider.h</header>
   </customwidget>
   <customwidget>
    <class>SelectColorButton</class>
    <extends>QPushButton</extends>
    <header>selectcolorbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QDoubleSlider</class>
+   <extends>QSlider</extends>
+   <header>qdoubleslider.h</header>
   </customwidget>
   <customwidget>
    <class>CustomIntSpinBox</class>

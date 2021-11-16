@@ -42,12 +42,6 @@
   #include "wingdi.h"
 #endif
 
-//#if defined(Q_OS_LINUX)
-//  #if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
-//    #include <QtPlatformHeaders/QGLXNativeContext>
-//  #endif
-//#endif
-
 OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGLWindow(),
     _isOpenGLInitialized(false),
     _isOpenCLInitialized(false),

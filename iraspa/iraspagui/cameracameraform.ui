@@ -651,7 +651,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSlider" name="EulerAngleYSlider">
+            <widget class="QIntegerSlider" name="EulerAngleYSlider">
              <property name="minimumSize">
               <size>
                <width>60</width>
@@ -1103,6 +1103,11 @@
    <class>CustomDoubleSpinBox</class>
    <extends>QDoubleSpinBox</extends>
    <header>customdoublespinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QIntegerSlider</class>
+   <extends>QSlider</extends>
+   <header>qintegerslider.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

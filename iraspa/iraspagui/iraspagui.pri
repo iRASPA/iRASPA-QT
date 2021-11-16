@@ -26,6 +26,7 @@ SOURCES += \
     $$PWD/projecttreeviewproxystyle.cpp \
     $$PWD/projecttreeviewstyleditemdelegate.cpp \
     $$PWD/qdoubledial.cpp \
+    $$PWD/qintegerslider.cpp \
     $$PWD/renderstackedwidget.cpp \
     $$PWD/aboutdialog.cpp \
     $$PWD/iraspatoolbar.cpp \
@@ -114,6 +115,7 @@ HEADERS += \
     $$PWD/projecttreeviewproxystyle.h \
     $$PWD/projecttreeviewstyleditemdelegate.h \
     $$PWD/qdoubledial.h \
+    $$PWD/qintegerslider.h \
     $$PWD/renderstackedwidget.h \
     $$PWD/aboutdialog.h \
     $$PWD/iraspatoolbar.h \
