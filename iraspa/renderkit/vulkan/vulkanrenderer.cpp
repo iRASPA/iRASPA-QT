@@ -1356,6 +1356,11 @@ void VulkanRenderer::updateUniformBuffer(std::shared_ptr<RKCamera> camera)
 {
   double4x4 projectionMatrix = double4x4();
   double4x4 modelViewMatrix = double4x4(1.0);
+  double4x4 viewMatrix = double4x4(1.0);
+  double4x4 modelMatrix = double4x4(1.0);
+  double4x4 axesModelViewMatrix = double4x4(1.0);
+  double4x4 axesProjectionMatrix = double4x4(1.0);
+  bool isOrthographic = true;
   double bloomLevel = 1.0;;
   double bloomPulse = 1.0;
 
@@ -1363,8 +1368,14 @@ void VulkanRenderer::updateUniformBuffer(std::shared_ptr<RKCamera> camera)
   modelViewMatrix = camera->modelViewMatrix();
   bloomLevel = camera->bloomLevel();
   bloomPulse = camera->bloomPulse();
+  modelMatrix = camera->modelMatrix();
+  viewMatrix = camera->viewMatrix();
+  axesModelViewMatrix = camera->axesModelViewMatrix();
+  axesProjectionMatrix = camera->axesProjectionMatrix(1.0);
+  isOrthographic = camera->isOrthographic();
 
-  RKTransformationUniforms transformationUniforms = RKTransformationUniforms(projectionMatrix, modelViewMatrix, bloomLevel, bloomPulse, 1);
+
+  RKTransformationUniforms transformationUniforms = RKTransformationUniforms(projectionMatrix, modelViewMatrix, modelMatrix, viewMatrix, axesProjectionMatrix, axesModelViewMatrix, isOrthographic, bloomLevel, bloomPulse, 1);
 
   vkDeviceWaitIdle(device);
   void* data;

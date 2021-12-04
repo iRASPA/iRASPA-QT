@@ -87,8 +87,8 @@ macx{
 
     #QMAKE_CXXFLAGS += -Wl,--stack,4194304
     QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
-    INCLUDEPATH += $$system(python-config --include | sed -e 's:-I::g')
-    QMAKE_LFLAGS += -framework Python -framework Accelerate
+    INCLUDEPATH += $$system(/usr/local/bin/python3-config --include | sed -e 's:-I::g')
+    QMAKE_LFLAGS +=  -framework OpenCL -framework Accelerate /usr/local/Cellar/python@3.10/3.10.0_2/Frameworks/Python.framework/Versions/3.10/lib/libpython3.10.dylib
     LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
   }
 

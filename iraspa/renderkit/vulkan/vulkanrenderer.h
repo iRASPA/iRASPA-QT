@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+
 #include <QByteArray>
 
 #ifndef NOMINMAX
@@ -19,6 +20,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "rkrenderuniforms.h"
+#include "rkcamera.h"
 
 struct QueueFamilyIndices
 {
