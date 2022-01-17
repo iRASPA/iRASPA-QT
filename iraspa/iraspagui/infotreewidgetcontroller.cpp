@@ -1859,7 +1859,7 @@ void InfoTreeWidgetController::setCreationTemperature(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationTemperature(name);
     }
@@ -1897,7 +1897,7 @@ void InfoTreeWidgetController::setCreationTemperatureScale(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
       {
         infoViewer->setCreationTemperatureScale(Structure::TemperatureScale(value));
       }
@@ -1934,7 +1934,7 @@ void InfoTreeWidgetController::setCreationPressure(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationPressure(name);
     }
@@ -1972,7 +1972,7 @@ void InfoTreeWidgetController::setCreationPressureScale(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
       {
         infoViewer->setCreationPressureScale(Structure::PressureScale(value));
       }
@@ -2011,7 +2011,7 @@ void InfoTreeWidgetController::setCreationMethod(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
       {
         infoViewer->setCreationMethod(Structure::CreationMethod(value));
       }
@@ -2050,7 +2050,7 @@ void InfoTreeWidgetController::setCreationRelaxUnitCell(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
       {
         infoViewer->setCreationUnitCellRelaxationMethod(Structure::UnitCellRelaxationMethod(value));
       }
@@ -2087,7 +2087,7 @@ void InfoTreeWidgetController::setCreationAtomicPositionsSoftwarePackage(QString
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationAtomicPositionsSoftwarePackage(name);
     }
@@ -2125,7 +2125,7 @@ void InfoTreeWidgetController::setCreationAtomicPositionsAlgorithm(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
       {
         infoViewer->setCreationAtomicPositionsIonsRelaxationAlgorithm(Structure::IonsRelaxationAlgorithm(value));
       }
@@ -2164,7 +2164,7 @@ void InfoTreeWidgetController::setCreationAtomicPositionsEigenvalues(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
       {
         infoViewer->setCreationAtomicPositionsIonsRelaxationCheck(Structure::IonsRelaxationCheck(value));
       }
@@ -2201,7 +2201,7 @@ void InfoTreeWidgetController::setCreationAtomicPositionsForceField(QString name
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationAtomicPositionsForcefield(name);
     }
@@ -2237,7 +2237,7 @@ void InfoTreeWidgetController::setCreationAtomicPositionsForceFieldDetails(QStri
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationAtomicPositionsForcefieldDetails(name);
     }
@@ -2273,7 +2273,7 @@ void InfoTreeWidgetController::setCreationAtomicChargesSoftwarePackage(QString n
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationAtomicChargesSoftwarePackage(name);
     }
@@ -2309,7 +2309,7 @@ void InfoTreeWidgetController::setCreationAtomicChargesAlgorithm(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationAtomicChargesAlgorithms(name);
     }
@@ -2346,7 +2346,7 @@ void InfoTreeWidgetController::setCreationAtomicChargesForceField(QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationAtomicChargesForcefield(name);
     }
@@ -2382,7 +2382,7 @@ void InfoTreeWidgetController::setCreationAtomicChargesForceFieldDetails(QString
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCreationAtomicChargesForcefieldDetails(name);
     }
@@ -2836,7 +2836,7 @@ void InfoTreeWidgetController::setCreationExperimentalRadiationType(const QStrin
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementRadiation(type);
     }
@@ -2872,7 +2872,7 @@ void InfoTreeWidgetController::setCreationExperimentalWaveLength(const QString& 
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementWaveLength(wavelength);
     }
@@ -2909,7 +2909,7 @@ void InfoTreeWidgetController::setCreationExperimentalMeasuermentThetaMin(const 
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementThetaMin(thetamin);
     }
@@ -2945,7 +2945,7 @@ void InfoTreeWidgetController::setCreationExperimentalMeasuermentThetaMax(const 
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementThetaMax(thetamax);
     }
@@ -2981,7 +2981,7 @@ void InfoTreeWidgetController::setCreationExperimentalMeasuermentHMin(const QStr
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementIndexLimitsHmin(hmin);
     }
@@ -3017,7 +3017,7 @@ void InfoTreeWidgetController::setCreationExperimentalMeasuermentHMax(const QStr
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementIndexLimitsHmax(hmax);
     }
@@ -3053,7 +3053,7 @@ void InfoTreeWidgetController::setCreationExperimentalMeasuermentKMin(const QStr
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementIndexLimitsKmin(kmin);
     }
@@ -3089,7 +3089,7 @@ void InfoTreeWidgetController::setCreationExperimentalMeasuermentKMax(const QStr
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementIndexLimitsKmax(kmax);
     }
@@ -3125,7 +3125,7 @@ void InfoTreeWidgetController::setCreationExperimentalMeasuermentLMin(const QStr
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementIndexLimitsLmin(lmin);
     }
@@ -3161,7 +3161,7 @@ void InfoTreeWidgetController::setCreationExperimentalMeasuermentLMax(const QStr
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementIndexLimitsLmax(lmax);
     }
@@ -3197,7 +3197,7 @@ void InfoTreeWidgetController::setCreationExperimentalNumberOfReflections(const 
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementNumberOfSymmetryIndependentReflections(reflections);
     }
@@ -3233,7 +3233,7 @@ void InfoTreeWidgetController::setCreationExperimentalSoftware(const QString& so
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementSoftware(software);
     }
@@ -3269,7 +3269,7 @@ void InfoTreeWidgetController::setCreationExperimentalDetails(const QString& det
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementRefinementDetails(details);
     }
@@ -3305,7 +3305,7 @@ void InfoTreeWidgetController::setCreationExperimentalGoodnessOfFit(const QStrin
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementGoodnessOfFit(goodness);
     }
@@ -3341,7 +3341,7 @@ void InfoTreeWidgetController::setCreationExperimentalFinalIndices(const QString
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementRFactorGt(indices);
     }
@@ -3377,7 +3377,7 @@ void InfoTreeWidgetController::setCreationExperimentalRIndicest(const QString& i
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setExperimentalMeasurementRFactorAll(indices);
     }
@@ -3501,7 +3501,7 @@ void InfoTreeWidgetController::setChemicalFormulaMoiety(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setChemicalFormulaMoiety(name);
     }
@@ -3537,7 +3537,7 @@ void InfoTreeWidgetController::setChemicalFormulaSum(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setChemicalFormulaSum(name);
     }
@@ -3573,7 +3573,7 @@ void InfoTreeWidgetController::setChemicalNameSystematic(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setChemicalNameSystematic(name);
     }
@@ -3792,7 +3792,7 @@ void InfoTreeWidgetController::setCitationArticleTitle(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCitationArticleTitle(name);
     }
@@ -3828,7 +3828,7 @@ void InfoTreeWidgetController::setCitationJournalTitle(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCitationJournalTitle(name);
     }
@@ -3864,7 +3864,7 @@ void InfoTreeWidgetController::setCitationArticleAuthors(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCitationAuthors(name);
     }
@@ -3900,7 +3900,7 @@ void InfoTreeWidgetController::setCitationJournalVolume(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCitationJournalVolume(name);
     }
@@ -3936,7 +3936,7 @@ void InfoTreeWidgetController::setCitationJournalNumber(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCitationJournalNumber(name);
     }
@@ -3972,7 +3972,7 @@ void InfoTreeWidgetController::setCitationPublicationDate(QDate date)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCitationPublicationDate(date);
     }
@@ -4008,7 +4008,7 @@ void InfoTreeWidgetController::setCitationDOI(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCitationDOI(name);
     }
@@ -4044,7 +4044,7 @@ void InfoTreeWidgetController::setCitationDatabaseCodes(const QString name)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<InfoEditor> infoViewer = std::dynamic_pointer_cast<InfoEditor>(iraspa_structure->object()))
     {
       infoViewer->setCitationDatebaseCodes(name);
     }

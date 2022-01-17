@@ -195,6 +195,8 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
   std::vector<cl_mem> images;
   std::vector<cl_mem> buffers;
 
+  qDebug() << "size: " << size;
+
   if(!_isOpenCLInitialized)
   {
     if(_logReporter)
@@ -213,88 +215,29 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
     return 0;
   }
 
-  // Make the two first buffers use INT8
-  cl_image_format imageFormat{CL_RGBA,CL_UNSIGNED_INT8};
-  cl_image_desc imageDescriptor{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
-
-  images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
-  if (err != CL_SUCCESS)
+  for(int i=1; i<int(ceil(log2(double(size)))); i++)
   {
-    qWarning("Error clCreateImage:  %d\n",err);
-    return 0;
-  }
-
-
-  bufferSize /= 2;
-  imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT8};
-  imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
-  images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
-  if (err != CL_SUCCESS)
-  {
-    QString message = QString("OpenCL energy surface: error in clCreateImage (error: %1)").arg(QString::number(err));
-    if(_logReporter)
+    cl_image_format imageFormat{};
+    switch(i)
     {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-    }
-    return 0;
-  }
-
-  bufferSize /= 2;
-  // And the third, fourth and fifth INT16
-  imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT16};
-  imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
-  images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
-  if (err != CL_SUCCESS)
-  {
-    QString message = QString("OpenCL energy surface: error in clCreateImage (error: %1)").arg(QString::number(err));
-    if(_logReporter)
-    {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-    }
-    return 0;
-  }
-
-  bufferSize /= 2;
-  imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT16};
-  imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
-  images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
-  if (err != CL_SUCCESS)
-  {
-    QString message = QString("OpenCL energy surface: error in clCreateImage (error: %1)").arg(QString::number(err));
-    if(_logReporter)
-    {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-    }
-    return 0;
-  }
-
-  bufferSize /= 2;
-  imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT16};
-  imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
-  images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
-  if (err != CL_SUCCESS)
-  {
-    QString message = QString("OpenCL energy surface: error in clCreateImage (error: %1)").arg(QString::number(err));
-    if(_logReporter)
-    {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
-    }
-    return 0;
-  }
-
-  bufferSize /= 2;
-
-  // The rest will use INT32
-  for(int i=5; i<int(ceil(log2(double(size)))); i++)
-  {
-    // Image cant be 1x1x1
-    if(bufferSize == 1)
-    {
-      bufferSize = 2;
+    case 1:
+      imageFormat = cl_image_format{CL_RGBA,CL_UNSIGNED_INT8};
+      break;
+    case 2:
+      imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT8};
+      break;
+    case 3:
+      imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT16};
+      break;
+    case 4:
+      imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT16};
+      break;
+    default:
+      imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT32};
+      break;
     }
 
-    imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT32};
-    imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
+    cl_image_desc imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
     images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
     if (err != CL_SUCCESS)
     {
@@ -305,12 +248,27 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
       }
       return 0;
     }
+    bufferSize /= 2;
   }
 
-  imageFormat = cl_image_format{CL_R, CL_FLOAT};
-  imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, size, size, size, 0, 0, 0, 0, 0, nullptr};
+  // last one should always be CL_UNSIGNED_INT32 (because the sum is read back as integers)
+  cl_image_format imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT32};
+  cl_image_desc imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
+  images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
+  if (err != CL_SUCCESS)
+  {
+    QString message = QString("OpenCL energy surface: error in clCreateImage (error: %1)").arg(QString::number(err));
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+    }
+    return 0;
+  }
+
 
   // Transfer dataset to device
+  imageFormat = cl_image_format{CL_R, CL_FLOAT};
+  imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, size, size, size, 0, 0, 0, 0, 0, nullptr};
   cl_mem rawData = clCreateImage(_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, &imageFormat, &imageDescriptor, voxels->data(), nullptr);
   if (err != CL_SUCCESS)
   {
@@ -326,10 +284,13 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
   //===================================================================================================================================
 
   cl_float clIsoValue = cl_float(isoValue);
+  cl_int4 clDimensions = {{int32_t(40),int32_t(40),int32_t(40),1}};
 
   clSetKernelArg(_classifyCubesKernel,  0, sizeof(cl_mem), &images[0]);
   clSetKernelArg(_classifyCubesKernel,  1, sizeof(cl_mem), &rawData);
-  clSetKernelArg(_classifyCubesKernel,  2, sizeof(cl_float), &clIsoValue);
+  clSetKernelArg(_classifyCubesKernel,  2, sizeof(cl_int4), &clDimensions);
+  clSetKernelArg(_classifyCubesKernel,  3, sizeof(cl_float), &clIsoValue);
+
 
   clGetKernelWorkGroupInfo(_classifyCubesKernel, _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_workGroupSize, nullptr);
 
@@ -337,6 +298,15 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
   size_t global_work_size[3] = {size, size, size};
 
   err = clEnqueueNDRangeKernel(_clCommandQueue, _classifyCubesKernel, 3, nullptr, global_work_size, nullptr, 0, nullptr, nullptr);
+  if (err != CL_SUCCESS)
+  {
+    QString message = QString("OpenCL energy surface: error in clEnqueueNDRangeKernel  1 (error: %1)").arg(QString::number(err));
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
+    }
+    return -1;
+  }
 
   // histoPyramidConstruction
   //===================================================================================================================================
@@ -350,14 +320,13 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
   err = clEnqueueNDRangeKernel(_clCommandQueue, _constructHPLevelKernel, 3, nullptr, global_work_size2, nullptr, 0, nullptr, nullptr);
   if (err != CL_SUCCESS)
   {
-    QString message = QString("OpenCL energy surface: error in clEnqueueNDRangeKernel (error: %1)").arg(QString::number(err));
+    QString message = QString("OpenCL energy surface: error in clEnqueueNDRangeKernel 2 (error: %1)").arg(QString::number(err));
     if(_logReporter)
     {
       _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
     }
-    return 0;
+    return -1;
   }
-
 
   size_t previous = size / 2;
   // Run level 2 to top level
@@ -371,12 +340,12 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
     err = clEnqueueNDRangeKernel(_clCommandQueue, _constructHPLevelKernel, 3, nullptr, global_work_size3, nullptr, 0, nullptr, nullptr);
     if (err != CL_SUCCESS)
     {
-      QString message = QString("OpenCL energy surface: error in clEnqueueNDRangeKernel (error: %1)").arg(QString::number(err));
+      QString message = QString("OpenCL energy surface: error in clEnqueueNDRangeKernel 3 (error: %1)").arg(QString::number(err));
       if(_logReporter)
       {
         _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
       }
-      return 0;
+      return -1;
     }
   }
 
@@ -396,12 +365,14 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
     {
       _logReporter->logMessage(LogReporting::ErrorLevel::error, message);
     }
-    return 0;
+    return -1;
   }
   clFinish(_clCommandQueue);
 
   cl_int sum2 = sum[0] + sum[1] + sum[2] + sum[3] + sum[4] + sum[5] + sum[6] + sum[7];
   int numberOfTriangles = int(sum2);
+
+  qDebug() << "Foudn triangles" << numberOfTriangles;
 
   if(numberOfTriangles == 0)
   {
@@ -446,9 +417,11 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
       }
     }
 
-    clSetKernelArg(_traverseHPKernel, static_cast<cl_uint>(i), sizeof(cl_mem), &VBOBuffer);  // CHECK, was &v[0]
-    clSetKernelArg(_traverseHPKernel, static_cast<cl_uint>(i+1), sizeof(cl_float), &clIsoValue);
-    clSetKernelArg(_traverseHPKernel, static_cast<cl_uint>(i+2), sizeof(cl_int), &clSum);
+    clSetKernelArg(_traverseHPKernel, static_cast<cl_uint>(i), sizeof(cl_mem), &VBOBuffer);
+    clSetKernelArg(_traverseHPKernel, static_cast<cl_uint>(i+1), sizeof(cl_int4), &clDimensions);
+    clSetKernelArg(_traverseHPKernel, static_cast<cl_uint>(i+2), sizeof(cl_float), &clIsoValue);
+    clSetKernelArg(_traverseHPKernel, static_cast<cl_uint>(i+3), sizeof(cl_int), &clSum);
+
 
 
     if(_glInteroperability)
@@ -464,7 +437,7 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
       }
     }
 
-    // Increase the global_work_size so that it is divideable by 64
+    // Increase the global_work_size so that it is divideable by 32
     size_t local_work_size[1] = {size_t(64)};
     int sizeInt = sum + 64 - (sum - 64*(numberOfTriangles / 64));
     size_t global_work_size4[1] = {size_t(sizeInt)};
@@ -474,11 +447,12 @@ int SKOpenCLMarchingCubes::computeIsosurface(size_t size, std::vector<cl_float> 
 
     if (err != CL_SUCCESS)
     {
-      QString message = QString("OpenCL energy surface: error in clEnqueueNDRangeKernel (error: %1)").arg(QString::number(err));
+      QString message = QString("OpenCL energy surface: error in clEnqueueNDRangeKernel 4 (error: %1)").arg(QString::number(err));
       if(_logReporter)
       {
         _logReporter->logMessage(LogReporting::ErrorLevel::warning, message);
       }
+      return -1;
     }
 
 
@@ -527,7 +501,7 @@ std::string SKOpenCLMarchingCubes::_marchingCubesKernelPart = std::string(R"foo(
 
 #pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable
 
-#define SIZE 128
+#define SIZE 64
 
 __constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST;
 
@@ -877,14 +851,14 @@ __kernel void constructHPLevel(
 
   int4 writePos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
   int4 readPos = writePos*2;
-  int writeValue = read_imagei(readHistoPyramid, sampler, readPos&(SIZE-1)).x +   // 0
-  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[1])&(SIZE-1)).x + // 1
-  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[2])&(SIZE-1)).x + // 2
-  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[3])&(SIZE-1)).x + // 3
-  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[4])&(SIZE-1)).x + // 4
-  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[5])&(SIZE-1)).x + // 5
-  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[6])&(SIZE-1)).x + // 6
-  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[7])&(SIZE-1)).x;  // 7
+  int writeValue = read_imagei(readHistoPyramid, sampler, readPos).x + // 0
+  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[1])).x + // 1
+  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[2])).x + // 2
+  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[3])).x + // 3
+  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[4])).x + // 4
+  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[5])).x + // 5
+  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[6])).x + // 6
+  read_imagei(readHistoPyramid, sampler, (readPos+cubeOffsets[7])).x;  // 7
 
   write_imagei(writeHistoPyramid, writePos, writeValue);
 }
@@ -892,14 +866,14 @@ __kernel void constructHPLevel(
 int4 scanHPLevel(int target, __read_only image3d_t hp, int4 current) {
 
   int8 neighbors = {
-    read_imagei(hp, sampler, current&(SIZE-1)).x,
-    read_imagei(hp, sampler, (current + cubeOffsets[1])&(SIZE-1)).x,
-    read_imagei(hp, sampler, (current + cubeOffsets[2])&(SIZE-1)).x,
-    read_imagei(hp, sampler, (current + cubeOffsets[3])&(SIZE-1)).x,
-    read_imagei(hp, sampler, (current + cubeOffsets[4])&(SIZE-1)).x,
-    read_imagei(hp, sampler, (current + cubeOffsets[5])&(SIZE-1)).x,
-    read_imagei(hp, sampler, (current + cubeOffsets[6])&(SIZE-1)).x,
-    read_imagei(hp, sampler, (current + cubeOffsets[7])&(SIZE-1)).x
+    read_imagei(hp, sampler, current).x,
+    read_imagei(hp, sampler, (current + cubeOffsets[1])).x,
+    read_imagei(hp, sampler, (current + cubeOffsets[2])).x,
+    read_imagei(hp, sampler, (current + cubeOffsets[3])).x,
+    read_imagei(hp, sampler, (current + cubeOffsets[4])).x,
+    read_imagei(hp, sampler, (current + cubeOffsets[5])).x,
+    read_imagei(hp, sampler, (current + cubeOffsets[6])).x,
+    read_imagei(hp, sampler, (current + cubeOffsets[7])).x
   };
 
   int acc = current.s3 + neighbors.s0;
@@ -919,7 +893,6 @@ int4 scanHPLevel(int target, __read_only image3d_t hp, int4 current) {
   cmp.s6 = acc <= target;
   cmp.s7 = 0;
 
-
   current += cubeOffsets[(cmp.s0+cmp.s1+cmp.s2+cmp.s3+cmp.s4+cmp.s5+cmp.s6+cmp.s7)];
   current.s0 = current.s0*2;
   current.s1 = current.s1*2;
@@ -934,18 +907,19 @@ int4 scanHPLevel(int target, __read_only image3d_t hp, int4 current) {
   cmp.s6*neighbors.s6 +
   cmp.s7*neighbors.s7;
   return current;
-
 }
-
-
 
 __kernel void traverseHP(
                          __read_only image3d_t hp0, // Largest HP
                          __read_only image3d_t hp1,
                          __read_only image3d_t hp2,
                          __read_only image3d_t hp3,
+#if SIZE > 16
                          __read_only image3d_t hp4,
+#endif
+#if SIZE > 32
                          __read_only image3d_t hp5,
+#endif
 #if SIZE > 64
                          __read_only image3d_t hp6,
 #endif
@@ -960,6 +934,7 @@ __kernel void traverseHP(
 #endif
                          __read_only image3d_t rawData,
                          __global float * VBOBuffer,
+                         __private int4 dimensions,
                          __private float isolevel,
                          __private int sum
                          ) {
@@ -981,8 +956,12 @@ __kernel void traverseHP(
 #if SIZE > 64
   cubePosition = scanHPLevel(target, hp6, cubePosition);
 #endif
+#if SIZE > 32
   cubePosition = scanHPLevel(target, hp5, cubePosition);
+#endif
+#if SIZE > 16
   cubePosition = scanHPLevel(target, hp4, cubePosition);
+#endif
   cubePosition = scanHPLevel(target, hp3, cubePosition);
   cubePosition = scanHPLevel(target, hp2, cubePosition);
   cubePosition = scanHPLevel(target, hp1, cubePosition);
@@ -992,7 +971,7 @@ __kernel void traverseHP(
   cubePosition.z = cubePosition.z / 2;
 
   char vertexNr = 0;
-  const int4 cubeData = read_imagei(hp0, sampler, cubePosition&(SIZE-1));
+  const int4 cubeData = read_imagei(hp0, sampler, cubePosition);
 
   // max 5 triangles
   for(int i = (target-cubePosition.s3)*3; i < (target-cubePosition.s3+1)*3; i++)
@@ -1004,32 +983,32 @@ __kernel void traverseHP(
 
     // compute normal
     const float4 forwardDifference0 = (float4)(
-                                               (float)(-read_imagef(rawData, sampler, (int4)(point0.x+1, point0.y,   point0.z,   0)&(SIZE-1)).x+
-                                                       read_imagef(rawData, sampler, (int4)(point0.x-1, point0.y,   point0.z,   0)&(SIZE-1)).x),
-                                               (float)(-read_imagef(rawData, sampler, (int4)(point0.x,   point0.y+1, point0.z,   0)&(SIZE-1)).x+
-                                                       read_imagef(rawData, sampler, (int4)(point0.x,   point0.y-1, point0.z,   0)&(SIZE-1)).x),
-                                               (float)(-read_imagef(rawData, sampler, (int4)(point0.x,   point0.y,   point0.z+1, 0)&(SIZE-1)).x+
-                                                       read_imagef(rawData, sampler, (int4)(point0.x,   point0.y,   point0.z-1, 0)&(SIZE-1)).x),
+                                               (float)(-read_imagef(rawData, sampler, (int4)(point0.x+1, point0.y,   point0.z,   0) % dimensions).x+
+                                                        read_imagef(rawData, sampler, (int4)(point0.x-1, point0.y,   point0.z,   0) % dimensions).x),
+                                               (float)(-read_imagef(rawData, sampler, (int4)(point0.x,   point0.y+1, point0.z,   0) % dimensions).x+
+                                                        read_imagef(rawData, sampler, (int4)(point0.x,   point0.y-1, point0.z,   0) % dimensions).x),
+                                               (float)(-read_imagef(rawData, sampler, (int4)(point0.x,   point0.y,   point0.z+1, 0) % dimensions).x+
+                                                        read_imagef(rawData, sampler, (int4)(point0.x,   point0.y,   point0.z-1, 0) % dimensions).x),
                                                0.0f
                                                );
     const float4 forwardDifference1 = (float4)(
-                                               (float)(-read_imagef(rawData, sampler, (int4)(point1.x+1, point1.y,   point1.z,   0)&(SIZE-1)).x+
-                                                       read_imagef(rawData, sampler, (int4)(point1.x-1, point1.y,   point1.z,   0)&(SIZE-1)).x),
-                                               (float)(-read_imagef(rawData, sampler, (int4)(point1.x,   point1.y+1, point1.z,   0)&(SIZE-1)).x+
-                                                       read_imagef(rawData, sampler, (int4)(point1.x,   point1.y-1, point1.z,   0)&(SIZE-1)).x),
-                                               (float)(-read_imagef(rawData, sampler, (int4)(point1.x,   point1.y,   point1.z+1, 0)&(SIZE-1)).x+
-                                                       read_imagef(rawData, sampler, (int4)(point1.x,   point1.y,   point1.z-1, 0)&(SIZE-1)).x),
+                                               (float)(-read_imagef(rawData, sampler, (int4)(point1.x+1, point1.y,   point1.z,   0) % dimensions).x+
+                                                        read_imagef(rawData, sampler, (int4)(point1.x-1, point1.y,   point1.z,   0) % dimensions).x),
+                                               (float)(-read_imagef(rawData, sampler, (int4)(point1.x,   point1.y+1, point1.z,   0) % dimensions).x+
+                                                        read_imagef(rawData, sampler, (int4)(point1.x,   point1.y-1, point1.z,   0) % dimensions).x),
+                                               (float)(-read_imagef(rawData, sampler, (int4)(point1.x,   point1.y,   point1.z+1, 0) % dimensions).x+
+                                                        read_imagef(rawData, sampler, (int4)(point1.x,   point1.y,   point1.z-1, 0) % dimensions).x),
                                                0.0f
                                                );
 
 
-    const float value0 = read_imagef(rawData, sampler, (int4)(point0.x, point0.y, point0.z, 0)).x;
+    const float value0 = read_imagef(rawData, sampler, (int4)(point0.x, point0.y, point0.z, 0) % dimensions).x;
     const float diff = native_divide(
                                      (float)(isolevel-value0),
-                                     (float)(read_imagef(rawData, sampler, (int4)(point1.x, point1.y, point1.z, 0)).x - value0));
+                                     (float)(read_imagef(rawData, sampler, (int4)(point1.x, point1.y, point1.z, 0) % dimensions).x - value0));
 
     const float4 vertex = (float4)(point0.x, point0.y, point0.z, 1.0f) + ((float4)(point1.x, point1.y, point1.z,0.0f) - (float4)(point0.x, point0.y, point0.z,0.0f)) * diff;
-    const float4 scaledVertex = (float4)(vertex.x/(float)(SIZE-1),vertex.y/(float)(SIZE-1),vertex.z/(float)(SIZE-1),1.0f);
+    const float4 scaledVertex = (float4)(vertex.x/(float)(dimensions.x),vertex.y/(float)(dimensions.y),vertex.z/(float)(dimensions.z),1.0f);
 
     const float4 normal = forwardDifference0 + (forwardDifference1 - forwardDifference0) * diff;
 
@@ -1040,28 +1019,32 @@ __kernel void traverseHP(
   }
 }
 
-
-
 // The first part of the algorithm uses a table (edgeTable) which maps the vertices under the isosurface to the intersecting edges.
 // An 8 bit index is formed where each bit corresponds to a vertex.
 __kernel void classifyCubes(__write_only image3d_t histoPyramid,
                             __read_only image3d_t rawData,
+                            __private int4 dimensions,
                             __private float isolevel)
 {
   int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
 
+  if(any(pos>=dimensions))
+  {
+    write_imageui(histoPyramid, pos, (uint4)(0, 0, 0, 0));
+    return;
+  }
+
   // Find cube class nr
   const float first = read_imagef(rawData, sampler, pos).x;
   const uchar cubeindex =
-  ((first > isolevel)) |
-  ((read_imagef(rawData, sampler, (pos + cubeOffsets[1])&(SIZE-1)).x > isolevel) << 1) |
-  ((read_imagef(rawData, sampler, (pos + cubeOffsets[3])&(SIZE-1)).x > isolevel) << 2) |
-  ((read_imagef(rawData, sampler, (pos + cubeOffsets[2])&(SIZE-1)).x > isolevel) << 3) |
-  ((read_imagef(rawData, sampler, (pos + cubeOffsets[4])&(SIZE-1)).x > isolevel) << 4) |
-  ((read_imagef(rawData, sampler, (pos + cubeOffsets[5])&(SIZE-1)).x > isolevel) << 5) |
-  ((read_imagef(rawData, sampler, (pos + cubeOffsets[7])&(SIZE-1)).x > isolevel) << 6) |
-  ((read_imagef(rawData, sampler, (pos + cubeOffsets[6])&(SIZE-1)).x > isolevel) << 7);
-
+       ((first > isolevel)) |
+       ((read_imagef(rawData, sampler, (pos + cubeOffsets[1]) % dimensions).x > isolevel) << 1) |
+       ((read_imagef(rawData, sampler, (pos + cubeOffsets[3]) % dimensions).x > isolevel) << 2) |
+       ((read_imagef(rawData, sampler, (pos + cubeOffsets[2]) % dimensions).x > isolevel) << 3) |
+       ((read_imagef(rawData, sampler, (pos + cubeOffsets[4]) % dimensions).x > isolevel) << 4) |
+       ((read_imagef(rawData, sampler, (pos + cubeOffsets[5]) % dimensions).x > isolevel) << 5) |
+       ((read_imagef(rawData, sampler, (pos + cubeOffsets[7]) % dimensions).x > isolevel) << 6) |
+       ((read_imagef(rawData, sampler, (pos + cubeOffsets[6]) % dimensions).x > isolevel) << 7);
 
   // Store number of triangles
   write_imageui(histoPyramid, pos, (uint4)(numberOfTriangles[cubeindex], cubeindex, first, 0));

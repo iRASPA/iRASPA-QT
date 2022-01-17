@@ -70,7 +70,7 @@ void DirectXWindow::redrawWithQuality(RKRenderQuality quality)
 
 }
 
-void DirectXWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void DirectXWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _renderStructures = structures;
 }
@@ -130,19 +130,19 @@ void DirectXWindow::reloadBackgroundImage()
 
 }
 
-void DirectXWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void DirectXWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }
-void DirectXWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void DirectXWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }
-void DirectXWindow::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void DirectXWindow::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }
-void DirectXWindow::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void DirectXWindow::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }

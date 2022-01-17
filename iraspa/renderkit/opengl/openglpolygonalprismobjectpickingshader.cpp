@@ -28,7 +28,7 @@ OpenGLPolygonalPrismObjectPickingShader::OpenGLPolygonalPrismObjectPickingShader
 }
 
 
-void OpenGLPolygonalPrismObjectPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLPolygonalPrismObjectPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

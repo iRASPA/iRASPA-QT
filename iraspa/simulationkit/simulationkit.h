@@ -31,6 +31,9 @@
 #include <skopenclmarchingcubes.h>
 #include <skopenclfindminmumenergygridunitcell.h>
 #include <skopenclvoidfractionunitcell.h>
+#include <skcomputeenergygrid.h>
+#include <skcomputeisosurface.h>
+#include <skcomputevoidfraction.h>
 #endif
 
 

@@ -49,115 +49,20 @@ Molecule::Molecule(std::shared_ptr<SKStructure> frame): Structure(frame)
   _atomsTreeController->setTags();
 }
 
-
-Molecule::Molecule(const std::shared_ptr<const Crystal> structure): Structure(structure)
+Molecule::Molecule(const std::shared_ptr<Object> object): Structure(object)
 {
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  convertAsymmetricAtomsToCartesian();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    if(!atomViewer->isFractional())
+    {
+      convertAsymmetricAtomsToFractional();
+      expandSymmetry();
+    }
+    _atomsTreeController->setTags();
+    reComputeBoundingBox();
+    computeBonds();
+  }
 }
-
-Molecule::Molecule(const std::shared_ptr<const MolecularCrystal> structure): Structure(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const Molecule> structure): Structure(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const ProteinCrystal> structure): Structure(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const Protein> structure): Structure(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const CrystalCylinderPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToCartesian();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const CrystalEllipsoidPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToCartesian();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const CrystalPolygonalPrismPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToCartesian();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const CylinderPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const EllipsoidPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const PolygonalPrismPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Molecule::Molecule(const std::shared_ptr<const GridVolume> volume): Structure(volume)
-{
-
-}
-
 
 
 std::shared_ptr<Object> Molecule::shallowClone()
@@ -402,9 +307,9 @@ std::set<int> Molecule::filterCartesianAtomPositions(std::function<bool(double3)
 }
 
 
-std::set<int> Molecule::filterCartesianBondPositions(std::function<bool(double3)> &closure)
+BondSelectionIndexSet Molecule::filterCartesianBondPositions(std::function<bool(double3)> &closure)
 {
-  std::set<int> data;
+  BondSelectionIndexSet data;
 
   if(_isVisible)
   {

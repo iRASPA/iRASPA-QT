@@ -84,7 +84,7 @@ void OpenGLAtomPerspectiveImposterShader::paintGL(std::vector<std::vector<GLuint
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _atomShader._numberOfDrawnAtoms[i][j]>0)
         {
@@ -216,7 +216,7 @@ void OpenGLAtomPerspectiveImposterShader::initializeVertexArrayObject()
   }
 }
 
-void OpenGLAtomPerspectiveImposterShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAtomPerspectiveImposterShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

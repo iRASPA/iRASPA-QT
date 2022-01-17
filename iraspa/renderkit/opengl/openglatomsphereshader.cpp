@@ -30,7 +30,7 @@ OpenGLAtomSphereShader::OpenGLAtomSphereShader()
 }
 
 
-void OpenGLAtomSphereShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAtomSphereShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -50,7 +50,7 @@ void OpenGLAtomSphereShader::paintGL(std::vector<std::vector<GLuint>>& atomTextu
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
         {
@@ -179,7 +179,7 @@ void OpenGLAtomSphereShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         glBindVertexArray(_vertexArrayObject[i][j]);
         check_gl_error();

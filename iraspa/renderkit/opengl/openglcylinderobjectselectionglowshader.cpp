@@ -33,7 +33,7 @@ OpenGLCylinderObjectSelectionGlowShader::OpenGLCylinderObjectSelectionGlowShader
 }
 
 
-void OpenGLCylinderObjectSelectionGlowShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCylinderObjectSelectionGlowShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

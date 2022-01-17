@@ -48,7 +48,7 @@ bool OpenGLObjectShader::initializeOpenGLFunctions()
   return QOpenGLFunctions_3_3_Core::initializeOpenGLFunctions();
 }
 
-void OpenGLObjectShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLObjectShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _crystalEllipseObjectShader.setRenderStructures(structures);
   _crystalCylinderObjectShader.setRenderStructures(structures);

@@ -33,7 +33,7 @@ OpenGLCrystalEllipsoidObjectSelectionStripesShader::OpenGLCrystalEllipsoidObject
 }
 
 
-void OpenGLCrystalEllipsoidObjectSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalEllipsoidObjectSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

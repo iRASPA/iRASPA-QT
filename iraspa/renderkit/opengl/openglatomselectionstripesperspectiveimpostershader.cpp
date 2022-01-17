@@ -31,7 +31,7 @@ OpenGLAtomSelectionStripesPerspectiveImposterShader::OpenGLAtomSelectionStripesP
 
 }
 
-void OpenGLAtomSelectionStripesPerspectiveImposterShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAtomSelectionStripesPerspectiveImposterShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -91,7 +91,7 @@ void OpenGLAtomSelectionStripesPerspectiveImposterShader::paintGL(GLuint structu
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(source->atomSelectionStyle() == RKSelectionStyle::striped && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _atomSelectionShader._numberOfDrawnAtoms[i][j]>0)
         {

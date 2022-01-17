@@ -52,7 +52,7 @@ bool OpenGLBondSelectionShader::initializeOpenGLFunctions()
   return QOpenGLFunctions_3_3_Core::initializeOpenGLFunctions();
 }
 
-void OpenGLBondSelectionShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLBondSelectionShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _internalBondSelectionInstanceShader.setRenderStructures(structures);
   _externalBondSelectionInstanceShader.setRenderStructures(structures);

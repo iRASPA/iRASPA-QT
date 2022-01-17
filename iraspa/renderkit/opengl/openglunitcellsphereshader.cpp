@@ -31,7 +31,7 @@ OpenGLUnitCellSphereShader::OpenGLUnitCellSphereShader()
 
 }
 
-void OpenGLUnitCellSphereShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLUnitCellSphereShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -48,7 +48,7 @@ void OpenGLUnitCellSphereShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderStructure* source = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderUnitCellSource* source = dynamic_cast<RKRenderUnitCellSource*>(_renderStructures[i][j].get()))
       {
         if(source->drawUnitCell() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfUnitCellSpheres[i][j]>0)
         {
@@ -81,7 +81,7 @@ void OpenGLUnitCellSphereShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderStructure* source = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderUnitCellSource* source = dynamic_cast<RKRenderUnitCellSource*>(_renderStructures[i][j].get()))
       {
         glBindVertexArray(_vertexArrayObject[i][j]);
         check_gl_error();

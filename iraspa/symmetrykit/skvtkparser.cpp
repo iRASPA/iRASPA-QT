@@ -26,7 +26,7 @@
 #include <sstream>
 #include "skvtkparser.h"
 
-SKVTKParser::SKVTKParser(QUrl url, QDataStream::ByteOrder byteorder, LogReporting *log): _url(url), _byteOrder(byteorder), _log(log), _frame(std::make_shared<SKStructure>())
+SKVTKParser::SKVTKParser(QUrl url, QDataStream::ByteOrder byteorder): _url(url), _byteOrder(byteorder), _frame(std::make_shared<SKStructure>())
 {
   _frame->kind = SKStructure::Kind::VTKDensityVolume;
 }
@@ -48,7 +48,7 @@ template <typename T> static QByteArray readData(QTextStream &stream, size_t num
   return QByteArray(reinterpret_cast<char*>(dataPoints.data()), dataPoints.size() * sizeof(T));
 }
 
-bool SKVTKParser::startParsing()
+void SKVTKParser::startParsing()
 {
   QFile file(_url.toLocalFile());
   QFileInfo info(file);
@@ -72,11 +72,7 @@ bool SKVTKParser::startParsing()
         if (line.isEmpty())
         {
           file.close();
-          if(_log)
-          {
-            _log->logMessage(LogReporting::ErrorLevel::error, "Cannot read VTK header");
-          }
-          return false;
+          {throw "Cannot read VTK header";}
         }
         else
         {
@@ -101,11 +97,7 @@ bool SKVTKParser::startParsing()
             if(geometryType != "STRUCTURED_POINTS")
             {
               file.close();
-              if(_log)
-              {
-                _log->logMessage(LogReporting::ErrorLevel::error, "VTK DataSet type must be STRUCTURED_POINTS");
-              }
-              return false;
+              {throw "VTK DataSet type must be STRUCTURED_POINTS";}
             }
           }
         }
@@ -190,11 +182,7 @@ bool SKVTKParser::startParsing()
             else
             {
               file.close();
-              if(_log)
-              {
-                _log->logMessage(LogReporting::ErrorLevel::error, "Cannot read VTK SCALARS type");
-              }
-              return false;
+              {throw "Cannot read VTK SCALARS type";}
             }
 
             if(strSplited.size()>=4)
@@ -296,14 +284,8 @@ bool SKVTKParser::startParsing()
       _frame->byteData = _byteData;
       _frame->dataType = _dataType;
       _movies.push_back({_frame});
-      return true;
     }
-    if(_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "No VTK file found");
-    }
-    return false;
+    throw "No VTK file found";
   }
-  return false;
 }
 

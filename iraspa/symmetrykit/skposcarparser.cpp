@@ -35,16 +35,14 @@
 #include "skasymmetricatom.h"
 #include "skelement.h"
 
-SKPOSCARParser::SKPOSCARParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
-  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell),_asMolecule(asMolecule), _log(log), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
+SKPOSCARParser::SKPOSCARParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell),_asMolecule(asMolecule), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
 {
   _frame->kind = SKStructure::Kind::crystal;
   _frame->displayName = _scanner.displayName();
 }
 
-
-
-bool SKPOSCARParser::startParsing()
+void SKPOSCARParser::startParsing()
 {
   double3x3 unitCell{};
   double3x3 inverseUnitCell{};
@@ -54,18 +52,11 @@ bool SKPOSCARParser::startParsing()
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) return false;
+  if(scannedLine.isEmpty()) {throw "Empty file";}
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty())
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "POSCAR file near empty");
-    }
-    return false;
-  }
+  if(scannedLine.isEmpty()) {throw "POSCAR file near empty";}
 
   // read first lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -76,43 +67,17 @@ bool SKPOSCARParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "missing first lattice vector in POSCAR");
-    }
-    return false;
-  }
+  if(termsScannedLined.size()<3) {throw "Missing first lattice vector in POSCAR";}
 
   bool succes = false;
   unitCell.ax = termsScannedLined[0].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the x-coordinate of first lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the x-coordinate of first lattice vector";}
+
   unitCell.ay = termsScannedLined[1].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the y-coordinate of first lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the y-coordinate of first lattice vector";}
+
   unitCell.az = termsScannedLined[2].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the z-coordinate of first lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the z-coordinate of first lattice vector";}
 
   // read second lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -123,42 +88,16 @@ bool SKPOSCARParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "missing second lattice vector in POSCAR");
-    }
-    return false;
-  }
+  if(termsScannedLined.size()<3) {throw "Missing second lattice vector in POSCAR";}
 
   unitCell.bx = termsScannedLined[0].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the x-coordinate of second lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the x-coordinate of second lattice vector";}
+
   unitCell.by = termsScannedLined[1].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the y-coordinate of second lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the y-coordinate of second lattice vector";}
+
   unitCell.bz = termsScannedLined[2].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the z-coordinate of second lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the z-coordinate of second lattice vector";}
 
   // read third lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -169,42 +108,16 @@ bool SKPOSCARParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "missing third lattice vector in POSCAR");
-    }
-    return false;
-  }
+  if(termsScannedLined.size()<3) {throw "Missing third lattice vector in POSCAR";}
 
   unitCell.cx = termsScannedLined[0].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the x-coordinate of third lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the x-coordinate of third lattice vector";}
+
   unitCell.cy = termsScannedLined[1].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the y-coordinate of third lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the y-coordinate of third lattice vector";}
+
   unitCell.cz = termsScannedLined[2].toDouble(&succes);
-  if(!succes)
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the z-coordinate of third lattice vector " + termsScannedLined[0]);
-      return false;
-    }
-  }
+  if(!succes) {throw "Could not parse the z-coordinate of third lattice vector";}
 
   _frame->cell = std::make_shared<SKCell>(unitCell);
   inverseUnitCell = unitCell.inverse();
@@ -218,14 +131,7 @@ bool SKPOSCARParser::startParsing()
   #else
     QStringList elementList = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(elementList.empty())
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "list of elements is empty");
-      return false;
-    }
-  }
+  if(elementList.empty()) {throw "List of elements is empty";}
 
   // read amount of atoms per element
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -236,22 +142,9 @@ bool SKPOSCARParser::startParsing()
   #else
     QStringList amountList = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(amountList.empty())
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "list of amount of atoms is empty");
-      return false;
-    }
-  }
+  if(amountList.empty()) {throw "List of amount of atoms is empty";}
 
-  if(elementList.size() != amountList.size())
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "the number of atoms list does not match the element list");
-    }
-  }
+  if(elementList.size() != amountList.size())  {throw "The number of atoms list does not match the element list";}
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -298,14 +191,7 @@ bool SKPOSCARParser::startParsing()
       #else
         termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
       #endif
-      if(termsScannedLined.empty())
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "error reading atoms");
-          return false;
-        }
-      }
+      if(termsScannedLined.empty()) {throw "Error reading atoms";}
 
       QString chemicalElement = chemicalElementString.simplified().toLower();
       chemicalElement.replace(0, 1, chemicalElement[0].toUpper());
@@ -316,42 +202,19 @@ bool SKPOSCARParser::startParsing()
       }
       else
       {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Unknown element " + chemicalElement);
-          atom->setElementIdentifier(0);
-          atom->setDisplayName("error");
-        }
+        atom->setElementIdentifier(0);
+        atom->setDisplayName("Unknown");
       }
 
       double3 position;
       position.x = termsScannedLined[0].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the x-coordinate " + termsScannedLined[0]);
-          atom->setDisplayName("error x");
-        }
-      }
+      if(!succes) {throw "Could not parse the atom x-coordinate";}
+
       position.y = termsScannedLined[1].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the y-coordinate " + termsScannedLined[1]);
-          atom->setDisplayName("error y");
-        }
-      }
+      if(!succes) {throw "Could not parse the atom y-coordinate";}
+
       position.z = termsScannedLined[2].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the z-coordinate " + termsScannedLined[2]);
-          atom->setDisplayName("error z");
-        }
-      }
+      if(!succes) {throw "Could not parse the atom z-coordinate";}
 
       // convert to fractional position if Cartesian coordinates are specified
       if(cartesian)
@@ -368,5 +231,4 @@ bool SKPOSCARParser::startParsing()
   }
 
   _movies.push_back({_frame});
-  return true;
 }

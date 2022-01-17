@@ -74,5 +74,8 @@ public:
   double3 origin;
   double3 spacing;
   DataType dataType;
+  std::pair<double,double> range;
+  double average;
+  double variance;
   QByteArray byteData;
 };

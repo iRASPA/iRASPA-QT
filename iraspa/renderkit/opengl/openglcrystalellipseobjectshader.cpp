@@ -30,7 +30,7 @@ OpenGLCrystalEllipseObjectShader::OpenGLCrystalEllipseObjectShader()
 }
 
 
-void OpenGLCrystalEllipseObjectShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalEllipseObjectShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

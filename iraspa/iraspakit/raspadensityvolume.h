@@ -25,17 +25,17 @@
 #include "gridvolume.h"
 #include "symmetrykit.h"
 
-class RASPADensityVolume: public GridVolume, public RKRenderRASPADensityVolumeSource
+class RASPADensityVolume: public GridVolume
 {
 public:
   RASPADensityVolume();
   RASPADensityVolume(std::shared_ptr<SKStructure> frame);
 
+  // Object
+  // ===============================================================================================
+  RASPADensityVolume(const std::shared_ptr<Object> object);
   ObjectType structureType() override final { return ObjectType::RASPADensityVolume; }
-
-  int3 dimension() const override {return _dimensions;}
-  double3 spacing() const override {return _spacing;}
-  QByteArray data() const  override{return _data;}
+  std::shared_ptr<Object> shallowClone()  override final;
 
 private:
   qint64 _versionNumber{1};

@@ -54,9 +54,12 @@ RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, d
 };
 
 
-RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure)
+RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderObject> structure)
 {
-  if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
+  this->sceneIdentifier = int32_t(sceneIdentifier);
+  this->MovieIdentifier = int32_t(movieIdentifier);
+
+  if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(structure.get()))
   {
     SKBoundingBox boundingbox = renderStructure->cell()->boundingBox();
     double3 centerOfRotation = boundingbox.center();
@@ -66,11 +69,6 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     this->modelMatrix = float4x4(currentModelMatrix);
     this->inverseModelMatrix = float4x4(double4x4::inverse(currentModelMatrix));
 
-    this->unitCellScaling =  float(renderStructure->unitCellScaleFactor());
-    this->unitCellDiffuseColor = float(renderStructure->unitCellDiffuseIntensity()) * float4(renderStructure->unitCellDiffuseColor().redF(),renderStructure->unitCellDiffuseColor().greenF(),
-                                                                                             renderStructure->unitCellDiffuseColor().blueF(),renderStructure->unitCellDiffuseColor().alphaF());
-
-    double3 offset = renderStructure->renderLocalAxes().offset();
     double3x3 box = renderStructure->cell()->box();
 
     double3 numberOfReplicas = renderStructure->cell()->numberOfReplicas();
@@ -83,34 +81,48 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     this->boxMatrix[3][1] = float(shift.y);
     this->boxMatrix[3][2] = float(shift.z);
 
-    switch(renderStructure->renderLocalAxes().position())
+    if (RKRenderLocalAxesSource* renderStructure = dynamic_cast<RKRenderLocalAxesSource*>(structure.get()))
     {
-    case RKLocalAxes::Position::none:
-      this->localAxisPosition = float4(0.0,0.0,0.0,1.0) + float4(offset.x,offset.y,offset.z,0.0);
-      break;
-    case RKLocalAxes::Position::origin:
-      this->localAxisPosition = float4(0.0,0.0,0.0,1.0) + float4(offset.x,offset.y,offset.z,0.0);
-      break;
-    case RKLocalAxes::Position::center:
-      this->localAxisPosition =  box * float4(0.5,0.5,0.5,1.0) + float4(offset.x,offset.y,offset.z,0.0);
-      break;
-    case RKLocalAxes::Position::originBoundingBox:
-      this->localAxisPosition = float4(boundingbox.minimum().x,boundingbox.minimum().y,boundingbox.minimum().z,1.0) + float4(offset.x,offset.y,offset.z,0.0);
-      break;
-    case RKLocalAxes::Position::centerBoundingBox:
-      this->localAxisPosition = float4(centerOfRotation.x, centerOfRotation.y, centerOfRotation.z, 1.0) + float4(offset.x,offset.y,offset.z,0.0);
-      break;
-    default:
-      break;
+      double3 offset = renderStructure->renderLocalAxes().offset();
+
+      switch(renderStructure->renderLocalAxes().position())
+      {
+      case RKLocalAxes::Position::none:
+        this->localAxisPosition = float4(0.0,0.0,0.0,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+        break;
+      case RKLocalAxes::Position::origin:
+        this->localAxisPosition = float4(0.0,0.0,0.0,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+        break;
+      case RKLocalAxes::Position::center:
+        this->localAxisPosition =  box * float4(0.5,0.5,0.5,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+        break;
+      case RKLocalAxes::Position::originBoundingBox:
+        this->localAxisPosition = float4(boundingbox.minimum().x,boundingbox.minimum().y,boundingbox.minimum().z,1.0) + float4(offset.x,offset.y,offset.z,0.0);
+        break;
+      case RKLocalAxes::Position::centerBoundingBox:
+        this->localAxisPosition = float4(centerOfRotation.x, centerOfRotation.y, centerOfRotation.z, 1.0) + float4(offset.x,offset.y,offset.z,0.0);
+        break;
+      default:
+        break;
+      }
     }
 
-    this->sceneIdentifier = int32_t(sceneIdentifier);
-    this->MovieIdentifier = int32_t(movieIdentifier);
+    if (RKRenderUnitCellSource* renderStructure = dynamic_cast<RKRenderUnitCellSource*>(structure.get()))
+    {
+        this->unitCellScaling =  float(renderStructure->unitCellScaleFactor());
+        this->unitCellDiffuseColor = float(renderStructure->unitCellDiffuseIntensity()) * float4(renderStructure->unitCellDiffuseColor().redF(),renderStructure->unitCellDiffuseColor().greenF(),
+                                                                                                 renderStructure->unitCellDiffuseColor().blueF(),renderStructure->unitCellDiffuseColor().alphaF());
+    }
 
-    if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
+    if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(structure.get()))
     {
       this->colorAtomsWithBondColor = source->colorAtomsWithBondColor();
       this->atomScaleFactor = float(source->atomScaleFactor());
+
+      this->atomHDR = source->atomHDR();
+      this->atomHDRExposure = float(source->atomHDRExposure());
+      this->atomSelectionIntensity = float(source->atomSelectionIntensity());
+      this->clipAtomsAtUnitCell = source->clipAtomsAtUnitCell();
 
       this->atomHue = float(source->atomHue());
       this->atomSaturation = float(source->atomSaturation());
@@ -130,15 +142,25 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
                                                                               source->atomSpecularColor().blueF(),source->atomSpecularColor().alphaF());
       this->atomShininess = float(source->atomShininess());
 
+      this->atomSelectionScaling = float(std::max(1.001,source->atomSelectionScaling())); // avoid artifacts
+      this->atomSelectionStripesDensity = float(source->atomSelectionStripesDensity());
+      this->atomSelectionStripesFrequency = float(source->atomSelectionStripesFrequency());
+      this->atomSelectionWorleyNoise3DFrequency = float(source->atomSelectionWorleyNoise3DFrequency());
+      this->atomSelectionWorleyNoise3DJitter = float(source->atomSelectionWorleyNoise3DJitter());
 
+      this->atomAnnotationTextColor = float4(source->renderTextColor().redF(),source->renderTextColor().greenF(),
+                                             source->renderTextColor().blueF(),source->renderTextColor().alphaF());
+      this->atomAnnotationTextScaling = float(source->renderTextScaling());
+      this->atomAnnotationTextDisplacement = float4(float(source->renderTextOffset().x),
+                                                   float(source->renderTextOffset().y),
+                                                   float(source->renderTextOffset().z),
+                                                   0.0);
+    }
+
+    if (RKRenderBondSource* source = dynamic_cast<RKRenderBondSource*>(structure.get()))
+    {
       this->bondScaling = float(source->bondScaleFactor());
       this->bondColorMode = int32_t(source->bondColorMode());
-
-
-      this->atomHDR = source->atomHDR();
-      this->atomHDRExposure = float(source->atomHDRExposure());
-      this->atomSelectionIntensity = float(source->atomSelectionIntensity());
-      this->clipAtomsAtUnitCell = source->clipAtomsAtUnitCell();
 
       this->bondHDR = source->bondHDR();
       this->bondHDRExposure = float(source->bondHDRExposure());
@@ -175,19 +197,6 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       //this->boxMatrix[3][2] = float(shift.z);
 
 
-      this->atomSelectionScaling = float(std::max(1.001,source->atomSelectionScaling())); // avoid artifacts
-      this->atomSelectionStripesDensity = float(source->atomSelectionStripesDensity());
-      this->atomSelectionStripesFrequency = float(source->atomSelectionStripesFrequency());
-      this->atomSelectionWorleyNoise3DFrequency = float(source->atomSelectionWorleyNoise3DFrequency());
-      this->atomSelectionWorleyNoise3DJitter = float(source->atomSelectionWorleyNoise3DJitter());
-
-      this->atomAnnotationTextColor = float4(source->renderTextColor().redF(),source->renderTextColor().greenF(),
-                                             source->renderTextColor().blueF(),source->renderTextColor().alphaF());
-      this->atomAnnotationTextScaling = float(source->renderTextScaling());
-      this->atomAnnotationTextDisplacement = float4(float(source->renderTextOffset().x),
-                                                   float(source->renderTextOffset().y),
-                                                   float(source->renderTextOffset().z),
-                                                   0.0);
 
       // clipping planes are in object space
       double3 u_plane0 = double3::normalize(double3::cross(box[0],box[1]));
@@ -239,15 +248,18 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
   }
 }
 
-RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure, double4x4 inverseModelMatrix)
+RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderObject> structure, double4x4 inverseModelMatrix)
 {
-  if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
+  if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(structure.get()))
   {
-    this->unitCellScaling =  float(renderStructure->unitCellScaleFactor());
-    this->unitCellDiffuseColor = float(renderStructure->unitCellDiffuseIntensity()) * float4(renderStructure->unitCellDiffuseColor().redF(),renderStructure->unitCellDiffuseColor().greenF(),
-                                                                                             renderStructure->unitCellDiffuseColor().blueF(),renderStructure->unitCellDiffuseColor().alphaF());
+    if (RKRenderUnitCellSource* source = dynamic_cast<RKRenderUnitCellSource*>(structure.get()))
+    {
+      this->unitCellScaling =  float(source->unitCellScaleFactor());
+      this->unitCellDiffuseColor = float(source->unitCellDiffuseIntensity()) * float4(source->unitCellDiffuseColor().redF(),source->unitCellDiffuseColor().greenF(),
+                                                                                      source->unitCellDiffuseColor().blueF(),source->unitCellDiffuseColor().alphaF());
+    }
 
-    if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(structure.get()))
+    if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(structure.get()))
     {
       SKBoundingBox boundingbox = renderStructure->cell()->boundingBox();
       double3 centerOfRotation = boundingbox.center();
@@ -280,30 +292,12 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       this->atomShininess = float(source->atomShininess());
 
 
-      this->bondScaling = float(source->bondScaleFactor());
-      this->bondColorMode = int32_t(source->bondColorMode());
-
-
       this->atomHDR = source->atomHDR();
       this->atomHDRExposure = float(source->atomHDRExposure());
       this->atomSelectionIntensity = float(source->atomSelectionIntensity());
       this->clipAtomsAtUnitCell = source->clipAtomsAtUnitCell();
 
-      this->bondHDR = source->bondHDR();
-      this->bondHDRExposure = float(source->bondHDRExposure());
-      this->clipBondsAtUnitCell = source->clipBondsAtUnitCell();
 
-      this->bondHue = float(source->bondHue());
-      this->bondSaturation = float(source->bondSaturation());
-      this->bondValue = float(source->bondValue());
-
-      this->bondAmbientColor = float(source->bondAmbientIntensity()) * float4(source->bondAmbientColor().redF(),source->bondAmbientColor().greenF(),
-                                                                              source->bondAmbientColor().blueF(),source->bondAmbientColor().alphaF());
-      this->bondDiffuseColor = float(source->bondDiffuseIntensity()) * float4(source->bondDiffuseColor().redF(),source->bondDiffuseColor().greenF(),
-                                                                              source->bondDiffuseColor().blueF(),source->bondDiffuseColor().alphaF());
-      this->bondSpecularColor = float(source->bondSpecularIntensity()) * float4(source->bondSpecularColor().redF(),source->bondSpecularColor().greenF(),
-                                                                                source->bondSpecularColor().blueF(),source->bondSpecularColor().alphaF());
-      this->bondShininess = float(source->bondShininess());
 
       double3x3 unitCell = renderStructure->cell()->unitCell();
       double3x3 box = renderStructure->cell()->box();
@@ -332,12 +326,6 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
                                                    float(source->renderTextOffset().z),
                                                    0.0);
 
-      this->bondSelectionStripesDensity = float(source->bondSelectionStripesDensity());
-      this->bondSelectionStripesFrequency = float(source->bondSelectionStripesFrequency());
-      this->bondSelectionWorleyNoise3DFrequency = float(source->bondSelectionWorleyNoise3DFrequency());
-      this->bondSelectionWorleyNoise3DJitter = float(source->bondSelectionWorleyNoise3DJitter());
-      this->bondSelectionScaling = float(std::max(1.001,source->bondSelectionScaling())); // avoid artifacts
-      this->bondSelectionIntensity = float(source->bondSelectionIntensity());
 
 
       // clipping planes are in object space
@@ -350,6 +338,35 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       this->clipPlaneFront = float4(-u_plane0.x, -u_plane0.y, -u_plane0.z, double3::dot(u_plane0,corner2));
       this->clipPlaneTop = float4(-u_plane1.x, -u_plane1.y, -u_plane1.z, double3::dot(u_plane1,corner2));
       this->clipPlaneRight = float4(-u_plane2.x, -u_plane2.y, -u_plane2.z, double3::dot(u_plane2,corner2));
+    }
+
+    if (RKRenderBondSource* source = dynamic_cast<RKRenderBondSource*>(structure.get()))
+    {
+      this->bondScaling = float(source->bondScaleFactor());
+      this->bondColorMode = int32_t(source->bondColorMode());
+
+      this->bondHDR = source->bondHDR();
+      this->bondHDRExposure = float(source->bondHDRExposure());
+      this->clipBondsAtUnitCell = source->clipBondsAtUnitCell();
+
+      this->bondHue = float(source->bondHue());
+      this->bondSaturation = float(source->bondSaturation());
+      this->bondValue = float(source->bondValue());
+
+      this->bondAmbientColor = float(source->bondAmbientIntensity()) * float4(source->bondAmbientColor().redF(),source->bondAmbientColor().greenF(),
+                                                                              source->bondAmbientColor().blueF(),source->bondAmbientColor().alphaF());
+      this->bondDiffuseColor = float(source->bondDiffuseIntensity()) * float4(source->bondDiffuseColor().redF(),source->bondDiffuseColor().greenF(),
+                                                                              source->bondDiffuseColor().blueF(),source->bondDiffuseColor().alphaF());
+      this->bondSpecularColor = float(source->bondSpecularIntensity()) * float4(source->bondSpecularColor().redF(),source->bondSpecularColor().greenF(),
+                                                                                source->bondSpecularColor().blueF(),source->bondSpecularColor().alphaF());
+      this->bondShininess = float(source->bondShininess());
+
+      this->bondSelectionStripesDensity = float(source->bondSelectionStripesDensity());
+      this->bondSelectionStripesFrequency = float(source->bondSelectionStripesFrequency());
+      this->bondSelectionWorleyNoise3DFrequency = float(source->bondSelectionWorleyNoise3DFrequency());
+      this->bondSelectionWorleyNoise3DJitter = float(source->bondSelectionWorleyNoise3DJitter());
+      this->bondSelectionScaling = float(std::max(1.001,source->bondSelectionScaling())); // avoid artifacts
+      this->bondSelectionIntensity = float(source->bondSelectionIntensity());
     }
   }
 }
@@ -372,11 +389,11 @@ RKIsosurfaceUniforms::RKIsosurfaceUniforms()
 
 }
 
-RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderStructure> structure)
+RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderObject> structure)
 {
-  if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(structure.get()))
+  if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(structure.get()))
   {
-    if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(structure.get()))
+    if (RKRenderVolumetricDataSource* source = dynamic_cast<RKRenderVolumetricDataSource*>(structure.get()))
     {
       double3x3 currentUnitCellMatrix = renderStructure->cell()->unitCell();
       double3x3 currentBoxMatrix = renderStructure->cell()->box();
@@ -385,6 +402,19 @@ RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderStructure> st
       this->unitCellNormalMatrix = float4x4(double3x3::transpose(double3x3::inverse(currentUnitCellMatrix)));
 
       this->stepLength = source->adsorptionVolumeStepLength();
+      this->transparencyThreshold = source->adsorptionTransparencyThreshold();
+      this->transferFunctionIndex = int32_t(source->adsorptionVolumeTransferFunction());
+      int3 dimensions = source->dimensions();
+
+      int largestSize = std::max({dimensions.x,dimensions.y,dimensions.z});
+      int k = 1;
+      while(largestSize > pow(2,k))
+      {
+        k += 1;
+      }
+      float encompassingCubeSize = float(pow(2,k));
+      this->scaleToEncompassing = float4(dimensions.x/encompassingCubeSize,dimensions.y/encompassingCubeSize,
+                                         dimensions.z/encompassingCubeSize,1.0);
 
       this->boxMatrix = float4x4(currentBoxMatrix);
       this->inverseBoxMatrix = float4x4(currentBoxMatrix.inverse());

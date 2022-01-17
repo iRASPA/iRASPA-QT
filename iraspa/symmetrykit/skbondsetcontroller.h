@@ -48,9 +48,9 @@ struct bond_indexSet_compare_greater_than
   }
 };
 
-using BondSelectionIndexSet = std::set<int>;
-using BondSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<SKAsymmetricBond>, int>, bond_indexSet_compare_less>;
-using ReversedBondSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<SKAsymmetricBond>, int>, bond_indexSet_compare_greater_than>;
+using BondSelectionIndexSet = std::set<int64_t>;
+using BondSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<SKAsymmetricBond>, int64_t>, bond_indexSet_compare_less>;
+using ReversedBondSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<SKAsymmetricBond>, int64_t>, bond_indexSet_compare_greater_than>;
 
 class SKBondSetController
 {
@@ -64,7 +64,7 @@ public:
   void setBonds(std::vector<std::shared_ptr<SKBond>> &bonds);
   bool insertBond(std::shared_ptr<SKAsymmetricBond> bondItem, int index);
   bool removeBond(int index);
-  void insertBonds(std::vector<std::shared_ptr<SKAsymmetricBond> > bonds, std::set<int> indexSet);
+  void insertBonds(std::vector<std::shared_ptr<SKAsymmetricBond> > bonds, BondSelectionIndexSet indexSet);
   void deleteBonds(BondSelectionIndexSet indexSet);
 
 

@@ -27,7 +27,7 @@ OpenGLCrystalPolygonalPrismSelectionInstanceShader::OpenGLCrystalPolygonalPrismS
 
 }
 
-void OpenGLCrystalPolygonalPrismSelectionInstanceShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalPolygonalPrismSelectionInstanceShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

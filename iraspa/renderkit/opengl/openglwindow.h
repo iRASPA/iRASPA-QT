@@ -69,8 +69,6 @@
 #include "opengltextrenderingshader.h"
 #include "openglglobalaxesshader.h"
 #include "opengllocalaxesshader.h"
-#include "openglraspadensityvolumeshader.h"
-#include "openglvtkdensityvolumeshader.h"
 
 #define CL_TARGET_OPENCL_VERSION 120
 #ifdef Q_OS_MACOS
@@ -105,7 +103,7 @@ public:
   void redraw() override final;
   void redrawWithQuality(RKRenderQuality quality) override final;
 
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures) override final;
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures) override final;
   void setRenderDataSource(std::shared_ptr<RKRenderDataSource> source) override final;
   void reloadData() override final;
   void reloadData(RKRenderQuality ambientOcclusionQuality) override final;
@@ -119,8 +117,8 @@ public:
 
   void setLogReportingWidget(LogReporting *logReporting)  override final;
 
-  void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderStructure>> structures) override;
-  void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderStructure>> structures) override;
+  void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) override;
+  void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) override;
 
   void updateTransformUniforms() override final;
   void updateStructureUniforms() override final;
@@ -135,8 +133,8 @@ public:
   QImage renderSceneToImage(int width, int height, RKRenderQuality quality) override final;
   std::array<int,4> pickTexture(int x, int y, int width, int height) override final;
 
-  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures) override final;
-  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures) override final;
+  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
+  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
 
   void setControlPanel(bool iskeyAltOn);
   void updateControlPanel();
@@ -149,7 +147,7 @@ private:
   LogReporting* _logReporter = nullptr;
   QStringList _logData{};
 
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderStructure>>>{};
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderObject>>>{};
   GLuint _sceneFrameBuffer;
   GLuint _sceneDepthTexture;
   GLuint _sceneResolveDepthFrameBuffer;
@@ -198,9 +196,6 @@ private:
   OpenGLPickingShader _pickingShader;
 
   OpenGLTextRenderingShader _textShader;
-
-  OpenGLRASPADensityVolumeShader _RASPADensityVolumeShader;
-  OpenGLVTKDensityVolumeShader _VTKDensityVolumeShader;
 
 #if defined (Q_OS_OSX)
   void initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue);

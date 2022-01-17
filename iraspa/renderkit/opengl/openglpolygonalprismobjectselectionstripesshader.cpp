@@ -33,7 +33,7 @@ OpenGLPolygonalPrismObjectSelectionStripesShader::OpenGLPolygonalPrismObjectSele
 }
 
 
-void OpenGLPolygonalPrismObjectSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLPolygonalPrismObjectSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

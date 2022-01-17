@@ -24,6 +24,7 @@
 #include <QString>
 #include <QDate>
 #include <symmetrykit.h>
+#include "structure.h"
 
 class SpaceGroupViewer
 {
@@ -32,4 +33,16 @@ public:
 
   virtual void setSpaceGroupHallNumber(int HallNumber) = 0;
   virtual SKSpaceGroup& spaceGroup()  = 0;
+};
+
+class SpaceGroupEditor
+{
+public:
+  virtual ~SpaceGroupEditor() = 0;
+
+  virtual std::shared_ptr<Structure> superCell() const = 0;
+  virtual std::shared_ptr<Structure> removeSymmetry() const = 0;
+  virtual std::shared_ptr<Structure> wrapAtomsToCell() const = 0;
+  virtual std::shared_ptr<Structure> flattenHierarchy() const = 0;
+  virtual std::shared_ptr<Structure> appliedCellContentShift() const = 0;
 };

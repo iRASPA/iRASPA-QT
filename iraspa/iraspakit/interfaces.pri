@@ -1,27 +1,29 @@
 INCLUDEPATH += $$PWD
 
 SOURCES += \
-    $$PWD/adsorptionsurfacevisualappearanceviewer.cpp \
-    $$PWD/atomtextvisualappearanceviewer.cpp \
+    $$PWD/annotationviewer.cpp \
+    $$PWD/atomstructureviewer.cpp \
     $$PWD/atomviewer.cpp \
-    $$PWD/atomvisualappearanceviewer.cpp \
+    $$PWD/bondstructureviewer.cpp \
     $$PWD/bondviewer.cpp \
-    $$PWD/bondvisualappearanceviewer.cpp \
-    $$PWD/cellviewer.cpp \
     $$PWD/displayable.cpp \
     $$PWD/infoviewer.cpp  \
-    $$PWD/primitivevisualappearanceviewer.cpp \
-    $$PWD/spacegroupviewer.cpp
+    $$PWD/primitivestructureviewer.cpp \
+    $$PWD/spacegroupviewer.cpp \
+    $$PWD/structuralpropertyviewer.cpp \
+    $$PWD/unitcellviewer.cpp \
+    $$PWD/volumetricdataviewer.cpp
 
 HEADERS += \
-    $$PWD/adsorptionsurfacevisualappearanceviewer.h \
-    $$PWD/atomtextvisualappearanceviewer.h \
+    $$PWD/annotationviewer.h \
+    $$PWD/atomstructureviewer.h \
     $$PWD/atomviewer.h \
-    $$PWD/atomvisualappearanceviewer.h \
+    $$PWD/bondstructureviewer.h \
     $$PWD/bondviewer.h \
-    $$PWD/bondvisualappearanceviewer.h \
-    $$PWD/cellviewer.h \
     $$PWD/displayable.h \
     $$PWD/infoviewer.h \
-    $$PWD/primitivevisualappearanceviewer.h \
-    $$PWD/spacegroupviewer.h
+    $$PWD/primitivestructureviewer.h \
+    $$PWD/spacegroupviewer.h \
+    $$PWD/structuralpropertyviewer.h \
+    $$PWD/unitcellviewer.h \
+    $$PWD/volumetricdataviewer.h

@@ -32,7 +32,7 @@ OpenGLCylinderObjectShader::OpenGLCylinderObjectShader()
 }
 
 
-void OpenGLCylinderObjectShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCylinderObjectShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

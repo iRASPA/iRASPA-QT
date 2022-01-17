@@ -56,6 +56,150 @@ Structure::Structure(std::shared_ptr<SKStructure> frame): Object(frame), _atomsT
   }
 }
 
+Structure::Structure(const std::shared_ptr<Object> object): Object(object), _atomsTreeController(std::make_shared<SKAtomTreeController>()),
+    _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
+{
+  if (std::shared_ptr<AtomStructureViewer> atomStructureViewer = std::dynamic_pointer_cast<AtomStructureViewer>(object))
+  {
+    _atomRepresentationType = atomStructureViewer->atomRepresentationType();
+    _atomRepresentationStyle = atomStructureViewer->atomRepresentationStyle();
+    _atomColorSchemeIdentifier = atomStructureViewer->atomColorSchemeIdentifier();
+    _atomColorSchemeOrder = atomStructureViewer->colorSchemeOrder();
+    _atomForceFieldIdentifier = atomStructureViewer->atomForceFieldIdentifier();
+    _atomForceFieldOrder = atomStructureViewer->forceFieldSchemeOrder();
+
+    _drawAtoms = atomStructureViewer->drawAtoms();
+
+    _atomHue = atomStructureViewer->atomHue();
+    _atomSaturation = atomStructureViewer->atomSaturation();
+    _atomValue = atomStructureViewer->atomValue();
+    _atomScaleFactor = atomStructureViewer->atomScaleFactor();
+
+    _atomAmbientOcclusion = atomStructureViewer->atomAmbientOcclusion();
+    _atomHDR = atomStructureViewer->atomHDR();
+    _atomHDRExposure = atomStructureViewer->atomHDRExposure();
+
+    _atomAmbientColor = atomStructureViewer->atomAmbientColor();
+    _atomDiffuseColor = atomStructureViewer->atomDiffuseColor();
+    _atomSpecularColor = atomStructureViewer->atomSpecularColor();
+    _atomAmbientIntensity = atomStructureViewer->atomAmbientIntensity();
+    _atomDiffuseIntensity = atomStructureViewer->atomDiffuseIntensity();
+    _atomSpecularIntensity = atomStructureViewer->atomSpecularIntensity();
+    _atomShininess = atomStructureViewer->atomShininess();
+
+    _atomSelectionStyle = atomStructureViewer->atomSelectionStyle();
+    _atomSelectionIntensity = atomStructureViewer->atomSelectionIntensity();
+    _atomSelectionScaling = atomStructureViewer->atomSelectionScaling();
+  }
+
+  if (std::shared_ptr<BondStructureViewer> bondStructureViewer = std::dynamic_pointer_cast<BondStructureViewer>(object))
+  {
+    _drawBonds = bondStructureViewer->drawBonds();
+    _bondScaleFactor = bondStructureViewer->bondScaleFactor();
+    _bondColorMode = bondStructureViewer->bondColorMode();
+
+    _bondAmbientOcclusion = bondStructureViewer->bondAmbientOcclusion();
+
+    _bondHDR = bondStructureViewer->bondHDR();
+    _bondHDRExposure = bondStructureViewer->bondHDRExposure();
+
+    _bondHue = bondStructureViewer->bondHue();
+    _bondSaturation = bondStructureViewer->bondSaturation();
+    _bondValue = bondStructureViewer->bondValue();
+
+    _bondAmbientColor = bondStructureViewer->bondAmbientColor();
+    _bondDiffuseColor = bondStructureViewer->bondDiffuseColor();
+    _bondSpecularColor = bondStructureViewer->bondSpecularColor();
+    _bondAmbientIntensity = bondStructureViewer->bondAmbientIntensity();
+    _bondDiffuseIntensity = bondStructureViewer->bondDiffuseIntensity();
+    _bondSpecularIntensity = bondStructureViewer->bondSpecularIntensity();
+    _bondShininess = bondStructureViewer->bondShininess();
+
+    _bondSelectionStyle = bondStructureViewer->bondSelectionStyle();
+    _bondSelectionIntensity = bondStructureViewer->bondSelectionIntensity();
+    _bondSelectionScaling = bondStructureViewer->bondSelectionScaling();
+  }
+
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    QByteArray byteArray = QByteArray();
+    QDataStream stream(&byteArray, QIODevice::WriteOnly);
+    stream << atomViewer->atomsTreeController();
+
+    QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
+    streamRead >> _atomsTreeController;
+
+    _atomsTreeController->setTags();
+    _bondSetController->setTags();
+  }
+
+  if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(object))
+  {
+
+  }
+
+  if (std::shared_ptr<AnnotationViewer> annotationViewer = std::dynamic_pointer_cast<AnnotationViewer>(object))
+  {
+    _atomTextType = annotationViewer->renderTextType();
+    _atomTextFont = annotationViewer->renderTextFont();
+    _atomTextAlignment = annotationViewer->renderTextAlignment();
+    _atomTextStyle = annotationViewer->renderTextStyle();
+    _atomTextColor = annotationViewer->renderTextColor();
+    _atomTextScaling = annotationViewer->renderTextScaling();
+    _atomTextOffset = annotationViewer->renderTextOffset();
+  }
+
+  if (std::shared_ptr<InfoViewer> infoViewer = std::dynamic_pointer_cast<InfoViewer>(object))
+  {
+    _creationTemperature = infoViewer->creationTemperature();
+    _creationTemperatureScale = infoViewer->creationTemperatureScale();
+    _creationPressure = infoViewer->creationPressure();
+    _creationPressureScale = infoViewer->creationPressureScale();
+    _creationMethod = infoViewer->creationMethod();
+    _creationUnitCellRelaxationMethod = infoViewer->creationUnitCellRelaxationMethod();
+    _creationAtomicPositionsSoftwarePackage = infoViewer->creationAtomicPositionsSoftwarePackage();
+    _creationAtomicPositionsIonsRelaxationAlgorithm = infoViewer->creationAtomicPositionsIonsRelaxationAlgorithm();
+    _creationAtomicPositionsIonsRelaxationCheck = infoViewer->creationAtomicPositionsIonsRelaxationCheck();
+    _creationAtomicPositionsForcefield = infoViewer->creationAtomicPositionsForcefield();
+    _creationAtomicPositionsForcefieldDetails = infoViewer->creationAtomicPositionsForcefieldDetails();
+    _creationAtomicChargesSoftwarePackage = infoViewer->creationAtomicChargesSoftwarePackage();
+    _creationAtomicChargesAlgorithms = infoViewer->creationAtomicChargesAlgorithms();
+    _creationAtomicChargesForcefield = infoViewer->creationAtomicChargesForcefield();
+    _creationAtomicChargesForcefieldDetails = infoViewer->creationAtomicChargesForcefieldDetails();
+
+    _experimentalMeasurementRadiation = infoViewer->experimentalMeasurementRadiation();
+    _experimentalMeasurementWaveLength = infoViewer->experimentalMeasurementWaveLength();
+    _experimentalMeasurementThetaMin = infoViewer->experimentalMeasurementThetaMin();
+    _experimentalMeasurementThetaMax = infoViewer->experimentalMeasurementThetaMax();
+    _experimentalMeasurementIndexLimitsHmin = infoViewer->experimentalMeasurementIndexLimitsHmin();
+    _experimentalMeasurementIndexLimitsHmax = infoViewer->experimentalMeasurementIndexLimitsHmax();
+    _experimentalMeasurementIndexLimitsKmin = infoViewer->experimentalMeasurementIndexLimitsKmin();
+    _experimentalMeasurementIndexLimitsKmax = infoViewer->experimentalMeasurementIndexLimitsKmax();
+    _experimentalMeasurementIndexLimitsLmin = infoViewer->experimentalMeasurementIndexLimitsLmin();
+    _experimentalMeasurementIndexLimitsLmax = infoViewer->experimentalMeasurementIndexLimitsLmax();
+    _experimentalMeasurementNumberOfSymmetryIndependentReflections = infoViewer->experimentalMeasurementNumberOfSymmetryIndependentReflections();
+    _experimentalMeasurementSoftware = infoViewer->experimentalMeasurementSoftware();
+    _experimentalMeasurementRefinementDetails = infoViewer->experimentalMeasurementRefinementDetails();
+    _experimentalMeasurementGoodnessOfFit = infoViewer->experimentalMeasurementGoodnessOfFit();
+    _experimentalMeasurementRFactorGt = infoViewer->experimentalMeasurementRFactorGt();
+    _experimentalMeasurementRFactorAll = infoViewer->experimentalMeasurementRFactorAll();
+
+    _chemicalFormulaMoiety = infoViewer->chemicalFormulaMoiety();
+    _chemicalFormulaSum = infoViewer->chemicalFormulaSum();
+    _chemicalNameSystematic = infoViewer->chemicalNameSystematic();
+
+    _citationArticleTitle = infoViewer->citationArticleTitle();
+    _citationJournalTitle = infoViewer->citationJournalTitle();
+    _citationAuthors = infoViewer->citationAuthors();
+    _citationJournalVolume = infoViewer->citationJournalVolume();
+    _citationJournalNumber = infoViewer->citationJournalNumber();
+    _citationJournalPageNumbers = infoViewer->citationJournalPageNumbers();
+    _citationDOI = infoViewer->citationDOI();
+    _citationPublicationDate = infoViewer->citationPublicationDate();
+    _citationDatebaseCodes = infoViewer->citationDatebaseCodes();
+  }
+}
+
 // shallow copy, atoms/bonds are empty, spacegroup no symmetry
 Structure::Structure(const Structure &structure): Object(structure),  _atomsTreeController(std::make_shared<SKAtomTreeController>()),
   _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
@@ -292,303 +436,9 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
   _experimentalMeasurementGoodnessOfFit = structure._experimentalMeasurementGoodnessOfFit;
   _experimentalMeasurementRFactorGt = structure._experimentalMeasurementRFactorGt;
   _experimentalMeasurementRFactorAll = structure._experimentalMeasurementRFactorAll;
-
-  /*
-  QByteArray byteArray = QByteArray();
-  QDataStream stream(&byteArray, QIODevice::WriteOnly);
-  stream << structure._atomsTreeController;
-
-  QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
-  streamRead >> _atomsTreeController;
-
-  setRepresentationStyle(_atomRepresentationStyle);
-
-  reComputeBoundingBox();
-
-  _atomsTreeController->setTags();
-  _bondSetController->setTags();
-  */
 }
 
 
-Structure::Structure(const std::shared_ptr<const Structure> structure): Object(structure), _atomsTreeController(std::make_shared<SKAtomTreeController>()),
-   _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
-{
-  qDebug() << "Copy constructor Structure";
-  /*
-  _displayName = structure->_displayName;
-
-  _origin = structure->_origin;
-  _scaling = structure->_scaling;
-  _orientation = structure->_orientation;
-  _rotationDelta = structure->_rotationDelta;
-  _periodic = structure->_periodic;
-  _isVisible = structure->_isVisible;
-  _cell = std::make_shared<SKCell>(*structure->_cell);
-  */
-  _minimumGridEnergyValue = structure->_minimumGridEnergyValue;
-  //_legacySpaceGroup = structure->_legacySpaceGroup;
-
-  _selectionCOMTranslation = structure->_selectionCOMTranslation;
-  _selectionRotationIndex = structure->_selectionRotationIndex;
-  _selectionBodyFixedBasis = structure->_selectionBodyFixedBasis;
-
-  _structureType = structure->_structureType;
-  _structureMaterialType = structure->_structureMaterialType;
-  _structureMass = structure->_structureMass;
-  _structureDensity = structure->_structureDensity;
-  _structureHeliumVoidFraction = structure->_structureHeliumVoidFraction;
-  _structureSpecificVolume = structure->_structureSpecificVolume;
-  _structureAccessiblePoreVolume = structure->_structureAccessiblePoreVolume;
-  _structureVolumetricNitrogenSurfaceArea = structure->_structureVolumetricNitrogenSurfaceArea;
-  _structureGravimetricNitrogenSurfaceArea = structure->_structureGravimetricNitrogenSurfaceArea;
-  _structureNumberOfChannelSystems = structure->_structureNumberOfChannelSystems;
-  _structureNumberOfInaccessiblePockets = structure->_structureNumberOfInaccessiblePockets;
-  _structureDimensionalityOfPoreSystem = structure->_structureDimensionalityOfPoreSystem;
-  _structureLargestCavityDiameter = structure->_structureLargestCavityDiameter;
-  _structureRestrictingPoreLimitingDiameter = structure->_structureRestrictingPoreLimitingDiameter;
-  _structureLargestCavityDiameterAlongAViablePath = structure->_structureLargestCavityDiameterAlongAViablePath;
-
-  _authorFirstName = structure->_authorFirstName;
-  _authorMiddleName = structure->_authorMiddleName;
-  _authorLastName = structure->_authorLastName;
-  _authorOrchidID = structure->_authorOrchidID;
-  _authorResearcherID = structure->_authorResearcherID;
-  _authorAffiliationUniversityName = structure->_authorAffiliationUniversityName;
-  _authorAffiliationFacultyName = structure->_authorAffiliationFacultyName;
-  _authorAffiliationInstituteName = structure->_authorAffiliationInstituteName;
-  _authorAffiliationCityName = structure->_authorAffiliationCityName;
-  _authorAffiliationCountryName = structure->_authorAffiliationCountryName;
-
-  // primitive properties
-  _primitiveTransformationMatrix = structure->_primitiveTransformationMatrix;
-  _primitiveOrientation = structure->_primitiveOrientation;
-  _primitiveRotationDelta = structure->_primitiveRotationDelta;
-
-  _primitiveOpacity = structure->_primitiveOpacity;
-  _primitiveIsCapped = structure->_primitiveIsCapped;
-  _primitiveIsFractional = structure->_primitiveIsFractional;
-  _primitiveNumberOfSides = structure->_primitiveNumberOfSides;
-  _primitiveThickness = structure->_primitiveThickness;
-
-  _primitiveFrontSideHDR = structure->_primitiveFrontSideHDR;
-  _primitiveFrontSideHDRExposure = structure->_primitiveFrontSideHDRExposure;
-  _primitiveFrontSideAmbientColor = structure->_primitiveFrontSideAmbientColor;
-  _primitiveFrontSideDiffuseColor = structure->_primitiveFrontSideDiffuseColor;
-  _primitiveFrontSideSpecularColor = structure->_primitiveFrontSideSpecularColor;
-  _primitiveFrontSideAmbientIntensity = structure->_primitiveFrontSideAmbientIntensity;
-  _primitiveFrontSideDiffuseIntensity = structure->_primitiveFrontSideDiffuseIntensity;
-  _primitiveFrontSideSpecularIntensity = structure->_primitiveFrontSideSpecularIntensity;
-  _primitiveFrontSideShininess = structure->_primitiveFrontSideShininess;
-
-  _primitiveBackSideHDR = structure->_primitiveBackSideHDR;
-  _primitiveBackSideHDRExposure = structure->_primitiveBackSideHDRExposure;
-  _primitiveBackSideAmbientColor = structure->_primitiveBackSideAmbientColor;
-  _primitiveBackSideDiffuseColor = structure->_primitiveBackSideDiffuseColor;
-  _primitiveBackSideSpecularColor = structure->_primitiveBackSideSpecularColor;
-  _primitiveBackSideAmbientIntensity = structure->_primitiveBackSideAmbientIntensity;
-  _primitiveBackSideDiffuseIntensity = structure->_primitiveBackSideDiffuseIntensity;
-  _primitiveBackSideSpecularIntensity = structure->_primitiveBackSideSpecularIntensity;
-  _primitiveBackSideShininess = structure->_primitiveBackSideShininess;
-
-  // atoms
-  _drawAtoms = structure->_drawAtoms;
-
-  _atomRepresentationType = structure->_atomRepresentationType;
-  _atomRepresentationStyle = structure->_atomRepresentationStyle;
-  _atomForceFieldIdentifier = structure->_atomForceFieldIdentifier;
-  _atomForceFieldOrder = structure->_atomForceFieldOrder;
-  _atomColorSchemeIdentifier = structure->_atomColorSchemeIdentifier;
-  _atomColorSchemeOrder = structure->_atomColorSchemeOrder;
-
-  _atomSelectionStyle = structure->_atomSelectionStyle;
-  _atomSelectionStripesDensity = structure->_atomSelectionStripesDensity;
-  _atomSelectionStripesFrequency = structure->_atomSelectionStripesFrequency;
-  _atomSelectionWorleyNoise3DFrequency = structure->_atomSelectionWorleyNoise3DFrequency;
-  _atomSelectionWorleyNoise3DJitter = structure->_atomSelectionWorleyNoise3DJitter;
-  _atomSelectionScaling = structure->_atomSelectionScaling;
-  _atomSelectionIntensity = structure->_atomSelectionIntensity;
-
-  _atomHue = structure->_atomHue;
-  _atomSaturation = structure->_atomSaturation;
-  _atomValue = structure->_atomValue;
-  _atomScaleFactor = structure->_atomScaleFactor;
-
-  _atomAmbientOcclusion = structure->_atomAmbientOcclusion;
-  _atomAmbientOcclusionPatchNumber = structure->_atomAmbientOcclusionPatchNumber;
-  _atomAmbientOcclusionTextureSize = structure->_atomAmbientOcclusionTextureSize;
-  _atomAmbientOcclusionPatchSize = structure->_atomAmbientOcclusionPatchSize;
-  //_atomCacheAmbientOcclusionTexture = clone->_atomCacheAmbientOcclusionTexture;
-
-  _atomHDR = structure->_atomHDR;
-  _atomHDRExposure = structure->_atomHDRExposure;
-  _atomSelectionIntensity = structure->_atomSelectionIntensity;
-
-  _atomAmbientColor = structure->_atomAmbientColor;
-  _atomDiffuseColor = structure->_atomDiffuseColor;
-  _atomSpecularColor = structure->_atomSpecularColor;
-  _atomAmbientIntensity = structure->_atomAmbientIntensity;
-  _atomDiffuseIntensity = structure->_atomDiffuseIntensity;
-  _atomSpecularIntensity = structure->_atomSpecularIntensity;
-  _atomShininess = structure->_atomShininess;
-
-  // bonds
-  _drawBonds = structure->_drawBonds;
-
-  _bondScaleFactor = structure->_bondScaleFactor;
-  _bondColorMode = structure->_bondColorMode;
-
-  _bondAmbientColor = structure->_bondAmbientColor;
-  _bondDiffuseColor = structure->_bondDiffuseColor;
-  _bondSpecularColor = structure->_bondSpecularColor;
-  _bondAmbientIntensity = structure->_bondAmbientIntensity;
-  _bondDiffuseIntensity = structure->_bondDiffuseIntensity;
-  _bondSpecularIntensity = structure->_bondSpecularIntensity;
-  _bondShininess = structure->_bondShininess;
-
-  _bondHDR = structure->_bondHDR;
-  _bondHDRExposure = structure->_bondHDRExposure;
-  _bondSelectionIntensity = structure->_bondSelectionIntensity;
-
-  _bondHue = structure->_bondHue;
-  _bondSaturation = structure->_bondSaturation;
-  _bondValue = structure->_bondValue;
-
-  _bondAmbientOcclusion = structure->_bondAmbientOcclusion;
-
-  // text properties
-  _atomTextType = structure->_atomTextType;
-  _atomTextFont = structure->_atomTextFont;
-  _atomTextScaling = structure->_atomTextScaling;
-  _atomTextColor = structure->_atomTextColor;
-  _atomTextGlowColor = structure->_atomTextGlowColor;
-  _atomTextStyle = structure->_atomTextStyle;
-  _atomTextEffect = structure->_atomTextEffect;
-  _atomTextAlignment = structure->_atomTextAlignment;
-  _atomTextOffset = structure->_atomTextOffset;
-
-  // unit cell
-  _drawUnitCell = structure->_drawUnitCell;
-  _unitCellScaleFactor = structure->_unitCellScaleFactor;
-  _unitCellDiffuseColor = structure->_unitCellDiffuseColor;
-  _unitCellDiffuseIntensity = structure->_unitCellDiffuseIntensity;
-
-  // adsorption surface
-  _frameworkProbeMolecule = structure->_frameworkProbeMolecule;
-
-  _drawAdsorptionSurface = structure->_drawAdsorptionSurface;
-  _adsorptionSurfaceOpacity = structure->_adsorptionSurfaceOpacity;
-  _adsorptionSurfaceIsoValue = structure->_adsorptionSurfaceIsoValue;
-
-  _adsorptionSurfaceRenderingMethod = structure->_adsorptionSurfaceRenderingMethod;
-  _adsorptionVolumeTransferFunction = structure->_adsorptionVolumeTransferFunction;
-  _adsorptionVolumeStepLength = structure->_adsorptionVolumeStepLength;
-
-  _adsorptionSurfaceSize = structure->_adsorptionSurfaceSize;
-  _adsorptionSurfaceNumberOfTriangles = structure->_adsorptionSurfaceNumberOfTriangles;
-
-  _adsorptionSurfaceProbeMolecule = structure->_adsorptionSurfaceProbeMolecule;
-
-  _adsorptionSurfaceHue = structure->_adsorptionSurfaceHue;
-  _adsorptionSurfaceSaturation = structure->_adsorptionSurfaceSaturation;
-  _adsorptionSurfaceValue = structure->_adsorptionSurfaceValue;
-
-  _adsorptionSurfaceFrontSideHDR = structure->_adsorptionSurfaceFrontSideHDR;
-  _adsorptionSurfaceFrontSideHDRExposure = structure->_adsorptionSurfaceFrontSideHDRExposure;
-  _adsorptionSurfaceFrontSideAmbientColor = structure->_adsorptionSurfaceFrontSideAmbientColor;
-  _adsorptionSurfaceFrontSideDiffuseColor = structure->_adsorptionSurfaceFrontSideDiffuseColor;
-  _adsorptionSurfaceFrontSideSpecularColor = structure->_adsorptionSurfaceFrontSideSpecularColor;
-  _adsorptionSurfaceFrontSideDiffuseIntensity = structure->_adsorptionSurfaceFrontSideDiffuseIntensity;
-  _adsorptionSurfaceFrontSideAmbientIntensity = structure->_adsorptionSurfaceFrontSideAmbientIntensity;
-  _adsorptionSurfaceFrontSideSpecularIntensity = structure->_adsorptionSurfaceFrontSideSpecularIntensity;
-  _adsorptionSurfaceFrontSideShininess = structure->_adsorptionSurfaceFrontSideShininess;
-
-  _adsorptionSurfaceBackSideHDR = structure->_adsorptionSurfaceBackSideHDR;
-  _adsorptionSurfaceBackSideHDRExposure = structure->_adsorptionSurfaceBackSideHDRExposure;
-  _adsorptionSurfaceBackSideAmbientColor = structure->_adsorptionSurfaceBackSideAmbientColor;
-  _adsorptionSurfaceBackSideDiffuseColor = structure->_adsorptionSurfaceBackSideDiffuseColor;
-  _adsorptionSurfaceBackSideSpecularColor = structure->_adsorptionSurfaceBackSideSpecularColor;
-  _adsorptionSurfaceBackSideDiffuseIntensity = structure->_adsorptionSurfaceBackSideDiffuseIntensity;
-  _adsorptionSurfaceBackSideAmbientIntensity = structure->_adsorptionSurfaceBackSideAmbientIntensity;
-  _adsorptionSurfaceBackSideSpecularIntensity = structure->_adsorptionSurfaceBackSideSpecularIntensity;
-  _adsorptionSurfaceBackSideShininess = structure->_adsorptionSurfaceBackSideShininess;
-
-
-  _creationDate = structure->_creationDate;
-  _creationTemperature = structure->_creationTemperature;
-  _creationTemperatureScale = structure->_creationTemperatureScale;
-  _creationPressure = structure->_creationPressure;
-  _creationPressureScale = structure->_creationPressureScale;
-  _creationMethod = structure->_creationMethod;
-  _creationUnitCellRelaxationMethod = structure->_creationUnitCellRelaxationMethod;
-  _creationAtomicPositionsSoftwarePackage = structure->_creationAtomicPositionsSoftwarePackage;
-  _creationAtomicPositionsIonsRelaxationAlgorithm = structure->_creationAtomicPositionsIonsRelaxationAlgorithm;
-  _creationAtomicPositionsIonsRelaxationCheck = structure->_creationAtomicPositionsIonsRelaxationCheck;
-  _creationAtomicPositionsForcefield = structure->_creationAtomicPositionsForcefield;
-  _creationAtomicPositionsForcefieldDetails = structure->_creationAtomicPositionsForcefieldDetails;
-  _creationAtomicChargesSoftwarePackage = structure->_creationAtomicChargesSoftwarePackage;
-  _creationAtomicChargesAlgorithms = structure->_creationAtomicChargesAlgorithms;
-  _creationAtomicChargesForcefield = structure->_creationAtomicChargesForcefield;
-  _creationAtomicChargesForcefieldDetails = structure->_creationAtomicChargesForcefieldDetails;
-
-  _chemicalFormulaMoiety = structure->_chemicalFormulaMoiety;
-  _chemicalFormulaSum = structure->_chemicalFormulaSum;
-  _chemicalNameSystematic = structure->_chemicalNameSystematic;
-  _cellFormulaUnitsZ = structure->_cellFormulaUnitsZ;
-
-
-  _citationArticleTitle = structure->_citationArticleTitle;
-  _citationJournalTitle = structure->_citationJournalTitle;
-  _citationAuthors = structure->_citationAuthors;
-  _citationJournalVolume = structure->_citationJournalVolume;
-  _citationJournalNumber = structure->_citationJournalNumber;
-  _citationJournalPageNumbers = structure->_citationJournalPageNumbers;
-  _citationDOI = structure->_citationDOI;
-  _citationPublicationDate = structure->_citationPublicationDate;
-  _citationDatebaseCodes = structure->_citationDatebaseCodes;
-
-  _experimentalMeasurementRadiation = structure->_experimentalMeasurementRadiation;
-  _experimentalMeasurementWaveLength = structure->_experimentalMeasurementWaveLength;
-  _experimentalMeasurementThetaMin = structure->_experimentalMeasurementThetaMin;
-  _experimentalMeasurementThetaMax = structure->_experimentalMeasurementThetaMax;
-  _experimentalMeasurementIndexLimitsHmin = structure->_experimentalMeasurementIndexLimitsHmin;
-  _experimentalMeasurementIndexLimitsHmax = structure->_experimentalMeasurementIndexLimitsHmax;
-  _experimentalMeasurementIndexLimitsKmin = structure->_experimentalMeasurementIndexLimitsKmin;
-  _experimentalMeasurementIndexLimitsKmax = structure->_experimentalMeasurementIndexLimitsKmax;
-  _experimentalMeasurementIndexLimitsLmin = structure->_experimentalMeasurementIndexLimitsLmin;
-  _experimentalMeasurementIndexLimitsLmax = structure->_experimentalMeasurementIndexLimitsLmax;
-  _experimentalMeasurementNumberOfSymmetryIndependentReflections = structure->_experimentalMeasurementNumberOfSymmetryIndependentReflections;
-  _experimentalMeasurementSoftware = structure->_experimentalMeasurementSoftware;
-  _experimentalMeasurementRefinementDetails = structure->_experimentalMeasurementRefinementDetails;
-  _experimentalMeasurementGoodnessOfFit = structure->_experimentalMeasurementGoodnessOfFit;
-  _experimentalMeasurementRFactorGt = structure->_experimentalMeasurementRFactorGt;
-  _experimentalMeasurementRFactorAll = structure->_experimentalMeasurementRFactorAll;
-
-  structure->atomsTreeController()->setTags();
-
-  QByteArray byteArray = QByteArray();
-  QDataStream stream(&byteArray, QIODevice::WriteOnly);
-  stream << structure->_atomsTreeController;
-
-  QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
-  streamRead >> _atomsTreeController;
-
-  setRepresentationStyle(_atomRepresentationStyle);
-
-  reComputeBoundingBox();
-
-  _atomsTreeController->setTags();
-  _bondSetController->setTags();
-}
-
-Structure::Structure(const std::shared_ptr<const Primitive> primitive): Object(primitive)
-{
-
-}
-Structure:: Structure(const std::shared_ptr<const GridVolume> volume): Object(volume)
-{
-
-}
 
 void Structure::convertAsymmetricAtomsToCartesian()
 {
@@ -679,9 +529,9 @@ std::set<int> Structure::filterCartesianAtomPositions(std::function<bool(double3
   return std::set<int>();
 };
 
-std::set<int> Structure::filterCartesianBondPositions(std::function<bool(double3)> &)
+BondSelectionIndexSet Structure::filterCartesianBondPositions(std::function<bool(double3)> &)
 {
-  return std::set<int>();
+  return BondSelectionIndexSet();
 };
 
 
@@ -1669,7 +1519,7 @@ void Structure::toggleAtomSelection(int asymmetricAtomId)
 
 void Structure::toggleBondSelection(int asymmetricBondId)
 {
-  std::set<int>::const_iterator search = _bondSetController->selectionIndexSet().find(asymmetricBondId);
+  std::set<int64_t>::const_iterator search = _bondSetController->selectionIndexSet().find(asymmetricBondId);
   if (search != _bondSetController->selectionIndexSet().end())
   {
     _bondSetController->selectionIndexSet().erase(*search);
@@ -1709,7 +1559,6 @@ void Structure::addToAtomSelection(std::set<int>& atomIds)
 
 void Structure::setStructureNitrogenSurfaceArea(double value)
 {
-  std::cout << "Surface area: " << value << std::endl;
   _structureGravimetricNitrogenSurfaceArea = value * Constants::AvogadroConstantPerAngstromSquared / _structureMass;
   _structureVolumetricNitrogenSurfaceArea = value * 1e4 / cell()->volume();
 }
@@ -1900,6 +1749,7 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
 
   stream << structure->_drawAdsorptionSurface;
   stream << structure->_adsorptionSurfaceOpacity;
+  stream << structure->_adsorptionTransparencyThreshold;
   stream << structure->_adsorptionSurfaceIsoValue;
   stream << structure->_adsorptionSurfaceMinimumValue;
 
@@ -1907,8 +1757,8 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << static_cast<typename std::underlying_type<RKPredefinedVolumeRenderingTransferFunction>::type>(structure->_adsorptionVolumeTransferFunction);
   stream << structure->_adsorptionVolumeStepLength;
 
-  stream << structure->_adsorptionSurfaceSize;
-  stream << structure->_adsorptionSurfaceNumberOfTriangles;
+  stream << structure->_encompassingPowerOfTwoCubicGridSize;
+  stream << qint64(0);
 
   stream << static_cast<typename std::underlying_type<ProbeMolecule>::type>(structure->_adsorptionSurfaceProbeMolecule);
 
@@ -2279,6 +2129,11 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
 
   stream >> structure->_drawAdsorptionSurface;
   stream >> structure->_adsorptionSurfaceOpacity;
+  if(versionNumber >= 10) // introduced in version 10
+  {
+    stream >> structure->_adsorptionTransparencyThreshold;
+  }
+
   stream >> structure->_adsorptionSurfaceIsoValue;
   stream >> structure->_adsorptionSurfaceMinimumValue;
 
@@ -2293,7 +2148,15 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
     stream >> structure->_adsorptionVolumeStepLength;
   }
 
-  stream >> structure->_adsorptionSurfaceSize;
+  if(versionNumber <= 9)
+  {
+    qint64 temp;
+    stream >> temp;
+  }
+  else
+  {
+    stream >> structure->_encompassingPowerOfTwoCubicGridSize;
+  }
   stream >> structure->_adsorptionSurfaceNumberOfTriangles;
 
   qint64 adsorptionSurfaceProbeMolecule;

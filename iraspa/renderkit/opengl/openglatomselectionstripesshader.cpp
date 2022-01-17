@@ -30,7 +30,7 @@ OpenGLAtomSelectionStripesShader::OpenGLAtomSelectionStripesShader()
 
 }
 
-void OpenGLAtomSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAtomSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -103,7 +103,7 @@ void OpenGLAtomSelectionStripesShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(source->atomSelectionStyle() == RKSelectionStyle::striped && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
         {
@@ -139,7 +139,7 @@ void OpenGLAtomSelectionStripesShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         std::vector<RKInPerInstanceAttributesAtoms> atomData = source->renderSelectedAtoms();
         _numberOfDrawnAtoms[i][j] = atomData.size();

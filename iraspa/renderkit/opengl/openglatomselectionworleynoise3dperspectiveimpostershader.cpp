@@ -31,7 +31,7 @@ OpenGLAtomSelectionWorleyNoise3DPerspectiveImposterShader::OpenGLAtomSelectionWo
 
 }
 
-void OpenGLAtomSelectionWorleyNoise3DPerspectiveImposterShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAtomSelectionWorleyNoise3DPerspectiveImposterShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -91,7 +91,7 @@ void OpenGLAtomSelectionWorleyNoise3DPerspectiveImposterShader::paintGL(GLuint s
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(source->atomSelectionStyle() == RKSelectionStyle::WorleyNoise3D && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _atomSelectionShader._numberOfDrawnAtoms[i][j]>0)
         {

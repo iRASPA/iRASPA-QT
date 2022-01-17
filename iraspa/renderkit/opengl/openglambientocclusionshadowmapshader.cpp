@@ -41,16 +41,16 @@ OpenGLAmbientOcclusionShadowMapShader::~OpenGLAmbientOcclusionShadowMapShader()
   _cache.clear();
 }
 
-void OpenGLAmbientOcclusionShadowMapShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAmbientOcclusionShadowMapShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
    deleteBuffers();
    _renderStructures = structures;
    generateBuffers();
 }
 
-void OpenGLAmbientOcclusionShadowMapShader::invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void OpenGLAmbientOcclusionShadowMapShader::invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
-  for(const std::shared_ptr<RKRenderStructure> &structure : structures)
+  for(const std::shared_ptr<RKRenderObject> &structure : structures)
   {
     _cache.remove(structure.get());
   }
@@ -258,7 +258,7 @@ void OpenGLAmbientOcclusionShadowMapShader::adjustAmbientOcclusionTextureSize()
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxSize);
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         size_t numberOfAtoms = source->renderAtoms().size();
 
@@ -394,8 +394,8 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
     {
       for(size_t j=0;j<_renderStructures[i].size();j++)
       {
-          if (RKRenderStructure* renderStructure = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
-        if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+          if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(_renderStructures[i][j].get()))
+        if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
         {
           if(source->atomAmbientOcclusion() && _renderStructures[i][j]->isVisible())
           {

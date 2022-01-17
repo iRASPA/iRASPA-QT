@@ -175,7 +175,7 @@ void BondListView::deleteSelection()
           if(_iRASPAProject)
           {
             std::vector<std::shared_ptr<SKAsymmetricBond>> bonds = structure->bondSetController()->selectedObjects();
-            std::set<int> bondSelection = structure->bondSetController()->selectionIndexSet();
+            BondSelectionIndexSet bondSelection = structure->bondSetController()->selectionIndexSet();
             BondListViewDeleteSelectionCommand *deleteSelectionCommand = new BondListViewDeleteSelectionCommand(_mainWindow, _bondModel, structure, bonds, bondSelection);
             _iRASPAProject->undoManager().push(deleteSelectionCommand);
           }
@@ -204,7 +204,7 @@ void BondListView::setSelectedBonds(const QItemSelection &selected, const QItemS
   {
     if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspaStructure->object()))
     {
-      std::set<int> previousBondSelection = structure->bondSetController()->selectionIndexSet();
+      BondSelectionIndexSet previousBondSelection = structure->bondSetController()->selectionIndexSet();
 
       for(QModelIndex index : deselected.indexes())
       {
@@ -232,7 +232,7 @@ void BondListView::setSelectedBonds(const QItemSelection &selected, const QItemS
         {
           if(_iRASPAProject)
           {
-            std::set<int> bondSelection = structure->bondSetController()->selectionIndexSet();
+            BondSelectionIndexSet bondSelection = structure->bondSetController()->selectionIndexSet();
 
             BondListViewChangeSelectionCommand *changeSelectionCommand = new BondListViewChangeSelectionCommand(structure->bondSetController(), _mainWindow,
                                                                            structure, bondSelection, previousBondSelection);

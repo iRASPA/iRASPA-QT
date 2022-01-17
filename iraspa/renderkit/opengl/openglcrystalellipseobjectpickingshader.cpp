@@ -28,7 +28,7 @@ OpenGLCrystalEllipseObjectPickingShader::OpenGLCrystalEllipseObjectPickingShader
 }
 
 
-void OpenGLCrystalEllipseObjectPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalEllipseObjectPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

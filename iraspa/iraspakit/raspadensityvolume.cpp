@@ -5,6 +5,16 @@ RASPADensityVolume::RASPADensityVolume(): GridVolume()
 
 }
 
+RASPADensityVolume::RASPADensityVolume(const std::shared_ptr<Object> object): GridVolume(object)
+{
+
+}
+
+std::shared_ptr<Object> RASPADensityVolume::shallowClone()
+{
+  return std::make_shared<RASPADensityVolume>(static_cast<const RASPADensityVolume&>(*this));
+}
+
 RASPADensityVolume::RASPADensityVolume(std::shared_ptr<SKStructure> frame): GridVolume(frame)
 {
   std::optional<QString> displayName = frame->displayName;
@@ -151,6 +161,7 @@ RASPADensityVolume::RASPADensityVolume(std::shared_ptr<SKStructure> frame): Grid
 
   _data =  QByteArray(reinterpret_cast<const char*>(dataGrid.data()), dataGrid.size()*sizeof(float4));
 }
+
 
 
 

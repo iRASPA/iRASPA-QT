@@ -102,7 +102,7 @@ void OpenGLPickingShader::initializeStructureUniforms()
   glUniformBlockBinding(_polygonalPrismPickingShader.program(), glGetUniformBlockIndex(_polygonalPrismPickingShader.program(), "StructureUniformBlock"), 1);
 }
 
-void OpenGLPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _atomPickingShader.setRenderStructures(structures);
   _internalBondPickingShader.setRenderStructures(structures);

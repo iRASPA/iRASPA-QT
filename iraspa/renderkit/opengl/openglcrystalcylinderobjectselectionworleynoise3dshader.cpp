@@ -33,7 +33,7 @@ OpenGLCrystalCylinderObjectSelectionWorleyNoise3DShader::OpenGLCrystalCylinderOb
 }
 
 
-void OpenGLCrystalCylinderObjectSelectionWorleyNoise3DShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalCylinderObjectSelectionWorleyNoise3DShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

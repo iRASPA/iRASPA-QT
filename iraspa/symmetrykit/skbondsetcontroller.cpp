@@ -28,14 +28,14 @@
 #include <algorithm>
 #include <map>
 #include <unordered_set>
+#include "foundationkit.h"
 
-qint64 SKBondSetController::_versionNumber = 2;
+qint64 SKBondSetController::_versionNumber = 3;
 
 SKBondSetController::SKBondSetController(std::shared_ptr<SKAtomTreeController> atomTreeController):_atomTreecontroller(atomTreeController)
 {
 
 }
-
 
 struct SKAysmmetricBondCompare
 {
@@ -131,10 +131,10 @@ bool SKBondSetController::removeBond(int index)
   return true;
 }
 
-void SKBondSetController::insertBonds(std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, std::set<int> indexSet)
+void SKBondSetController::insertBonds(std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, BondSelectionIndexSet indexSet)
 {
-  int bondIndex=0;
-  for(int index: indexSet)
+  int64_t bondIndex=0;
+  for(int64_t index: indexSet)
   {
     _arrangedObjects.insert(_arrangedObjects.begin() + index, bonds[bondIndex]);
     bondIndex++;
@@ -241,7 +241,7 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<SKBondSetCont
 {
   stream << controller->_versionNumber;
   stream << controller->_arrangedObjects;
-
+  stream << controller->_selectedIndexSet;
   return stream;
 }
 
@@ -259,6 +259,11 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<SKBondSetController
   std::vector<std::shared_ptr<SKAtomCopy>> atomCopies = controller->_atomTreecontroller->allAtomCopies();
 
   stream >> controller->_arrangedObjects;
+
+  if(versionNumber >= 3) // introduced in version 3
+  {
+    stream >> controller->_selectedIndexSet;
+  }
 
   // fill in the atoms from the tags
   for(std::shared_ptr<SKAsymmetricBond> &bond: controller->_arrangedObjects)

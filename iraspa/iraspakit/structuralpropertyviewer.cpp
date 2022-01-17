@@ -19,9 +19,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "atomvisualappearanceviewer.h"
+#include "structuralpropertyviewer.h"
 
-AtomVisualAppearanceViewer::~AtomVisualAppearanceViewer()
+StructuralPropertyViewer::~StructuralPropertyViewer()
+{
+  // Compulsory virtual destructor definition
+}
+
+StructuralPropertyEditor::~StructuralPropertyEditor()
 {
   // Compulsory virtual destructor definition
 }

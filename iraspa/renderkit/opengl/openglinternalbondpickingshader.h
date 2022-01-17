@@ -45,7 +45,7 @@ public:
   OpenGLInternalBondPickingShader(OpenGLBondShader &bondShader);
   void loadShader(void) override final;
 
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   void paintGL(GLuint structureUniformBuffer);
 
   void reloadData();
@@ -59,7 +59,7 @@ private:
   OpenGLInternalBondShader &_internalBondShader;
   GLuint _program;
 
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   std::vector<std::vector<GLuint>> _vertexAllBondsArrayObject;
   std::vector<std::vector<GLuint>> _vertexSingleBondsArrayObject;

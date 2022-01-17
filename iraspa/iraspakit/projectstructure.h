@@ -35,19 +35,24 @@
 class ProjectStructure: public Project, public RKRenderDataSource
 {
 public:
+  enum class MovieType: qint64
+  {
+    frames = 0, rotationY = 1, rotationXYlemniscate = 2
+  };
+
   ProjectStructure();
   ~ProjectStructure() override;
-  ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log);
-  ProjectStructure(QList<QUrl> fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log);
+  ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule);
+  ProjectStructure(QList<QUrl> fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule);
 
   std::vector<size_t> numberOfScenes() const override final;
   int numberOfMovies(int sceneIndex) const override final;
-  std::vector<std::shared_ptr<RKRenderStructure>> renderStructuresForScene(size_t i) const;
+  std::vector<std::shared_ptr<RKRenderObject>> renderStructuresForScene(size_t i) const;
 
   std::vector<std::shared_ptr<RKLight>>& renderLights() override final {return _renderLights;}
 
   std::vector<RKInPerInstanceAttributesAtoms> renderMeasurementPoints() const override final;
-  std::vector<RKRenderStructure> renderMeasurementStructure() const override final;
+  std::vector<RKRenderObject> renderMeasurementStructure() const override final;
 
   bool hasSelectedObjects() const override final;
 
@@ -107,7 +112,7 @@ public:
   void setInitialSelectionIfNeeded() override final;
   std::shared_ptr<RKGlobalAxes> axes() const override final {return _renderAxes;}
 private:
-  qint64 _versionNumber{4};
+  qint64 _versionNumber{5};
 
   SKBoundingBox _boundingBox = SKBoundingBox();
   bool _showBoundingBox{false};
@@ -131,7 +136,7 @@ private:
   RKImageDimensions _imageDimensions = RKImageDimensions::pixels;
   RKImageQuality _renderImageQuality = RKImageQuality::rgb_8_bits;
   qint64 _movieFramesPerSecond = 10;
-
+  ProjectStructure::MovieType _movieType = ProjectStructure::MovieType::rotationY;
   std::vector<std::shared_ptr<RKLight>> _renderLights{std::make_shared<RKLight>(),std::make_shared<RKLight>(),std::make_shared<RKLight>(),std::make_shared<RKLight>()};
   std::shared_ptr<RKCamera> _camera;
   std::shared_ptr<RKGlobalAxes> _renderAxes = std::make_shared<RKGlobalAxes>();

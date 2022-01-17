@@ -38,7 +38,7 @@ OpenGLTextRenderingShader::~OpenGLTextRenderingShader()
 {
 }
 
-void OpenGLTextRenderingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLTextRenderingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -62,7 +62,7 @@ void OpenGLTextRenderingShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfDrawnAtoms[i][j]>0)
         {
@@ -126,7 +126,7 @@ void OpenGLTextRenderingShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         QString fontString = source->renderTextFont();
         if(!_cachedFontAtlas.contains(fontString))

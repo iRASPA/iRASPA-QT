@@ -42,128 +42,25 @@ CylinderPrimitive::CylinderPrimitive(const CylinderPrimitive &cylinderPrimitive)
 {
 }
 
+CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<Object> object): Primitive(object)
+{
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    if(atomViewer->isFractional())
+    {
+      convertAsymmetricAtomsToCartesian();
+      expandSymmetry();
+    }
+    _atomsTreeController->setTags();
+    reComputeBoundingBox();
+  }
+}
+
 std::shared_ptr<Object> CylinderPrimitive::shallowClone()
 {
   return std::make_shared<CylinderPrimitive>(static_cast<const CylinderPrimitive&>(*this));
 }
 
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const Crystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  convertAsymmetricAtomsToCartesian();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const MolecularCrystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const Molecule> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const ProteinCrystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const Protein> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const CrystalCylinderPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const CrystalEllipsoidPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const CrystalPolygonalPrismPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const CylinderPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const EllipsoidPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const PolygonalPrismPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<const GridVolume> volume): Primitive(volume)
-{
-
-}
-
-
-
-/*
-CylinderPrimitive::CylinderPrimitive(std::shared_ptr<Primitive> s): Primitive(s)
-{
-  _cell = std::make_shared<SKCell>(*s->cell());
-
-  if(dynamic_cast<Crystal*>(s.get()) ||
-     dynamic_cast<CrystalEllipsoidPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalCylinderPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalPolygonalPrismPrimitive*>(s.get()))
-  {
-    //convertAsymmetricAtomsToFractional();
-  }
-
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  //computeBonds();
-}*/
 
 
 

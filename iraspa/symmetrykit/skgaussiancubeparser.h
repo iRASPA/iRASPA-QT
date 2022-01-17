@@ -19,9 +19,39 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "atomtextvisualappearanceviewer.h"
+#pragma once
 
-AtomTextVisualAppearanceViewer::~AtomTextVisualAppearanceViewer()
+#include <cmath>
+#include <QString>
+#include <QUrl>
+#include <string>
+#include <vector>
+#include <map>
+#include <tuple>
+#include <cwctype>
+#include <optional>
+#include <foundationkit.h>
+#include "skparser.h"
+#include "skasymmetricatom.h"
+#include "skatomtreenode.h"
+#include "skatomtreecontroller.h"
+#include "skspacegroup.h"
+#include "skstructure.h"
+
+class SKGaussianCubeParser: public SKParser
 {
-  // Compulsory virtual destructor definition
-}
+public:
+  SKGaussianCubeParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
+  void startParsing() override final;
+private:
+  Scanner _scanner;
+  [[maybe_unused]] bool _onlyAsymmetricUnitCell;
+  [[maybe_unused]] bool _asMolecule;
+  [[maybe_unused]] QString::const_iterator _previousScanLocation;
+
+  [[maybe_unused]] int _numberOfAtoms = 0;
+  [[maybe_unused]] int _numberOfAminoAcidAtoms = 0;
+  std::shared_ptr<SKStructure> _frame;
+  std::optional<SKCell> _cell;
+  [[maybe_unused]] int _spaceGroupHallNumber;
+};

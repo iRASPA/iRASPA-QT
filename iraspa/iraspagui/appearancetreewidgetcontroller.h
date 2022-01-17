@@ -32,6 +32,7 @@
 #include <QString>
 #include <QColor>
 #include <iraspakit.h>
+#include <mathkit.h>
 #include "iraspamainwindowconsumerprotocol.h"
 #include <simulationkit.h>
 #include <optional>
@@ -238,9 +239,9 @@ private:
   void reloadAtomShininess();
 
   void setRepresentationType(int value);
-  std::optional<std::unordered_set<AtomVisualAppearanceViewer::RepresentationType, enum_hash> > representationType();
+  std::optional<std::unordered_set<AtomStructureViewer::RepresentationType, enum_hash> > representationType();
   void setRepresentationStyle(int value);
-  std::optional<std::unordered_set<AtomVisualAppearanceViewer::RepresentationStyle, enum_hash> > representationStyle();
+  std::optional<std::unordered_set<AtomStructureViewer::RepresentationStyle, enum_hash> > representationStyle();
   void setColorSchemeComboBoxIndex(int value);
   std::optional<std::set<QString> > colorSchemeIdentifier();
   void setColorSchemeOrder(int value);
@@ -407,6 +408,8 @@ private:
   void reloadAdsorptionVolumeStepLength();
   void reloadAdsorptionSurfaceIsovalue();
   void reloadAdsorptionSurfaceOpacity();
+  void reloadAdsorptionTransparencyThreshold();
+  void reloadAdsorptionQuality();
   void reloadAdsorptionSurfaceHue();
   void reloadAdsorptionSurfaceSaturation();
   void reloadAdsorptionSurfaceValue();
@@ -437,8 +440,13 @@ private:
   void setAdsorptionSurfaceIsovalue(double value);
   std::optional<std::unordered_set<double>> adsorptionSurfaceIsovalue();
   std::optional<std::unordered_set<double>> adsorptionSurfaceMinimumValue();
+  std::optional<std::unordered_set<double>> adsorptionSurfaceMaximumValue();
   void setAdsorptionSurfaceOpacity(double value);
   std::optional<std::unordered_set<double>> adsorptionSurfaceOpacity();
+  void setAdsorptionTransparencyThreshold(double value);
+  std::optional<std::unordered_set<double>> adsorptionTransparencyThreshold();
+  void setAdsorptionQualityIndex(int value);
+  std::optional<std::unordered_set<int> > adsorptionQualityIndex();
 
   void setAdsorptionSurfaceHue(double value);
   std::optional<std::unordered_set<double> > adsorptionSurfaceHue();
@@ -446,6 +454,7 @@ private:
   std::optional<std::unordered_set<double> > adsorptionSurfaceSaturation();
   void setAdsorptionSurfaceValue(double value);
   std::optional<std::unordered_set<double> > adsorptionSurfaceValue();
+  std::optional<std::unordered_set<int3>> adsorptionDimensions();
 
   void setAdsorptionSurfaceInsideHighDynamicRange(int value);
   std::optional<std::unordered_set<bool> > adsorptionSurfaceInsideHighDynamicRange();

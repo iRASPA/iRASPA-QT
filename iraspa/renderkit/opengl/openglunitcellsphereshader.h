@@ -42,13 +42,13 @@ public:
   void paintGL(GLuint structureUniformBuffer);
   void reloadData();
   void initializeVertexArrayObject();
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   void deleteBuffers();
   void generateBuffers();
   GLuint program() {return _program;}
 private:
   GLuint _program;
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   GLint _vertexNormalAttributeLocation;
   GLint _vertexPositionAttributeLocation;

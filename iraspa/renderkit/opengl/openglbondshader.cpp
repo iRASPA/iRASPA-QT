@@ -40,7 +40,7 @@ bool OpenGLBondShader::initializeOpenGLFunctions()
   return QOpenGLFunctions_3_3_Core::initializeOpenGLFunctions();
 }
 
-void OpenGLBondShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLBondShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _internalBondShader.setRenderStructures(structures);
   _externalBondShader.setRenderStructures(structures);

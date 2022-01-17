@@ -25,7 +25,7 @@
 
 BondListViewDeleteSelectionCommand::BondListViewDeleteSelectionCommand(MainWindow *mainWindow, std::shared_ptr<BondListViewModel> bondTreeModel,
                                                std::shared_ptr<Object> object,
-                                               std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, std::set<int> bondSelection, QUndoCommand *parent):
+                                               std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, BondSelectionIndexSet bondSelection, QUndoCommand *parent):
   QUndoCommand(parent),
   _mainWindow(mainWindow),
   _bondTreeModel(bondTreeModel),

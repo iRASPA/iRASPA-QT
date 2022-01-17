@@ -39,7 +39,7 @@ class OpenGLAmbientOcclusionShadowMapShader: public OpenGLShader
 public:
   OpenGLAmbientOcclusionShadowMapShader(OpenGLAtomSphereShader &atomShader,OpenGLAtomOrthographicImposterShader &atomOrthographicImposterShader);
   ~OpenGLAmbientOcclusionShadowMapShader() override final;
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   void reloadData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality);
   void deleteBuffers();
   void generateBuffers();
@@ -52,7 +52,7 @@ public:
   GLuint shadowMapProgram() {return _shadowMapProgram;}
 
   std::vector<std::vector<GLuint>> &generatedAmbientOcclusionTextures() {return _generatedAmbientOcclusionTexture;}
-  void invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderStructure>> structure);
+  void invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderObject>> structure);
 
 private:
   GLuint _ambientOcclusionProgram;
@@ -61,7 +61,7 @@ private:
   OpenGLAtomSphereShader& _atomShader;
   OpenGLAtomOrthographicImposterShader& _atomOrthographicImposterShader;
 
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   GLint _atomAmbientOcclusionMapUniformLocation;
   GLint _atomAmbientOcclusionMapWeightUniformLocation;
@@ -79,7 +79,7 @@ private:
   std::vector<std::vector<GLuint>> _ambientOcclusionFrameBufferObject;
   std::vector<std::vector<GLuint>> _generatedAmbientOcclusionTexture;
 
-  QCache<RKRenderStructure*, std::vector<uint16_t>> _cache;
+  QCache<RKRenderObject*, std::vector<uint16_t>> _cache;
 
   static const std::string _vertexAmbientOcclusionShaderSource;
   static const std::string _fragmentAmbientOcclusionShaderSource;

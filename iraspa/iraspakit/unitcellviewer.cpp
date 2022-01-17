@@ -19,9 +19,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "primitivevisualappearanceviewer.h"
+#include "unitcellviewer.h"
 
-PrimitiveVisualAppearanceViewer::~PrimitiveVisualAppearanceViewer()
+UnitCellViewer::~UnitCellViewer()
+{
+  // Compulsory virtual destructor definition
+}
+
+UnitCellEditor::~UnitCellEditor()
 {
   // Compulsory virtual destructor definition
 }

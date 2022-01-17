@@ -34,18 +34,16 @@
 #include "skasymmetricatom.h"
 #include "skatomtreenode.h"
 #include "skatomtreecontroller.h"
-#include "logreporting.h"
 
 class SKXYZParser: public SKParser
 {
 public:
-  SKXYZParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
-  bool startParsing() override final;
+  SKXYZParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
+  void startParsing() override final;
 private:
   Scanner _scanner;
   [[maybe_unused]] bool _onlyAsymmetricUnitCell;
   bool _asMolecule;
-  LogReporting *_log;
   QString::const_iterator _previousScanLocation;
   std::optional<int> _spaceGroupHallNumber;
   std::shared_ptr<SKStructure> _frame;

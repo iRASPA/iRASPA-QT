@@ -30,7 +30,7 @@ OpenGLAtomSelectionWorleyNoise3DShader::OpenGLAtomSelectionWorleyNoise3DShader()
 
 }
 
-void OpenGLAtomSelectionWorleyNoise3DShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAtomSelectionWorleyNoise3DShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -115,7 +115,7 @@ void OpenGLAtomSelectionWorleyNoise3DShader::paintGL(GLuint structureUniformBuff
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(source->atomSelectionStyle() == RKSelectionStyle::WorleyNoise3D && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)
         {
@@ -151,7 +151,7 @@ void OpenGLAtomSelectionWorleyNoise3DShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         std::vector<RKInPerInstanceAttributesAtoms> atomData = source->renderSelectedAtoms();
         _numberOfDrawnAtoms[i][j] = atomData.size();

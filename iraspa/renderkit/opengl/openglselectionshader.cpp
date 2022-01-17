@@ -39,7 +39,7 @@ void OpenGLSelectionShader::initializeOpenGLFunctions()
   _objectSelectionShader.initializeOpenGLFunctions();
 }
 
-void OpenGLSelectionShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLSelectionShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _atomSelectionShader.setRenderStructures(structures);
   _bondSelectionShader.setRenderStructures(structures);

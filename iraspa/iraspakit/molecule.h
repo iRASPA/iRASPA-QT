@@ -30,42 +30,48 @@ public:
   Molecule(const Molecule &molecule);
   Molecule(std::shared_ptr<SKStructure> frame);
 
-  Molecule(const std::shared_ptr<const class Crystal> structure);
-  Molecule(const std::shared_ptr<const class MolecularCrystal> structure);
-  Molecule(const std::shared_ptr<const class Molecule> structure);
-  Molecule(const std::shared_ptr<const class ProteinCrystal> structure);
-  Molecule(const std::shared_ptr<const class Protein> structure);
-  Molecule(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
-  Molecule(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
-  Molecule(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
-  Molecule(const std::shared_ptr<const class CylinderPrimitive> primitive);
-  Molecule(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
-  Molecule(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
-  Molecule(const std::shared_ptr<const class GridVolume> volume);
-
   ~Molecule() {}
 
-  std::shared_ptr<Object> shallowClone() override final;
-
+  // Object
+  // ===============================================================================================
+  Molecule(const std::shared_ptr<Object> object);
   ObjectType structureType() override final { return ObjectType::molecule; }
+  std::shared_ptr<Object> shallowClone() override final;
+  SKBoundingBox boundingBox() const override;
+  void reComputeBoundingBox() override;
 
+  // RKRenderAtomSource: overwritten from Structure
+  // ===============================================================================================
+  std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override final;
+  std::vector<RKInPerInstanceAttributesAtoms> renderSelectedAtoms() const override final;
+  std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const override final;
+
+  // RKRenderBondSource: overwritten from Structure
+  // ===============================================================================================
+  std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const override final;
+  std::vector<RKInPerInstanceAttributesBonds> renderSelectedInternalBonds() const override final;
+
+  // AtomViewer: overwritten from Structure
+  // ===============================================================================================
+  bool isFractional() override final {return false;}
+  void expandSymmetry() final override;
+  void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);
+  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
+
+  // BondViewer: overwritten from Structure
+  // ===============================================================================================
+  BondSelectionIndexSet filterCartesianBondPositions(std::function<bool(double3)> &) override final;
+  void computeBonds() final override;
+
+  // Structure: reimplemented
+  // ===============================================================================================
   std::shared_ptr<Structure> flattenHierarchy() const override final;
   std::shared_ptr<Structure> appliedCellContentShift() const override final;
 
-	std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override final;
-  std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const override final;
-
-  std::vector<RKInPerInstanceAttributesAtoms> renderSelectedAtoms() const override final;
-  std::vector<RKInPerInstanceAttributesBonds> renderSelectedInternalBonds() const override final;
-
-  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
-  std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &) override final;
-
-  SKBoundingBox boundingBox() const final override;
-  void reComputeBoundingBox() final override;
-
-  void expandSymmetry() final override;
-  void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToFractionalPositions() override final;
@@ -73,28 +79,20 @@ public:
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToFractionalPositions() override final;
 
-  double bondLength(std::shared_ptr<SKBond> bond) const override final;
-  double3 bondVector(std::shared_ptr<SKBond> bond) const override final;
-  std::pair<double3, double3> computeChangedBondLength(std::shared_ptr<SKBond> bond, double bondlength) const override final;
-  void computeBonds() final override;
-
   std::vector<double3> atomPositions() const override final;
-
-  std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const override final;
-
-  double3x3 unitCell();
-
 
   double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms) const override final;
   double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom> > atoms) const override final;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
+
+  double bondLength(std::shared_ptr<SKBond> bond) const override final;
+  double3 bondVector(std::shared_ptr<SKBond> bond) const override final;
+  std::pair<double3, double3> computeChangedBondLength(std::shared_ptr<SKBond> bond, double bondlength) const override final;
 
 private:
   qint64 _versionNumber{2};
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Molecule> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Molecule> &);
+
+  double3x3 unitCell();
 };
 

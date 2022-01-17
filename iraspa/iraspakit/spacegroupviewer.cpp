@@ -25,3 +25,8 @@ SpaceGroupViewer::~SpaceGroupViewer()
 {
   // Compulsory virtual destructor definition
 }
+
+SpaceGroupEditor::~SpaceGroupEditor()
+{
+  // Compulsory virtual destructor definition
+}

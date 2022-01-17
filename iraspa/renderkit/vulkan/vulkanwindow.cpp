@@ -118,7 +118,7 @@ void VulkanWindow::redrawWithQuality(RKRenderQuality quality)
 
 }
 
-void VulkanWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void VulkanWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _renderStructures = structures;
 }
@@ -177,19 +177,19 @@ void VulkanWindow::reloadBackgroundImage()
 
 }
 
-void VulkanWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void VulkanWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }
-void VulkanWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void VulkanWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }
-void VulkanWindow::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void VulkanWindow::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }
-void VulkanWindow::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void VulkanWindow::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }

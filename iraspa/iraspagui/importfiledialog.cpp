@@ -27,8 +27,14 @@ ImportFileDialog::ImportFileDialog(QWidget *parent) : QFileDialog(parent)
   setOption(QFileDialog::DontUseNativeDialog);
   setFileMode(QFileDialog::ExistingFiles);
 
-  setNameFilters(QStringList({"all supported files (*.cif *.pdb *.xyz *.vtk POSCAR CONTCAR)","CIF files (*.cif)","PDB files (*.pdb)", "XYZ files (*.xyz)", "VTK files (*.vtk)","VASP Files (POSCAR CONTCAR)"}));
-  selectNameFilter(QString("all supported files (*.cif *.pdb *.xyz *.vtk POSCAR CONTCAR)"));
+  setNameFilters(QStringList({"all supported files (*.cif *.pdb *.xyz *.vtk *.cube POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)",
+                              "CIF files (*.cif)",
+                              "PDB files (*.pdb)",
+                              "XYZ files (*.xyz)",
+                              "VTK files (*.vtk)",
+                              "CUBE files (*.cube)"
+                              "VASP Files (POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)"}));
+  selectNameFilter(QString("all supported files (*.cif *.pdb *.xyz *.vtk POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)"));
 
   checkboxSeperateProjects = new QCheckBox(this);
   checkboxSeperateProjects->setText("As seperate projects");

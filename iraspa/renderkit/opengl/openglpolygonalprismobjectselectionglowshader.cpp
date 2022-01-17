@@ -33,7 +33,7 @@ OpenGLPolygonalPrismObjectSelectionGlowShader::OpenGLPolygonalPrismObjectSelecti
 }
 
 
-void OpenGLPolygonalPrismObjectSelectionGlowShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLPolygonalPrismObjectSelectionGlowShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

@@ -34,7 +34,8 @@
 #include "textfield.h"
 #include "celltreewidgetchangestructurecommand.h"
 #include "celltreewidgetappliedcellcontentshiftcommand.h"
-#include "cellviewer.h"
+#include "unitcellviewer.h"
+#include "structuralpropertyviewer.h"
 #include "spacegroupviewer.h"
 
 CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget(parent ),
@@ -105,10 +106,7 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   itemMolecularCrystalSolvent->setFlags(itemMolecularCrystalSolvent->flags() & ~Qt::ItemIsEnabled);
   QStandardItem *itemDensityVolume = model->item(16);
   itemDensityVolume->setFlags(itemDensityVolume->flags() & ~Qt::ItemIsEnabled);
-  QStandardItem *itemVASPDensityVolume = model->item(19);
-  itemVASPDensityVolume->setFlags(itemVASPDensityVolume->flags() & ~Qt::ItemIsEnabled);
-  QStandardItem *itemGaussianDensityVolume = model->item(20);
-  itemGaussianDensityVolume->setFlags(itemGaussianDensityVolume->flags() & ~Qt::ItemIsEnabled);
+
 
   QObject::connect(_cellCellForm->cellStructureTypeComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CellTreeWidgetController::setStructureType);
 
@@ -3613,7 +3611,7 @@ void CellTreeWidgetController::reloadStructuralLargestDiamtereAlongAViablePath()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      if (std::optional<std::unordered_set<double>> values = structureLargestCavityDiameterAlongAviablePath(); values)
+      if (std::optional<std::unordered_set<double>> values = structureLargestCavityDiameterAlongAViablePath(); values)
       {
         _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setEnabled(true);
         _cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
@@ -3641,7 +3639,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structuralMa
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureMass();
       set.insert(value);
@@ -3664,7 +3662,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structuralDe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureDensity();
       set.insert(value);
@@ -3687,7 +3685,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structureHel
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureHeliumVoidFraction();
       set.insert(value);
@@ -3711,7 +3709,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structureSpe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureSpecificVolume();
       set.insert(value);
@@ -3734,7 +3732,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structureAcc
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureAccessiblePoreVolume();
       set.insert(value);
@@ -3754,7 +3752,7 @@ void CellTreeWidgetController::setFrameworkProbeMolecule(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<StructuralPropertyEditor> cellViewer = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
       {
         cellViewer->setFrameworkProbeMolecule(ProbeMolecule(value));
       }
@@ -3764,9 +3762,9 @@ void CellTreeWidgetController::setFrameworkProbeMolecule(int value)
       }
     }
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     emit computeNitrogenSurfaceArea(render_structures);
     this->reloadStructureProperties();
@@ -3786,7 +3784,7 @@ std::optional<std::unordered_set<ProbeMolecule, enum_hash>> CellTreeWidgetContro
   std::unordered_set<ProbeMolecule, enum_hash> set = std::unordered_set<ProbeMolecule, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       ProbeMolecule value = cellViewer->frameworkProbeMolecule();
       set.insert(value);
@@ -3809,7 +3807,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structureVol
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureVolumetricNitrogenSurfaceArea();
       set.insert(value);
@@ -3832,7 +3830,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structureGra
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureGravimetricNitrogenSurfaceArea();
       set.insert(value);
@@ -3855,7 +3853,7 @@ std::optional<std::unordered_set<int>> CellTreeWidgetController::structureNumber
   std::unordered_set<int> set = std::unordered_set<int>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureNumberOfChannelSystems();
       set.insert(value);
@@ -3873,7 +3871,7 @@ void CellTreeWidgetController::setStructureNumberOfChannelSystems(int value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyEditor> cellViewer = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
     {
       cellViewer->setStructureNumberOfChannelSystems(value);
     }
@@ -3891,7 +3889,7 @@ std::optional<std::unordered_set<int>> CellTreeWidgetController::structureNumber
   std::unordered_set<int> set = std::unordered_set<int>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       int value = cellViewer->structureNumberOfInaccessiblePockets();
       set.insert(value);
@@ -3909,7 +3907,7 @@ void CellTreeWidgetController::setStructureNumberOfInaccessiblePockets(int value
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyEditor> cellViewer = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
     {
       cellViewer->setStructureNumberOfInaccessiblePockets(value);
     }
@@ -3926,7 +3924,7 @@ std::optional<std::unordered_set<int>> CellTreeWidgetController::structureDimens
   std::unordered_set<int> set = std::unordered_set<int>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       int value = cellViewer->structureDimensionalityOfPoreSystem();
       set.insert(value);
@@ -3944,7 +3942,7 @@ void CellTreeWidgetController::setStructureDimensionalityOfPoreSystem(int value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyEditor> cellViewer = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
     {
       cellViewer->setStructureDimensionalityOfPoreSystem(value);
     }
@@ -3961,7 +3959,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structureLar
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureLargestCavityDiameter();
       set.insert(value);
@@ -3979,7 +3977,7 @@ void CellTreeWidgetController::setStructureLargestCavityDiameter(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyEditor> cellViewer = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
     {
       cellViewer->setStructureLargestCavityDiameter(value);
     }
@@ -3996,7 +3994,7 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structureRes
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       double value = cellViewer->structureRestrictingPoreLimitingDiameter();
       set.insert(value);
@@ -4014,7 +4012,7 @@ void CellTreeWidgetController::setStructureRestrictingPoreLimitingDiameter(doubl
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyEditor> cellViewer = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
     {
       cellViewer->setStructureRestrictingPoreLimitingDiameter(value);
     }
@@ -4022,7 +4020,7 @@ void CellTreeWidgetController::setStructureRestrictingPoreLimitingDiameter(doubl
   _mainWindow->documentWasModified();
 }
 
-std::optional<std::unordered_set<double>> CellTreeWidgetController::structureLargestCavityDiameterAlongAviablePath()
+std::optional<std::unordered_set<double>> CellTreeWidgetController::structureLargestCavityDiameterAlongAViablePath()
 {
   if(_iraspa_structures.empty())
   {
@@ -4031,9 +4029,9 @@ std::optional<std::unordered_set<double>> CellTreeWidgetController::structureLar
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
-      double value = cellViewer->structureLargestCavityDiameterAlongAviablePath();
+      double value = cellViewer->structureLargestCavityDiameterAlongAViablePath();
       set.insert(value);
     }
   }
@@ -4049,9 +4047,9 @@ void CellTreeWidgetController::setStructureLargestCavityDiameterAlongAviablePath
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<CellViewer> cellViewer = std::dynamic_pointer_cast<CellViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<StructuralPropertyEditor> cellViewer = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
     {
-      cellViewer->setStructureLargestCavityDiameterAlongAviablePath(value);
+      cellViewer->setStructureLargestCavityDiameterAlongAViablePath(value);
     }
   }
   _mainWindow->documentWasModified();
@@ -4830,11 +4828,16 @@ std::optional<std::set<QString>> CellTreeWidgetController::symmetrySymmorphicity
 
 void CellTreeWidgetController::computeHeliumVoidFractionPushButton()
 {
-  std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
-  std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                  [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+  for(const std::shared_ptr<iRASPAObject>&iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+    {
+      double heliumVoidfraction = volumetricDataEditor->computeVoidFraction();
+      volumetricDataEditor->setStructureHeliumVoidFraction(heliumVoidfraction);
+      volumetricDataEditor->recomputeDensityProperties();
+    }
+  }
 
-  emit computeHeliumVoidFraction(render_structures);
   this->reloadStructureProperties();
 
   _mainWindow->documentWasModified();
@@ -4842,11 +4845,17 @@ void CellTreeWidgetController::computeHeliumVoidFractionPushButton()
 
 void CellTreeWidgetController::computeGravimetricSurfaceAreaPushButton()
 {
-  std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
-  std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                  [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+  for(const std::shared_ptr<iRASPAObject>&iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+    {
+      double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceArea();
+      volumetricDataEditor->setStructureGravimetricNitrogenSurfaceArea(surfaceArea);
+      volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
+      volumetricDataEditor->recomputeDensityProperties();
+    }
+  }
 
-  emit computeNitrogenSurfaceArea(render_structures);
   this->reloadStructureProperties();
 
   _mainWindow->documentWasModified();

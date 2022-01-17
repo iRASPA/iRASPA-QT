@@ -35,7 +35,7 @@
 // RKStructureUniforms (ambient occlusion)  6
 // ShadowUniformBlock  (ambient occlusion)  7
 
-class RKRenderStructure;
+class RKRenderObject;
 class RKRenderDataSource;
 
 
@@ -46,7 +46,30 @@ enum class RKEnergySurfaceType: qint64
 
 enum class RKPredefinedVolumeRenderingTransferFunction: qint64
 {
-  standard = 0, multiple_values = 1
+  RASPA_PES = 0,
+  CoolWarmDiverging = 1,
+  Xray = 2,
+  Gray = 3,
+  Rainbow = 4,
+  Turbo = 5,
+  Gnuplot = 6,
+  Spectral = 7,
+  Cool = 8,
+  Viridis = 9,
+  Plasma = 10,
+  Inferno = 11,
+  Magma = 12,
+  Cividis = 13,
+  Spring = 14,
+  Summer = 15,
+  Autumn = 16,
+  Winter = 17,
+  Reds = 18,
+  Blues = 19,
+  Greens = 20,
+  Purples = 21,
+  Oranges = 22,
+  multiple_values = 23
 };
 
 enum class RKBackgroundType: qint64
@@ -382,8 +405,8 @@ struct RKStructureUniforms
 
 
   RKStructureUniforms() {}
-  RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure);
-  RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderStructure> structure, double4x4 inverseModelMatrix);
+  RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderObject> structure);
+  RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderObject> structure, double4x4 inverseModelMatrix);
 };
 
 const std::string  OpenGLStructureUniformBlockStringLiteral = R"foo(
@@ -562,7 +585,7 @@ struct RKIsosurfaceUniforms
   float4 specularFrontSide = float4(1.0f, 1.0f, 1.0f, 1.0f);
   int32_t frontHDR = true;
   float frontHDRExposure = 1.5;
-  float pad1 = 0.0;
+  float transparencyThreshold = 0.0;
   float shininessFrontSide = 4.0;
 
   float4 ambientBackSide = float4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -570,7 +593,7 @@ struct RKIsosurfaceUniforms
   float4 specularBackSide = float4(0.9f, 0.9f, 0.9f, 1.0f);
   int32_t backHDR = true;
   float backHDRExposure = 1.5;
-  float pad2 = 0.0;
+  int32_t transferFunctionIndex;
   float shininessBackSide = 4.0;
 
   //----------------------------------------  256 bytes boundary
@@ -580,7 +603,7 @@ struct RKIsosurfaceUniforms
   float value;
   float stepLength = 0.001;
 
-  float4 pad4;
+  float4 scaleToEncompassing;
   float4 pad5;
   float4 pad6;
 
@@ -590,7 +613,7 @@ struct RKIsosurfaceUniforms
 
 
   RKIsosurfaceUniforms();
-  RKIsosurfaceUniforms(std::shared_ptr<RKRenderStructure> structure);
+  RKIsosurfaceUniforms(std::shared_ptr<RKRenderObject> structure);
 };
 
 const std::string  OpenGLIsosurfaceUniformBlockStringLiteral = R"foo(
@@ -608,7 +631,7 @@ layout (std140) uniform IsosurfaceUniformBlock
   vec4 specularFrontSide;
   bool frontHDR;
   float frontHDRExposure;
-  float pad1;
+  float transparencyThreshold;
   float shininessFrontSide;
 
   vec4 ambientBackSide;
@@ -616,7 +639,7 @@ layout (std140) uniform IsosurfaceUniformBlock
   vec4 specularBackSide;
   bool backHDR;
   float backHDRExposure;
-  float pad2;
+  int transferFunctionIndex;
   float shininessBackSide;
 
   float hue;
@@ -624,7 +647,7 @@ layout (std140) uniform IsosurfaceUniformBlock
   float value;
   float stepLength;
 
-  vec4 pad4;
+  vec4 scaleToEncompassing;
   vec4 pad5;
   vec4 pad6;
 } isosurfaceUniforms;

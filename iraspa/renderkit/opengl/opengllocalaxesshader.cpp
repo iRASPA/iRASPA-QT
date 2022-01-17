@@ -35,7 +35,7 @@ OpenGLLocalAxesShader::OpenGLLocalAxesShader()
 }
 
 
-void OpenGLLocalAxesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLLocalAxesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -52,7 +52,7 @@ void OpenGLLocalAxesShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderStructure* axes = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderLocalAxesSource* axes = dynamic_cast<RKRenderLocalAxesSource*>(_renderStructures[i][j].get()))
       {
         if(_renderStructures[i][j]->isVisible() && axes->renderLocalAxes().position() != RKLocalAxes::Position::none)
         {
@@ -66,9 +66,8 @@ void OpenGLLocalAxesShader::paintGL(GLuint structureUniformBuffer)
           check_gl_error();
           glBindVertexArray(0);
         }
-
-        index++;
       }
+      index++;
     }
   }
   glUseProgram(0);
@@ -126,85 +125,88 @@ void OpenGLLocalAxesShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      AxesSystemDefaultGeometry axesGeometry{};
-
-      if (RKRenderStructure* axes = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderObject* object = dynamic_cast<RKRenderObject*>(_renderStructures[i][j].get()))
       {
-        double length = axes->renderLocalAxes().length();
-        double width = axes->renderLocalAxes().width();
+        AxesSystemDefaultGeometry axesGeometry{};
 
-        SKBoundingBox boundingBox = axes->boundingBox();
-        std::shared_ptr<SKCell> unitCell = axes->cell();
-
-        switch(axes->renderLocalAxes().scalingType())
+        if (RKRenderLocalAxesSource* axes = dynamic_cast<RKRenderLocalAxesSource*>(_renderStructures[i][j].get()))
         {
-          case RKLocalAxes::ScalingType::absolute:
+          double length = axes->renderLocalAxes().length();
+          double width = axes->renderLocalAxes().width();
+
+          std::shared_ptr<SKCell> unitCell = object->cell();
+          SKBoundingBox boundingBox = unitCell->boundingBox();
+
+          switch(axes->renderLocalAxes().scalingType())
+          {
+            case RKLocalAxes::ScalingType::absolute:
+              break;
+            case RKLocalAxes::ScalingType::relative:
+              length = boundingBox.shortestEdge() * axes->renderLocalAxes().length() / 100.0;
+              break;
+          }
+
+
+          switch(axes->renderLocalAxes().style())
+          {
+          case RKLocalAxes::Style::defaultStyle:
+            axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
+                                          length, width, float4(1.0,0.4,0.7,1.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
+                                          0.0, 1.0, float4(1.0,0.4,0.7,1.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
+                                          false, 1.0, 4);
             break;
-          case RKLocalAxes::ScalingType::relative:
-            length = boundingBox.shortestEdge() * axes->renderLocalAxes().length() / 100.0;
+          case RKLocalAxes::Style::defaultStyleRGB:
+            axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
+                                          length, width, float4(1.0,0.0,0.0,1.0), float4(0.0,1.0,0.0,1.0), float4(0.0,0.0,1.0,1.0),
+                                          0.0, 1.0, float4(1.0,0.0,0.0,1.0), float4(0.0,1.0,0.0,1.0), float4(0.0,0.0,1.0,1.0),
+                                          false, 1.0, 4);
             break;
+          case RKLocalAxes::Style::cylinder:
+            axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
+                                          length, width, float4(1.0,0.4,0.0,7.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
+                                          0.0, 1.0, float4(1.0,0.4,0.7,1.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
+                                          false, 1.0, 41);
+            break;
+          case RKLocalAxes::Style::cylinderRGB:
+            axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
+                                          length, width, float4(1.0,0.0,0.0,1.0), float4(0.0,1.0,0.0,1.0), float4(0.0,0.0,1.0,1.0),
+                                          0.0, 1.0, float4(1.0,0.0,0.0,1.0), float4(0.0,1.0,0.0,1.0), float4(0.0,0.0,1.0,1.0),
+                                          false, 1.0, 41);
+            break;
+
+
+          }
+
         }
 
-
-        switch(axes->renderLocalAxes().style())
+        glBindVertexArray(_vertexArrayObject[i][j]);
+        check_gl_error();
+        glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
+        if(axesGeometry.vertices().size()>0)
         {
-        case RKLocalAxes::Style::defaultStyle:
-          axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
-                                        length, width, float4(1.0,0.4,0.7,1.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
-                                        0.0, 1.0, float4(1.0,0.4,0.7,1.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
-                                        false, 1.0, 4);
-          break;
-        case RKLocalAxes::Style::defaultStyleRGB:
-          axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
-                                        length, width, float4(1.0,0.0,0.0,1.0), float4(0.0,1.0,0.0,1.0), float4(0.0,0.0,1.0,1.0),
-                                        0.0, 1.0, float4(1.0,0.0,0.0,1.0), float4(0.0,1.0,0.0,1.0), float4(0.0,0.0,1.0,1.0),
-                                        false, 1.0, 4);
-          break;
-        case RKLocalAxes::Style::cylinder:
-          axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
-                                        length, width, float4(1.0,0.4,0.0,7.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
-                                        0.0, 1.0, float4(1.0,0.4,0.7,1.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
-                                        false, 1.0, 41);
-          break;
-        case RKLocalAxes::Style::cylinderRGB:
-          axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
-                                        length, width, float4(1.0,0.0,0.0,1.0), float4(0.0,1.0,0.0,1.0), float4(0.0,0.0,1.0,1.0),
-                                        0.0, 1.0, float4(1.0,0.0,0.0,1.0), float4(0.0,1.0,0.0,1.0), float4(0.0,0.0,1.0,1.0),
-                                        false, 1.0, 41);
-          break;
+          glBufferData(GL_ARRAY_BUFFER, axesGeometry.vertices().size() * sizeof(RKPrimitiveVertex), axesGeometry.vertices().data(), GL_DYNAMIC_DRAW);
+          check_gl_error();
+        }
+        _numberOfIndices[i][j] = axesGeometry.indices().size();
 
+        glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKPrimitiveVertex), (GLvoid *)offsetof(RKPrimitiveVertex,position));
+        glVertexAttribPointer(_vertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKPrimitiveVertex), (GLvoid *)offsetof(RKPrimitiveVertex,normal));
+        glVertexAttribPointer(_vertexColorAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKPrimitiveVertex), (GLvoid *)offsetof(RKPrimitiveVertex,color));
 
+        check_gl_error();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer[i][j]);
+        if(axesGeometry.indices().size()>0)
+        {
+          glBufferData(GL_ELEMENT_ARRAY_BUFFER, axesGeometry.indices().size() * sizeof(GLshort), axesGeometry.indices().data(), GL_DYNAMIC_DRAW);
+          check_gl_error();
         }
 
-      }
-
-      glBindVertexArray(_vertexArrayObject[i][j]);
-      check_gl_error();
-      glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer[i][j]);
-      if(axesGeometry.vertices().size()>0)
-      {
-        glBufferData(GL_ARRAY_BUFFER, axesGeometry.vertices().size() * sizeof(RKPrimitiveVertex), axesGeometry.vertices().data(), GL_DYNAMIC_DRAW);
+        glEnableVertexAttribArray(_vertexPositionAttributeLocation);
+        glEnableVertexAttribArray(_vertexNormalAttributeLocation);
+        glEnableVertexAttribArray(_vertexColorAttributeLocation);
         check_gl_error();
+        glBindVertexArray(0);
       }
-      _numberOfIndices[i][j] = axesGeometry.indices().size();
-
-      glVertexAttribPointer(_vertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKPrimitiveVertex), (GLvoid *)offsetof(RKPrimitiveVertex,position));
-      glVertexAttribPointer(_vertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKPrimitiveVertex), (GLvoid *)offsetof(RKPrimitiveVertex,normal));
-      glVertexAttribPointer(_vertexColorAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKPrimitiveVertex), (GLvoid *)offsetof(RKPrimitiveVertex,color));
-
-      check_gl_error();
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer[i][j]);
-      if(axesGeometry.indices().size()>0)
-      {
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, axesGeometry.indices().size() * sizeof(GLshort), axesGeometry.indices().data(), GL_DYNAMIC_DRAW);
-        check_gl_error();
-      }
-
-      glEnableVertexAttribArray(_vertexPositionAttributeLocation);
-      glEnableVertexAttribArray(_vertexNormalAttributeLocation);
-      glEnableVertexAttribArray(_vertexColorAttributeLocation);
-      check_gl_error();
-      glBindVertexArray(0);
     }
   }
 }

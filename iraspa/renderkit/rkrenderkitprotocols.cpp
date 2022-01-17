@@ -21,17 +21,32 @@
 
 #include "rkrenderkitprotocols.h"
 
-RKRenderStructure::~RKRenderStructure()
+RKRenderObject::~RKRenderObject()
 {
   // Compulsory virtual destructor definition
 }
 
-RKRenderAtomicStructureSource::~RKRenderAtomicStructureSource()
+RKRenderLocalAxesSource::~RKRenderLocalAxesSource()
 {
   // Compulsory virtual destructor definition
 }
 
-RKRenderAdsorptionSurfaceSource::~RKRenderAdsorptionSurfaceSource()
+RKRenderUnitCellSource::~RKRenderUnitCellSource()
+{
+  // Compulsory virtual destructor definition
+}
+
+RKRenderAtomSource::~RKRenderAtomSource()
+{
+  // Compulsory virtual destructor definition
+}
+
+RKRenderBondSource::~RKRenderBondSource()
+{
+  // Compulsory virtual destructor definition
+}
+
+RKRenderVolumetricDataSource::~RKRenderVolumetricDataSource()
 {
   // Compulsory virtual destructor definition
 }
@@ -71,21 +86,6 @@ RKRenderPrimitivePolygonalPrimsObjectsSource::~RKRenderPrimitivePolygonalPrimsOb
   // Compulsory virtual destructor definition
 }
 
-
-RKRenderDensityVolumeSource::~RKRenderDensityVolumeSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderRASPADensityVolumeSource::~RKRenderRASPADensityVolumeSource()
-{
-  // Compulsory virtual destructor definition
-}
-
-RKRenderVTKDensityVolumeSource::~RKRenderVTKDensityVolumeSource()
-{
-  // Compulsory virtual destructor definition
-}
 
 RKRenderDataSource::~RKRenderDataSource()
 {

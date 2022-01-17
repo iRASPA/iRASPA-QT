@@ -44,12 +44,12 @@ bool OpenGLAtomShader::initializeOpenGLFunctions()
   return QOpenGLFunctions_3_3_Core::initializeOpenGLFunctions();
 }
 
-void OpenGLAtomShader::invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderStructure>> structure)
+void OpenGLAtomShader::invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderObject>> structure)
 {
   _atomAmbientOcclusionShader.invalidateCachedAmbientOcclusionTexture(structure);
 }
 
-void OpenGLAtomShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAtomShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _renderStructures = structures;
   _atomShader.setRenderStructures(structures);
@@ -62,7 +62,7 @@ void OpenGLAtomShader::setRenderStructures(std::vector<std::vector<std::shared_p
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* object = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* object = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(object->drawAtoms() && _renderStructures[i][j]->isVisible())
         {
@@ -112,7 +112,7 @@ void OpenGLAtomShader::reloadData()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
         if(source->drawAtoms() && _renderStructures[i][j]->isVisible())
         {

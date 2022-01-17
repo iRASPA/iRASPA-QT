@@ -30,7 +30,7 @@ OpenGLEllipseObjectPickingShader::OpenGLEllipseObjectPickingShader(OpenGLObjectS
 }
 
 
-void OpenGLEllipseObjectPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLEllipseObjectPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

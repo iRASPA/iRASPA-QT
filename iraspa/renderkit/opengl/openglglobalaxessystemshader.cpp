@@ -43,6 +43,7 @@ void OpenGLGlobalAxesSystemShader::paintGL()
 {
   if(std::shared_ptr<RKRenderDataSource> dataSource = _dataSource)
   {
+    glEnable(GL_DEPTH_CLAMP);
     glUseProgram(_program);
     check_gl_error();
 
@@ -53,6 +54,7 @@ void OpenGLGlobalAxesSystemShader::paintGL()
     glBindVertexArray(0);
 
     glUseProgram(0);
+    glDisable(GL_DEPTH_CLAMP);
   }
 }
 

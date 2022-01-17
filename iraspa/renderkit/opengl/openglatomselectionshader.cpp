@@ -50,7 +50,7 @@ bool OpenGLAtomSelectionShader::initializeOpenGLFunctions()
   return QOpenGLFunctions_3_3_Core::initializeOpenGLFunctions();
 }
 
-void OpenGLAtomSelectionShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLAtomSelectionShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _atomSelectionWorleyNoise3DShader.setRenderStructures(structures);
   _atomSelectionWorleyNoise3DOrthographicImposterShader.setRenderStructures(structures);

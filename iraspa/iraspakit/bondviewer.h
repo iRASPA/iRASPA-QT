@@ -36,5 +36,13 @@ public:
   virtual void addBondToSelection(int asymmetricBondId) = 0;
   virtual void toggleBondSelection(int asymmetricAtomId) = 0;
 
-  virtual std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &) = 0;
+  virtual BondSelectionIndexSet filterCartesianBondPositions(std::function<bool(double3)> &) = 0;
+};
+
+class BondEditor
+{
+public:
+  virtual ~BondEditor() = 0;
+
+  virtual void setBondSetController(std::shared_ptr<SKBondSetController> controller) = 0;
 };

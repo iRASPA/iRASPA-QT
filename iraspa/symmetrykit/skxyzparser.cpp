@@ -27,16 +27,14 @@
 #endif
 #include "skxyzparser.h"
 
-SKXYZParser::SKXYZParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
-    _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log), _frame(std::make_shared<SKStructure>())
+SKXYZParser::SKXYZParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+    _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _frame(std::make_shared<SKStructure>())
 {
   _frame->kind = SKStructure::Kind::molecule;
   _frame->displayName = _scanner.displayName();
 }
 
-
-
-bool SKXYZParser::startParsing()
+void SKXYZParser::startParsing()
 {
   int lineNumber = 0;
   int numberOfAtoms = 0;
@@ -45,25 +43,17 @@ bool SKXYZParser::startParsing()
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) return false;
+  if(scannedLine.isEmpty()) {throw "Empty file";}
 
   // scan second line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty())
-  {
-    if (_log)
-    {
-      _log->logMessage(LogReporting::ErrorLevel::error, "XYZ file near empty");
-    }
-    return false;
-  }
+  if(scannedLine.isEmpty()) {throw "XYZ file near empty";}
 
   QString simplifiedLine = scannedLine.simplified().toLower();
   if(simplifiedLine.startsWith("lattice=\""))
   {
     simplifiedLine.remove(0,QString("lattice=\"").size());
     simplifiedLine.replace('\"',' ');
-    qDebug() << "Yes, starts with Lattice";
 
     // read lattice vectors
     #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
@@ -80,107 +70,39 @@ bool SKXYZParser::startParsing()
       bool succes = false;
 
       unitCell.ax = termsScannedLined[0].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the ax-cell coordinate" + termsScannedLined[0]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the ax-cell coordinate";}
 
       unitCell.ay = termsScannedLined[1].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the ay-cell coordinate" + termsScannedLined[1]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the ay-cell coordinate";}
 
       unitCell.az = termsScannedLined[2].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the az-cell coordinate" + termsScannedLined[2]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the az-cell coordinate";}
+
 
       unitCell.bx = termsScannedLined[3].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the ax-cell coordinate" + termsScannedLined[3]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the bx-cell coordinate";}
 
       unitCell.by = termsScannedLined[4].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the ay-cell coordinate" + termsScannedLined[4]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the by-cell coordinate";}
 
       unitCell.bz = termsScannedLined[5].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the az-cell coordinate" + termsScannedLined[5]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the bz-cell coordinate";}
+
 
       unitCell.cx = termsScannedLined[6].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the ax-cell coordinate" + termsScannedLined[6]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the cx-cell coordinate";}
 
       unitCell.cy = termsScannedLined[7].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::warning, "Count not parse the ay-cell coordinate" + termsScannedLined[7]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the cy-cell coordinate";}
 
       unitCell.cz = termsScannedLined[8].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the az-cell coordinate" + termsScannedLined[8]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Count not parse the cz-cell coordinate";}
 
       if(!_asMolecule)
       {
         _frame->kind = SKStructure::Kind::molecularCrystal;
       }
       _frame->cell = std::make_shared<SKCell>(unitCell);
-    }
-    else
-    {
-      if (_log)
-      {
-        _log->logMessage(LogReporting::ErrorLevel::warning, "missing lattice data");
-      }
     }
   }
 
@@ -203,15 +125,7 @@ bool SKXYZParser::startParsing()
       #else
         QStringList termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
       #endif
-      if(termsScannedLined.size()<4)
-      {
-        // should have at least 4 strings (chemical element and x,yz)
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "missing data on line " + QString::number(lineNumber));
-        }
-        return false;
-      }
+      if(termsScannedLined.size()<4) {throw "Missing data";}
 
       numberOfAtoms += 1;
       std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
@@ -221,32 +135,14 @@ bool SKXYZParser::startParsing()
 
       bool succes = false;
       position.x = termsScannedLined[1].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the x-coordinate " + termsScannedLined[1]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Could not parse the x-coordinate";}
+
       position.y = termsScannedLined[2].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the y-coordinate " + termsScannedLined[2]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Could not parse the y-coordinate";}
+
       position.z = termsScannedLined[3].toDouble(&succes);
-      if(!succes)
-      {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Count not parse the z-coordinate " + termsScannedLined[3]);
-          return false;
-        }
-      }
+      if(!succes) {throw "Could not parse the z-coordinate";}
+
 
       if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(chemicalElement); index != PredefinedElements::atomicNumberData.end())
       {
@@ -257,17 +153,12 @@ bool SKXYZParser::startParsing()
       }
       else
       {
-        if (_log)
-        {
-          _log->logMessage(LogReporting::ErrorLevel::error, "Unknown element " + chemicalElement);
-          atom->setPosition(position);
-          atom->setElementIdentifier(0);
-          atom->setDisplayName("error");
-        }
+        atom->setPosition(position);
+        atom->setElementIdentifier(0);
+        atom->setDisplayName("Unknown");
       }
       _frame->atoms.push_back(atom);
     }
   }
   _movies.push_back({_frame});
-  return true;
 }

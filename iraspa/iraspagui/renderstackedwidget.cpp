@@ -125,7 +125,7 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
   this->_projectTreeNode = projectTreeNode;
   this->_project.reset();
 
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> render_structures{};
   if (projectTreeNode)
   {
     if(std::shared_ptr<iRASPAProject> iraspaProject = projectTreeNode->representedObject())
@@ -145,9 +145,9 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
 
           for(std::vector<std::shared_ptr<iRASPAObject>> v : _iraspa_structures)
           {
-            std::vector<std::shared_ptr<RKRenderStructure>> r{};
+            std::vector<std::shared_ptr<RKRenderObject>> r{};
             std::transform(v.begin(),v.end(),std::back_inserter(r),
-                           [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                           [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
             render_structures.push_back(r);
             qDebug() << "Number of structures: " << r.size() << v.size();
           }
@@ -190,12 +190,12 @@ void RenderStackedWidget::setLogReportingWidget(LogReporting *logReporting)
 
 void RenderStackedWidget::setSelectedRenderFrames(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> iraspa_structures)
 {
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> renderStructures{};
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> renderStructures{};
   for(std::vector<std::shared_ptr<iRASPAObject>> v : iraspa_structures)
   {
-    std::vector<std::shared_ptr<RKRenderStructure>> r{};
+    std::vector<std::shared_ptr<RKRenderObject>> r{};
     std::transform(v.begin(),v.end(),std::back_inserter(r),
-                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
     renderStructures.push_back(r);
   }
 
@@ -622,15 +622,15 @@ void RenderStackedWidget::selectAsymetricAtomsInRectangle(QRect rect, bool exten
 
               AtomSelectionIndexPaths atomSelection = atomTreeController->selectionIndexPaths();
 
-              std::set<int> previousBondSelection{};
-              std::set<int> bondSelection{};
+              BondSelectionIndexSet previousBondSelection{};
+              BondSelectionIndexSet bondSelection{};
               if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(object))
               {
                 std::shared_ptr<SKBondSetController> bondSetController = bondViewer->bondSetController();
 
                 previousBondSelection = bondSetController->selectionIndexSet();
 
-                std::set<int> indexSetSelectedBonds = bondViewer->filterCartesianBondPositions(closure);
+                BondSelectionIndexSet indexSetSelectedBonds = bondViewer->filterCartesianBondPositions(closure);
 
                 if(extend)
                 {
@@ -765,12 +765,12 @@ void RenderStackedWidget::reloadRenderData()
   {
     _iraspa_structures = project->sceneList()->selectediRASPAStructures();
 
-    std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
+    std::vector<std::vector<std::shared_ptr<RKRenderObject>>> render_structures{};
     for(std::vector<std::shared_ptr<iRASPAObject>> v : _iraspa_structures)
     {
-      std::vector<std::shared_ptr<RKRenderStructure>> r{};
+      std::vector<std::shared_ptr<RKRenderObject>> r{};
       std::transform(v.begin(),v.end(),std::back_inserter(r),
-                     [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                     [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
       render_structures.push_back(r);
     }
 
@@ -785,13 +785,13 @@ void RenderStackedWidget::reloadRenderData()
 
 void RenderStackedWidget::resetData()
 {
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures{};
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> render_structures{};
 
   for(std::vector<std::shared_ptr<iRASPAObject>> v : _iraspa_structures)
   {
-    std::vector<std::shared_ptr<RKRenderStructure>> r{};
+    std::vector<std::shared_ptr<RKRenderObject>> r{};
     std::transform(v.begin(),v.end(),std::back_inserter(r),
-                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
     render_structures.push_back(r);
   }
 
@@ -989,7 +989,7 @@ void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, Movie
       {
         project->sceneList()->setSelectedFrameIndex(iframe);
 
-        std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
+        std::vector<std::vector<std::shared_ptr<RKRenderObject>>> render_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
 
         renderViewController->setRenderStructures(render_structures);
         renderViewController->reloadData();
@@ -1001,7 +1001,7 @@ void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, Movie
       }
       movie.finalize();
 
-      std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> render_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
+      std::vector<std::vector<std::shared_ptr<RKRenderObject>>> render_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
       renderViewController->setRenderStructures(render_structures);
       renderViewController->reloadData();
     }
@@ -1553,11 +1553,11 @@ void RenderStackedWidget::redrawWithQuality(RKRenderQuality quality)
 
 void RenderStackedWidget::invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures)
 {
-  std::vector<std::shared_ptr<RKRenderStructure>> renderStructures{};
+  std::vector<std::shared_ptr<RKRenderObject>> renderStructures{};
   for (const std::vector<std::shared_ptr<iRASPAObject>> &v : structures)
   {
     std::transform(v.begin(),v.end(),std::back_inserter(renderStructures),
-                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
   }
 
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
@@ -1568,11 +1568,11 @@ void RenderStackedWidget::invalidateCachedAmbientOcclusionTextures(std::vector<s
 
 void RenderStackedWidget::invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures)
 {
-  std::vector<std::shared_ptr<RKRenderStructure>> renderStructures{};
+  std::vector<std::shared_ptr<RKRenderObject>> renderStructures{};
   for (const std::vector<std::shared_ptr<iRASPAObject>> &v : structures)
   {
     std::transform(v.begin(),v.end(),std::back_inserter(renderStructures),
-                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                   [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
   }
 
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
@@ -1633,7 +1633,7 @@ void RenderStackedWidget::updateControlPanel()
 }
 
 
-void RenderStackedWidget::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void RenderStackedWidget::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
@@ -1641,7 +1641,7 @@ void RenderStackedWidget::computeHeliumVoidFraction(std::vector<std::shared_ptr<
   }
 }
 
-void RenderStackedWidget::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures)
+void RenderStackedWidget::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {

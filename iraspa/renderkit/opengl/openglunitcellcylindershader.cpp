@@ -31,7 +31,7 @@ OpenGLUnitCellCylinderShader::OpenGLUnitCellCylinderShader()
 
 }
 
-void OpenGLUnitCellCylinderShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLUnitCellCylinderShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -48,7 +48,7 @@ void OpenGLUnitCellCylinderShader::paintGL(GLuint structureUniformBuffer)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderStructure* source = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderUnitCellSource* source = dynamic_cast<RKRenderUnitCellSource*>(_renderStructures[i][j].get()))
       {
         if(source->drawUnitCell() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfUnitCellCylinders[i][j]>0)
         {
@@ -81,7 +81,7 @@ void OpenGLUnitCellCylinderShader::initializeVertexArrayObject()
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderStructure* source = dynamic_cast<RKRenderStructure*>(_renderStructures[i][j].get()))
+      if (RKRenderUnitCellSource* source = dynamic_cast<RKRenderUnitCellSource*>(_renderStructures[i][j].get()))
       {
         glBindVertexArray(_vertexArrayObject[i][j]);
 

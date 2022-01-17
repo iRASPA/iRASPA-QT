@@ -19,9 +19,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "bondvisualappearanceviewer.h"
+#pragma once
 
-BondVisualAppearanceViewer::~BondVisualAppearanceViewer()
+#include <QtGlobal>
+#include <QStringList>
+#include <array>
+#include <vector>
+
+#define CL_TARGET_OPENCL_VERSION 120
+#ifdef Q_OS_MACOS
+  #include <OpenCL/opencl.h>
+#elif _WIN32
+  #include <CL/cl.h>
+#else
+  #include <CL/opencl.h>
+#endif
+
+class SKOpenCL
 {
-  // Compulsory virtual destructor definition
-}
+public:
+  SKOpenCL();
+protected:
+  bool _isOpenCLInitialized = false;
+  bool _isOpenCLReady = false;
+  cl_context _clContext = nullptr;
+  cl_device_id _clDeviceId = nullptr;
+  cl_command_queue _clCommandQueue = nullptr;
+
+  std::optional<cl_device_id> bestOpenCLDevice(cl_device_type device_type);
+  bool supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId);
+};

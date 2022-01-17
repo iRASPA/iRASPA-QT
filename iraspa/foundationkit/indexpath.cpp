@@ -27,7 +27,7 @@ IndexPath::IndexPath()
   _path.reserve(10);
 }
 
-IndexPath::IndexPath(const size_t index)
+IndexPath::IndexPath(const int64_t index)
 {
   _path.reserve(10);
   _path.push_back(index);
@@ -47,12 +47,12 @@ IndexPath IndexPath::indexPath(QModelIndex index)
   return IndexPath(row);
 }
 
-size_t& IndexPath::operator[] (const size_t index) // for non-const objects: can be used for assignment
+int64_t& IndexPath::operator[] (const size_t index) // for non-const objects: can be used for assignment
 {
   return _path[index];
 }
 
-const size_t& IndexPath::operator[] (const size_t index) const // for const objects: can only be used for access
+const int64_t& IndexPath::operator[] (const size_t index) const // for const objects: can only be used for access
 {
   return _path[index];
 }
@@ -90,7 +90,7 @@ IndexPath IndexPath::removingLastIndex() const
 {
   IndexPath indexPath{};
   if (_path.size() <= 1) {return indexPath;}
-  indexPath._path = std::vector<size_t>(_path.begin(),std::prev(_path.end(), 1));
+  indexPath._path = std::vector<int64_t>(_path.begin(),std::prev(_path.end(), 1));
   return indexPath;
 }
 
@@ -196,3 +196,77 @@ QDebug operator<<(QDebug debug, const IndexPath &c)
   }
   return debug;
 }
+
+QDataStream &operator<<(QDataStream& stream, const std::vector<IndexPath>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const IndexPath& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<IndexPath>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    IndexPath tempVal{};
+    stream >> tempVal;
+    qDebug() << tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}
+
+QDataStream &operator<<(QDataStream &stream, const IndexPath &indexPath)
+{
+  stream << static_cast<int32_t>(indexPath._path.size());
+  for(const size_t singleVal : indexPath._path)
+     stream << qint64(singleVal);
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, IndexPath &indexPath)
+{
+  int32_t vecSize;
+  indexPath._path.clear();
+  stream >> vecSize;
+  indexPath._path.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    qint64 tempVal{};
+    stream >> tempVal;
+    indexPath._path.push_back(tempVal);
+  }
+  return stream;
+}
+
+/*
+ QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAtomTreeNode>>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const std::shared_ptr<SKAtomTreeNode>& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKAtomTreeNode>>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  val.reserve(vecSize);
+
+  while(vecSize--)
+  {
+    std::shared_ptr<SKAtomTreeNode> tempVal = std::make_shared<SKAtomTreeNode>();
+    stream >> tempVal;
+    val.push_back(tempVal);
+  }
+  return stream;
+}*/

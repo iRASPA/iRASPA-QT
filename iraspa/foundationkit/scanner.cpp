@@ -29,14 +29,14 @@ Scanner::Scanner(QUrl &url, CharacterSet charactersToBeSkipped): _charactersToBe
   QFile file(url.toLocalFile());
   QFileInfo info(file);
 
-  if (file.open(QIODevice::ReadOnly))
+  if (file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    QTextStream in(&file);
-
     _displayName = info.baseName();
-
-    _string = in.readAll();
+    QByteArray byteArray = file.readAll();
+    _string = QString(byteArray);
   }
+  file.close();
+
    _scanLocation = _string.constBegin();
 }
 

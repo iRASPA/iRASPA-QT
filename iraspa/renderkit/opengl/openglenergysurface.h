@@ -59,11 +59,11 @@ public:
 
   void reloadData();
   void initializeVertexArrayObject();
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   GLuint program() {return _program;}
-  void invalidateIsosurface(std::vector<std::shared_ptr<RKRenderStructure>> structures);
-  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures);
-  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures);
+  void invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures);
+  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures);
+  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures);
   void setGLInteroperability(bool value) {_energyGridMarchingCubes.setGLInteroperability(value);}
 
   void initializeTransformUniforms();
@@ -73,7 +73,7 @@ public:
 private:
   bool _isOpenCLInitialized;
   GLuint _program;
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   LogReporting* _logReporter = nullptr;
 
@@ -96,7 +96,7 @@ private:
   SKOpenCLFindMinmumEnergyGridUnitCell _findMinimumEnergyGridUnitCell;
   SKOpenCLVoidFractionUnitCell _voidFractionUnitCell;
 
-  QCache<RKRenderStructure*, std::vector<cl_float>> _cache;
+  QCache<RKRenderObject*, std::vector<cl_float>> _cache;
 
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;

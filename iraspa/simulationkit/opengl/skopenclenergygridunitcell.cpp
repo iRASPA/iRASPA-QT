@@ -165,7 +165,6 @@ void SKOpenCLEnergyGridUnitCell::callBack(cl_program program, void *user_data)
 
       ptr->_isOpenCLReady = true;
     }
-
   });
 }
 

@@ -36,58 +36,69 @@ Primitive::Primitive(const Primitive &primitive): Object(primitive), _atomsTreeC
 
 }
 
+Primitive::Primitive(const std::shared_ptr<Object> object): Object(object), _atomsTreeController(std::make_shared<SKAtomTreeController>())
+{
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    QByteArray byteArray = QByteArray();
+    QDataStream stream(&byteArray, QIODevice::WriteOnly);
+    stream << atomViewer->atomsTreeController();
+
+    QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
+    streamRead >> _atomsTreeController;
+
+    _atomsTreeController->setTags();
+  }
+
+  if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(object))
+  {
+    _primitiveOrientation  = primitiveViewer->primitiveOrientation();
+    _primitiveRotationDelta = primitiveViewer->primitiveRotationDelta();
+    _primitiveTransformationMatrix = primitiveViewer->primitiveTransformationMatrix();
+
+    _primitiveOpacity = primitiveViewer->primitiveOpacity();
+    _primitiveNumberOfSides = primitiveViewer->primitiveNumberOfSides();
+    _primitiveIsCapped = primitiveViewer->primitiveIsCapped();
+
+    _primitiveSelectionStyle = primitiveViewer->primitiveSelectionStyle();
+    _primitiveSelectionScaling = primitiveViewer->primitiveSelectionScaling();
+    _primitiveSelectionIntensity = primitiveViewer->primitiveSelectionIntensity();
+
+    _primitiveSelectionStripesDensity = primitiveViewer->primitiveSelectionStripesDensity();
+    _primitiveSelectionStripesFrequency = primitiveViewer->primitiveSelectionStripesFrequency();
+    _primitiveSelectionWorleyNoise3DFrequency = primitiveViewer->primitiveSelectionWorleyNoise3DFrequency();
+    _primitiveSelectionWorleyNoise3DJitter = primitiveViewer->primitiveSelectionWorleyNoise3DJitter();
+
+    _primitiveHue = primitiveViewer->primitiveHue();
+    _primitiveSaturation = primitiveViewer->primitiveSaturation();
+    _primitiveValue = primitiveViewer->primitiveValue();
+
+    _primitiveFrontSideHDR = primitiveViewer->primitiveFrontSideHDR();
+    _primitiveFrontSideHDRExposure = primitiveViewer->primitiveFrontSideHDRExposure();
+    _primitiveFrontSideAmbientIntensity = primitiveViewer->primitiveFrontSideAmbientIntensity();
+    _primitiveFrontSideDiffuseIntensity = primitiveViewer->primitiveFrontSideDiffuseIntensity();
+    _primitiveFrontSideSpecularIntensity = primitiveViewer->primitiveFrontSideSpecularIntensity();
+    _primitiveFrontSideAmbientColor = primitiveViewer->primitiveFrontSideAmbientColor();
+    _primitiveFrontSideDiffuseColor = primitiveViewer->primitiveFrontSideDiffuseColor();
+    _primitiveFrontSideSpecularColor = primitiveViewer->primitiveFrontSideSpecularColor();
+    _primitiveFrontSideShininess = primitiveViewer->primitiveFrontSideShininess();
+
+    _primitiveBackSideHDR = primitiveViewer->primitiveBackSideHDR();
+    _primitiveBackSideHDRExposure = primitiveViewer->primitiveBackSideHDRExposure();
+    _primitiveBackSideAmbientIntensity = primitiveViewer->primitiveBackSideAmbientIntensity();
+    _primitiveBackSideDiffuseIntensity = primitiveViewer->primitiveBackSideDiffuseIntensity();
+    _primitiveBackSideSpecularIntensity = primitiveViewer->primitiveBackSideSpecularIntensity();
+    _primitiveBackSideAmbientColor = primitiveViewer->primitiveBackSideAmbientColor();
+    _primitiveBackSideDiffuseColor = primitiveViewer->primitiveBackSideDiffuseColor();
+    _primitiveBackSideSpecularColor = primitiveViewer->primitiveBackSideSpecularColor();
+    _primitiveBackSideShininess = primitiveViewer->primitiveBackSideShininess();
+  }
+}
+
 std::shared_ptr<Object> Primitive::shallowClone()
 {
   return std::make_shared<Primitive>(static_cast<const Primitive&>(*this));
 }
-
-
-Primitive::Primitive(const std::shared_ptr<const Structure> structure): Object(structure), _atomsTreeController(std::make_shared<SKAtomTreeController>())
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-
-  structure->atomsTreeController()->setTags();
-
-  QByteArray byteArray = QByteArray();
-  QDataStream stream(&byteArray, QIODevice::WriteOnly);
-  stream << structure->atomsTreeController();
-
-  QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
-  streamRead >> _atomsTreeController;
-}
-
-Primitive::Primitive(const std::shared_ptr<const Primitive> primitive): Object(primitive), _atomsTreeController(std::make_shared<SKAtomTreeController>())
-{
-
-}
-
-Primitive::Primitive(const std::shared_ptr<const GridVolume> volume): Object(volume), _atomsTreeController(std::make_shared<SKAtomTreeController>())
-{
-
-}
-
-
-/*
-Primitive::Primitive(std::shared_ptr<Object> s): Object(s), _atomsTreeController(std::make_shared<SKAtomTreeController>())
-{
-       qDebug() << "CALLED!";
-  _cell = std::make_shared<SKCell>(*s->cell());
-
-
-
-  if(dynamic_cast<Crystal*>(s.get()) ||
-     dynamic_cast<CrystalEllipsoidPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalCylinderPrimitive*>(s.get()) ||
-     dynamic_cast<CrystalPolygonalPrismPrimitive*>(s.get()))
-  {
-   // convertAsymmetricAtomsToFractional();
-  }
-
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
- // computeBonds();
-}*/
 
 // MARK: Symmetry
 // =====================================================================

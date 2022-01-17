@@ -33,7 +33,7 @@ OpenGLCrystalCylinderObjectSelectionStripesShader::OpenGLCrystalCylinderObjectSe
 }
 
 
-void OpenGLCrystalCylinderObjectSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalCylinderObjectSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

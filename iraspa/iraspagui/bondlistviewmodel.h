@@ -57,9 +57,9 @@ public:
 
   QModelIndexList selectedIndexes();
 
-  void deleteSelection(std::shared_ptr<Object> object, std::set<int> indexSet);
+  void deleteSelection(std::shared_ptr<Object> object, BondSelectionIndexSet indexSet);
   void deleteSelection(std::shared_ptr<Object> object, BondSelectionNodesAndIndexSet selection);
-  void insertSelection(std::shared_ptr<Object> object, std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, std::set<int> indexSet);
+  void insertSelection(std::shared_ptr<Object> object, std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, BondSelectionIndexSet indexSet);
   void insertSelection(std::shared_ptr<Object> object, BondSelectionNodesAndIndexSet selection);
 private:
   std::shared_ptr<iRASPAObject> _iraspaStructure;

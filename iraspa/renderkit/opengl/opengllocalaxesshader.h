@@ -47,7 +47,7 @@ public:
 
   void reloadData();
   void initializeVertexArrayObject();
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   GLuint program() {return _program;}
 
   void initializeTransformUniforms();
@@ -55,7 +55,7 @@ public:
   void initializeLightUniforms();
 private:
   GLuint _program;
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   std::vector<std::vector<size_t>> _numberOfIndices;
   std::vector<std::vector<GLuint>> _vertexBuffer;

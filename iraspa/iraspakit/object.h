@@ -37,7 +37,7 @@ enum class ObjectType : qint64
   gridVolume = 16, RASPADensityVolume = 17, VTKDensityVolume = 18, VASPDensityVolume = 19, GaussianCubeVolume = 20
 };
 
-class Object: public DisplayableProtocol, public RKRenderStructure
+class Object: public DisplayableProtocol, public RKRenderObject, public RKRenderLocalAxesSource
 {
 public:
   Object();
@@ -61,9 +61,9 @@ public:
 
   void setCell(std::shared_ptr<SKCell> cell) {_cell = cell;}
 
-  virtual SKBoundingBox boundingBox()  const override;
-  SKBoundingBox transformedBoundingBox() const override;
-  virtual void reComputeBoundingBox();
+  virtual SKBoundingBox boundingBox() const; // has to be overwriten for subclasses of Object
+  virtual void reComputeBoundingBox();       // has to be overwriten for subclasses of Object
+  SKBoundingBox transformedBoundingBox() const;
 
   double rotationDelta() {return _rotationDelta;}
   void setRotationDelta(double angle) {_rotationDelta = angle;}
@@ -76,20 +76,20 @@ public:
   void setOriginZ(double value) {_origin.z = value;}
 
   // unit cell
-  bool drawUnitCell() const override {return _drawUnitCell;}
+  virtual bool drawUnitCell() const {return _drawUnitCell;}
+  virtual double unitCellScaleFactor() const {return _unitCellScaleFactor;}
+  virtual QColor unitCellDiffuseColor() const {return _unitCellDiffuseColor;}
+  virtual double unitCellDiffuseIntensity() const {return _unitCellDiffuseIntensity;}
+  virtual std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const  {return {};}
+  virtual std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const {return {};}
+
   void setDrawUnitCell(bool state) {_drawUnitCell = state;}
-  double unitCellScaleFactor() const override {return _unitCellScaleFactor;}
   void setUnitCellScaleFactor(double value) {_unitCellScaleFactor = value;}
-  QColor unitCellDiffuseColor() const override {return _unitCellDiffuseColor;}
   void setUnitCellDiffuseColor(QColor color) {_unitCellDiffuseColor = color;}
-  double unitCellDiffuseIntensity() const override {return _unitCellDiffuseIntensity;}
   void setUnitCellDiffuseIntensity(double value) {_unitCellDiffuseIntensity = value;}
 
-  // local axes
+  // Protocol: RKRenderLocalAxesSource
   RKLocalAxes &renderLocalAxes() override {return _localAxes;}
-
-  std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const override  {return {};}
-  std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const override {return {};}
 
   // info
   QString authorFirstName() {return _authorFirstName;}

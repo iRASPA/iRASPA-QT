@@ -77,7 +77,7 @@ public:
   GLuint &colorTexture() {return _texture;}
 
   void reloadData();
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
 private:
   OpenGLAtomPickingShader _atomPickingShader;
   OpenGLInternalBondPickingShader _internalBondPickingShader;

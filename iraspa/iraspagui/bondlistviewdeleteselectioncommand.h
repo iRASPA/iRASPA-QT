@@ -36,7 +36,7 @@ class BondListViewDeleteSelectionCommand : public QUndoCommand
 {
 public:
   BondListViewDeleteSelectionCommand(MainWindow *mainWindow, std::shared_ptr<BondListViewModel> bondTreeModel, std::shared_ptr<Object> object,
-                         std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, std::set<int> bondSelection, QUndoCommand *parent = nullptr);
+                         std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, BondSelectionIndexSet bondSelection, QUndoCommand *parent = nullptr);
   void undo() override final;
   void redo() override final;
 private:
@@ -44,5 +44,5 @@ private:
   std::weak_ptr<BondListViewModel> _bondTreeModel;
   std::shared_ptr<Object> _object;
   std::vector<std::shared_ptr<SKAsymmetricBond>> _bonds;
-  std::set<int> _bondSelection;
+  BondSelectionIndexSet _bondSelection;
 };

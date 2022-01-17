@@ -23,6 +23,7 @@
 
 #include <mathkit.h>
 #include "rkrenderkitprotocols.h"
+#include <QByteArray>
 
 enum class ProbeMolecule: qint64
 {
@@ -30,36 +31,44 @@ enum class ProbeMolecule: qint64
 };
 
 
-class AdsorptionSurfaceVisualAppearanceViewer
+class VolumetricDataViewer
 {
 public:
 
-  virtual  ~AdsorptionSurfaceVisualAppearanceViewer() = 0;
+  virtual  ~VolumetricDataViewer() = 0;
 
-  virtual RKEnergySurfaceType adsorptionSurfaceRenderingMethod() = 0;
-  virtual void setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType type) = 0;
-  virtual RKPredefinedVolumeRenderingTransferFunction adsorptionVolumeTransferFunction() = 0;
-  virtual void setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction function) = 0;
-  virtual double adsorptionVolumeStepLength() = 0;
-  virtual void setAdsorptionVolumeStepLength(double value) = 0;
-
-
-  virtual std::vector<double3> atomUnitCellPositions() const = 0;
   virtual bool drawAdsorptionSurface() const  = 0;
   virtual void setDrawAdsorptionSurface(bool state)  = 0;
+  virtual int encompassingPowerOfTwoCubicGridSize() const = 0;
+  virtual std::pair<double,double> range() const = 0;
+  virtual int3 dimensions() const = 0;
+  virtual double3 spacing() const = 0;
+  virtual QByteArray data() const = 0;
+  virtual double average() const = 0;
+  virtual double variance() const = 0;
+
   virtual double adsorptionSurfaceOpacity() const  = 0;
-  virtual void setAdsorptionSurfaceOpacity(double value)  = 0;
-  virtual double adsorptionSurfaceIsoValue() const  = 0;
-  virtual void setAdsorptionSurfaceIsoValue(double value)  = 0;
-  virtual double adsorptionSurfaceMinimumValue() const  = 0;
-  virtual void setAdsorptionSurfaceMinimumValue(double value)  = 0;
-
-  virtual int adsorptionSurfaceSize() const = 0;
-  virtual double2 adsorptionSurfaceProbeParameters() const = 0;
-  // int adsorptionSurfaceNumberOfTriangles() const = 0;
-
+  virtual void setAdsorptionSurfaceOpacity(double value) = 0;
+  virtual double adsorptionTransparencyThreshold() const = 0;
+  virtual void setAdsorptionTransparencyThreshold(double value) = 0;
+  virtual double adsorptionSurfaceIsoValue() const = 0;
+  virtual void setAdsorptionSurfaceIsoValue(double value) = 0;
   virtual ProbeMolecule adsorptionSurfaceProbeMolecule() const = 0;
   virtual void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) = 0;
+
+  virtual RKEnergySurfaceType adsorptionSurfaceRenderingMethod() const = 0;
+  virtual void setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType type) = 0;
+  virtual RKPredefinedVolumeRenderingTransferFunction adsorptionVolumeTransferFunction() const = 0;
+  virtual void setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction function) = 0;
+  virtual double adsorptionVolumeStepLength() const = 0;
+  virtual void setAdsorptionVolumeStepLength(double value) = 0;
+
+  virtual double adsorptionSurfaceHue() const = 0;
+  virtual void setAdsorptionSurfaceHue(double value) = 0;
+  virtual double adsorptionSurfaceSaturation() const = 0;
+  virtual void setAdsorptionSurfaceSaturation(double value) = 0;
+  virtual double adsorptionSurfaceValue() const = 0;
+  virtual void setAdsorptionSurfaceValue(double value) = 0;
 
   virtual bool adsorptionSurfaceFrontSideHDR() const = 0;
   virtual void setAdsorptionSurfaceFrontSideHDR(bool state) = 0;
@@ -80,13 +89,6 @@ public:
   virtual double adsorptionSurfaceFrontSideShininess() const = 0;
   virtual void setAdsorptionSurfaceFrontSideShininess(double value) = 0;
 
-  virtual double adsorptionSurfaceHue() const = 0;
-  virtual void setAdsorptionSurfaceHue(double value) = 0;
-  virtual double adsorptionSurfaceSaturation() const = 0;
-  virtual void setAdsorptionSurfaceSaturation(double value) = 0;
-  virtual double adsorptionSurfaceValue() const = 0;
-  virtual void setAdsorptionSurfaceValue(double value) = 0;
-
   virtual bool adsorptionSurfaceBackSideHDR() const = 0;
   virtual void setAdsorptionSurfaceBackSideHDR(bool state) = 0;
   virtual double adsorptionSurfaceBackSideHDRExposure() const = 0;
@@ -105,4 +107,12 @@ public:
   virtual void setAdsorptionSurfaceBackSideSpecularIntensity(double value) = 0;
   virtual double adsorptionSurfaceBackSideShininess() const = 0;
   virtual void setAdsorptionSurfaceBackSideShininess(double value) = 0;
+};
+
+class VolumetricDataEditor: public VolumetricDataViewer
+{
+  public:
+    virtual  ~VolumetricDataEditor() = 0;
+
+    virtual void setEncompassingPowerOfTwoCubicGridSize(int value) = 0;
 };

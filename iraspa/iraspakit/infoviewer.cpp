@@ -31,3 +31,8 @@ InfoViewer::~InfoViewer()
 {
   // Compulsory virtual destructor definition
 }
+
+InfoEditor::~InfoEditor()
+{
+  // Compulsory virtual destructor definition
+}

@@ -40,7 +40,7 @@ bool OpenGLUnitCellShader::initializeOpenGLFunctions()
   return QOpenGLFunctions_3_3_Core::initializeOpenGLFunctions();
 }
 
-void OpenGLUnitCellShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLUnitCellShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _unitCellSphereShader.setRenderStructures(structures);
   _unitCellCylinderShader.setRenderStructures(structures);

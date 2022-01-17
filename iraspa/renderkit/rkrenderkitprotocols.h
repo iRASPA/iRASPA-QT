@@ -40,51 +40,79 @@ struct RKInPerInstanceAttributesAtoms;
 struct RKInPerInstanceAttributesBonds;
 struct RKInPerInstanceAttributesText;
 
-
-class RKRenderStructure
+class RKRenderObject
 {
 public:
-  virtual ~RKRenderStructure() = 0;
+  virtual ~RKRenderObject() = 0;
+
   virtual QString displayName() const = 0;
-  virtual std::shared_ptr<SKCell> cell() const = 0;
+  virtual bool isVisible() const = 0;
+
   virtual  simd_quatd orientation() const = 0;
   virtual  double3 origin() const = 0;
 
-  virtual bool isVisible() const = 0;
+  virtual std::shared_ptr<SKCell> cell() const = 0;
+};
+
+class RKRenderLocalAxesSource
+{
+public:
+  virtual ~RKRenderLocalAxesSource() = 0;
+
+  virtual RKLocalAxes &renderLocalAxes() = 0;
+};
+
+class RKRenderUnitCellSource
+{
+public:
+  virtual ~RKRenderUnitCellSource() = 0;
 
   virtual bool drawUnitCell() const = 0;
 
-  // unit cell
   virtual double unitCellScaleFactor() const = 0;
   virtual QColor unitCellDiffuseColor() const = 0;
   virtual double unitCellDiffuseIntensity() const = 0;
-
-  virtual RKLocalAxes &renderLocalAxes() = 0;
-  virtual SKBoundingBox boundingBox() const = 0;
-  virtual SKBoundingBox transformedBoundingBox() const = 0;
 
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const = 0;
   virtual std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const = 0;
 };
 
-class RKRenderAtomicStructureSource
+class RKRenderAtomSource
 {
 public:
-  virtual ~RKRenderAtomicStructureSource() = 0;
-  virtual void computeBonds() = 0;
+  virtual ~RKRenderAtomSource() = 0;
 
-  virtual bool hasSelectedAtoms() const = 0;
+  virtual int numberOfAtoms() const = 0;
+  virtual bool drawAtoms() const = 0;
 
-  virtual std::vector<double3> atomPositions() const = 0;
-  virtual std::vector<double3> bondPositions() const = 0;
+  virtual QColor atomAmbientColor() const = 0;
+  virtual QColor atomDiffuseColor() const = 0;
+  virtual QColor atomSpecularColor() const = 0;
+  virtual double atomAmbientIntensity() const = 0;
+  virtual double atomDiffuseIntensity() const = 0;
+  virtual double atomSpecularIntensity() const = 0;
+  virtual double atomShininess() const = 0;
 
-  virtual std::vector<double2> potentialParameters() const = 0;
+  virtual double atomHue() const = 0;
+  virtual double atomSaturation() const = 0;
+  virtual double atomValue() const = 0;
 
+  virtual bool colorAtomsWithBondColor() const = 0;
+  virtual double atomScaleFactor() const = 0;
+  virtual bool atomAmbientOcclusion() const = 0;
+  virtual int atomAmbientOcclusionPatchNumber() const = 0;
+  virtual int atomAmbientOcclusionPatchSize() const = 0;
+  virtual int atomAmbientOcclusionTextureSize() const = 0;
+  virtual void setAtomAmbientOcclusionPatchNumber(int) = 0;  // CHECK
+  virtual void setAtomAmbientOcclusionPatchSize(int) = 0;    // CHECK
+  virtual void setAtomAmbientOcclusionTextureSize(int) = 0;  // CHECK
+
+  virtual bool atomHDR() const = 0;
+  virtual double atomHDRExposure() const = 0;
+  virtual bool clipAtomsAtUnitCell() const = 0;
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const = 0;
 
-  virtual bool clipAtomsAtUnitCell() const = 0;
-  virtual bool clipBondsAtUnitCell() const = 0;
-
+  virtual std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const = 0;  // CHECK
   virtual std::vector<RKInPerInstanceAttributesText> renderTextData() const = 0;
   virtual RKTextType renderTextType() const = 0;
   virtual QString renderTextFont() const = 0;
@@ -96,64 +124,28 @@ public:
 
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedAtoms() const = 0;
   virtual RKSelectionStyle atomSelectionStyle() const = 0;
-  virtual double atomSelectionIntensity() const = 0;
-  virtual double atomSelectionScaling() const = 0;
-  virtual double atomSelectionFrequency() const = 0;
-  virtual double atomSelectionDensity() const = 0;
   virtual double atomSelectionStripesDensity() const = 0;
   virtual double atomSelectionStripesFrequency() const = 0;
   virtual double atomSelectionWorleyNoise3DFrequency() const = 0;
   virtual double atomSelectionWorleyNoise3DJitter() const = 0;
+  virtual double atomSelectionIntensity() const = 0;
+  virtual double atomSelectionScaling() const = 0;
+};
 
+class RKRenderBondSource
+{
+public:
+  virtual ~RKRenderBondSource() = 0;
+
+  virtual bool drawBonds() const = 0;
+  virtual int numberOfInternalBonds() const = 0;
+  virtual int numberOfExternalBonds() const = 0;
   virtual std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const = 0;
   virtual std::vector<RKInPerInstanceAttributesBonds> renderExternalBonds() const = 0;
   virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedInternalBonds() const = 0;
   virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedExternalBonds() const = 0;
 
-
-
-  virtual int numberOfAtoms() const = 0;
-  virtual int numberOfInternalBonds() const = 0;
-  virtual int numberOfExternalBonds() const = 0;
-
-
-  virtual bool drawAtoms() const = 0;
-  virtual bool drawBonds() const = 0;
-
-  // material properties
-  virtual QColor atomAmbientColor() const = 0;
-  virtual QColor atomDiffuseColor() const = 0;
-  virtual QColor atomSpecularColor() const = 0;
-  virtual double atomAmbientIntensity() const = 0;
-  virtual double atomDiffuseIntensity() const = 0;
-  virtual double atomSpecularIntensity() const = 0;
-  virtual double atomShininess() const = 0;
-
-  virtual void expandSymmetry() = 0;
-  virtual void reComputeBoundingBox() = 0;
-
-  virtual bool hasExternalBonds() const = 0;
-
-  virtual bool isUnity() const = 0;
-
-  virtual double atomHue() const = 0;
-  virtual double atomSaturation() const = 0;
-  virtual double atomValue() const = 0;
-
-  virtual bool colorAtomsWithBondColor() const = 0;
-  virtual double atomScaleFactor() const = 0;
-  virtual bool atomAmbientOcclusion() const = 0;
-  virtual int atomAmbientOcclusionPatchNumber() const = 0;
-  virtual void setAtomAmbientOcclusionPatchNumber(int) = 0;
-  virtual int atomAmbientOcclusionPatchSize() const = 0;
-  virtual void setAtomAmbientOcclusionPatchSize(int) = 0;
-  virtual int atomAmbientOcclusionTextureSize() const = 0;
-  virtual void setAtomAmbientOcclusionTextureSize(int) = 0;
-
-  virtual bool atomHDR() const = 0;
-  virtual double atomHDRExposure() const = 0;
-
-  virtual bool bondAmbientOcclusion() const = 0;
+  //virtual bool bondAmbientOcclusion() const = 0;
   virtual QColor bondAmbientColor() const = 0;
   virtual QColor bondDiffuseColor() const = 0;
   virtual QColor bondSpecularColor() const = 0;
@@ -162,54 +154,49 @@ public:
   virtual double bondSpecularIntensity() const = 0;
   virtual double bondShininess() const = 0;
 
+  virtual bool isUnity() const = 0;
+  virtual bool hasExternalBonds() const = 0;
+
   virtual double bondScaleFactor() const = 0;
   virtual RKBondColorMode bondColorMode() const = 0;
 
   virtual bool bondHDR() const = 0;
   virtual double bondHDRExposure() const = 0;
 
+  virtual bool clipBondsAtUnitCell() const = 0;
+
   virtual double bondHue() const = 0;
   virtual double bondSaturation() const = 0;
   virtual double bondValue() const = 0;
 
   virtual RKSelectionStyle bondSelectionStyle() const = 0;
-  virtual double bondSelectionIntensity() const = 0;
-  virtual double bondSelectionScaling() const = 0;
-  virtual double bondSelectionFrequency() const = 0;
-  virtual double bondSelectionDensity() const = 0;
   virtual double bondSelectionStripesDensity() const = 0;
   virtual double bondSelectionStripesFrequency() const = 0;
   virtual double bondSelectionWorleyNoise3DFrequency() const = 0;
   virtual double bondSelectionWorleyNoise3DJitter() const = 0;
-
-
-  virtual void recomputeDensityProperties() = 0;
-  virtual double2 frameworkProbeParameters() const = 0;
-  virtual void setStructureHeliumVoidFraction(double value) = 0;
-  virtual void setStructureNitrogenSurfaceArea(double value) = 0;
-
-  virtual std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const = 0;
+  virtual double bondSelectionIntensity() const = 0;
+  virtual double bondSelectionScaling() const = 0;
 };
 
-class RKRenderAdsorptionSurfaceSource
+class RKRenderVolumetricDataSource
 {
 public:
-  virtual ~RKRenderAdsorptionSurfaceSource() = 0;
+  virtual ~RKRenderVolumetricDataSource() = 0;
 
-  virtual RKEnergySurfaceType adsorptionSurfaceRenderingMethod() = 0;
-  virtual RKPredefinedVolumeRenderingTransferFunction adsorptionVolumeTransferFunction() = 0;
-  virtual double adsorptionVolumeStepLength() = 0;
-
-  virtual std::vector<double3> atomUnitCellPositions() const = 0;
   virtual bool drawAdsorptionSurface() const = 0;
-  virtual double adsorptionSurfaceOpacity() const = 0;
-  virtual double adsorptionSurfaceIsoValue() const = 0;
-  virtual double adsorptionSurfaceMinimumValue() const = 0;
-  virtual void setAdsorptionSurfaceMinimumValue(double value) = 0;
-  virtual int adsorptionSurfaceSize() const = 0;
-  virtual double2 adsorptionSurfaceProbeParameters() const = 0;
 
-  virtual std::vector<double2> potentialParameters() const = 0;
+  virtual int3 dimensions() const = 0;
+  virtual std::vector<float> gridData()  = 0;
+  virtual std::vector<float4> gridValueAndGradientData()  = 0;
+  virtual bool isImmutable() const = 0;
+
+  virtual RKEnergySurfaceType adsorptionSurfaceRenderingMethod() const = 0;
+  virtual RKPredefinedVolumeRenderingTransferFunction adsorptionVolumeTransferFunction() const = 0;
+  virtual double adsorptionVolumeStepLength() const = 0;
+
+  virtual double adsorptionSurfaceOpacity() const = 0;
+  virtual double adsorptionTransparencyThreshold() const = 0;
+  virtual double adsorptionSurfaceIsoValue() const = 0;
 
   virtual double adsorptionSurfaceHue() const = 0;
   virtual double adsorptionSurfaceSaturation() const = 0;
@@ -234,11 +221,6 @@ public:
   virtual double adsorptionSurfaceBackSideAmbientIntensity() const = 0;
   virtual double adsorptionSurfaceBackSideSpecularIntensity() const = 0;
   virtual double adsorptionSurfaceBackSideShininess() const = 0;
-
-  virtual void recomputeDensityProperties() = 0;
-  virtual double2 frameworkProbeParameters() const = 0;
-  virtual void setStructureHeliumVoidFraction(double value) = 0;
-  virtual void setStructureNitrogenSurfaceArea(double value) = 0;
 };
 
 class RKRenderPrimitiveObjectsSource
@@ -248,22 +230,22 @@ public:
 
   virtual bool drawAtoms() const = 0;
 
-  virtual simd_quatd primitiveOrientation() const = 0;
+  virtual RKSelectionStyle primitiveSelectionStyle() const = 0;
+  virtual double primitiveSelectionStripesDensity() const = 0;
+  virtual double primitiveSelectionStripesFrequency() const = 0;
+  virtual double primitiveSelectionWorleyNoise3DFrequency() const = 0;
+  virtual double primitiveSelectionWorleyNoise3DJitter() const = 0;
+  virtual double primitiveSelectionIntensity() const = 0;
+  virtual double primitiveSelectionScaling() const = 0;
+
   virtual double3x3 primitiveTransformationMatrix() const = 0;
+  virtual simd_quatd primitiveOrientation() const = 0;
 
   virtual double primitiveOpacity() const = 0;
   virtual bool primitiveIsCapped() const = 0;
   virtual bool primitiveIsFractional() const = 0;
   virtual int primitiveNumberOfSides() const = 0;
   virtual double primitiveThickness() const = 0;
-
-  virtual RKSelectionStyle primitiveSelectionStyle() const = 0;
-  virtual double primitiveSelectionIntensity() const = 0;
-  virtual double primitiveSelectionScaling() const = 0;
-  virtual double primitiveSelectionStripesDensity() const = 0;
-  virtual double primitiveSelectionStripesFrequency() const = 0;
-  virtual double primitiveSelectionWorleyNoise3DFrequency() const = 0;
-  virtual double primitiveSelectionWorleyNoise3DJitter() const = 0;
 
   virtual double primitiveHue() const = 0;
   virtual double primitiveSaturation() const = 0;
@@ -338,28 +320,6 @@ public:
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitivePolygonalPrismObjects() const = 0;
 };
 
-class RKRenderDensityVolumeSource
-{
-public:
-  virtual ~RKRenderDensityVolumeSource() = 0;
-
-  virtual QByteArray data() const = 0;
-  virtual int3 dimension() const = 0;
-  virtual double3 spacing() const = 0;
-};
-
-class RKRenderRASPADensityVolumeSource: public RKRenderDensityVolumeSource
-{
-public:
-  virtual ~RKRenderRASPADensityVolumeSource() = 0;
-};
-
-class RKRenderVTKDensityVolumeSource: public RKRenderDensityVolumeSource
-{
-public:
-  virtual ~RKRenderVTKDensityVolumeSource() = 0;
-};
-
 class RKRenderDataSource
 {
 public:
@@ -371,7 +331,7 @@ public:
   virtual std::vector<std::shared_ptr<RKLight>>& renderLights() = 0;
 
   virtual std::vector<RKInPerInstanceAttributesAtoms> renderMeasurementPoints() const = 0;
-  virtual std::vector<RKRenderStructure> renderMeasurementStructure() const = 0;
+  virtual std::vector<RKRenderObject> renderMeasurementStructure() const = 0;
 
   virtual SKBoundingBox renderBoundingBox() const = 0;
 
@@ -398,7 +358,7 @@ class RKRenderViewController
   virtual void redraw() = 0;
   virtual void redrawWithQuality(RKRenderQuality quality) = 0;
 
-  virtual void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures) = 0;
+  virtual void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures) = 0;
   virtual void setRenderDataSource(std::shared_ptr<RKRenderDataSource> source) = 0;
   virtual void reloadData() = 0;
   virtual void reloadData(RKRenderQuality ambientOcclusionQuality) = 0;
@@ -411,10 +371,10 @@ class RKRenderViewController
 
   virtual void reloadBackgroundImage() = 0;
 
-  virtual void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderStructure>> structures) = 0;
-  virtual void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderStructure>> structures) = 0;
-  virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures) = 0;
-  virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures) = 0;
+  virtual void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
+  virtual void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
+  virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
+  virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
 
   virtual void updateTransformUniforms() = 0;
   virtual void updateStructureUniforms() = 0;

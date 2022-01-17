@@ -25,17 +25,18 @@
 #include "gridvolume.h"
 #include "symmetrykit.h"
 
-class VTKDensityVolume: public GridVolume, public RKRenderVTKDensityVolumeSource
+class VTKDensityVolume: public GridVolume
 {
 public:
   VTKDensityVolume();
   VTKDensityVolume(std::shared_ptr<SKStructure> frame);
 
+  // Object
+  // ===============================================================================================
+  VTKDensityVolume(const std::shared_ptr<Object> object);
   ObjectType structureType() override final { return ObjectType::VTKDensityVolume; }
+  std::shared_ptr<Object> shallowClone()  override final;
 
-  int3 dimension() const override {return _dimensions;}
-  double3 spacing() const override {return _spacing;}
-  QByteArray data() const  override{return _data;}
 private:
   qint64 _versionNumber{1};
 

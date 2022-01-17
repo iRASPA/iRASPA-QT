@@ -64,122 +64,49 @@ Crystal::Crystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 
 Crystal::Crystal(const Crystal &crystal): Structure(crystal)
 {
+
 }
 
-Crystal::Crystal(const std::shared_ptr<const Crystal> structure): Structure(structure)
+
+
+Crystal::Crystal(const std::shared_ptr<Object> object): Structure(object)
 {
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
+  if (std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(object))
+  {
+    _spaceGroup = spaceGroupViewer->spaceGroup();
+  }
+
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    if(!atomViewer->isFractional())
+    {
+      convertAsymmetricAtomsToFractional();
+      expandSymmetry();
+    }
+    _atomsTreeController->setTags();
+    reComputeBoundingBox();
+    computeBonds();
+  }
+
+  if (std::shared_ptr<StructuralPropertyViewer> structuralPropertyViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(object))
+  {
+    _structureMaterialType = structuralPropertyViewer->structureMaterialType();
+    _frameworkProbeMolecule = structuralPropertyViewer->frameworkProbeMolecule();
+    _structureMass = structuralPropertyViewer->structureMass();
+    _structureDensity = structuralPropertyViewer->structureDensity();
+    _structureHeliumVoidFraction = structuralPropertyViewer->structureHeliumVoidFraction();
+    _structureSpecificVolume = structuralPropertyViewer->structureSpecificVolume();
+    _structureAccessiblePoreVolume = structuralPropertyViewer->structureAccessiblePoreVolume();
+    _structureVolumetricNitrogenSurfaceArea = structuralPropertyViewer->structureVolumetricNitrogenSurfaceArea();
+    _structureGravimetricNitrogenSurfaceArea = structuralPropertyViewer->structureGravimetricNitrogenSurfaceArea();
+    _structureNumberOfChannelSystems = structuralPropertyViewer->structureNumberOfChannelSystems();
+    _structureNumberOfInaccessiblePockets = structuralPropertyViewer->structureNumberOfInaccessiblePockets();
+    _structureDimensionalityOfPoreSystem = structuralPropertyViewer->structureDimensionalityOfPoreSystem();
+    _structureLargestCavityDiameter = structuralPropertyViewer->structureLargestCavityDiameter();
+    _structureRestrictingPoreLimitingDiameter = structuralPropertyViewer->structureRestrictingPoreLimitingDiameter();
+    _structureLargestCavityDiameterAlongAViablePath = structuralPropertyViewer->structureLargestCavityDiameterAlongAViablePath();
+  }
 }
-
-Crystal::Crystal(const std::shared_ptr<const MolecularCrystal> structure): Structure(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const Molecule> structure): Structure(structure)
-{
-  _cell = std::make_shared<SKCell>(structure->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const ProteinCrystal> structure): Structure(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const Protein> structure): Structure(structure)
-{
-  _cell = std::make_shared<SKCell>(structure->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const CrystalCylinderPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const CrystalEllipsoidPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const CrystalPolygonalPrismPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const CylinderPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(primitive->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const EllipsoidPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(primitive->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const PolygonalPrismPrimitive> primitive): Structure(primitive)
-{
-  _cell = std::make_shared<SKCell>(primitive->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-  computeBonds();
-}
-
-Crystal::Crystal(const std::shared_ptr<const GridVolume> volume): Structure(volume)
-{
-  _cell = std::make_shared<SKCell>(*volume->cell());
-}
-
-
-
-
 
 std::shared_ptr<Object> Crystal::shallowClone()
 {
@@ -420,6 +347,9 @@ std::vector<RKInPerInstanceAttributesAtoms> Crystal::renderUnitCellSpheres() con
   int maximumReplicaY = _cell->maximumReplicaY();
   int maximumReplicaZ = _cell->maximumReplicaZ();
 
+  double3 boundingBoxWidths = _cell->boundingBox().widths();
+  double scaleFactor = 0.0025 * std::max({boundingBoxWidths.x,boundingBoxWidths.y,boundingBoxWidths.z});
+
   std::vector<RKInPerInstanceAttributesAtoms> data = std::vector<RKInPerInstanceAttributesAtoms>();
 
   uint32_t asymmetricBondIndex=0;
@@ -433,7 +363,7 @@ std::vector<RKInPerInstanceAttributesAtoms> Crystal::renderUnitCellSpheres() con
         float4 ambient = float4(1.0f,1.0f,1.0f,1.0f);
         float4 diffuse = float4(1.0f,1.0f,1.0f,1.0f);
         float4 specular = float4(1.0f,1.0f,1.0f,1.0f);
-        float4 scale = float4(0.1f,0.1f,0.1f,1.0f);
+        float4 scale = float4(scaleFactor,scaleFactor,scaleFactor,1.0f);
         RKInPerInstanceAttributesAtoms sphere = RKInPerInstanceAttributesAtoms(float4(position,1.0), ambient, diffuse, specular, scale, asymmetricBondIndex);
         data.push_back(sphere);
       }
@@ -454,6 +384,9 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderUnitCellCylinders() c
   int maximumReplicaY = _cell->maximumReplicaY();
   int maximumReplicaZ = _cell->maximumReplicaZ();
 
+  double3 boundingBoxWidths = _cell->boundingBox().widths();
+  double scaleFactor = 0.0025 * std::max({boundingBoxWidths.x,boundingBoxWidths.y,boundingBoxWidths.z});
+
   std::vector<RKInPerInstanceAttributesBonds> data = std::vector<RKInPerInstanceAttributesBonds>();
 
   for(int k1=minimumReplicaX;k1<=maximumReplicaX+1;k1++)
@@ -466,7 +399,7 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderUnitCellCylinders() c
         {
           double3 position1 = _cell->unitCell() * double3(k1,k2,k3); // + origin();
           double3 position2 = _cell->unitCell() * double3(k1+1,k2,k3); // + origin();
-          float4 scale = float4(0.1f,1.0f,0.1f,1.0f);
+          float4 scale = float4(scaleFactor,1.0f,scaleFactor,1.0f);
           RKInPerInstanceAttributesBonds cylinder =
                   RKInPerInstanceAttributesBonds(float4(position1,1.0),
                                                  float4(position2,1.0),
@@ -480,7 +413,7 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderUnitCellCylinders() c
         {
           double3 position1 = _cell->unitCell() * double3(k1,k2,k3); // + origin();
           double3 position2 = _cell->unitCell() * double3(k1,k2+1,k3); // + origin();
-          float4 scale = float4(0.1f,1.0f,0.1f,1.0f);
+          float4 scale = float4(scaleFactor,1.0f,scaleFactor,1.0f);
           RKInPerInstanceAttributesBonds cylinder =
                   RKInPerInstanceAttributesBonds(float4(position1,1.0),
                                                  float4(position2,1.0),
@@ -494,7 +427,7 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderUnitCellCylinders() c
         {
           double3 position1 = _cell->unitCell() * double3(k1,k2,k3); // + origin();
           double3 position2 = _cell->unitCell() * double3(k1,k2,k3+1); // + origin();
-          float4 scale = float4(0.1f,1.0f,0.1f,1.0f);
+          float4 scale = float4(scaleFactor,1.0f,scaleFactor,1.0f);
           RKInPerInstanceAttributesBonds cylinder =
                   RKInPerInstanceAttributesBonds(float4(position1,1.0),
                                                  float4(position2,1.0),
@@ -726,8 +659,6 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderSelectedExternalBonds
   return data;
 }
 
-
-
 // MARK: Filtering
 // =====================================================================
 
@@ -850,9 +781,9 @@ std::set<int> Crystal::filterCartesianAtomPositions(std::function<bool(double3)>
   return data;
 }
 
-std::set<int> Crystal::filterCartesianBondPositions(std::function<bool(double3)> &closure)
+BondSelectionIndexSet Crystal::filterCartesianBondPositions(std::function<bool(double3)> &closure)
 {
-  std::set<int> data;
+  BondSelectionIndexSet data;
 
   if(_isVisible)
   {
@@ -1859,6 +1790,185 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Crystal::rota
                  });
 
   return rotatedPositions;
+}
+
+// Protocol: RKRenderAdsorptionSurfaceSource
+
+std::vector<float> Crystal::gridData()
+{
+  int size = pow(2,_encompassingPowerOfTwoCubicGridSize);
+  _dimensions = int3(size,size,size);
+  double2 probeParameter = adsorptionSurfaceProbeParameters();
+  std::vector<double3> positions = atomUnitCellPositions();
+  std::vector<double2> parameters = potentialParameters();
+  double3x3 unitCell = cell()->unitCell();
+  int3 numberOfReplicas = cell()->numberOfReplicas(12.0);
+
+  try
+  {
+    std::vector<float> gridData = SKComputeEnergyGrid::ComputeEnergyGrid(int3(size,size,size),
+                                                        probeParameter, positions, parameters, unitCell, numberOfReplicas);
+    _adsorptionVolumeStepLength = 0.25 / double(size);
+
+    const auto [min, max] = std::minmax_element(begin(gridData), end(gridData));
+    _range = std::pair(double(*min),double(*max));
+    return gridData;
+  }
+  catch (char const* e)
+  {
+    std::cout << "Exception caught: " << e << std::endl;
+    return std::vector<float>();
+  }
+}
+std::vector<float4> Crystal::gridValueAndGradientData()
+{
+  std::vector<float> energyData = gridData();
+
+  int encompassingcubicsize = pow(2,_encompassingPowerOfTwoCubicGridSize);
+  std::vector<float4> gradientData(encompassingcubicsize*encompassingcubicsize*encompassingcubicsize);
+
+  for(int z=0;z<_dimensions.z;z++)
+  {
+    for(int y=0;y<_dimensions.y;y++)
+    {
+      for(int x=0;x<_dimensions.x;x++)
+      {
+        float temp = 1000.0*(1.0/300.0)*(energyData[x+_dimensions.x*y+z*_dimensions.x*_dimensions.y]-_range.first);
+        float value;
+        if(temp<0)
+        {
+          value = 0.0;
+        }
+        else if(temp>54000)
+        {
+         value = 1.0;
+        }
+        else
+        {
+          value=temp/65535.0;
+        }
+
+
+        // x
+        int xi = (int)(x + 0.5f);
+        float xf = x + 0.5f - xi;
+        float xd0 = energyData[int(((xi-1 + _dimensions.x) % _dimensions.x)+y*_dimensions.x+z*_dimensions.x*_dimensions.y)];
+        float xd1 = energyData[int((xi)+y*_dimensions.x+z*_dimensions.x*_dimensions.y)];
+        float xd2 = energyData[int(((xi+1 + _dimensions.x) % _dimensions.x)+y*_dimensions.x+z*_dimensions.x*_dimensions.y)];
+        float gx = (xd1 - xd0) * (1.0f - xf) + (xd2 - xd1) * xf; // lerp
+
+        // y
+        int yi = (int)(y + 0.5f);
+        float yf = y + 0.5f - yi;
+        float yd0 = energyData[int(x + ((yi-1+_dimensions.y) % _dimensions.y)*_dimensions.x+z*_dimensions.x*_dimensions.y)];
+        float yd1 = energyData[int(x + (yi)*_dimensions.x+z*_dimensions.x*_dimensions.y)];
+        float yd2 = energyData[int(x + ((yi+1+_dimensions.y) % _dimensions.y)*_dimensions.x+z*_dimensions.x*_dimensions.y)];
+        float gy = (yd1 - yd0) * (1.0f - yf) + (yd2 - yd1) * yf; // lerp
+
+        // z
+        int zi = (int)(z + 0.5f);
+        float zf = z + 0.5f - zi;
+        float zd0 = energyData[int(x+y*_dimensions.x+((zi-1+_dimensions.z) % _dimensions.z)*_dimensions.x*_dimensions.y)];
+        float zd1 = energyData[int(x+y*_dimensions.x+(zi)*_dimensions.x*_dimensions.y)];
+        float zd2 = energyData[int(x+y*_dimensions.x+((zi+1+_dimensions.z) % _dimensions.z)*_dimensions.x*_dimensions.y)];
+        float gz =  (zd1 - zd0) * (1.0f - zf) + (zd2 - zd1) * zf; // lerp
+
+        int index = int(x+encompassingcubicsize*y+z*encompassingcubicsize*encompassingcubicsize);
+        gradientData[index] = float4(value, gx, gy, gz);
+      }
+    }
+  }
+  return gradientData;
+}
+
+// Protocol: VolumetricDataEditor
+
+void Crystal::setEncompassingPowerOfTwoCubicGridSize(int value)
+{
+  _encompassingPowerOfTwoCubicGridSize = value;
+  int size = pow(2,value);
+  _dimensions = int3(size,size,size);
+  _adsorptionVolumeStepLength = 0.25 / double(size);
+}
+
+double Crystal::computeVoidFraction() const
+{
+  int3 size = int3(128,128,128);
+  double2 probeParameter = double2(10.9, 2.64);
+  std::vector<double3> positions = atomUnitCellPositions();
+  std::vector<double2> parameters = potentialParameters();
+  double3x3 unitCell = cell()->unitCell();
+  int3 numberOfReplicas = cell()->numberOfReplicas(12.0);
+
+  try
+  {
+    std::vector<float> gridData = SKComputeEnergyGrid::ComputeEnergyGrid(size, probeParameter, positions,
+                                                                         parameters, unitCell, numberOfReplicas);
+    double sumBoltzmannWeight = 0.0;
+    for(const float &value: gridData)
+    {
+      sumBoltzmannWeight += exp(-(1.0/298.0) * value);  // K_B  chosen as 1.0 (energy units are Kelvin)
+    }
+    return (double)sumBoltzmannWeight/(double)(size.x*size.y*size.z);
+  }
+  catch (char const* e)
+  {
+    std::cout << "Exception caught: " << e << std::endl;
+    return 0.0;
+  }
+  return 0.0;
+}
+
+double Crystal::computeNitrogenSurfaceArea() const
+{
+  int3 size = int3(128,128,128);
+
+  double2 probeParameter = frameworkProbeParameters();
+  std::vector<double3> positions = atomUnitCellPositions();
+  std::vector<double2> parameters = potentialParameters();
+  double3x3 unitCell = cell()->unitCell();
+  int3 numberOfReplicas = cell()->numberOfReplicas(12.0);
+
+  try
+  {
+    std::vector<float> gridData = SKComputeEnergyGrid::ComputeEnergyGrid(size, probeParameter, positions,
+                                                                         parameters, unitCell, numberOfReplicas);
+
+    double isoValue = 0.0;
+
+    std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(size, &gridData, isoValue);
+
+    double totalArea=0.0;
+    for(size_t i=0; i<triangleData.size(); i+=9)
+    {
+      double3 p1 = unitCell * double3(triangleData[i].x,triangleData[i].y,triangleData[i].z);
+      double3 p2 = unitCell * double3(triangleData[i+3].x,triangleData[i+3].y,triangleData[i+3].z);
+      double3 p3 = unitCell * double3(triangleData[i+6].x,triangleData[i+6].y,triangleData[i+6].z);
+      double3 v = double3::cross(p2-p1,p3-p1);
+      double area = 0.5 * v.length();
+      if(std::isfinite(area) && fabs(area) < 1.0 )
+      {
+        totalArea += area;
+      }
+    }
+    return totalArea;
+  }
+  catch (char const* e)
+  {
+    std::cout << "Exception caught: " << e << std::endl;
+    return 0.0;
+  }
+  return 0.0;
+}
+
+void Crystal::setStructureVolumetricNitrogenSurfaceArea(double value)
+{
+  _structureVolumetricNitrogenSurfaceArea = value * 1e4 / cell()->volume();
+}
+
+void Crystal::setStructureGravimetricNitrogenSurfaceArea(double value)
+{
+  _structureGravimetricNitrogenSurfaceArea = value * Constants::AvogadroConstantPerAngstromSquared / _structureMass;
 }
 
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Crystal> &crystal)

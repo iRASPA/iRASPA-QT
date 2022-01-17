@@ -56,7 +56,7 @@ public:
   void initializeLightUniforms();
 
   void reloadData();
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
 private:
   OpenGLAtomSelectionShader _atomSelectionShader;
   OpenGLBondSelectionShader _bondSelectionShader;

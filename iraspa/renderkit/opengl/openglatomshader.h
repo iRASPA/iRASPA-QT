@@ -56,8 +56,8 @@ public:
   void initializeLightUniforms();
 
   void reloadData();
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
-  void invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderStructure>> structure);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
+  void invalidateCachedAmbientOcclusionTexture(std::vector<std::shared_ptr<RKRenderObject>> structure);
   void reloadAmbientOcclusionData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality);
 private:
   OpenGLAtomSphereShader _atomShader;
@@ -66,7 +66,7 @@ private:
   OpenGLAmbientOcclusionShadowMapShader _atomAmbientOcclusionShader;
 
   size_t _numberOfAtoms = 0;
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   friend OpenGLAtomPickingShader;
   friend OpenGLTextRenderingShader;

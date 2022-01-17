@@ -32,45 +32,40 @@ public:
   PolygonalPrismPrimitive();
   PolygonalPrismPrimitive(const PolygonalPrismPrimitive &polygonalPrismPrimitive);
 
-  PolygonalPrismPrimitive(const std::shared_ptr<const class Crystal> structure);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class MolecularCrystal> structure);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class Molecule> structure);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class ProteinCrystal> structure);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class Protein> structure);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class CylinderPrimitive> primitive);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
-  PolygonalPrismPrimitive(const std::shared_ptr<const class GridVolume> volume);
-
   ~PolygonalPrismPrimitive() {}
 
+  // Object
+  // ===============================================================================================
+  PolygonalPrismPrimitive(const std::shared_ptr<Object> object);
+  ObjectType structureType() override final { return ObjectType::polygonalPrismPrimitive; }
   std::shared_ptr<Object> shallowClone() override final;
+  SKBoundingBox boundingBox() const override;
+  void reComputeBoundingBox() override;
 
+  // Protocol:  RKRenderAtomSource overwrite
+  // ===============================================================================================
   bool drawAtoms() const override {return _drawAtoms;}
 
-  ObjectType structureType() override final { return ObjectType::polygonalPrismPrimitive; }
-
-  std::shared_ptr<Primitive> flattenHierarchy() const override final;
-
+  // Protocol:  RKRenderCrystalPrimitivePolygonalPrimsObjectsSource
+  // ===============================================================================================
   std::vector<RKInPerInstanceAttributesAtoms> renderPrimitivePolygonalPrismObjects() const override final;
   std::vector<RKInPerInstanceAttributesAtoms> renderSelectedPrimitivePolygonalPrismObjects() const override final;
 
-  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
-
-  SKBoundingBox boundingBox() const final override;
-  void reComputeBoundingBox() final override;
-
+  // AtomViewer: overwritten from Structure
+  // ===============================================================================================
+  bool isFractional() override final {return false;}
   void expandSymmetry() override final;
-  std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
-  std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions() override final;
+  std::shared_ptr<Primitive> flattenHierarchy() const override final;
+  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToFractionalPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToFractionalPositions() override final;
 
+  // Structure: reimplemented
+  // ===============================================================================================
+  std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
+  std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions() override final;
   double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms) const override final;
   double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom> > atoms) const override final;
   std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;

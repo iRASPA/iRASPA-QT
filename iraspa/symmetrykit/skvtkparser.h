@@ -35,19 +35,14 @@
 #include "skasymmetricatom.h"
 #include "skatomtreenode.h"
 #include "skatomtreecontroller.h"
-#include "logreporting.h"
-
 
 class SKVTKParser: public SKParser
 {
 public:
-  SKVTKParser(QUrl url, QDataStream::ByteOrder byteorder, LogReporting *log);
-  bool startParsing() override final;
-
-
+  SKVTKParser(QUrl url, QDataStream::ByteOrder byteorder);
+  void startParsing() override final;
 private:
   QUrl _url;
-  LogReporting *_log;
   QDataStream::ByteOrder _byteOrder;
 
   std::shared_ptr<SKStructure> _frame;

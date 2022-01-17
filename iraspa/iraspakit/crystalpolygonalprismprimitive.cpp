@@ -42,110 +42,26 @@ CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const CrystalPoly
 {
 }
 
+CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<Object> object): Primitive(object)
+{
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    if(!atomViewer->isFractional())
+    {
+      convertAsymmetricAtomsToFractional();
+      expandSymmetry();
+    }
+    _atomsTreeController->setTags();
+    reComputeBoundingBox();
+  }
+}
+
 std::shared_ptr<Object> CrystalPolygonalPrismPrimitive::shallowClone()
 {
   return std::make_shared<CrystalPolygonalPrismPrimitive>(static_cast<const CrystalPolygonalPrismPrimitive&>(*this));
 }
 
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const Crystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
 
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const MolecularCrystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const Molecule> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(structure->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const ProteinCrystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const Protein> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(structure->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const CrystalCylinderPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const CrystalEllipsoidPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const CrystalPolygonalPrismPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const CylinderPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(primitive->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const EllipsoidPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(primitive->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const PolygonalPrismPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(primitive->boundingBox());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<const GridVolume> volume): Primitive(volume)
-{
-
-}
 
 
 // MARK: Rendering
@@ -221,6 +137,9 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalPolygonalPrismPrimitive::rend
   int maximumReplicaY = _cell->maximumReplicaY();
   int maximumReplicaZ = _cell->maximumReplicaZ();
 
+  double3 boundingBoxWidths = _cell->boundingBox().widths();
+  double scaleFactor = 0.0025 * std::max({boundingBoxWidths.x,boundingBoxWidths.y,boundingBoxWidths.z});
+
   std::vector<RKInPerInstanceAttributesAtoms> data = std::vector<RKInPerInstanceAttributesAtoms>();
 
   uint32_t asymmetricBondIndex=0;
@@ -234,7 +153,7 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalPolygonalPrismPrimitive::rend
         float4 ambient = float4(1.0f,1.0f,1.0f,1.0f);
         float4 diffuse = float4(1.0f,1.0f,1.0f,1.0f);
         float4 specular = float4(1.0f,1.0f,1.0f,1.0f);
-        float4 scale = float4(0.1f,0.1f,0.1f,1.0f);
+        float4 scale = float4(scaleFactor,scaleFactor,scaleFactor,1.0f);
         RKInPerInstanceAttributesAtoms sphere = RKInPerInstanceAttributesAtoms(float4(position,1.0), ambient, diffuse, specular, scale, asymmetricBondIndex);
         data.push_back(sphere);
       }
@@ -255,6 +174,9 @@ std::vector<RKInPerInstanceAttributesBonds> CrystalPolygonalPrismPrimitive::rend
   int maximumReplicaY = _cell->maximumReplicaY();
   int maximumReplicaZ = _cell->maximumReplicaZ();
 
+  double3 boundingBoxWidths = _cell->boundingBox().widths();
+  double scaleFactor = 0.0025 * std::max({boundingBoxWidths.x,boundingBoxWidths.y,boundingBoxWidths.z});
+
   std::vector<RKInPerInstanceAttributesBonds> data = std::vector<RKInPerInstanceAttributesBonds>();
 
   for(int k1=minimumReplicaX;k1<=maximumReplicaX+1;k1++)
@@ -267,7 +189,7 @@ std::vector<RKInPerInstanceAttributesBonds> CrystalPolygonalPrismPrimitive::rend
         {
           double3 position1 = _cell->unitCell() * double3(k1,k2,k3); // + origin();
           double3 position2 = _cell->unitCell() * double3(k1+1,k2,k3); // + origin();
-          float4 scale = float4(0.1f,1.0f,0.1f,1.0f);
+          float4 scale = float4(scaleFactor,1.0f,scaleFactor,1.0f);
           RKInPerInstanceAttributesBonds cylinder =
                   RKInPerInstanceAttributesBonds(float4(position1,1.0),
                                                  float4(position2,1.0),
@@ -281,7 +203,7 @@ std::vector<RKInPerInstanceAttributesBonds> CrystalPolygonalPrismPrimitive::rend
         {
           double3 position1 = _cell->unitCell() * double3(k1,k2,k3); // + origin();
           double3 position2 = _cell->unitCell() * double3(k1,k2+1,k3); // + origin();
-          float4 scale = float4(0.1f,1.0f,0.1f,1.0f);
+          float4 scale = float4(scaleFactor,1.0f,scaleFactor,1.0f);
           RKInPerInstanceAttributesBonds cylinder =
                   RKInPerInstanceAttributesBonds(float4(position1,1.0),
                                                  float4(position2,1.0),
@@ -295,7 +217,7 @@ std::vector<RKInPerInstanceAttributesBonds> CrystalPolygonalPrismPrimitive::rend
         {
           double3 position1 = _cell->unitCell() * double3(k1,k2,k3); // + origin();
           double3 position2 = _cell->unitCell() * double3(k1,k2,k3+1); // + origin();
-          float4 scale = float4(0.1f,1.0f,0.1f,1.0f);
+          float4 scale = float4(scaleFactor,1.0f,scaleFactor,1.0f);
           RKInPerInstanceAttributesBonds cylinder =
                   RKInPerInstanceAttributesBonds(float4(position1,1.0),
                                                  float4(position2,1.0),

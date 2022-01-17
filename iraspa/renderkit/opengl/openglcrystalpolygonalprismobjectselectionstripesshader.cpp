@@ -33,7 +33,7 @@ OpenGLCrystalPolygonalPrismObjectSelectionStripesShader::OpenGLCrystalPolygonalP
 }
 
 
-void OpenGLCrystalPolygonalPrismObjectSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalPolygonalPrismObjectSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

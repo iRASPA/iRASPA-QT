@@ -35,12 +35,12 @@ ProjectStructure::ProjectStructure(): _camera(std::make_shared<RKCamera>())
 }
 
 ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
-                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log): _camera(std::make_shared<RKCamera>())
+                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
 {
   QUrl url = QUrl::fromLocalFile(filename);
   if (url.isValid())
   {
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, asSeparateProject, onlyAsymmetricUnit, asMolecule, log);
+    std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, asSeparateProject, onlyAsymmetricUnit, asMolecule);
     for(std::shared_ptr<Movie> movie : scene->movies())
     {
       movie->setParent(scene);
@@ -55,13 +55,13 @@ ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, For
 }
 
 ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
-                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log): _camera(std::make_shared<RKCamera>())
+                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
 {
   foreach (const QUrl &url, fileURLs)
   {
     if (url.isValid())
     {
-      std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, asSeparateProject, onlyAsymmetricUnit, asMolecule, log);
+      std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, asSeparateProject, onlyAsymmetricUnit, asMolecule);
       for(std::shared_ptr<Movie> movie : scene->movies())
       {
         movie->setParent(scene);
@@ -73,8 +73,6 @@ ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets
 
   _backgroundImage = QImage(QSize(1024,1024), QImage::Format_ARGB32);
   _backgroundImage.fill(QColor(255,255,255,255));
-
-  qDebug() << "DONE Project reading";
 }
 
 ProjectStructure::~ProjectStructure()
@@ -128,9 +126,9 @@ int ProjectStructure::numberOfMovies([[maybe_unused]] int sceneIndex) const
   return 0;
 }
 
-std::vector<std::shared_ptr<RKRenderStructure>> ProjectStructure::renderStructuresForScene(size_t i) const
+std::vector<std::shared_ptr<RKRenderObject>> ProjectStructure::renderStructuresForScene(size_t i) const
 {
-  std::vector<std::shared_ptr<RKRenderStructure>> structures = std::vector<std::shared_ptr<RKRenderStructure>>();
+  std::vector<std::shared_ptr<RKRenderObject>> structures = std::vector<std::shared_ptr<RKRenderObject>>();
 
   std::optional<size_t> selectedFrameIndex = _sceneList->selectedFrameIndex();
   if(selectedFrameIndex)
@@ -143,7 +141,7 @@ std::vector<std::shared_ptr<RKRenderStructure>> ProjectStructure::renderStructur
       {
         if(std::shared_ptr<Object> object = selectedFrame->object())
         {
-          if(std::shared_ptr<RKRenderStructure> structure = std::dynamic_pointer_cast<RKRenderStructure>(object))
+          if(std::shared_ptr<RKRenderObject> structure = std::dynamic_pointer_cast<RKRenderObject>(object))
           {
             structures.push_back(structure);
           }
@@ -159,9 +157,9 @@ std::vector<RKInPerInstanceAttributesAtoms> ProjectStructure::renderMeasurementP
   return std::vector<RKInPerInstanceAttributesAtoms>();
 }
 
-std::vector<RKRenderStructure> ProjectStructure::renderMeasurementStructure() const
+std::vector<RKRenderObject> ProjectStructure::renderMeasurementStructure() const
 {
-  return std::vector<RKRenderStructure>();
+  return std::vector<RKRenderObject>();
 }
 
 SKBoundingBox ProjectStructure::renderBoundingBox() const
@@ -451,6 +449,8 @@ QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<ProjectStruct
   stream << static_cast<typename std::underlying_type<RKImageQuality>::type>(node->_renderImageQuality);
 
   stream << node->_movieFramesPerSecond;
+  stream << static_cast<typename std::underlying_type<ProjectStructure::MovieType>::type>(node->_movieType);
+
   stream << node->_camera;
   stream << node->_renderAxes;
 
@@ -508,6 +508,12 @@ QDataStream &operator>>(QDataStream& stream, std::shared_ptr<ProjectStructure>& 
   node->_renderImageQuality = RKImageQuality(renderImageQuality);
 
   stream >> node->_movieFramesPerSecond;
+  if(versionNumber >= 5) // introduced in version 5
+  {
+    qint64 movieType;
+    stream >> movieType;
+    node->_movieType = ProjectStructure::MovieType(movieType);
+  }
 
   stream >> node->_camera;
 

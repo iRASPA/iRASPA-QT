@@ -107,7 +107,7 @@ public:
 
     AtomSelectionIndexPaths updateIndexPathsFromNodes(AtomSelectionNodesAndIndexPaths selection);
 private:
-    qint64 _versionNumber{1};
+    qint64 _versionNumber{2};
 
     std::shared_ptr<SKAtomTreeNode> _hiddenRootNode{nullptr};
 

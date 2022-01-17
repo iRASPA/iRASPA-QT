@@ -37,18 +37,16 @@
 #include "skatomtreecontroller.h"
 #include "skspacegroup.h"
 #include "skstructure.h"
-#include "logreporting.h"
 
 class SKPOSCARParser: public SKParser
 {
 public:
-  SKPOSCARParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
-  bool startParsing() override final;
+  SKPOSCARParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
+  void startParsing() override final;
 private:
   Scanner _scanner;
   [[maybe_unused]] bool _onlyAsymmetricUnitCell;
   [[maybe_unused]] bool _asMolecule;
-  LogReporting *_log;
   [[maybe_unused]] QString::const_iterator _previousScanLocation;
 
   [[maybe_unused]] int _numberOfAtoms = 0;

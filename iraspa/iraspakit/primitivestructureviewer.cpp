@@ -19,9 +19,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "adsorptionsurfacevisualappearanceviewer.h"
+#include "primitivestructureviewer.h"
 
-AdsorptionSurfaceVisualAppearanceViewer::~AdsorptionSurfaceVisualAppearanceViewer()
+PrimitiveViewer::~PrimitiveViewer()
+{
+  // Compulsory virtual destructor definition
+}
+
+PrimitiveEditor::~PrimitiveEditor()
 {
   // Compulsory virtual destructor definition
 }

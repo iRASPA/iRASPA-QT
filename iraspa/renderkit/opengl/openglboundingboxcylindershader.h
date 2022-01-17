@@ -46,7 +46,7 @@ public:
 private:
   GLuint _program;
   std::shared_ptr<RKRenderDataSource> _dataSource;
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   GLint _vertexNormalAttributeLocation;
   GLint _vertexPositionAttributeLocation;

@@ -25,3 +25,8 @@ BondViewer::~BondViewer()
 {
   // Compulsory virtual destructor definition
 }
+
+BondEditor::~BondEditor()
+{
+  // Compulsory virtual destructor definition
+}

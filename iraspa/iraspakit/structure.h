@@ -34,14 +34,14 @@
 #include "displayable.h"
 #include "object.h"
 #include "infoviewer.h"
-#include "cellviewer.h"
+#include "unitcellviewer.h"
 #include "atomviewer.h"
 #include "bondviewer.h"
-#include "primitivevisualappearanceviewer.h"
-#include "atomvisualappearanceviewer.h"
-#include "bondvisualappearanceviewer.h"
-#include "adsorptionsurfacevisualappearanceviewer.h"
-#include "atomtextvisualappearanceviewer.h"
+#include "primitivestructureviewer.h"
+#include "atomstructureviewer.h"
+#include "bondstructureviewer.h"
+#include "volumetricdataviewer.h"
+#include "annotationviewer.h"
 #include "primitive.h"
 #include "gridvolume.h"
 
@@ -57,10 +57,10 @@ struct enum_hash
 };
 
 
-class Structure: public Object, public InfoViewer, public CellViewer, public AtomViewer, public BondViewer,
-                 public AtomVisualAppearanceViewer, public BondVisualAppearanceViewer,
-                 public AdsorptionSurfaceVisualAppearanceViewer, public AtomTextVisualAppearanceViewer,
-                 public RKRenderAtomicStructureSource, public RKRenderAdsorptionSurfaceSource
+class Structure: public Object, public InfoEditor,  public AtomViewer, public BondViewer,
+                 public AtomStructureEditor, public BondStructureEditor,
+                 public AnnotationEditor,
+                 public RKRenderAtomSource, public RKRenderBondSource
 {
 public:
   Structure();
@@ -68,14 +68,271 @@ public:
   Structure(std::shared_ptr<SKStructure> structure);
   Structure(const Structure &structure);
 
-  Structure(const std::shared_ptr<const Structure> structure);
-  Structure(const std::shared_ptr<const Primitive> primitive);
-  Structure(const std::shared_ptr<const GridVolume> volume);
-
   virtual ~Structure() {}
 
+  // Object
+  // ===============================================================================================
+  Structure(const std::shared_ptr<Object> object);
+  ObjectType structureType() override {return ObjectType::structure;}
   std::shared_ptr<Object> shallowClone() override;
+  SKBoundingBox boundingBox() const override;
+  void reComputeBoundingBox() override;
+  SKBoundingBox transformedBoundingBox() const;
 
+  enum class StructureType: qint64
+  {
+    framework = 0, adsorbate = 1, cation = 2, ionicLiquid = 3, solvent = 4
+  };
+
+  // Protocol:  AtomViewer
+  // ===============================================================================================
+  std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
+  const std::shared_ptr<SKAtomTreeController> &atomsTreeController() const {return _atomsTreeController;}
+  void expandSymmetry() override;
+
+  void clearSelection() override final;
+  void setAtomSelection(int asymmetricAtomId) override final;
+  void addAtomToSelection(int asymmetricAtomId) override final;
+  void toggleAtomSelection(int asymmetricAtomId) override final;
+  void setAtomSelection(std::set<int>& atomIds) override final;
+  void addToAtomSelection(std::set<int>& atomIds) override final;
+
+  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override;
+
+  void recomputeSelectionBodyFixedBasis() override;
+
+  void convertAsymmetricAtomsToCartesian() override;
+  void convertAsymmetricAtomsToFractional() override;
+
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
+
+  // Protocol:  AtomEditor
+  // ===============================================================================================
+  void setAtomTreeController(std::shared_ptr<SKAtomTreeController> controller) {_atomsTreeController = controller;}
+
+  // Protocol:  RKRenderAtomSource
+  // ===============================================================================================
+  int numberOfAtoms() const override {return 0;}
+  bool drawAtoms() const override {return _drawAtoms;}
+
+  QColor atomAmbientColor() const override {return _atomAmbientColor;}
+  QColor atomDiffuseColor() const override {return _atomDiffuseColor;}
+  QColor atomSpecularColor() const override {return _atomSpecularColor;}
+  double atomAmbientIntensity() const override {return _atomAmbientIntensity;}
+  double atomDiffuseIntensity() const override {return _atomDiffuseIntensity;}
+  double atomSpecularIntensity() const override {return _atomSpecularIntensity;}
+  double atomShininess() const override {return _atomShininess;}
+
+  double atomHue() const override {return _atomHue;}
+  double atomSaturation() const override {return _atomSaturation;}
+  double atomValue() const override {return _atomValue;}
+
+  bool colorAtomsWithBondColor() const override;
+
+  double atomScaleFactor() const override {return _atomScaleFactor;}
+  bool atomAmbientOcclusion() const override {return _atomAmbientOcclusion;}
+  int atomAmbientOcclusionPatchNumber() const override {return _atomAmbientOcclusionPatchNumber;}
+  int atomAmbientOcclusionPatchSize() const override {return _atomAmbientOcclusionPatchSize;}
+  int atomAmbientOcclusionTextureSize() const override {return _atomAmbientOcclusionTextureSize;}
+  void setAtomAmbientOcclusionPatchNumber(int patchNumber) override  {_atomAmbientOcclusionPatchNumber=patchNumber;}
+  void setAtomAmbientOcclusionPatchSize(int patchSize)  override {_atomAmbientOcclusionPatchSize=patchSize;}
+  void setAtomAmbientOcclusionTextureSize(int size)  override {_atomAmbientOcclusionTextureSize=size;}
+
+  bool atomHDR() const  override{return _atomHDR;}
+  double atomHDRExposure() const override {return _atomHDRExposure;}
+  bool clipAtomsAtUnitCell() const override {return false;}
+  virtual std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override;
+
+  virtual std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const override;
+  std::vector<RKInPerInstanceAttributesText> renderTextData() const override {return std::vector<RKInPerInstanceAttributesText>();}
+  RKTextType renderTextType() const override {return _atomTextType;}
+  QString renderTextFont() const override {return _atomTextFont;}
+  RKTextAlignment renderTextAlignment() const override {return _atomTextAlignment;}
+  RKTextStyle renderTextStyle() const override {return _atomTextStyle;}
+  QColor renderTextColor() const override {return _atomTextColor;}
+  double renderTextScaling() const override {return _atomTextScaling;}
+  double3 renderTextOffset() const override {return _atomTextOffset;}
+
+  virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedAtoms() const override;
+  RKSelectionStyle atomSelectionStyle() const override {return _atomSelectionStyle;}
+  double atomSelectionStripesDensity() const override {return _atomSelectionStripesDensity;}
+  double atomSelectionStripesFrequency() const override {return _atomSelectionStripesFrequency;}
+  double atomSelectionWorleyNoise3DFrequency() const override {return _atomSelectionWorleyNoise3DFrequency;}
+  double atomSelectionWorleyNoise3DJitter() const override {return _atomSelectionWorleyNoise3DJitter;}
+  double atomSelectionScaling() const override {return _atomSelectionScaling;}
+  double atomSelectionIntensity() const override {return _atomSelectionIntensity;}
+
+  // Protocol:  AtomStructureViewer (most are already in RKRenderAtomSource)
+  // ===============================================================================================
+
+  RepresentationType atomRepresentationType() override {return _atomRepresentationType;}
+  RepresentationStyle atomRepresentationStyle() override {return _atomRepresentationStyle;}
+  QString atomColorSchemeIdentifier() override {return _atomColorSchemeIdentifier;}
+  SKColorSet::ColorSchemeOrder colorSchemeOrder() override {return _atomColorSchemeOrder;}
+  QString atomForceFieldIdentifier() override {return _atomForceFieldIdentifier;}
+  ForceFieldSet::ForceFieldSchemeOrder forceFieldSchemeOrder() override {return _atomForceFieldOrder;}
+
+  double atomSelectionFrequency() const override;
+  double atomSelectionDensity() const override;
+
+  // Protocol:  AtomStructureEditor
+  // ===============================================================================================
+
+  void recheckRepresentationStyle() override;
+  void setDrawAtoms(bool drawAtoms) override {_drawAtoms = drawAtoms;}
+
+  void setRepresentationType(RepresentationType) override final;
+  void setRepresentationStyle(RepresentationStyle style) override;
+  void setRepresentationStyle(RepresentationStyle style, const SKColorSets &colorSets) override;
+  void setRepresentationColorSchemeIdentifier(const QString colorSchemeName, const SKColorSets &colorSets) override;
+  void setColorSchemeOrder(SKColorSet::ColorSchemeOrder order) override {_atomColorSchemeOrder = order;}
+  void setAtomForceFieldIdentifier(QString identifier, ForceFieldSets &forceFieldSets) override;
+  void updateForceField(ForceFieldSets &forceFieldSets) override;
+  void setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder order) override {_atomForceFieldOrder = order;}
+
+  void setAtomHue(double value) override {_atomHue = value;}
+  void setAtomSaturation(double value) override {_atomSaturation = value;}
+  void setAtomValue(double value) override {_atomValue = value;}
+  void setAtomScaleFactor(double size) override;
+
+  void setAtomAmbientOcclusion(bool value) override {_atomAmbientOcclusion = value;}
+  void setAtomHDR(bool value) override {_atomHDR = value;}
+  void setAtomHDRExposure(double value) override {_atomHDRExposure = value;}
+
+  void setAtomAmbientColor(QColor color) override {_atomAmbientColor = color;}
+  void setAtomDiffuseColor(QColor color) override {_atomDiffuseColor = color;}
+  void setAtomSpecularColor(QColor color) override {_atomSpecularColor = color;}
+  void setAtomAmbientIntensity(double value) override {_atomAmbientIntensity = value;}
+  void setAtomDiffuseIntensity(double value) override {_atomDiffuseIntensity = value;}
+  void setAtomSpecularIntensity(double value) override {_atomSpecularIntensity = value;}
+  void setAtomShininess(double value) override {_atomShininess = value;}
+
+  void setAtomSelectionStyle(RKSelectionStyle style) override {_atomSelectionStyle = style;}
+  void setAtomSelectionFrequency(double value) override;
+  void setAtomSelectionDensity(double value) override;
+  void setAtomSelectionScaling(double scaling) override {_atomSelectionScaling = scaling;}
+  void setSelectionIntensity(double scaling) override {_atomSelectionIntensity = scaling;}
+
+  void setAtomSelectionStripesDensity(double value)  {_atomSelectionStripesDensity = value;}
+  void setAtomSelectionStripesFrequency(double value)  {_atomSelectionStripesFrequency = value;}
+  void setAtomSelectionWorleyNoise3DFrequency(double value)  {_atomSelectionWorleyNoise3DFrequency = value;}
+  void setAtomSelectionWorleyNoise3DJitter(double value)  {_atomSelectionWorleyNoise3DJitter = value;}
+
+  // move
+  void setRenderTextType(RKTextType type) override {_atomTextType = type;}
+  void setRenderTextFont(QString value) override {_atomTextFont = value;}
+  void setRenderTextAlignment(RKTextAlignment alignment) override {_atomTextAlignment = alignment;}
+  void setRenderTextStyle(RKTextStyle style) override {_atomTextStyle = style;}
+  void setRenderTextColor(QColor color) override {_atomTextColor = color;}
+  void setRenderTextScaling(double scaling) override {_atomTextScaling = scaling;}
+  void setRenderTextOffsetX(double value) override {_atomTextOffset.x = value;}
+  void setRenderTextOffsetY(double value) override {_atomTextOffset.y = value;}
+  void setRenderTextOffsetZ(double value) override {_atomTextOffset.z = value;}
+
+  // Protocol:  BondViewer
+  // ===============================================================================================
+
+  std::shared_ptr<SKBondSetController> bondSetController() override final {return _bondSetController;}
+  void computeBonds() override {;}
+
+  void setBondSelection(int asymmetricBondId) override final;
+  void addBondToSelection(int asymmetricBondId) override final;
+  void toggleBondSelection(int asymmetricAtomId) override final;
+
+   BondSelectionIndexSet filterCartesianBondPositions(std::function<bool(double3)> &) override;
+
+  // Protocol:  BondEditor
+  // ===============================================================================================
+
+   // TODO
+
+  // Protocol:  RKRenderBondSource
+  // ===============================================================================================
+
+  bool drawBonds() const override {return _drawBonds;}
+  int numberOfInternalBonds() const override {return 0;}
+  int numberOfExternalBonds() const override {return 0;}
+  virtual std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const override;
+  virtual std::vector<RKInPerInstanceAttributesBonds> renderExternalBonds() const override;
+  virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedInternalBonds() const override;
+  virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedExternalBonds() const override;
+
+  bool bondAmbientOcclusion() const override {return _bondAmbientOcclusion;}
+  QColor bondAmbientColor() const override {return _bondAmbientColor;}
+  QColor bondDiffuseColor() const override {return _bondDiffuseColor;}
+  QColor bondSpecularColor() const override {return _bondSpecularColor;}
+  double bondAmbientIntensity() const override {return _bondAmbientIntensity;}
+  double bondDiffuseIntensity() const override {return _bondDiffuseIntensity;}
+  double bondSpecularIntensity() const override {return _bondSpecularIntensity;}
+  double bondShininess() const override {return _bondShininess;}
+
+  bool isUnity() const override final {return _atomRepresentationType == RepresentationType::unity;}
+  bool hasExternalBonds() const override {return true;}
+
+  double bondScaleFactor() const override {return _bondScaleFactor;}
+  RKBondColorMode bondColorMode() const override {return _bondColorMode;}
+
+  bool bondHDR() const override {return _bondHDR;}
+  double bondHDRExposure() const override {return _bondHDRExposure;}
+
+  bool clipBondsAtUnitCell() const override {return false;}
+
+  double bondHue() const override {return _bondHue;}
+  double bondSaturation() const override {return _bondSaturation;}
+  double bondValue() const override {return _bondValue;}
+
+  RKSelectionStyle bondSelectionStyle() const override {return _bondSelectionStyle;}
+  double bondSelectionStripesDensity() const override {return _bondSelectionStripesDensity;}
+  double bondSelectionStripesFrequency() const override  {return _bondSelectionStripesFrequency;}
+  double bondSelectionWorleyNoise3DFrequency() const override {return _bondSelectionWorleyNoise3DFrequency;}
+  double bondSelectionWorleyNoise3DJitter() const override  {return _bondSelectionWorleyNoise3DJitter;}
+  double bondSelectionIntensity() const override {return _bondSelectionIntensity;}
+  double bondSelectionScaling() const override {return _bondSelectionScaling;}
+
+
+  // Protocol:  BondStructureViewer (most are already in RKRenderBondSource)
+  // ===============================================================================================
+
+  double bondSelectionFrequency() const override;
+  double bondSelectionDensity() const override;
+
+  // Protocol:  BondStructureEditor
+  // ===============================================================================================
+
+  void setDrawBonds(bool drawBonds) override {_drawBonds = drawBonds;}
+  void setBondScaleFactor(double value) override;
+  void setBondColorMode(RKBondColorMode value) override {_bondColorMode = value;}
+
+  void setBondAmbientOcclusion(bool state) override {_bondAmbientOcclusion = state;}
+
+  void setBondHDR(bool value) override {_bondHDR = value;}
+  void setBondHDRExposure(double value) override {_bondHDRExposure = value;}
+
+  void setBondHue(double value) override {_bondHue = value;}
+  void setBondSaturation(double value) override {_bondSaturation = value;}
+  void setBondValue(double value) override {_bondValue = value;}
+
+  void setBondAmbientColor(QColor color) override {_bondAmbientColor = color;}
+  void setBondDiffuseColor(QColor color) override {_bondDiffuseColor = color;}
+  void setBondSpecularColor(QColor color) override {_bondSpecularColor = color;}
+  void setBondAmbientIntensity(double value) override {_bondAmbientIntensity = value;}
+  void setBondDiffuseIntensity(double value) override {_bondDiffuseIntensity = value;}
+  void setBondSpecularIntensity(double value) override {_bondSpecularIntensity = value;}
+  void setBondShininess(double value) override {_bondShininess = value;}
+
+  void setBondSelectionStyle(RKSelectionStyle style) override {_bondSelectionStyle = style;}
+  void setBondSelectionFrequency(double value) override;
+  void setBondSelectionDensity(double value) override;
+  void setBondSelectionIntensity(double value) override {_bondSelectionIntensity = value;}
+  void setBondSelectionScaling(double scaling) override {_bondSelectionScaling = scaling;}
+
+
+  // To be overwritten in subclasses of 'Structure'
+  // ===============================================================================================
+  bool isFractional() override  {return false;}
   virtual bool hasSymmetry() {return false;}
   virtual std::shared_ptr<Structure> superCell() const {return nullptr;}
   virtual std::shared_ptr<Structure> removeSymmetry() const {return nullptr;}
@@ -85,13 +342,15 @@ public:
   virtual std::vector<std::tuple<double3,int,double>> atomSymmetryData() const {return {};}
   virtual void setAtomSymmetryData(double3x3 unitCell, std::vector<std::tuple<double3,int,double>> atomData) {Q_UNUSED(unitCell); Q_UNUSED(atomData);};
 
+  virtual bool hasSelectedAtoms() const;
 
-  enum class StructureType: qint64
-  {
-    framework = 0, adsorbate = 1, cation = 2, ionicLiquid = 3, solvent = 4
-  };
+  virtual std::vector<double3> atomPositions() const {return std::vector<double3>();}
+  virtual std::vector<double3> bondPositions() const {return std::vector<double3>();}
 
-  ObjectType structureType() override {return ObjectType::structure;}
+  virtual std::vector<double2> potentialParameters() const {return std::vector<double2>();}
+
+  virtual std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const override;
+  virtual std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const override;
 
   virtual std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions();
   virtual std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions();
@@ -100,77 +359,26 @@ public:
   virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToFractionalPositions();
   virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToCartesianPositions();
 
-  bool hasSelectedAtoms() const override final;
-
-  std::vector<double3> atomPositions() const override {return std::vector<double3>();}
-  std::vector<double3> bondPositions() const override {return std::vector<double3>();}
-
-  std::vector<double2> potentialParameters() const override {return std::vector<double2>();}
-
-  virtual std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override;
-  virtual std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const override;
-  virtual std::vector<RKInPerInstanceAttributesBonds> renderExternalBonds() const override;
-  virtual std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const override;
-  virtual std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const override;
-
-  virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedAtoms() const override;
-  virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedInternalBonds() const override;
-  virtual std::vector<RKInPerInstanceAttributesBonds> renderSelectedExternalBonds() const override;
-
-  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override;
-  std::set<int> filterCartesianBondPositions(std::function<bool(double3)> &) override;
-
-  virtual std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const override;
-
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
-
-  SKBoundingBox boundingBox() const override;
-  SKBoundingBox transformedBoundingBox() const final override;
-  void reComputeBoundingBox() override;
-
-  void expandSymmetry() override;
   virtual double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
   virtual double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
-  void recomputeSelectionBodyFixedBasis() override;
 
   virtual double bondLength(std::shared_ptr<SKBond> bond) const;
   virtual double3 bondVector(std::shared_ptr<SKBond> bond) const;
   virtual std::pair<double3, double3> computeChangedBondLength(std::shared_ptr<SKBond>, double) const;
 
-  bool clipAtomsAtUnitCell() const override {return false;}
-  bool clipBondsAtUnitCell() const override {return false;}
-  bool colorAtomsWithBondColor() const override;
-
-
-
-  void clearSelection() override final;
-  void setAtomSelection(int asymmetricAtomId) override final;
-  void setBondSelection(int asymmetricBondId) override final;
-  void addAtomToSelection(int asymmetricAtomId) override final;
-  void addBondToSelection(int asymmetricBondId) override final;
-  void toggleAtomSelection(int asymmetricAtomId) override final;
-  void toggleBondSelection(int asymmetricAtomId) override final;
-  void setAtomSelection(std::set<int>& atomIds) override final;
-  void addToAtomSelection(std::set<int>& atomIds) override final;
-
-
-
   virtual double3 CartesianPosition(double3 position, int3 replicaPosition) const {Q_UNUSED(position); Q_UNUSED(replicaPosition); return double(); }
   virtual double3 FractionalPosition(double3 position, int3 replicaPosition) const {Q_UNUSED(position); Q_UNUSED(replicaPosition); return double(); }
-  void convertAsymmetricAtomsToCartesian() override;
-  void convertAsymmetricAtomsToFractional() override;
 
-  int numberOfAtoms() const override {return 0;}
-  int numberOfInternalBonds() const override {return 0;}
-  int numberOfExternalBonds() const override {return 0;}
 
-  void setAtomTreeController(std::shared_ptr<SKAtomTreeController> controller) {_atomsTreeController = controller;}
-  std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
-  const std::shared_ptr<SKAtomTreeController> &atomsTreeController() const {return _atomsTreeController;}
-  std::shared_ptr<SKBondSetController> bondSetController() override final {return _bondSetController;}
+
+  double2 adsorptionSurfaceProbeParameters() const;
+  ProbeMolecule adsorptionSurfaceProbeMolecule() const {return _adsorptionSurfaceProbeMolecule;}
+
+  void recomputeDensityProperties();
+  double2 frameworkProbeParameters() const;
+  void setStructureNitrogenSurfaceArea(double value);
+
+  SKSpaceGroup& legacySpaceGroup() {return _legacySpaceGroup;}
 
   // ==========================================================================================
   // Legacy for reading primitive from 'Structure' (Remove in the future)
@@ -250,234 +458,7 @@ public:
   void setBackPrimitiveShininess(double value)  {_primitiveBackSideShininess = value;}
   // ==========================================================================================
 
-  // atoms
-  bool drawAtoms() const override {return _drawAtoms;}
-  void setDrawAtoms(bool drawAtoms) override {_drawAtoms = drawAtoms;}
 
-  void setRepresentationType(RepresentationType) override final;
-  RepresentationType atomRepresentationType() override {return _atomRepresentationType;}
-  void setRepresentationStyle(RepresentationStyle style) override;
-  void setRepresentationStyle(RepresentationStyle style, const SKColorSets &colorSets) override;
-  RepresentationStyle atomRepresentationStyle() override {return _atomRepresentationStyle;}
-  bool isUnity() const override final {return _atomRepresentationType == RepresentationType::unity;}
-  void recheckRepresentationStyle() override;
-
-  void setRepresentationColorSchemeIdentifier(const QString colorSchemeName, const SKColorSets &colorSets) override;
-  QString atomColorSchemeIdentifier() override {return _atomColorSchemeIdentifier;}
-  void setColorSchemeOrder(SKColorSet::ColorSchemeOrder order) override {_atomColorSchemeOrder = order;}
-  SKColorSet::ColorSchemeOrder colorSchemeOrder() override {return _atomColorSchemeOrder;}
-
-  QString atomForceFieldIdentifier() override {return _atomForceFieldIdentifier;}
-  void setAtomForceFieldIdentifier(QString identifier, ForceFieldSets &forceFieldSets) override;
-  void updateForceField(ForceFieldSets &forceFieldSets) override;
-  void setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder order) override {_atomForceFieldOrder = order;}
-  ForceFieldSet::ForceFieldSchemeOrder forceFieldSchemeOrder() override {return _atomForceFieldOrder;}
-
-  QColor atomAmbientColor() const override {return _atomAmbientColor;}
-  void setAtomAmbientColor(QColor color) override {_atomAmbientColor = color;}
-  QColor atomDiffuseColor() const override {return _atomDiffuseColor;}
-  void setAtomDiffuseColor(QColor color) override {_atomDiffuseColor = color;}
-  QColor atomSpecularColor() const override {return _atomSpecularColor;}
-  void setAtomSpecularColor(QColor color) override {_atomSpecularColor = color;}
-
-  double atomAmbientIntensity() const override {return _atomAmbientIntensity;}
-  void setAtomAmbientIntensity(double value) override {_atomAmbientIntensity = value;}
-  double atomDiffuseIntensity() const override {return _atomDiffuseIntensity;}
-  void setAtomDiffuseIntensity(double value) override {_atomDiffuseIntensity = value;}
-  double atomSpecularIntensity() const override {return _atomSpecularIntensity;}
-  void setAtomSpecularIntensity(double value) override {_atomSpecularIntensity = value;}
-  double atomShininess() const override {return _atomShininess;}
-  void setAtomShininess(double value) override {_atomShininess = value;}
-
-  double atomHue() const override {return _atomHue;}
-  void setAtomHue(double value) override {_atomHue = value;}
-  double atomSaturation() const override {return _atomSaturation;}
-  void setAtomSaturation(double value) override {_atomSaturation = value;}
-  double atomValue() const override {return _atomValue;}
-  void setAtomValue(double value) override {_atomValue = value;}
-
-  double atomScaleFactor() const override {return _atomScaleFactor;}
-  void setAtomScaleFactor(double size) override;
-
-  bool atomAmbientOcclusion() const override {return _atomAmbientOcclusion;}
-  void setAtomAmbientOcclusion(bool value) override {_atomAmbientOcclusion = value;}
-  int atomAmbientOcclusionPatchNumber() const override {return _atomAmbientOcclusionPatchNumber;}
-  void setAtomAmbientOcclusionPatchNumber(int patchNumber) override {_atomAmbientOcclusionPatchNumber=patchNumber;}
-  int atomAmbientOcclusionPatchSize() const override {return _atomAmbientOcclusionPatchSize;}
-  void setAtomAmbientOcclusionPatchSize(int patchSize) override {_atomAmbientOcclusionPatchSize=patchSize;}
-  int atomAmbientOcclusionTextureSize() const override {return _atomAmbientOcclusionTextureSize;}
-  void setAtomAmbientOcclusionTextureSize(int size) override {_atomAmbientOcclusionTextureSize=size;}
-
-  bool atomHDR() const  override{return _atomHDR;}
-  void setAtomHDR(bool value) override {_atomHDR = value;}
-  double atomHDRExposure() const override {return _atomHDRExposure;}
-  void setAtomHDRExposure(double value) override {_atomHDRExposure = value;}
-
-  RKSelectionStyle atomSelectionStyle() const override {return _atomSelectionStyle;}
-  void setAtomSelectionStyle(RKSelectionStyle style) override {_atomSelectionStyle = style;}
-  double atomSelectionScaling() const override {return _atomSelectionScaling;}
-  void setAtomSelectionScaling(double scaling) override {_atomSelectionScaling = scaling;}
-  double atomSelectionIntensity() const override {return _atomSelectionIntensity;}
-  void setSelectionIntensity(double scaling) override {_atomSelectionIntensity = scaling;}
-
-  double atomSelectionStripesDensity() const override {return _atomSelectionStripesDensity;}
-  void setAtomSelectionStripesDensity(double value) override {_atomSelectionStripesDensity = value;}
-  double atomSelectionStripesFrequency() const override {return _atomSelectionStripesFrequency;}
-  void setAtomSelectionStripesFrequency(double value) override {_atomSelectionStripesFrequency = value;}
-  double atomSelectionWorleyNoise3DFrequency() const override {return _atomSelectionWorleyNoise3DFrequency;}
-  void setAtomSelectionWorleyNoise3DFrequency(double value) override {_atomSelectionWorleyNoise3DFrequency = value;}
-  double atomSelectionWorleyNoise3DJitter() const override {return _atomSelectionWorleyNoise3DJitter;}
-  void setAtomSelectionWorleyNoise3DJitter(double value) override {_atomSelectionWorleyNoise3DJitter = value;}
-
-  double atomSelectionFrequency() const override;
-  void setAtomSelectionFrequency(double value) override;
-  double atomSelectionDensity() const override;
-  void setAtomSelectionDensity(double value) override;
-
-  // bonds
-  bool hasExternalBonds() const override {return true;}
-  bool drawBonds() const override {return _drawBonds;}
-  void setDrawBonds(bool drawBonds) override {_drawBonds = drawBonds;}
-
-  bool bondAmbientOcclusion() const override {return _bondAmbientOcclusion;}
-  void setBondAmbientOcclusion(bool state) override {_bondAmbientOcclusion = state;}
-  QColor bondAmbientColor() const override {return _bondAmbientColor;}
-  void setBondAmbientColor(QColor color) override {_bondAmbientColor = color;}
-  QColor bondDiffuseColor() const override {return _bondDiffuseColor;}
-  void setBondDiffuseColor(QColor color) override {_bondDiffuseColor = color;}
-  QColor bondSpecularColor() const override {return _bondSpecularColor;}
-  void setBondSpecularColor(QColor color) override {_bondSpecularColor = color;}
-  double bondAmbientIntensity() const override {return _bondAmbientIntensity;}
-  void setBondAmbientIntensity(double value) override {_bondAmbientIntensity = value;}
-  double bondDiffuseIntensity() const override {return _bondDiffuseIntensity;}
-  void setBondDiffuseIntensity(double value) override {_bondDiffuseIntensity = value;}
-  double bondSpecularIntensity() const override {return _bondSpecularIntensity;}
-  void setBondSpecularIntensity(double value) override {_bondSpecularIntensity = value;}
-  double bondShininess() const override {return _bondShininess;}
-  void setBondShininess(double value) override {_bondShininess = value;}
-
-  double bondScaleFactor() const override {return _bondScaleFactor;}
-  void setBondScaleFactor(double value) override;
-  RKBondColorMode bondColorMode() const override {return _bondColorMode;}
-  void setBondColorMode(RKBondColorMode value) override {_bondColorMode = value;}
-
-  bool bondHDR() const override {return _bondHDR;}
-  void setBondHDR(bool value) override {_bondHDR = value;}
-  double bondHDRExposure() const override {return _bondHDRExposure;}
-  void setBondHDRExposure(double value) override {_bondHDRExposure = value;}
-
-  RKSelectionStyle bondSelectionStyle() const override {return _bondSelectionStyle;}
-  void setBondSelectionStyle(RKSelectionStyle style) override {_bondSelectionStyle = style;}
-  double bondSelectionScaling() const override {return _bondSelectionScaling;}
-  void setBondSelectionScaling(double scaling) override {_bondSelectionScaling = scaling;}
-  double bondSelectionIntensity() const override {return _bondSelectionIntensity;}
-  void setBondSelectionIntensity(double value) override {_bondSelectionIntensity = value;}
-
-  double bondSelectionStripesDensity() const override {return _bondSelectionStripesDensity;}
-  double bondSelectionStripesFrequency() const override  {return _bondSelectionStripesFrequency;}
-  double bondSelectionWorleyNoise3DFrequency() const override {return _bondSelectionWorleyNoise3DFrequency;}
-  double bondSelectionWorleyNoise3DJitter() const override  {return _bondSelectionWorleyNoise3DJitter;}
-
-  double bondSelectionFrequency() const override;
-  void setBondSelectionFrequency(double value) override;
-  double bondSelectionDensity() const override;
-  void setBondSelectionDensity(double value) override;
-
-  double bondHue() const override {return _bondHue;}
-  void setBondHue(double value) override {_bondHue = value;}
-  double bondSaturation() const override {return _bondSaturation;}
-  void setBondSaturation(double value) override {_bondSaturation = value;}
-  double bondValue() const override {return _bondValue;}
-  void setBondValue(double value) override {_bondValue = value;}
-
-
-
-  // adsorption surface
-  RKEnergySurfaceType adsorptionSurfaceRenderingMethod() override final {return _adsorptionSurfaceRenderingMethod;}
-  void setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType type) override final {_adsorptionSurfaceRenderingMethod = type;}
-  RKPredefinedVolumeRenderingTransferFunction adsorptionVolumeTransferFunction() override final {return _adsorptionVolumeTransferFunction;}
-  void setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction function) override final {_adsorptionVolumeTransferFunction = function;}
-  double adsorptionVolumeStepLength() override final {return _adsorptionVolumeStepLength;}
-  void setAdsorptionVolumeStepLength(double stepLength) override final {_adsorptionVolumeStepLength = stepLength;}
-  std::vector<double3> atomUnitCellPositions() const override {return std::vector<double3>();}
-  bool drawAdsorptionSurface() const override {return _drawAdsorptionSurface;}
-  void setDrawAdsorptionSurface(bool state) override {_drawAdsorptionSurface = state;}
-  double adsorptionSurfaceOpacity() const override {return _adsorptionSurfaceOpacity;}
-  void setAdsorptionSurfaceOpacity(double value) override {_adsorptionSurfaceOpacity = value;}
-  double adsorptionSurfaceIsoValue() const override {return _adsorptionSurfaceIsoValue;}
-  void setAdsorptionSurfaceIsoValue(double value)  override {_adsorptionSurfaceIsoValue = value;}
-  double adsorptionSurfaceMinimumValue() const override {return _adsorptionSurfaceMinimumValue;}
-  void setAdsorptionSurfaceMinimumValue(double value) override {_adsorptionSurfaceMinimumValue = value;}
-
-  int adsorptionSurfaceSize() const override {return _adsorptionSurfaceSize;}
-  double2 adsorptionSurfaceProbeParameters() const override final;
-
-  ProbeMolecule adsorptionSurfaceProbeMolecule() const override {return _adsorptionSurfaceProbeMolecule;}
-  void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) override {_adsorptionSurfaceProbeMolecule = value;}
-
-  bool adsorptionSurfaceFrontSideHDR() const override {return _adsorptionSurfaceFrontSideHDR;}
-  void setAdsorptionSurfaceFrontSideHDR(bool state) override {_adsorptionSurfaceFrontSideHDR = state;}
-  double adsorptionSurfaceFrontSideHDRExposure() const override {return _adsorptionSurfaceFrontSideHDRExposure;}
-  void setAdsorptionSurfaceFrontSideHDRExposure(double value) override {_adsorptionSurfaceFrontSideHDRExposure = value;}
-  QColor adsorptionSurfaceFrontSideAmbientColor() const override {return _adsorptionSurfaceFrontSideAmbientColor;}
-  void setAdsorptionSurfaceFrontSideAmbientColor(QColor color) override {_adsorptionSurfaceFrontSideAmbientColor = color;}
-  QColor adsorptionSurfaceFrontSideDiffuseColor() const override {return _adsorptionSurfaceFrontSideDiffuseColor;}
-  void setAdsorptionSurfaceFrontSideDiffuseColor(QColor color) override {_adsorptionSurfaceFrontSideDiffuseColor = color;}
-  QColor adsorptionSurfaceFrontSideSpecularColor() const override {return _adsorptionSurfaceFrontSideSpecularColor;}
-  void setAdsorptionSurfaceFrontSideSpecularColor(QColor color) override {_adsorptionSurfaceFrontSideSpecularColor = color;}
-  double adsorptionSurfaceFrontSideDiffuseIntensity() const override {return _adsorptionSurfaceFrontSideDiffuseIntensity;}
-  void setAdsorptionSurfaceFrontSideDiffuseIntensity(double value) override {_adsorptionSurfaceFrontSideDiffuseIntensity = value;}
-  double adsorptionSurfaceFrontSideAmbientIntensity() const override {return _adsorptionSurfaceFrontSideAmbientIntensity;}
-  void setAdsorptionSurfaceFrontSideAmbientIntensity(double value) override {_adsorptionSurfaceFrontSideAmbientIntensity = value;}
-  double adsorptionSurfaceFrontSideSpecularIntensity() const override {return _adsorptionSurfaceFrontSideSpecularIntensity;}
-  void setAdsorptionSurfaceFrontSideSpecularIntensity(double value) override {_adsorptionSurfaceFrontSideSpecularIntensity = value;}
-  double adsorptionSurfaceFrontSideShininess() const override {return _adsorptionSurfaceFrontSideShininess;}
-  void setAdsorptionSurfaceFrontSideShininess(double value) override {_adsorptionSurfaceFrontSideShininess = value;}
-
-  double adsorptionSurfaceHue() const override {return _adsorptionSurfaceHue;}
-  void setAdsorptionSurfaceHue(double value) override {_adsorptionSurfaceHue = value;}
-  double adsorptionSurfaceSaturation() const override {return _adsorptionSurfaceSaturation;}
-  void setAdsorptionSurfaceSaturation(double value) override {_adsorptionSurfaceSaturation = value;}
-  double adsorptionSurfaceValue() const override {return _adsorptionSurfaceValue;}
-  void setAdsorptionSurfaceValue(double value) override {_adsorptionSurfaceValue = value;}
-
-  bool adsorptionSurfaceBackSideHDR() const override {return _adsorptionSurfaceBackSideHDR;}
-  void setAdsorptionSurfaceBackSideHDR(bool state) override {_adsorptionSurfaceBackSideHDR = state;}
-  double adsorptionSurfaceBackSideHDRExposure() const override {return _adsorptionSurfaceBackSideHDRExposure;}
-  void setAdsorptionSurfaceBackSideHDRExposure(double value) override {_adsorptionSurfaceBackSideHDRExposure = value;}
-  QColor adsorptionSurfaceBackSideAmbientColor() const override {return _adsorptionSurfaceBackSideAmbientColor;}
-  void setAdsorptionSurfaceBackSideAmbientColor(QColor color) override {_adsorptionSurfaceBackSideAmbientColor = color;}
-  QColor adsorptionSurfaceBackSideDiffuseColor() const override {return _adsorptionSurfaceBackSideDiffuseColor;}
-  void setAdsorptionSurfaceBackSideDiffuseColor(QColor color) override {_adsorptionSurfaceBackSideDiffuseColor = color;}
-  QColor adsorptionSurfaceBackSideSpecularColor() const override {return _adsorptionSurfaceBackSideSpecularColor;}
-  void setAdsorptionSurfaceBackSideSpecularColor(QColor color) override {_adsorptionSurfaceBackSideSpecularColor = color;}
-  double adsorptionSurfaceBackSideDiffuseIntensity() const override {return _adsorptionSurfaceBackSideDiffuseIntensity;}
-  void setAdsorptionSurfaceBackSideDiffuseIntensity(double value) override {_adsorptionSurfaceBackSideDiffuseIntensity = value;}
-  double adsorptionSurfaceBackSideAmbientIntensity() const override {return _adsorptionSurfaceBackSideAmbientIntensity;}
-  void setAdsorptionSurfaceBackSideAmbientIntensity(double value) override {_adsorptionSurfaceBackSideAmbientIntensity = value;}
-  double adsorptionSurfaceBackSideSpecularIntensity() const override {return _adsorptionSurfaceBackSideSpecularIntensity;}
-  void setAdsorptionSurfaceBackSideSpecularIntensity(double value) override {_adsorptionSurfaceBackSideSpecularIntensity = value;}
-  double adsorptionSurfaceBackSideShininess() const override {return _adsorptionSurfaceBackSideShininess;}
-  void setAdsorptionSurfaceBackSideShininess(double value) override{_adsorptionSurfaceBackSideShininess = value;}
-
- // text
-  std::vector<RKInPerInstanceAttributesText> renderTextData() const override {return std::vector<RKInPerInstanceAttributesText>();}
-  RKTextType renderTextType() const override {return _atomTextType;}
-  void setRenderTextType(RKTextType type) override {_atomTextType = type;}
-  void setRenderTextFont(QString value) override {_atomTextFont = value;}
-  QString renderTextFont() const override {return _atomTextFont;}
-  RKTextAlignment renderTextAlignment() const override {return _atomTextAlignment;}
-  void setRenderTextAlignment(RKTextAlignment alignment) override {_atomTextAlignment = alignment;}
-  RKTextStyle renderTextStyle() const override {return _atomTextStyle;}
-  void setRenderTextStyle(RKTextStyle style) override {_atomTextStyle = style;}
-  QColor renderTextColor() const override {return _atomTextColor;}
-  void setRenderTextColor(QColor color) override {_atomTextColor = color;}
-  double renderTextScaling() const override {return _atomTextScaling;}
-  void setRenderTextScaling(double scaling) override {_atomTextScaling = scaling;}
-  double3 renderTextOffset() const override {return _atomTextOffset;}
-  void setRenderTextOffsetX(double value) override {_atomTextOffset.x = value;}
-  void setRenderTextOffsetY(double value) override {_atomTextOffset.y = value;}
-  void setRenderTextOffsetZ(double value) override {_atomTextOffset.z = value;}
 
   // info
   //=================================================================================================
@@ -598,44 +579,10 @@ public:
   QString citationDatebaseCodes() override final {return _citationDatebaseCodes;}
   void setCitationDatebaseCodes(QString name) override final {_citationDatebaseCodes = name;}
 
-  ProbeMolecule frameworkProbeMolecule() const override final  {return _frameworkProbeMolecule;}
-  void setFrameworkProbeMolecule(ProbeMolecule value) override final {_frameworkProbeMolecule = value;}
-
-  void recomputeDensityProperties() override;
-  QString structureMaterialType() override {return _structureMaterialType;}
-  double structureMass() override final {return _structureMass;}
-  double structureDensity() override final {return _structureDensity;}
-  double structureHeliumVoidFraction() override final {return _structureHeliumVoidFraction;}
-  void setStructureHeliumVoidFraction(double value) override final {_structureHeliumVoidFraction = value;}
-  void setStructureNitrogenSurfaceArea(double value) override final;
-  double2 frameworkProbeParameters() const override final;
-  double structureSpecificVolume() override final {return _structureSpecificVolume;}
-  double structureAccessiblePoreVolume () override final {return _structureAccessiblePoreVolume;}
-  double structureVolumetricNitrogenSurfaceArea() override final {return _structureVolumetricNitrogenSurfaceArea;}
-  double structureGravimetricNitrogenSurfaceArea() override final {return _structureGravimetricNitrogenSurfaceArea;}
-  int structureNumberOfChannelSystems() override final {return _structureNumberOfChannelSystems;}
-  void setStructureNumberOfChannelSystems(int value) override final {_structureNumberOfChannelSystems = value;}
-  int structureNumberOfInaccessiblePockets()  override final {return _structureNumberOfInaccessiblePockets;}
-  void setStructureNumberOfInaccessiblePockets(int value)  override final {_structureNumberOfInaccessiblePockets = value;}
-  int structureDimensionalityOfPoreSystem() override final {return _structureDimensionalityOfPoreSystem;}
-  void setStructureDimensionalityOfPoreSystem(int value) override final {_structureDimensionalityOfPoreSystem = value;}
-  double structureLargestCavityDiameter() override final {return _structureLargestCavityDiameter;}
-  void setStructureLargestCavityDiameter(double value) override final {_structureLargestCavityDiameter = value;}
-  double structureRestrictingPoreLimitingDiameter() override final {return _structureRestrictingPoreLimitingDiameter;}
-  void setStructureRestrictingPoreLimitingDiameter(double value) override final {_structureRestrictingPoreLimitingDiameter = value;}
-  double structureLargestCavityDiameterAlongAviablePath() override final {return _structureLargestCavityDiameterAlongAViablePath;}
-  void setStructureLargestCavityDiameterAlongAviablePath(double value) override final {_structureLargestCavityDiameterAlongAViablePath = value;}
-
-  // spacegroup
-  //void setSpaceGroupHallNumber(int HallNumber)  {_spaceGroup = SKSpaceGroup(HallNumber);}
-  SKSpaceGroup& legacySpaceGroup() {return _legacySpaceGroup;}
-
-  void computeBonds() override {;}
-
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Structure> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Structure> &);
 protected:
-  qint64 _versionNumber{9};
+  qint64 _versionNumber{10};
 
   std::shared_ptr<SKAtomTreeController> _atomsTreeController;
   std::shared_ptr<SKBondSetController> _bondSetController;
@@ -776,11 +723,15 @@ protected:
 
   bool _drawAdsorptionSurface = false;
   double _adsorptionSurfaceOpacity = 1.0;
+  double _adsorptionTransparencyThreshold = 0.0;
   double _adsorptionSurfaceIsoValue = 0.0;
+  qint64 _encompassingPowerOfTwoCubicGridSize = 7;
   double _adsorptionSurfaceMinimumValue = -1000.0;
 
+  //std::pair<double,double> _range{};
+  //int3 _dimensions{128,128,128};
   RKEnergySurfaceType _adsorptionSurfaceRenderingMethod = RKEnergySurfaceType::isoSurface;
-  RKPredefinedVolumeRenderingTransferFunction  _adsorptionVolumeTransferFunction = RKPredefinedVolumeRenderingTransferFunction::standard;
+  RKPredefinedVolumeRenderingTransferFunction  _adsorptionVolumeTransferFunction = RKPredefinedVolumeRenderingTransferFunction::RASPA_PES;
   double _adsorptionVolumeStepLength = 0.0005;
 
   qint64 _adsorptionSurfaceSize = 128;

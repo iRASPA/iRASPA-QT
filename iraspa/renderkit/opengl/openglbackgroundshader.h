@@ -46,7 +46,7 @@ public:
   GLuint program() {return _program;}
 private:
   GLuint _program;
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
   GLuint _backgroundTexture;
 
   GLuint _vertexArray;

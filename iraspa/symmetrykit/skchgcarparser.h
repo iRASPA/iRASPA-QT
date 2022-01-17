@@ -19,31 +19,40 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#pragma  once
+#pragma once
 
-#include <QObject>
-#include "renderkit.h"
+#include <cmath>
+#include <QString>
+#include <QUrl>
+#include <string>
+#include <vector>
+#include <map>
+#include <tuple>
+#include <cwctype>
+#include <optional>
+#include <foundationkit.h>
+#include "skparser.h"
+#include "skasymmetricatom.h"
+#include "skatomtreenode.h"
+#include "skatomtreecontroller.h"
+#include "skspacegroup.h"
+#include "skstructure.h"
+#include "logreporting.h"
 
-class AtomTextVisualAppearanceViewer
+class SKCHGCARParser: public SKParser
 {
 public:
- virtual ~AtomTextVisualAppearanceViewer() = 0;
+  SKCHGCARParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
+  void startParsing() override final;
+private:
+  Scanner _scanner;
+  [[maybe_unused]] bool _onlyAsymmetricUnitCell;
+  [[maybe_unused]] bool _asMolecule;
+  [[maybe_unused]] QString::const_iterator _previousScanLocation;
 
- virtual RKTextType renderTextType() const = 0;
- virtual void setRenderTextType(RKTextType type) = 0;
- virtual void setRenderTextFont(QString value) = 0;
- virtual QString renderTextFont() const = 0;
- virtual RKTextAlignment renderTextAlignment() const = 0;
- virtual void setRenderTextAlignment(RKTextAlignment alignment) = 0;
- virtual RKTextStyle renderTextStyle() const = 0;
- virtual void setRenderTextStyle(RKTextStyle style) = 0;
- virtual QColor renderTextColor() const = 0;
- virtual void setRenderTextColor(QColor color) = 0;
- virtual double renderTextScaling() const = 0;
- virtual void setRenderTextScaling(double scaling) = 0;
- virtual double3 renderTextOffset() const = 0;
- virtual void setRenderTextOffsetX(double value) = 0;
- virtual void setRenderTextOffsetY(double value) = 0;
- virtual void setRenderTextOffsetZ(double value) = 0;
+  [[maybe_unused]] int _numberOfAtoms = 0;
+  [[maybe_unused]] int _numberOfAminoAcidAtoms = 0;
+  std::shared_ptr<SKStructure> _frame;
+  std::optional<SKCell> _cell;
+  [[maybe_unused]] int _spaceGroupHallNumber;
 };
-

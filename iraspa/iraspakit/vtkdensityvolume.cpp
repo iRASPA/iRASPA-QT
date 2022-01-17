@@ -5,6 +5,15 @@ VTKDensityVolume::VTKDensityVolume(): GridVolume()
 
 }
 
+VTKDensityVolume::VTKDensityVolume(const std::shared_ptr<Object> object): GridVolume(object)
+{
+
+}
+
+std::shared_ptr<Object> VTKDensityVolume::shallowClone()
+{
+  return std::make_shared<VTKDensityVolume>(static_cast<const VTKDensityVolume&>(*this));
+}
 
 VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolume(frame)
 {

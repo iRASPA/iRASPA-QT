@@ -52,9 +52,9 @@ public:
   void initializeVertexArrayObject();
 
   void reloadData();
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
 private:
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   std::vector<std::vector<size_t>> _numberOfAllBonds;
   std::vector<std::vector<GLuint>> _vertexAllBondsInstanceBuffer;

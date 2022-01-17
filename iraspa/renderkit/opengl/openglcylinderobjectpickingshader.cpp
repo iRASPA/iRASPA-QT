@@ -28,7 +28,7 @@ OpenGLCylinderObjectPickingShader::OpenGLCylinderObjectPickingShader(OpenGLObjec
 }
 
 
-void OpenGLCylinderObjectPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCylinderObjectPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

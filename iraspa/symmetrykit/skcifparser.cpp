@@ -35,13 +35,13 @@
 #include <qmath.h>
 
 
-SKCIFParser::SKCIFParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
-  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log)
+SKCIFParser::SKCIFParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule)
 {
 
 }
 
-bool SKCIFParser::startParsing()
+void SKCIFParser::startParsing()
 {
   while(!_scanner.isAtEnd())
   {
@@ -102,8 +102,6 @@ bool SKCIFParser::startParsing()
   structure->spaceGroupHallNumber = _spaceGroupHallNumber;
   movieFrames.push_back(structure);
   _movies.push_back(movieFrames);
-
-  return true;
 }
 
 void SKCIFParser::parseAudit(QString& string)

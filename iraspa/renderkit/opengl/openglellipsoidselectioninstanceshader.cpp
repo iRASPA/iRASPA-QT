@@ -27,7 +27,7 @@ OpenGLEllipsoidSelectionInstanceShader::OpenGLEllipsoidSelectionInstanceShader()
 
 }
 
-void OpenGLEllipsoidSelectionInstanceShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLEllipsoidSelectionInstanceShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

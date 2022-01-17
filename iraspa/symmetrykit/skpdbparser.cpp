@@ -32,8 +32,8 @@
 #include "skasymmetricatom.h"
 #include "skelement.h"
 
-SKPDBParser::SKPDBParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
-  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
+SKPDBParser::SKPDBParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
 {
   _frame->kind = SKStructure::Kind::molecule;
   _frame->displayName = _scanner.displayName();
@@ -78,7 +78,7 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
   }
 }
 
-bool SKPDBParser::startParsing()
+void SKPDBParser::startParsing()
 {
   int lineNumber = 0;
   int modelNumber = 0;
@@ -493,6 +493,4 @@ bool SKPDBParser::startParsing()
 
   // add current frame in case last TER, ENDMDL, or END is missing
   addFrameToStructure(currentMovie,currentFrame);
-
-  return true;
 }

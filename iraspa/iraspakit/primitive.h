@@ -25,23 +25,36 @@
 #include "iraspakitprotocols.h"
 #include "object.h"
 #include "atomviewer.h"
-#include "primitivevisualappearanceviewer.h"
+#include "primitivestructureviewer.h"
 #include "rkrenderkitprotocols.h"
 
-class Primitive: public Object, public AtomViewer, public PrimitiveVisualAppearanceViewer, public RKRenderPrimitiveObjectsSource
+class Primitive: public Object, public AtomViewer, public PrimitiveEditor, public RKRenderPrimitiveObjectsSource
 {
 public:
   Primitive();
   Primitive(const Primitive &primitive);
 
-  Primitive(const std::shared_ptr<const class Structure> structure);
-  Primitive(const std::shared_ptr<const class Primitive> primitive);
-  Primitive(const std::shared_ptr<const class GridVolume> volume);
-
+  // Object
+  // ===============================================================================================
+  Primitive(const std::shared_ptr<Object> object);
   std::shared_ptr<Object> shallowClone() override;
 
+  // Protocol: AtomViewer
+  // ===============================================================================================
   bool drawAtoms() const override {return _drawAtoms;}
   void setDrawAtoms(bool draw) { _drawAtoms = draw;}
+  std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
+  bool isFractional() override {return false;}
+  virtual void expandSymmetry() override;
+  virtual double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
+  virtual double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
+  void recomputeSelectionBodyFixedBasis() override;
+  void convertAsymmetricAtomsToFractional() override;
+  void convertAsymmetricAtomsToCartesian() override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
+  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
 
   void clearSelection() override final;
   void setAtomSelection(int asymmetricAtomId) override final;
@@ -50,87 +63,12 @@ public:
   void setAtomSelection(std::set<int>& atomIds) override final;
   void addToAtomSelection(std::set<int>& atomIds) override final;
 
-  std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
+  // Protocol: AtomEditor
+  // ===============================================================================================
   void setAtomTreeController(std::shared_ptr<SKAtomTreeController> controller) {_atomsTreeController = controller;}
 
-  simd_quatd primitiveOrientation() const override final {return _primitiveOrientation;}
-  void setPrimitiveOrientation(simd_quatd orientation) override final  {_primitiveOrientation = orientation;}
-  double primitiveRotationDelta() const override final  {return _primitiveRotationDelta;}
-  void setPrimitiveRotationDelta(double angle) override final  {_primitiveRotationDelta = angle;}
-  void setPrimitiveTransformationMatrix(double3x3 matrix) override final  {_primitiveTransformationMatrix = matrix;}
-  double3x3 primitiveTransformationMatrix() const override final  {return _primitiveTransformationMatrix;}
-  double primitiveOpacity() const override final   {return _primitiveOpacity;}
-  void setPrimitiveOpacity(double opacity) override final  {_primitiveOpacity = opacity;}
-  int primitiveNumberOfSides() const override final  {return _primitiveNumberOfSides;}
-  void setPrimitiveNumberOfSides(int numberOfSides) override final  {_primitiveNumberOfSides = numberOfSides;}
-  bool primitiveIsCapped() const  override final  {return _primitiveIsCapped;}
-  void setPrimitiveIsCapped(bool isCapped) override final  {_primitiveIsCapped = isCapped;}
-
-  bool primitiveIsFractional() const override {return true;}
-  double primitiveThickness() const override final {return 0.05;}
-
-  RKSelectionStyle primitiveSelectionStyle() const override final  {return _primitiveSelectionStyle;}
-  void setPrimitiveSelectionStyle(RKSelectionStyle style) override final  {_primitiveSelectionStyle = style;}
-  double primitiveSelectionScaling() const override final  {return _primitiveSelectionScaling;}
-  void setPrimitiveSelectionScaling(double scaling) override final  {_primitiveSelectionScaling = scaling;}
-  double primitiveSelectionIntensity() const override final  {return _primitiveSelectionIntensity;}
-  void setPrimitiveSelectionIntensity(double value) override final   {_primitiveSelectionIntensity = value;}
-
-  double primitiveSelectionStripesDensity() const override final  {return _primitiveSelectionStripesDensity;}
-  double primitiveSelectionStripesFrequency() const  override final  {return _primitiveSelectionStripesFrequency;}
-  double primitiveSelectionWorleyNoise3DFrequency() const override final  {return _primitiveSelectionWorleyNoise3DFrequency;}
-  double primitiveSelectionWorleyNoise3DJitter() const override final  {return _primitiveSelectionWorleyNoise3DJitter;}
-
-  double primitiveSelectionFrequency() const  override final;
-  void setPrimitiveSelectionFrequency(double value) override final;
-  double primitiveSelectionDensity() const override final ;
-  void setPrimitiveSelectionDensity(double value) override final;
-
-  double primitiveHue() const override final {return _primitiveHue;}
-  void setPrimitiveHue(double value) override final {_primitiveHue = value;}
-  double primitiveSaturation() const override final {return _primitiveSaturation;}
-  void setPrimitiveSaturation(double value)  override final {_primitiveSaturation = value;}
-  double primitiveValue() const override final {return _primitiveValue;}
-  void setPrimitiveValue(double value) override final {_primitiveValue = value;}
-
-  bool primitiveFrontSideHDR() const override final {return _primitiveFrontSideHDR;}
-  void setPrimitiveFrontSideHDR(bool isHDR) override final  {_primitiveFrontSideHDR = isHDR;}
-  double primitiveFrontSideHDRExposure() const override final {return _primitiveFrontSideHDRExposure;}
-  void setPrimitiveFrontSideHDRExposure(double exposure) override final {_primitiveFrontSideHDRExposure = exposure;}
-  double primitiveFrontSideAmbientIntensity() const override final {return _primitiveFrontSideAmbientIntensity;}
-  void setPrimitiveFrontSideAmbientIntensity(double intensity) override final {_primitiveFrontSideAmbientIntensity = intensity;}
-  double primitiveFrontSideDiffuseIntensity() const override final {return _primitiveFrontSideDiffuseIntensity;}
-  void setPrimitiveFrontSideDiffuseIntensity(double intensity) override final {_primitiveFrontSideDiffuseIntensity = intensity;}
-  double primitiveFrontSideSpecularIntensity() const override final {return _primitiveFrontSideSpecularIntensity;}
-  void setPrimitiveFrontSideSpecularIntensity(double intensity) override final {_primitiveFrontSideSpecularIntensity = intensity;}
-  QColor primitiveFrontSideAmbientColor() const override final {return _primitiveFrontSideAmbientColor;}
-  void setPrimitiveFrontSideAmbientColor(QColor color) override final {_primitiveFrontSideAmbientColor = color;}
-  QColor primitiveFrontSideDiffuseColor() const override final {return _primitiveFrontSideDiffuseColor;}
-  void setPrimitiveFrontSideDiffuseColor(QColor color) override final {_primitiveFrontSideDiffuseColor = color;}
-  QColor primitiveFrontSideSpecularColor() const override final {return _primitiveFrontSideSpecularColor;}
-  void setPrimitiveFrontSideSpecularColor(QColor color) override final {_primitiveFrontSideSpecularColor = color;}
-  double primitiveFrontSideShininess() const override final  {return _primitiveFrontSideShininess;}
-  void setPrimitiveFrontSideShininess(double value) override final {_primitiveFrontSideShininess = value;}
-
-  bool primitiveBackSideHDR() const override final {return _primitiveBackSideHDR;}
-  void setPrimitiveBackSideHDR(bool isHDR)  override final {_primitiveBackSideHDR = isHDR;}
-  double primitiveBackSideHDRExposure() const  override final {return _primitiveBackSideHDRExposure;}
-  void setPrimitiveBackSideHDRExposure(double exposure) override final {_primitiveBackSideHDRExposure = exposure;}
-  double primitiveBackSideAmbientIntensity() const override final {return _primitiveBackSideAmbientIntensity;}
-  void setPrimitiveBackSideAmbientIntensity(double intensity) override final {_primitiveBackSideAmbientIntensity = intensity;}
-  double primitiveBackSideDiffuseIntensity() const override final {return _primitiveBackSideDiffuseIntensity;}
-  void setPrimitiveBackSideDiffuseIntensity(double intensity) override final {_primitiveBackSideDiffuseIntensity = intensity;}
-  double primitiveBackSideSpecularIntensity() const override final {return _primitiveBackSideSpecularIntensity;}
-  void setPrimitiveBackSideSpecularIntensity(double intensity) override final {_primitiveBackSideSpecularIntensity = intensity;}
-  QColor primitiveBackSideAmbientColor() const override final {return _primitiveBackSideAmbientColor;}
-  void setPrimitiveBackSideAmbientColor(QColor color) override final{_primitiveBackSideAmbientColor = color;}
-  QColor primitiveBackSideDiffuseColor() const override final {return _primitiveBackSideDiffuseColor;}
-  void setPrimitiveBackSideDiffuseColor(QColor color) override final {_primitiveBackSideDiffuseColor = color;}
-  QColor primitiveBackSideSpecularColor() const override final {return _primitiveBackSideSpecularColor;}
-  void setPrimitiveBackSideSpecularColor(QColor color) override final {_primitiveBackSideSpecularColor = color;}
-  double primitiveBackSideShininess() const override final {return _primitiveBackSideShininess;}
-  void setPrimitiveBackSideShininess(double value) override final {_primitiveBackSideShininess = value;}
-
+  // To be overwritten and specialized by subclasses
+  // ===============================================================================================
   virtual bool hasSymmetry() {return false;}
   virtual std::shared_ptr<Primitive> superCell() const {return nullptr;}
   virtual std::shared_ptr<Primitive> flattenHierarchy() const {return nullptr;}
@@ -144,18 +82,96 @@ public:
   virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToFractionalPositions();
   virtual std::vector<std::shared_ptr<SKAsymmetricAtom>> atomsCopiedAndTransformedToCartesianPositions();
 
-  virtual void expandSymmetry() override;
-  virtual double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
-  virtual double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
-  void recomputeSelectionBodyFixedBasis() override;
+  // Protocol: RKRenderPrimitiveObjectsSource
+  // ===============================================================================================
+  RKSelectionStyle primitiveSelectionStyle() const override final  {return _primitiveSelectionStyle;}
+  double primitiveSelectionStripesDensity() const override final  {return _primitiveSelectionStripesDensity;}
+  double primitiveSelectionStripesFrequency() const  override final  {return _primitiveSelectionStripesFrequency;}
+  double primitiveSelectionWorleyNoise3DFrequency() const override final  {return _primitiveSelectionWorleyNoise3DFrequency;}
+  double primitiveSelectionWorleyNoise3DJitter() const override final  {return _primitiveSelectionWorleyNoise3DJitter;}
+  double primitiveSelectionIntensity() const override final  {return _primitiveSelectionIntensity;}
+  double primitiveSelectionScaling() const override final  {return _primitiveSelectionScaling;}
 
-  void convertAsymmetricAtomsToFractional() override;
-  void convertAsymmetricAtomsToCartesian() override;
+  double3x3 primitiveTransformationMatrix() const override final  {return _primitiveTransformationMatrix;}
+  simd_quatd primitiveOrientation() const override final {return _primitiveOrientation;}
 
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
-  virtual std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override;
+  double primitiveOpacity() const override final   {return _primitiveOpacity;}
+  bool primitiveIsCapped() const  override final  {return _primitiveIsCapped;}
+  bool primitiveIsFractional() const override {return true;}
+  int primitiveNumberOfSides() const override final  {return _primitiveNumberOfSides;}
+  double primitiveThickness() const override final {return 0.05;}
+
+  double primitiveHue() const override final {return _primitiveHue;}
+  double primitiveSaturation() const override final {return _primitiveSaturation;}
+  double primitiveValue() const override final {return _primitiveValue;}
+
+  bool primitiveFrontSideHDR() const override final {return _primitiveFrontSideHDR;}
+  double primitiveFrontSideHDRExposure() const override final {return _primitiveFrontSideHDRExposure;}
+  QColor primitiveFrontSideAmbientColor() const override final {return _primitiveFrontSideAmbientColor;}
+  QColor primitiveFrontSideDiffuseColor() const override final {return _primitiveFrontSideDiffuseColor;}
+  QColor primitiveFrontSideSpecularColor() const override final {return _primitiveFrontSideSpecularColor;}
+  double primitiveFrontSideAmbientIntensity() const override final {return _primitiveFrontSideAmbientIntensity;}
+  double primitiveFrontSideDiffuseIntensity() const override final {return _primitiveFrontSideDiffuseIntensity;}
+  double primitiveFrontSideSpecularIntensity() const override final {return _primitiveFrontSideSpecularIntensity;}
+  double primitiveFrontSideShininess() const override final  {return _primitiveFrontSideShininess;}
+
+  bool primitiveBackSideHDR() const override final {return _primitiveBackSideHDR;}
+  double primitiveBackSideHDRExposure() const  override final {return _primitiveBackSideHDRExposure;}
+  QColor primitiveBackSideAmbientColor() const override final {return _primitiveBackSideAmbientColor;}
+  QColor primitiveBackSideDiffuseColor() const override final {return _primitiveBackSideDiffuseColor;}
+  QColor primitiveBackSideSpecularColor() const override final {return _primitiveBackSideSpecularColor;}
+  double primitiveBackSideAmbientIntensity() const override final {return _primitiveBackSideAmbientIntensity;}
+  double primitiveBackSideDiffuseIntensity() const override final {return _primitiveBackSideDiffuseIntensity;}
+  double primitiveBackSideSpecularIntensity() const override final {return _primitiveBackSideSpecularIntensity;}
+  double primitiveBackSideShininess() const override final {return _primitiveBackSideShininess;}
+
+  // Protocol: PrimitiveViewer (most are already in RKRenderPrimitiveObjectsSource)
+  // ===============================================================================================
+  double primitiveRotationDelta() const override final  {return _primitiveRotationDelta;}
+  double primitiveSelectionFrequency() const override final;
+  double primitiveSelectionDensity() const override final;
+
+  // Protocol: PrimitiveEditor
+  // ===============================================================================================
+
+  void setPrimitiveOrientation(simd_quatd orientation) override final  {_primitiveOrientation = orientation;}
+  void setPrimitiveRotationDelta(double angle) override final  {_primitiveRotationDelta = angle;}
+  void setPrimitiveTransformationMatrix(double3x3 matrix) override final  {_primitiveTransformationMatrix = matrix;}
+
+  void setPrimitiveOpacity(double opacity) override final  {_primitiveOpacity = opacity;}
+  void setPrimitiveNumberOfSides(int numberOfSides) override final  {_primitiveNumberOfSides = numberOfSides;}
+  void setPrimitiveIsCapped(bool isCapped) override final  {_primitiveIsCapped = isCapped;}
+
+  void setPrimitiveSelectionStyle(RKSelectionStyle style) override final  {_primitiveSelectionStyle = style;}
+  void setPrimitiveSelectionScaling(double scaling) override final  {_primitiveSelectionScaling = scaling;}
+  void setPrimitiveSelectionIntensity(double value) override final   {_primitiveSelectionIntensity = value;}
+
+  void setPrimitiveSelectionFrequency(double value) override final;  
+  void setPrimitiveSelectionDensity(double value) override final;
+
+  void setPrimitiveHue(double value) override final {_primitiveHue = value;}
+  void setPrimitiveSaturation(double value)  override final {_primitiveSaturation = value;}
+  void setPrimitiveValue(double value) override final {_primitiveValue = value;}
+
+  void setPrimitiveFrontSideHDR(bool isHDR) override final  {_primitiveFrontSideHDR = isHDR;}
+  void setPrimitiveFrontSideHDRExposure(double exposure) override final {_primitiveFrontSideHDRExposure = exposure;}
+  void setPrimitiveFrontSideAmbientIntensity(double intensity) override final {_primitiveFrontSideAmbientIntensity = intensity;}
+  void setPrimitiveFrontSideDiffuseIntensity(double intensity) override final {_primitiveFrontSideDiffuseIntensity = intensity;}
+  void setPrimitiveFrontSideSpecularIntensity(double intensity) override final {_primitiveFrontSideSpecularIntensity = intensity;}
+  void setPrimitiveFrontSideAmbientColor(QColor color) override final {_primitiveFrontSideAmbientColor = color;}
+  void setPrimitiveFrontSideDiffuseColor(QColor color) override final {_primitiveFrontSideDiffuseColor = color;}
+  void setPrimitiveFrontSideSpecularColor(QColor color) override final {_primitiveFrontSideSpecularColor = color;}
+  void setPrimitiveFrontSideShininess(double value) override final {_primitiveFrontSideShininess = value;}
+
+  void setPrimitiveBackSideHDR(bool isHDR)  override final {_primitiveBackSideHDR = isHDR;}
+  void setPrimitiveBackSideHDRExposure(double exposure) override final {_primitiveBackSideHDRExposure = exposure;}
+  void setPrimitiveBackSideAmbientIntensity(double intensity) override final {_primitiveBackSideAmbientIntensity = intensity;}
+  void setPrimitiveBackSideDiffuseIntensity(double intensity) override final {_primitiveBackSideDiffuseIntensity = intensity;}
+  void setPrimitiveBackSideSpecularIntensity(double intensity) override final {_primitiveBackSideSpecularIntensity = intensity;}
+  void setPrimitiveBackSideAmbientColor(QColor color) override final{_primitiveBackSideAmbientColor = color;}
+  void setPrimitiveBackSideDiffuseColor(QColor color) override final {_primitiveBackSideDiffuseColor = color;}
+  void setPrimitiveBackSideSpecularColor(QColor color) override final {_primitiveBackSideSpecularColor = color;}
+  void setPrimitiveBackSideShininess(double value) override final {_primitiveBackSideShininess = value;}
 
 protected:
   qint64 _versionNumber{2};
@@ -212,6 +228,5 @@ protected:
   double _primitiveBackSideDiffuseIntensity = 1.0;
   double _primitiveBackSideSpecularIntensity = 0.2;
   double _primitiveBackSideShininess = 4.0;
-
 };
 

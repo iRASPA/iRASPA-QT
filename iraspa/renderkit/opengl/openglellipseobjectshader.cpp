@@ -30,7 +30,7 @@ OpenGLEllipseObjectShader::OpenGLEllipseObjectShader()
 }
 
 
-void OpenGLEllipseObjectShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLEllipseObjectShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

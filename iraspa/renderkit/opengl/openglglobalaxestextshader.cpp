@@ -56,6 +56,7 @@ void OpenGLGlobalAxesTextShader::paintGL()
 {
   if(_dataSource)
   {
+    glEnable(GL_DEPTH_CLAMP);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
@@ -106,6 +107,7 @@ void OpenGLGlobalAxesTextShader::paintGL()
 
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
+    glDisable(GL_DEPTH_CLAMP);
   }
 }
 

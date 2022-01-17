@@ -37,49 +37,58 @@
 #include "ellipsoidprimitive.h"
 #include "polygonalprismprimitive.h"
 
-class CrystalCylinderPrimitive: public Primitive, public RKRenderCrystalPrimitiveCylinderObjectsSource
+class CrystalCylinderPrimitive: public Primitive, public RKRenderCrystalPrimitiveCylinderObjectsSource, public RKRenderUnitCellSource
 {
 public:
   CrystalCylinderPrimitive();
   CrystalCylinderPrimitive(const CrystalCylinderPrimitive &crystalCylinderPrimitive);
 
-  CrystalCylinderPrimitive(const std::shared_ptr<const class Crystal> structure);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class MolecularCrystal> structure);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class Molecule> structure);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class ProteinCrystal> structure);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class Protein> structure);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class CrystalCylinderPrimitive> primitive);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class CrystalEllipsoidPrimitive> primitive);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class CrystalPolygonalPrismPrimitive> primitive);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class CylinderPrimitive> primitive);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class EllipsoidPrimitive> primitive);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class PolygonalPrismPrimitive> primitive);
-  CrystalCylinderPrimitive(const std::shared_ptr<const class GridVolume> volume);
 
   ~CrystalCylinderPrimitive() {}
 
+  // Object: reimplemented
+  // ===============================================================================================
+  CrystalCylinderPrimitive(const std::shared_ptr<Object> object);
+  ObjectType structureType() override final { return ObjectType::crystalCylinderPrimitive; }
   std::shared_ptr<Object> shallowClone() override final;
+  SKBoundingBox boundingBox() const override final;
+  void reComputeBoundingBox() override final;
 
+  // Protocol:  RKRenderAtomSource overwrite
+  // ===============================================================================================
   bool drawAtoms() const override {return _drawAtoms;}
 
+  // Protocol:  RKRenderCrystalPrimitiveCylinderObjectsSource
+  // ===============================================================================================
+  std::vector<RKInPerInstanceAttributesAtoms> renderCrystalPrimitiveCylinderObjects() const override;
+  std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitiveCylinderObjects() const override;
+
+  // Protocol: RKRenderUnitCellSource
+  // ===============================================================================================
+  bool drawUnitCell() const override final {return _drawUnitCell;}
+  double unitCellScaleFactor() const override final  {return _unitCellScaleFactor;}
+  QColor unitCellDiffuseColor() const override final  {return _unitCellDiffuseColor;}
+  double unitCellDiffuseIntensity() const override final  {return _unitCellDiffuseIntensity;}
+  std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const override final;
+  std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const override final;
+
+  // AtomViewer: overwritten from Structure
+  // ===============================================================================================
+  bool isFractional() override final {return true;}
+  void expandSymmetry() override final;
+  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
+  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
+
+  // Structure: reimplemented
+  // ===============================================================================================
   bool hasSymmetry() override final {return true;}
   std::shared_ptr<Primitive> superCell() const override final;
   std::shared_ptr<Primitive> flattenHierarchy() const override final;
   std::shared_ptr<Primitive> appliedCellContentShift() const override final;
 
-  ObjectType structureType() override final { return ObjectType::crystalCylinderPrimitive; }
-
-  std::vector<RKInPerInstanceAttributesAtoms> renderCrystalPrimitiveCylinderObjects() const override;
-  std::vector<RKInPerInstanceAttributesAtoms> renderSelectedCrystalPrimitiveCylinderObjects() const override;
-  std::vector<RKInPerInstanceAttributesAtoms> renderUnitCellSpheres() const override final;
-  std::vector<RKInPerInstanceAttributesBonds> renderUnitCellCylinders() const override final;
-
-  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
-
-  SKBoundingBox boundingBox() const final override;
-  void reComputeBoundingBox() final override;
-
-  void expandSymmetry() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForFractionalPositions() override final;
   std::optional<std::pair<std::shared_ptr<SKCell>, double3>> cellForCartesianPositions() override final;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtomsCopiedAndTransformedToCartesianPositions() override final;
@@ -89,10 +98,6 @@ public:
 
   double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const override final;
   double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const override final;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> translatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, double3 translation) const override final;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionCartesian(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
-  std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> rotatedPositionsSelectionBodyFrame(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, simd_quatd rotation) const override final;
 
 private:
   qint64 _versionNumber{2};

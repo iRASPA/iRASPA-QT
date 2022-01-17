@@ -33,7 +33,7 @@ OpenGLCrystalPolygonalPrismObjectSelectionWorleyNoise3DShader::OpenGLCrystalPoly
 }
 
 
-void OpenGLCrystalPolygonalPrismObjectSelectionWorleyNoise3DShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalPolygonalPrismObjectSelectionWorleyNoise3DShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

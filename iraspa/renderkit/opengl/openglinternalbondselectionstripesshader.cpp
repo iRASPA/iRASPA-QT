@@ -33,7 +33,7 @@ OpenGLInternalBondSelectionStripesShader::OpenGLInternalBondSelectionStripesShad
 
 }
 
-void OpenGLInternalBondSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLInternalBondSelectionStripesShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;
@@ -57,7 +57,7 @@ void OpenGLInternalBondSelectionStripesShader::paintGL(GLuint structureUniformBu
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
-      if (RKRenderAtomicStructureSource* source = dynamic_cast<RKRenderAtomicStructureSource*>(_renderStructures[i][j].get()))
+      if (RKRenderBondSource* source = dynamic_cast<RKRenderBondSource*>(_renderStructures[i][j].get()))
       {
         if(source->bondSelectionStyle() == RKSelectionStyle::striped)
         {

@@ -41,4 +41,8 @@
 #include <skposcarlegacyparser.h>
 #include <skpointgroup.h>
 #include <skspacegroupdatabase.h>
+#include <skchgcarparser.h>
+#include <sklocpotparser.h>
+#include <skelfcarparser.h>
+#include <skgaussiancubeparser.h>
 

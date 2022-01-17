@@ -299,7 +299,7 @@ QModelIndexList BondListViewModel::selectedIndexes()
   return list;
 }
 
-void BondListViewModel::deleteSelection(std::shared_ptr<Object> object, std::set<int> indexSet)
+void BondListViewModel::deleteSelection(std::shared_ptr<Object> object, BondSelectionIndexSet indexSet)
 {
   this->beginResetModel();
 
@@ -327,7 +327,7 @@ void BondListViewModel::deleteSelection(std::shared_ptr<Object> object, BondSele
   this->endResetModel();
 }
 
-void BondListViewModel::insertSelection(std::shared_ptr<Object> object, std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, std::set<int> indexSet)
+void BondListViewModel::insertSelection(std::shared_ptr<Object> object, std::vector<std::shared_ptr<SKAsymmetricBond>> bonds, BondSelectionIndexSet indexSet)
 {
   this->beginResetModel();
 

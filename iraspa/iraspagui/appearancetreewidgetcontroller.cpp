@@ -30,10 +30,10 @@
 #include "qdoubleslider.h"
 #include <foundationkit.h>
 #include <limits>
-#include "primitivevisualappearanceviewer.h"
-#include "atomvisualappearanceviewer.h"
-#include "adsorptionsurfacevisualappearanceviewer.h"
-#include "atomtextvisualappearanceviewer.h"
+#include "primitivestructureviewer.h"
+#include "atomstructureviewer.h"
+#include "volumetricdataviewer.h"
+#include "annotationviewer.h"
 
 AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent): QTreeWidget(parent),
     _appearancePrimitiveForm(new AppearancePrimitiveForm),
@@ -656,7 +656,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QTreeWidgetItem* AdsorptionSurfaceItem = new QTreeWidgetItem(this);
   this->addTopLevelItem(AdsorptionSurfaceItem);
 
-  pushButtonAdsorptionSurface = new QPushButton(tr("Adsorption Surface"),this);
+  pushButtonAdsorptionSurface = new QPushButton(tr("Volumetric Data"),this);
   pushButtonAdsorptionSurface->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonAdsorptionSurface->setStyleSheet("text-align:left;");
   setItemWidget(AdsorptionSurfaceItem,0,pushButtonAdsorptionSurface);
@@ -687,7 +687,29 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(0, tr("Isosurface"));
   _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(1, tr("Volume Rendering"));
 
-  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(0, tr("Default"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(0, tr("RASPA PES"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(1, tr("CoolWarm"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(2, tr("Xray"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(3, tr("Gray"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(4, tr("Rainbow"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(5, tr("Turbo"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(6, tr("Gnuplot2"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(7, tr("Spectral"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(8, tr("Cool"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(9, tr("Viridis"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(10, tr("Plasma"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(11, tr("Inferno"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(12, tr("Magma"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(13, tr("Cividis"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(14, tr("Spring"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(15, tr("Summer"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(16, tr("Autumn"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(17, tr("Winter"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(18, tr("Reds"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(19, tr("Greens"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(20, tr("Blues"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(21, tr("Purples"));
+  _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(22, tr("Oranges"));
 
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(0, tr("Helium"));
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(1, tr("Methane"));
@@ -711,6 +733,22 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider->setDoubleMaximum(1000.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setMinimum(-1000.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setMaximum(100000.0);
+
+  _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSpinBox->setMinimum(0.0);
+  _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSpinBox->setMaximum(1.0);
+
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(0, tr("Custom"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(1, tr("2x2x2"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(2, tr("4x4x4"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(3, tr("8x8x8"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(4, tr("16x16x16"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(5, tr("32x32x32"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(6, tr("64x64x64"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(7, tr("128x128x128"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(8, tr("256x256x256"));
+   _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(9, tr("512x512x512"));
 
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setMinimum(0.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setMaximum(10.0);
@@ -825,6 +863,9 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue);
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity);
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity);
+  QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setAdsorptionTransparencyThreshold);
+  QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&AppearanceTreeWidgetController::setAdsorptionTransparencyThreshold);
+  QObject::connect(_appearanceAdsorptionSurfaceForm->qualityComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setAdsorptionQualityIndex);
 
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceHue);
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceHue);
@@ -2101,7 +2142,7 @@ void AppearanceTreeWidgetController::setRotationAngle(double angle)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveRotationDelta(angle);
       }
@@ -2121,7 +2162,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::rotati
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveRotationDelta());
     }
@@ -2140,7 +2181,7 @@ void AppearanceTreeWidgetController::rotateYawPlus()
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double rotationDelta = primitiveViewer->primitiveRotationDelta();
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
@@ -2168,7 +2209,7 @@ void AppearanceTreeWidgetController::rotateYawMinus()
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double rotationDelta = primitiveViewer->primitiveRotationDelta();
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
@@ -2196,7 +2237,7 @@ void AppearanceTreeWidgetController::rotatePitchPlus()
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double rotationDelta = primitiveViewer->primitiveRotationDelta();
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
@@ -2224,7 +2265,7 @@ void AppearanceTreeWidgetController::rotatePitchMinus()
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double rotationDelta = primitiveViewer->primitiveRotationDelta();
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
@@ -2252,7 +2293,7 @@ void AppearanceTreeWidgetController::rotateRollPlus()
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double rotationDelta = primitiveViewer->primitiveRotationDelta();
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
@@ -2280,7 +2321,7 @@ void AppearanceTreeWidgetController::rotateRollMinus()
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double rotationDelta = primitiveViewer->primitiveRotationDelta();
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
@@ -2308,7 +2349,7 @@ void AppearanceTreeWidgetController::setEulerAngleX(double angle)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
         double3 EulerAngles = orientation.EulerAngles();
@@ -2345,7 +2386,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::EulerA
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       simd_quatd orientation = primitiveViewer->primitiveOrientation();
       double3 EulerAngle = orientation.EulerAngles();
@@ -2366,7 +2407,7 @@ void AppearanceTreeWidgetController::setEulerAngleY(double angle)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
         double3 EulerAngles = orientation.EulerAngles();
@@ -2380,9 +2421,9 @@ void AppearanceTreeWidgetController::setEulerAngleY(double angle)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2407,7 +2448,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::EulerA
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       simd_quatd orientation = primitiveViewer->primitiveOrientation();
       double3 EulerAngle = orientation.EulerAngles();
@@ -2429,7 +2470,7 @@ void AppearanceTreeWidgetController::setEulerAngleZ(double angle)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         simd_quatd orientation = primitiveViewer->primitiveOrientation();
         double3 EulerAngles = orientation.EulerAngles();
@@ -2443,9 +2484,9 @@ void AppearanceTreeWidgetController::setEulerAngleZ(double angle)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2470,7 +2511,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::EulerA
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       simd_quatd orientation = primitiveViewer->primitiveOrientation();
       double3 EulerAngle = orientation.EulerAngles();
@@ -2494,7 +2535,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().ax);
     }
@@ -2513,7 +2554,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixAX(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.ax = value;
@@ -2525,9 +2566,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixAX(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2551,7 +2592,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().ay);
     }
@@ -2570,7 +2611,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixAY(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.ay = value;
@@ -2582,9 +2623,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixAY(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2608,7 +2649,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().az);
     }
@@ -2627,7 +2668,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixAZ(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.az = value;
@@ -2639,9 +2680,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixAZ(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2665,7 +2706,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().bx);
     }
@@ -2684,7 +2725,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixBX(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.bx = value;
@@ -2696,9 +2737,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixBX(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2722,7 +2763,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().by);
     }
@@ -2741,7 +2782,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixBY(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.by = value;
@@ -2753,9 +2794,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixBY(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2779,7 +2820,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().bz);
     }
@@ -2798,7 +2839,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixBZ(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.bz = value;
@@ -2810,9 +2851,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixBZ(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2836,7 +2877,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().cx);
     }
@@ -2855,7 +2896,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixCX(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.cx = value;
@@ -2867,9 +2908,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixCX(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2893,7 +2934,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().cy);
     }
@@ -2912,7 +2953,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixCY(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.cy = value;
@@ -2924,9 +2965,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixCY(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -2950,7 +2991,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::transf
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveTransformationMatrix().cz);
     }
@@ -2969,7 +3010,7 @@ void AppearanceTreeWidgetController::setTransformationMatrixCZ(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         double3x3 matrix = primitiveViewer->primitiveTransformationMatrix();
         matrix.cz = value;
@@ -2981,9 +3022,9 @@ void AppearanceTreeWidgetController::setTransformationMatrixCZ(double value)
     SKBoundingBox box = _projectStructure->renderBoundingBox();
     _projectStructure->camera()->resetForNewBoundingBox(box);
 
-    std::vector<std::shared_ptr<RKRenderStructure>> render_structures{};
+    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
     std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderStructure> {return iraspastructure->object();});
+                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
 
     if(_projectStructure)
     {
@@ -3008,7 +3049,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primit
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveOpacity());
     }
@@ -3027,7 +3068,7 @@ void AppearanceTreeWidgetController::setPrimitiveOpacity(double opacity)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveOpacity(opacity);
       }
@@ -3049,7 +3090,7 @@ std::optional<std::unordered_set<int>> AppearanceTreeWidgetController::primitive
   std::unordered_set<int> set = std::unordered_set<int>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       set.insert(primitiveViewer->primitiveNumberOfSides());
     }
@@ -3068,7 +3109,7 @@ void AppearanceTreeWidgetController::setPrimitiveNumberOfSides(int numberOfSides
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveNumberOfSides(numberOfSides);
       }
@@ -3094,7 +3135,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::primitiv
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       bool value = primitiveViewer->primitiveIsCapped();
       set.insert(value);
@@ -3111,7 +3152,7 @@ void AppearanceTreeWidgetController::setPrimitiveIsCapped(bool state)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveIsCapped(bool(state));
     }
@@ -3129,7 +3170,7 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionStyle(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveSelectionStyle(RKSelectionStyle(value));
       }
@@ -3150,7 +3191,7 @@ std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> AppearanceTreeWid
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       RKSelectionStyle value = primitiveViewer->primitiveSelectionStyle();
       set.insert(value);
@@ -3168,7 +3209,7 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionStyleNu(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveSelectionFrequency(value);
     }
@@ -3188,7 +3229,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primit
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveSelectionFrequency();
       set.insert(value);
@@ -3206,7 +3247,7 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionStyleRho(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveSelectionDensity(value);
     }
@@ -3226,7 +3267,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primit
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveSelectionDensity();
       set.insert(value);
@@ -3244,7 +3285,7 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionIntensity(double value
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveSelectionIntensity(value);
     }
@@ -3264,7 +3305,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primit
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveSelectionIntensity();
       set.insert(value);
@@ -3282,7 +3323,7 @@ void AppearanceTreeWidgetController::setPrimitiveSelectionScaling(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveSelectionScaling(value);
     }
@@ -3302,7 +3343,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primit
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveSelectionScaling();
       set.insert(value);
@@ -3321,7 +3362,7 @@ void AppearanceTreeWidgetController::setPrimitiveHue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveHue(value);
     }
@@ -3341,7 +3382,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primit
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveHue();
       set.insert(value);
@@ -3359,7 +3400,7 @@ void AppearanceTreeWidgetController::setPrimitiveSaturation(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveSaturation(value);
     }
@@ -3379,7 +3420,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primit
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveSaturation();
       set.insert(value);
@@ -3397,7 +3438,7 @@ void AppearanceTreeWidgetController::setPrimitiveValue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveValue(value);
     }
@@ -3417,7 +3458,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::primit
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveValue();
       set.insert(value);
@@ -3438,7 +3479,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveHighDynamicRange(int value
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveFrontSideHDR(bool(value));
     }
@@ -3458,7 +3499,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::frontPri
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       bool value = primitiveViewer->primitiveFrontSideHDR();
       set.insert(value);
@@ -3476,7 +3517,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveHDRExposure(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveFrontSideHDRExposure(value);
     }
@@ -3496,7 +3537,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontP
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveFrontSideHDRExposure();
       set.insert(value);
@@ -3514,7 +3555,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveAmbientLightIntensity(doub
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveFrontSideAmbientIntensity(value);
     }
@@ -3534,7 +3575,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontP
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveFrontSideAmbientIntensity();
       set.insert(value);
@@ -3556,7 +3597,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveAmbientLightColor()
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveFrontSideAmbientColor(color);
       }
@@ -3577,7 +3618,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::frontP
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       QColor value = primitiveViewer->primitiveFrontSideAmbientColor();
       set.insert(value);
@@ -3595,7 +3636,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveDiffuseLightIntensity(doub
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveFrontSideDiffuseIntensity(value);
     }
@@ -3615,7 +3656,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontP
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveFrontSideDiffuseIntensity();
       set.insert(value);
@@ -3637,7 +3678,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveDiffuseLightColor()
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveFrontSideDiffuseColor(color);
       }
@@ -3658,7 +3699,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::frontP
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       QColor value = primitiveViewer->primitiveFrontSideDiffuseColor();
       set.insert(value);
@@ -3676,7 +3717,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveSpecularLightIntensity(dou
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveFrontSideSpecularIntensity(value);
     }
@@ -3696,7 +3737,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontP
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveFrontSideSpecularIntensity();
       set.insert(value);
@@ -3718,7 +3759,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveSpecularLightColor()
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveFrontSideSpecularColor(color);
       }
@@ -3739,7 +3780,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::frontP
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       QColor value = primitiveViewer->primitiveFrontSideSpecularColor();
       set.insert(value);
@@ -3757,7 +3798,7 @@ void AppearanceTreeWidgetController::setFrontPrimitiveShininess(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveFrontSideShininess(value);
     }
@@ -3777,7 +3818,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::frontP
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveFrontSideShininess();
       set.insert(value);
@@ -3796,7 +3837,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveHighDynamicRange(int value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveBackSideHDR(bool(value));
     }
@@ -3816,7 +3857,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::backPrim
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       bool value = primitiveViewer->primitiveBackSideHDR();
       set.insert(value);
@@ -3834,7 +3875,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveHDRExposure(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveBackSideHDRExposure(value);
     }
@@ -3854,7 +3895,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPr
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveBackSideHDRExposure();
       set.insert(value);
@@ -3872,7 +3913,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveAmbientLightIntensity(doubl
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveBackSideAmbientIntensity(value);
     }
@@ -3892,7 +3933,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPr
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveBackSideAmbientIntensity();
       set.insert(value);
@@ -3914,7 +3955,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveAmbientLightColor()
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveBackSideAmbientColor(color);
       }
@@ -3935,7 +3976,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::backPr
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       QColor value = primitiveViewer->primitiveBackSideAmbientColor();
       set.insert(value);
@@ -3953,7 +3994,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightIntensity(doubl
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveBackSideDiffuseIntensity(value);
     }
@@ -3973,7 +4014,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPr
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveBackSideDiffuseIntensity();
       set.insert(value);
@@ -3995,7 +4036,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightColor()
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveBackSideDiffuseColor(color);
       }
@@ -4016,7 +4057,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::backPr
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       QColor value = primitiveViewer->primitiveBackSideDiffuseColor();
       set.insert(value);
@@ -4034,7 +4075,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveSpecularLightIntensity(doub
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveBackSideSpecularIntensity(value);
     }
@@ -4054,7 +4095,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPr
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveBackSideSpecularIntensity();
       set.insert(value);
@@ -4076,7 +4117,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveSpecularLightColor()
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
       {
         primitiveViewer->setPrimitiveBackSideSpecularColor(color);
       }
@@ -4097,7 +4138,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::backPr
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       QColor value = primitiveViewer->primitiveBackSideSpecularColor();
       set.insert(value);
@@ -4115,7 +4156,7 @@ void AppearanceTreeWidgetController::setBackPrimitiveShininess(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveEditor> primitiveViewer = std::dynamic_pointer_cast<PrimitiveEditor>(iraspa_structure->object()))
     {
       primitiveViewer->setPrimitiveBackSideShininess(value);
     }
@@ -4135,7 +4176,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::backPr
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<PrimitiveVisualAppearanceViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(iraspa_structure->object()))
     {
       double value = primitiveViewer->primitiveBackSideShininess();
       set.insert(value);
@@ -4936,7 +4977,7 @@ void AppearanceTreeWidgetController::setRepresentationType(int value)
   {
     if(value>=0 && value<int(Structure::RepresentationType::multiple_values))
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setRepresentationType(Structure::RepresentationType(value));
       }
@@ -4963,7 +5004,7 @@ std::optional<std::unordered_set<Structure::RepresentationType, enum_hash>> Appe
   std::unordered_set<Structure::RepresentationType, enum_hash> set = std::unordered_set<Structure::RepresentationType, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       Structure::RepresentationType value = atomViewer->atomRepresentationType();
       set.insert(value);
@@ -4983,7 +5024,7 @@ void AppearanceTreeWidgetController::setRepresentationStyle(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setRepresentationStyle(Structure::RepresentationStyle(value), _mainWindow->colorSets());
       }
@@ -5012,7 +5053,7 @@ std::optional<std::unordered_set<Structure::RepresentationStyle, enum_hash>> App
   std::unordered_set<Structure::RepresentationStyle, enum_hash> set = std::unordered_set<Structure::RepresentationStyle, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       Structure::RepresentationStyle value = atomViewer->atomRepresentationStyle();
       set.insert(value);
@@ -5033,7 +5074,7 @@ void AppearanceTreeWidgetController::setColorSchemeComboBoxIndex([[maybe_unused]
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setRepresentationColorSchemeIdentifier(stringValue, _mainWindow->colorSets());
       }
@@ -5058,7 +5099,7 @@ std::optional<std::set<QString>> AppearanceTreeWidgetController::colorSchemeIden
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       QString value = atomViewer->atomColorSchemeIdentifier();
       set.insert(value);
@@ -5078,7 +5119,7 @@ void AppearanceTreeWidgetController::setColorSchemeOrder(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setColorSchemeOrder(SKColorSet::ColorSchemeOrder(value));
         atomViewer->setRepresentationColorSchemeIdentifier(atomViewer->atomColorSchemeIdentifier(), _mainWindow->colorSets());
@@ -5104,7 +5145,7 @@ std::optional<std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash>> Appea
   std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash> set = std::unordered_set<SKColorSet::ColorSchemeOrder, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       SKColorSet::ColorSchemeOrder value = atomViewer->colorSchemeOrder();
       set.insert(value);
@@ -5125,7 +5166,7 @@ void AppearanceTreeWidgetController::setForcefieldSchemeComboBoxIndex([[maybe_un
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setAtomForceFieldIdentifier(stringValue,_mainWindow->forceFieldSets());
       }
@@ -5148,7 +5189,7 @@ std::optional<std::set<QString>> AppearanceTreeWidgetController::forceFieldSchem
   std::set<QString> set = std::set<QString>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       QString value = atomViewer->atomForceFieldIdentifier();
       set.insert(value);
@@ -5168,7 +5209,7 @@ void AppearanceTreeWidgetController::setForceFieldSchemeOrder(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setForceFieldSchemeOrder(ForceFieldSet::ForceFieldSchemeOrder(value));
         atomViewer->updateForceField(_mainWindow->forceFieldSets());
@@ -5196,7 +5237,7 @@ std::optional<std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash
   std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash> set = std::unordered_set<ForceFieldSet::ForceFieldSchemeOrder, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       ForceFieldSet::ForceFieldSchemeOrder value = atomViewer->forceFieldSchemeOrder();
       set.insert(value);
@@ -5216,7 +5257,7 @@ void AppearanceTreeWidgetController::setAtomSelectionStyle(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setAtomSelectionStyle(RKSelectionStyle(value));
       }
@@ -5241,7 +5282,7 @@ std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> AppearanceTreeWid
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       RKSelectionStyle value = atomViewer->atomSelectionStyle();
       set.insert(value);
@@ -5259,7 +5300,7 @@ void AppearanceTreeWidgetController::setAtomSelectionStyleNu(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomSelectionFrequency(value);
     }
@@ -5283,7 +5324,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomSelectionFrequency();
       set.insert(value);
@@ -5301,7 +5342,7 @@ void AppearanceTreeWidgetController::setAtomSelectionStyleRho(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomSelectionDensity(value);
     }
@@ -5325,7 +5366,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomSelectionDensity();
       set.insert(value);
@@ -5343,7 +5384,7 @@ void AppearanceTreeWidgetController::setAtomSelectionIntensity(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setSelectionIntensity(value);
     }
@@ -5367,7 +5408,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomSelectionIntensity();
       set.insert(value);
@@ -5385,7 +5426,7 @@ void AppearanceTreeWidgetController::setAtomSelectionScaling(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomSelectionScaling(value);
     }
@@ -5409,7 +5450,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomSelectionScaling();
       set.insert(value);
@@ -5429,7 +5470,7 @@ void AppearanceTreeWidgetController::setAtomDrawAtoms(int state)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       atomViewer->setDrawAtoms(bool(state));
     }
@@ -5453,7 +5494,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::atomDraw
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       bool value = atomViewer->drawAtoms();
       set.insert(value);
@@ -5471,7 +5512,7 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSpinBox(double size
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomScaleFactor(size);
     }
@@ -5504,7 +5545,7 @@ void AppearanceTreeWidgetController::setAtomSizeScalingDoubleSliderIntermediate(
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomScaleFactor(size);
     }
@@ -5546,7 +5587,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSi
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomScaleFactor();
       set.insert(value);
@@ -5565,7 +5606,7 @@ void AppearanceTreeWidgetController::setAtomHighDynamicRange(int value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       atomViewer->setAtomHDR(bool(value));
     }
@@ -5589,7 +5630,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::atomHigh
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       bool value = atomViewer->atomHDR();
       set.insert(value);
@@ -5607,7 +5648,7 @@ void AppearanceTreeWidgetController::setAtomHDRExposure(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       atomViewer->setAtomHDRExposure(value);
     }
@@ -5631,7 +5672,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomHD
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomHDRExposure();
       set.insert(value);
@@ -5649,7 +5690,7 @@ void AppearanceTreeWidgetController::setAtomHue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomHue(value);
     }
@@ -5673,7 +5714,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomHu
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomHue();
       set.insert(value);
@@ -5691,7 +5732,7 @@ void AppearanceTreeWidgetController::setAtomSaturation(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomSaturation(value);
     }
@@ -5715,7 +5756,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSa
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomSaturation();
       set.insert(value);
@@ -5733,7 +5774,7 @@ void AppearanceTreeWidgetController::setAtomValue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomValue(value);
     }
@@ -5757,7 +5798,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomVa
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomValue();
       set.insert(value);
@@ -5775,7 +5816,7 @@ void AppearanceTreeWidgetController::setAtomAmbientOcclusion(int value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       atomViewer->setAtomAmbientOcclusion(bool(value));
     }
@@ -5799,7 +5840,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::atomAmbi
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       bool value = atomViewer->atomAmbientOcclusion();
       set.insert(value);
@@ -5816,7 +5857,7 @@ void AppearanceTreeWidgetController::setAtomAmbientLightIntensity(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomAmbientIntensity(value);
     }
@@ -5840,7 +5881,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomAm
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomAmbientIntensity();
       set.insert(value);
@@ -5862,7 +5903,7 @@ void AppearanceTreeWidgetController::setAtomAmbientLightColor()
     _appearanceAtomsForm->atomAmbientColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setAtomAmbientColor(color);
       }
@@ -5887,7 +5928,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::atomAm
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       QColor value = atomViewer->atomAmbientColor();
       set.insert(value);
@@ -5905,7 +5946,7 @@ void AppearanceTreeWidgetController::setAtomDiffuseLightIntensity(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomDiffuseIntensity(value);
     }
@@ -5929,7 +5970,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomDi
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomDiffuseIntensity();
       set.insert(value);
@@ -5951,7 +5992,7 @@ void AppearanceTreeWidgetController::setAtomDiffuseLightColor()
     _appearanceAtomsForm->atomDiffuseColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setAtomDiffuseColor(color);
       }
@@ -5976,7 +6017,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::atomDi
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       QColor value = atomViewer->atomDiffuseColor();
       set.insert(value);
@@ -5994,7 +6035,7 @@ void AppearanceTreeWidgetController::setAtomSpecularLightIntensity(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomSpecularIntensity(value);
     }
@@ -6018,7 +6059,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomSpecularIntensity();
       set.insert(value);
@@ -6040,7 +6081,7 @@ void AppearanceTreeWidgetController::setAtomSpecularLightColor()
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
       {
         atomViewer->setAtomSpecularColor(color);
       }
@@ -6065,7 +6106,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::atomSp
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       QColor value = atomViewer->atomSpecularColor();
       set.insert(value);
@@ -6083,7 +6124,7 @@ void AppearanceTreeWidgetController::setAtomShininess(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
     {
       atomViewer->setAtomShininess(value);
     }
@@ -6107,7 +6148,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::atomSh
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomVisualAppearanceViewer> atomViewer = std::dynamic_pointer_cast<AtomVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
     {
       double value = atomViewer->atomShininess();
       set.insert(value);
@@ -6698,7 +6739,7 @@ void AppearanceTreeWidgetController::setBondDrawBonds(int state)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setDrawBonds(bool(state));
     }
@@ -6722,7 +6763,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::bondDraw
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       bool value = bondViewer->drawBonds();
       set.insert(value);
@@ -6740,7 +6781,7 @@ void AppearanceTreeWidgetController::setBondSizeScaling(double size)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondScaleFactor(size);
     }
@@ -6765,7 +6806,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSi
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondScaleFactor();
       set.insert(value);
@@ -6783,7 +6824,7 @@ void AppearanceTreeWidgetController::setBondColorMode(int value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondColorMode(RKBondColorMode(value));
     }
@@ -6807,7 +6848,7 @@ std::optional<std::unordered_set<RKBondColorMode, enum_hash> > AppearanceTreeWid
   std::unordered_set<RKBondColorMode, enum_hash> set = std::unordered_set<RKBondColorMode, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       RKBondColorMode value = bondViewer->bondColorMode();
       set.insert(value);
@@ -6827,7 +6868,7 @@ void AppearanceTreeWidgetController::setBondSelectionStyle(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
       {
         bondViewer->setBondSelectionStyle(RKSelectionStyle(value));
       }
@@ -6852,7 +6893,7 @@ std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> AppearanceTreeWid
   std::unordered_set<RKSelectionStyle, enum_hash> set = std::unordered_set<RKSelectionStyle, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       RKSelectionStyle value = bondViewer->bondSelectionStyle();
       set.insert(value);
@@ -6870,7 +6911,7 @@ void AppearanceTreeWidgetController::setBondSelectionStyleNu(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondSelectionFrequency(value);
     }
@@ -6894,7 +6935,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondSelectionFrequency();
       set.insert(value);
@@ -6912,7 +6953,7 @@ void AppearanceTreeWidgetController::setBondSelectionStyleRho(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondSelectionDensity(value);
     }
@@ -6936,7 +6977,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondSelectionDensity();
       set.insert(value);
@@ -6954,7 +6995,7 @@ void AppearanceTreeWidgetController::setBondSelectionIntensity(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondSelectionIntensity(value);
     }
@@ -6978,7 +7019,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondSelectionIntensity();
       set.insert(value);
@@ -6996,7 +7037,7 @@ void AppearanceTreeWidgetController::setBondSelectionScaling(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondSelectionScaling(value);
     }
@@ -7020,7 +7061,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSe
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondSelectionScaling();
       set.insert(value);
@@ -7040,7 +7081,7 @@ void AppearanceTreeWidgetController::setBondHighDynamicRange(int value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondHDR(bool(value));
     }
@@ -7064,7 +7105,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::bondHigh
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       bool value = bondViewer->bondHDR();
       set.insert(value);
@@ -7082,7 +7123,7 @@ void AppearanceTreeWidgetController::setBondHDRExposure(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondHDRExposure(value);
     }
@@ -7106,7 +7147,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondHD
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondHDRExposure();
       set.insert(value);
@@ -7124,7 +7165,7 @@ void AppearanceTreeWidgetController::setBondHue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondHue(value);
     }
@@ -7148,7 +7189,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondHu
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondHue();
       set.insert(value);
@@ -7166,7 +7207,7 @@ void AppearanceTreeWidgetController::setBondSaturation(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondSaturation(value);
     }
@@ -7190,7 +7231,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSa
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondSaturation();
       set.insert(value);
@@ -7208,7 +7249,7 @@ void AppearanceTreeWidgetController::setBondValue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondValue(value);
     }
@@ -7232,7 +7273,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondVa
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondValue();
       set.insert(value);
@@ -7250,7 +7291,7 @@ void AppearanceTreeWidgetController::setBondAmbientOcclusion(int value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondAmbientOcclusion(bool(value));
     }
@@ -7274,7 +7315,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::bondAmbi
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       bool value = bondViewer->bondAmbientOcclusion();
       set.insert(value);
@@ -7291,7 +7332,7 @@ void AppearanceTreeWidgetController::setBondAmbientLightIntensity(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondAmbientIntensity(value);
     }
@@ -7315,7 +7356,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondAm
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondAmbientIntensity();
       set.insert(value);
@@ -7337,7 +7378,7 @@ void AppearanceTreeWidgetController::setBondAmbientLightColor()
     _appearanceBondsForm->bondAmbientColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
       {
         bondViewer->setBondAmbientColor(color);
       }
@@ -7362,7 +7403,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::bondAm
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       QColor value = bondViewer->bondAmbientColor();
       set.insert(value);
@@ -7380,7 +7421,7 @@ void AppearanceTreeWidgetController::setBondDiffuseLightIntensity(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondDiffuseIntensity(value);
     }
@@ -7404,7 +7445,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondDi
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondDiffuseIntensity();
       set.insert(value);
@@ -7426,7 +7467,7 @@ void AppearanceTreeWidgetController::setBondDiffuseLightColor()
     _appearanceBondsForm->bondDiffuseColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
       {
         bondViewer->setBondDiffuseColor(color);
       }
@@ -7451,7 +7492,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::bondDi
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       QColor value = bondViewer->bondDiffuseColor();
       set.insert(value);
@@ -7469,7 +7510,7 @@ void AppearanceTreeWidgetController::setBondSpecularLightIntensity(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondSpecularIntensity(value);
     }
@@ -7493,7 +7534,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondSpecularIntensity();
       set.insert(value);
@@ -7515,7 +7556,7 @@ void AppearanceTreeWidgetController::setBondSpecularLightColor()
     _appearanceBondsForm->bondSpecularColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
       {
         bondViewer->setBondSpecularColor(color);
       }
@@ -7540,7 +7581,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::bondSp
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       QColor value = bondViewer->bondSpecularColor();
       set.insert(value);
@@ -7558,7 +7599,7 @@ void AppearanceTreeWidgetController::setBondShininess(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureEditor> bondViewer = std::dynamic_pointer_cast<BondStructureEditor>(iraspa_structure->object()))
     {
       bondViewer->setBondShininess(value);
     }
@@ -7582,7 +7623,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::bondSh
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<BondVisualAppearanceViewer> bondViewer = std::dynamic_pointer_cast<BondVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<BondStructureViewer> bondViewer = std::dynamic_pointer_cast<BondStructureViewer>(iraspa_structure->object()))
     {
       double value = bondViewer->bondShininess();
       set.insert(value);
@@ -8409,6 +8450,8 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProperties()
   reloadAdsorptionVolumeStepLength();
   reloadAdsorptionSurfaceIsovalue();
   reloadAdsorptionSurfaceOpacity();
+  reloadAdsorptionTransparencyThreshold();
+  reloadAdsorptionQuality();
   reloadAdsorptionSurfaceHue();
   reloadAdsorptionSurfaceSaturation();
   reloadAdsorptionSurfaceValue();
@@ -8577,6 +8620,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionVolumeTransferFunction()
 
 void AppearanceTreeWidgetController::reloadAdsorptionVolumeStepLength()
 {
+  qDebug() << "reloadAdsorptionVolumeStepLength";
   _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setDisabled(true);
 
   if(_projectTreeNode)
@@ -8590,6 +8634,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionVolumeStepLength()
 
         if(values->size()==1)
         {
+          qDebug() << "Set value to: " << *(values->begin());
           whileBlocking(_appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox)->setValue(*(values->begin()));
         }
       }
@@ -8612,10 +8657,20 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceIsovalue()
         _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-        if(values->size()==1)
+        if(values->size()>=1)
         {
+          // TODO: perhaps better to find min and max in set
           whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleMinimum(*(values->begin()));
           whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setMinimum(*(values->begin()));
+        }
+      }
+
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceMaximumValue(); values)
+      {
+        if(values->size()>=1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleMaximum(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setMaximum(*(values->begin()));
         }
       }
 
@@ -8623,6 +8678,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceIsovalue()
       {
         if(values->size()==1)
         {
+            qDebug() << "Isovalue: " << *(values->begin());
           whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setValue(*(values->begin()));
           whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleValue(*(values->begin()));
         }
@@ -8664,6 +8720,83 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceOpacity()
   }
 }
 
+void AppearanceTreeWidgetController::reloadAdsorptionTransparencyThreshold()
+{
+  _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSpinBox->setDisabled(true);
+  _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSlider->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      if (std::optional<std::unordered_set<double>> values = adsorptionTransparencyThreshold(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSlider->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSpinBox)->setValue(*(values->begin()));
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSlider)->setDoubleValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionThresholdDoubleSpinBox)->setText("Mult. Val.");
+        }
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadAdsorptionQuality()
+{
+  _appearanceAdsorptionSurfaceForm->qualityComboBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      if (std::optional<std::unordered_set<int>> values = adsorptionQualityIndex(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->qualityComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          if(int index = _appearanceAdsorptionSurfaceForm->qualityComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->qualityComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAdsorptionSurfaceForm->qualityComboBox)->setCurrentIndex(*(values->begin()));
+        }
+        else
+        {
+          if(int index = _appearanceAdsorptionSurfaceForm->qualityComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAdsorptionSurfaceForm->qualityComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAdsorptionSurfaceForm->qualityComboBox)->setCurrentText("Multiple values");
+        }
+      }
+
+      if (std::optional<std::unordered_set<int3>> dimensions = adsorptionDimensions(); dimensions)
+      {
+        _appearanceAdsorptionSurfaceForm->adsorptionQualityQLabel->setEnabled(_projectTreeNode->isEditable());
+
+        if(dimensions->size()==1)
+        {
+          int3 d = *(dimensions->begin());
+          QString dimensionsText = QString("(%1x%2x%3)").arg(d.x).arg(d.y).arg(d.z);
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionQualityQLabel)->setText(dimensionsText);
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionQualityQLabel)->setText("Multiple values");
+        }
+      }
+    }
+  }
+}
 
 void AppearanceTreeWidgetController::reloadAdsorptionSurfaceHue()
 {
@@ -9196,7 +9329,7 @@ void AppearanceTreeWidgetController::setDrawAdsorptionSurface(int state)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setDrawAdsorptionSurface(bool(state));
     }
@@ -9205,8 +9338,10 @@ void AppearanceTreeWidgetController::setDrawAdsorptionSurface(int state)
       structure->recheckRepresentationStyle();
     }
   }
-  reloadAtomProperties();
+
   emit rendererReloadData();
+
+  reloadAdsorptionSurfaceProperties();
 
   _mainWindow->documentWasModified();
 }
@@ -9220,7 +9355,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::drawAdso
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       bool value = adsorptionViewer->drawAdsorptionSurface();
       set.insert(value);
@@ -9240,7 +9375,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceRenderingMethod(int val
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType(value));
       }
@@ -9270,7 +9405,7 @@ std::optional<std::unordered_set<RKEnergySurfaceType, enum_hash>> AppearanceTree
   std::unordered_set<RKEnergySurfaceType, enum_hash> set = std::unordered_set<RKEnergySurfaceType, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       RKEnergySurfaceType value = adsorptionViewer->adsorptionSurfaceRenderingMethod();
       set.insert(value);
@@ -9291,7 +9426,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule(int value
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceProbeMolecule(ProbeMolecule(value));
       }
@@ -9319,7 +9454,7 @@ std::optional<std::unordered_set<ProbeMolecule, enum_hash> > AppearanceTreeWidge
   std::unordered_set<ProbeMolecule, enum_hash> set = std::unordered_set<ProbeMolecule, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       ProbeMolecule value = adsorptionViewer->adsorptionSurfaceProbeMolecule();
       set.insert(value);
@@ -9340,7 +9475,7 @@ void AppearanceTreeWidgetController::setAdsorptionVolumeTransferFunction(int val
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction(value));
       }
@@ -9368,7 +9503,7 @@ std::optional<std::unordered_set<RKPredefinedVolumeRenderingTransferFunction, en
   std::unordered_set<RKPredefinedVolumeRenderingTransferFunction, enum_hash> set = std::unordered_set<RKPredefinedVolumeRenderingTransferFunction, enum_hash>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       RKPredefinedVolumeRenderingTransferFunction value = adsorptionViewer->adsorptionVolumeTransferFunction();
       set.insert(value);
@@ -9387,7 +9522,7 @@ void AppearanceTreeWidgetController::setAdsorptionVolumeStepLength(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionVolumeStepLength(value);
     }
@@ -9407,7 +9542,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionVolumeStepLength();
       set.insert(value);
@@ -9428,7 +9563,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceIsoValue(value);
     }
@@ -9448,7 +9583,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceIsoValue();
       set.insert(value);
@@ -9472,9 +9607,9 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
-      double value = adsorptionViewer->adsorptionSurfaceMinimumValue();
+      double value = adsorptionViewer->range().first;
       set.insert(value);
     }
   }
@@ -9486,6 +9621,28 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   return std::nullopt;
 }
 
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceMaximumValue()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->range().second;
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity(double value)
 {
@@ -9493,7 +9650,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceOpacity(value);
       }
@@ -9514,9 +9671,125 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceOpacity();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setAdsorptionTransparencyThreshold(double value)
+{
+  if(value>=0 && value<=1.0)
+  {
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+    {
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+      {
+        adsorptionViewer->setAdsorptionTransparencyThreshold(value);
+      }
+    }
+    reloadAdsorptionSurfaceProperties();
+    emit rendererReloadData();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionTransparencyThreshold()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      double value = adsorptionViewer->adsorptionTransparencyThreshold();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setAdsorptionQualityIndex(int value)
+{
+  if(value>=0 && value<int(SKComputeEnergyGrid::GridSizeType::multiple_values))
+  {
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+    {
+      if (std::shared_ptr<VolumetricDataEditor> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataEditor>(iraspa_structure->object()))
+      {
+          // FIX
+        //if(!adsorptionViewer->isImmutable())
+        //{
+          qDebug() << "SETTING setEncompassingPowerOfTwoCubicGridSize";
+          adsorptionViewer->setEncompassingPowerOfTwoCubicGridSize(value);
+        //}
+      }
+    }
+
+    if(_projectStructure)
+    {
+      std::vector<std::vector<std::shared_ptr<iRASPAObject>>> invalidatedStructures = _projectStructure->sceneList()->invalidatediRASPAStructures();
+      emit _mainWindow->invalidateCachedIsoSurfaces(invalidatedStructures);
+    }
+    reloadAdsorptionSurfaceProperties();
+    emit rendererReloadData();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<std::unordered_set<int>> AppearanceTreeWidgetController::adsorptionQualityIndex()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<int> set = {};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      int value = adsorptionViewer->encompassingPowerOfTwoCubicGridSize();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+std::optional<std::unordered_set<int3>> AppearanceTreeWidgetController::adsorptionDimensions()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<int3> set = {};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      int3 value = adsorptionViewer->dimensions();
       set.insert(value);
     }
   }
@@ -9532,7 +9805,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceHue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceHue(value);
     }
@@ -9556,7 +9829,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceHue();
       set.insert(value);
@@ -9574,7 +9847,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceSaturation(double value
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceSaturation(value);
     }
@@ -9598,7 +9871,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceSaturation();
       set.insert(value);
@@ -9616,7 +9889,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceValue(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceValue(value);
     }
@@ -9640,7 +9913,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceValue();
       set.insert(value);
@@ -9659,7 +9932,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideHighDynamicRange(
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceFrontSideHDR(bool(value));
     }
@@ -9679,7 +9952,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::adsorpti
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       bool state = adsorptionViewer->adsorptionSurfaceFrontSideHDR();
       set.insert(state);
@@ -9697,7 +9970,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideHDRExposure(doubl
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceFrontSideHDRExposure(value);
     }
@@ -9717,7 +9990,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceFrontSideHDRExposure();
       set.insert(value);
@@ -9735,7 +10008,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideAmbientLightInten
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceFrontSideAmbientIntensity(value);
     }
@@ -9755,7 +10028,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceFrontSideAmbientIntensity();
       set.insert(value);
@@ -9776,7 +10049,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideAmbientLightColor
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceFrontSideAmbientColor(color);
       }
@@ -9797,7 +10070,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       QColor color = adsorptionViewer->adsorptionSurfaceFrontSideAmbientColor();
       set.insert(color);
@@ -9815,7 +10088,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideDiffuseLightInten
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceFrontSideDiffuseIntensity(value);
     }
@@ -9835,7 +10108,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceFrontSideDiffuseIntensity();
       set.insert(value);
@@ -9856,7 +10129,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideDiffuseLightColor
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceFrontSideDiffuseColor(color);
       }
@@ -9877,7 +10150,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       QColor color = adsorptionViewer->adsorptionSurfaceFrontSideDiffuseColor();
       set.insert(color);
@@ -9895,7 +10168,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideSpecularLightInte
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceFrontSideSpecularIntensity(value);
     }
@@ -9915,7 +10188,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceFrontSideSpecularIntensity();
       set.insert(value);
@@ -9936,7 +10209,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideSpecularLightColo
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceFrontSideSpecularColor(color);
       }
@@ -9957,7 +10230,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       QColor color = adsorptionViewer->adsorptionSurfaceFrontSideSpecularColor();
       set.insert(color);
@@ -9975,7 +10248,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceInsideShininess(double 
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceFrontSideShininess(value);
     }
@@ -9995,7 +10268,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceFrontSideShininess();
       set.insert(value);
@@ -10013,7 +10286,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideHighDynamicRange
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceBackSideHDR(bool(value));
     }
@@ -10033,7 +10306,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::adsorpti
   std::unordered_set<bool> set = std::unordered_set<bool>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       bool value = adsorptionViewer->adsorptionSurfaceBackSideHDR();
       set.insert(value);
@@ -10051,7 +10324,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideHDRExposure(doub
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceBackSideHDRExposure(value);
     }
@@ -10071,7 +10344,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceBackSideHDRExposure();
       set.insert(value);
@@ -10088,7 +10361,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightInte
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceBackSideAmbientIntensity(value);
     }
@@ -10108,7 +10381,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceBackSideAmbientIntensity();
       set.insert(value);
@@ -10129,7 +10402,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideAmbientLightColo
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceBackSideAmbientColor(color);
       }
@@ -10150,7 +10423,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       QColor value = adsorptionViewer->adsorptionSurfaceBackSideAmbientColor();
       set.insert(value);
@@ -10168,7 +10441,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightInte
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceBackSideDiffuseIntensity(value);
     }
@@ -10188,7 +10461,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceBackSideDiffuseIntensity();
       set.insert(value);
@@ -10209,7 +10482,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideDiffuseLightColo
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceBackSideDiffuseColor(color);
       }
@@ -10230,7 +10503,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       QColor value = adsorptionViewer->adsorptionSurfaceBackSideDiffuseColor();
       set.insert(value);
@@ -10248,7 +10521,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightInt
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceBackSideSpecularIntensity(value);
     }
@@ -10268,7 +10541,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceBackSideSpecularIntensity();
       set.insert(value);
@@ -10289,7 +10562,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideSpecularLightCol
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
       {
         adsorptionViewer->setAdsorptionSurfaceBackSideSpecularColor(color);
       }
@@ -10310,7 +10583,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       QColor value = adsorptionViewer->adsorptionSurfaceBackSideSpecularColor();
       set.insert(value);
@@ -10328,7 +10601,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOutsideShininess(double
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       adsorptionViewer->setAdsorptionSurfaceBackSideShininess(value);
     }
@@ -10348,7 +10621,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AdsorptionSurfaceVisualAppearanceViewer> adsorptionViewer = std::dynamic_pointer_cast<AdsorptionSurfaceVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->adsorptionSurfaceBackSideShininess();
       set.insert(value);
@@ -10655,7 +10928,7 @@ void AppearanceTreeWidgetController::setAnnotationType(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
       {
         textViewer->setRenderTextType(RKTextType(value));
       }
@@ -10677,7 +10950,7 @@ std::optional<std::set<RKTextType>> AppearanceTreeWidgetController::annotationTy
   std::set<RKTextType> set{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       RKTextType value = textViewer->renderTextType();
       set.insert(value);
@@ -10695,7 +10968,7 @@ void AppearanceTreeWidgetController::setAnnotationFontFamily(QString value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
     {
       textViewer->setRenderTextFont(value);
     }
@@ -10711,7 +10984,7 @@ void AppearanceTreeWidgetController::setAnnotationFontMember(QString value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
     {
       QString fontName = textViewer->renderTextFont();
 
@@ -10741,7 +11014,7 @@ std::optional<std::set<QString>> AppearanceTreeWidgetController::annotationFont(
   std::set<QString> set{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       QString value = textViewer->renderTextFont();
       set.insert(value);
@@ -10763,7 +11036,7 @@ void AppearanceTreeWidgetController::setAnnotationTextColor()
     _appearanceAtomsForm->atomSpecularColorPushButton->setColor(color);
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
       {
         textViewer->setRenderTextColor(color);
       }
@@ -10784,7 +11057,7 @@ std::optional<std::unordered_set<QColor>> AppearanceTreeWidgetController::annota
   std::unordered_set<QColor> set = std::unordered_set<QColor>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       QColor value = textViewer->renderTextColor();
       set.insert(value);
@@ -10805,7 +11078,7 @@ void AppearanceTreeWidgetController::setAnnotationAlignment(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
       {
         textViewer->setRenderTextAlignment(RKTextAlignment(value));
       }
@@ -10827,7 +11100,7 @@ std::optional<std::set<RKTextAlignment>> AppearanceTreeWidgetController::annotat
   std::set<RKTextAlignment> set{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       RKTextAlignment value = textViewer->renderTextAlignment();
       set.insert(value);
@@ -10847,7 +11120,7 @@ void AppearanceTreeWidgetController::setAnnotationStyle(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
       {
         textViewer->setRenderTextStyle(RKTextStyle(value));
       }
@@ -10869,7 +11142,7 @@ std::optional<std::set<RKTextStyle>> AppearanceTreeWidgetController::annotationS
   std::set<RKTextStyle> set{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       RKTextStyle value = textViewer->renderTextStyle();
       set.insert(value);
@@ -10889,7 +11162,7 @@ void AppearanceTreeWidgetController::setAnnotationScaling(double value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+      if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
       {
         textViewer->setRenderTextScaling(value);
       }
@@ -10910,7 +11183,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annota
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       double value = textViewer->renderTextScaling();
       set.insert(value);
@@ -10929,7 +11202,7 @@ void AppearanceTreeWidgetController::setAnnotationOffsetX(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
     {
       textViewer->setRenderTextOffsetX(value);
     }
@@ -10949,7 +11222,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annota
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       double value = textViewer->renderTextOffset().x;
       set.insert(value);
@@ -10967,7 +11240,7 @@ void AppearanceTreeWidgetController::setAnnotationOffsetY(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
     {
       textViewer->setRenderTextOffsetY(value);
     }
@@ -10987,7 +11260,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annota
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       double value = textViewer->renderTextOffset().y;
       set.insert(value);
@@ -11005,7 +11278,7 @@ void AppearanceTreeWidgetController::setAnnotationOffsetZ(double value)
 {
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationEditor> textViewer = std::dynamic_pointer_cast<AnnotationEditor>(iraspa_structure->object()))
     {
       textViewer->setRenderTextOffsetZ(value);
     }
@@ -11025,7 +11298,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annota
   std::unordered_set<double> set = std::unordered_set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<AtomTextVisualAppearanceViewer> textViewer = std::dynamic_pointer_cast<AtomTextVisualAppearanceViewer>(iraspa_structure->object()))
+    if (std::shared_ptr<AnnotationViewer> textViewer = std::dynamic_pointer_cast<AnnotationViewer>(iraspa_structure->object()))
     {
       double value = textViewer->renderTextOffset().z;
       set.insert(value);

@@ -5,11 +5,15 @@ SOURCES += \
     $$PWD/skasymmetricunit.cpp \
     $$PWD/skatomcopy.cpp \
     $$PWD/skcell.cpp \
+    $$PWD/skchgcarparser.cpp \
     $$PWD/skcifwriter.cpp \
     $$PWD/skcolorsets.cpp \
     $$PWD/skcolorset.cpp \
+    $$PWD/skelfcarparser.cpp \
+    $$PWD/skgaussiancubeparser.cpp \
     $$PWD/skintegerchangeofbasis.cpp \
     $$PWD/skintegersymmetryoperationset.cpp \
+    $$PWD/sklocpotparser.cpp \
     $$PWD/skmmcifparser.cpp \
     $$PWD/skmmcifwriter.cpp \
     $$PWD/skpdbwriter.cpp \
@@ -49,9 +53,13 @@ HEADERS += \
     $$PWD/skasymmetricbond.h \
     $$PWD/skasymmetricunit.h \
     $$PWD/skatomcopy.h \
+    $$PWD/skchgcarparser.h \
     $$PWD/skcifwriter.h \
+    $$PWD/skelfcarparser.h \
+    $$PWD/skgaussiancubeparser.h \
     $$PWD/skintegerchangeofbasis.h \
     $$PWD/skintegersymmetryoperationset.h \
+    $$PWD/sklocpotparser.h \
     $$PWD/skmmcifparser.h \
     $$PWD/skmmcifwriter.h \
     $$PWD/skpdbwriter.h \

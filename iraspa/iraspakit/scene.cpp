@@ -83,46 +83,56 @@ void Scene::setSelectedMovies(std::set<std::shared_ptr<Movie>> movies)
   _selectedMovies = movies;
 }
 
-Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, [[maybe_unused]] bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule, LogReporting *log)
+Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, [[maybe_unused]] bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule)
 {
   QFile file(url.toLocalFile());
   QFileInfo info(file);
 
   std::shared_ptr<SKParser> parser;
 
+   LogReporting *log;
+
   if((info.fileName().toUpper() == "POSCAR" && info.suffix().isEmpty()) ||
      (info.fileName().toUpper() == "CONTCAR" && info.suffix().isEmpty()) ||
       info.suffix().toLower() == "poscar")
   {
-    parser = std::make_shared<SKPOSCARParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), log);
+    parser = std::make_shared<SKPOSCARParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
+  }
+  else if(info.fileName().toUpper() == "CHGCAR" && info.suffix().isEmpty())
+  {
+    parser = std::make_shared<SKCHGCARParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
+  }
+  else if(info.fileName().toUpper() == "ELFCAR" && info.suffix().isEmpty())
+  {
+    parser = std::make_shared<SKELFCARParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
+  }
+  else if(info.fileName().toUpper() == "LOCPOT" && info.suffix().isEmpty())
+  {
+    parser = std::make_shared<SKLOCPOTParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
   }
   else if (info.suffix().toLower() == "cif")
   {
-    parser = std::make_shared<SKCIFParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), log);
+    parser = std::make_shared<SKCIFParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
   }
   else if (info.suffix().toLower() == "pdb")
   {
-    parser = std::make_shared<SKPDBParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), log);
+    parser = std::make_shared<SKPDBParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
   }
   else if (info.suffix().toLower() == "xyz")
   {
-    parser = std::make_shared<SKXYZParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), log);
+    parser = std::make_shared<SKXYZParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
   }
   else if (info.suffix().toLower() == "vtk")
   {
-    parser = std::make_shared<SKVTKParser>(url, QDataStream::BigEndian, log);
+    parser = std::make_shared<SKVTKParser>(url, QDataStream::BigEndian);
   }
-
-  bool success = parser->startParsing();
-
-  if(!success)
+  else if (info.suffix().toLower() == "cube")
   {
-    if (log)
-    {
-      log->logMessage(LogReporting::ErrorLevel::error, "Errors detected in input file");
-    }
-    return;
+    qDebug() << "Reading cube";
+    parser = std::make_shared<SKGaussianCubeParser>(url, onlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
   }
+
+  parser->startParsing();
 
   std::vector<std::vector<std::shared_ptr<SKStructure>>> movies = parser->movies();
 
@@ -151,18 +161,19 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
         iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<ProteinCrystal>(frame));
         break;
       case SKStructure::Kind::RASPADensityVolume:
-          qDebug() << "YEAAAHHH RASPADensityVolume";
         iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<RASPADensityVolume>(frame));
         break;
       case SKStructure::Kind::VTKDensityVolume:
         iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<VTKDensityVolume>(frame));
         break;
+      case SKStructure::Kind::VASPDensityVolume:
+        iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<VASPDensityVolume>(frame));
+        break;
+      case SKStructure::Kind::GaussianCubeVolume:
+        iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<GaussianCubeVolume>(frame));
+        break;
       default:
-        if (log)
-        {
-          log->logMessage(LogReporting::ErrorLevel::info, "Unknown structure format");
-        }
-        return;
+        throw "Unknown structure format";
       }
 
       if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspastructure->object()))
@@ -176,11 +187,11 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
         structure->reComputeBoundingBox();
         structure->recomputeDensityProperties();
 
-        if (log)
-        {
-          size_t numberOfAtoms = structure->atomsTreeController()->flattenedLeafNodes().size();
-          log->logMessage(LogReporting::ErrorLevel::info, "Read " + QString::number(numberOfAtoms) + " atoms");
-        }
+        //if (log)
+        //{
+        //  size_t numberOfAtoms = structure->atomsTreeController()->flattenedLeafNodes().size();
+        //  log->logMessage(LogReporting::ErrorLevel::info, "Read " + QString::number(numberOfAtoms) + " atoms");
+        //}
       }
 
       iraspastructure->object()->reComputeBoundingBox();

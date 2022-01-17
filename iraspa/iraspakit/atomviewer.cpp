@@ -25,3 +25,8 @@ AtomViewer::~AtomViewer()
 {
   // Compulsory virtual destructor definition
 }
+
+AtomEditor::~AtomEditor()
+{
+  // Compulsory virtual destructor definition
+}

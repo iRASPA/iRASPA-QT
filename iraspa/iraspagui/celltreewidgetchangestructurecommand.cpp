@@ -40,58 +40,7 @@ CellTreeWidgetChangeStructureCommand::CellTreeWidgetChangeStructureCommand(MainW
 }
 
 
-template<typename T> std::shared_ptr<Object> CellTreeWidgetChangeStructureCommand::createiRASPAObject(std::shared_ptr<iRASPAObject> iraspa_structure)
-{
-  if(const std::shared_ptr<Crystal> crystal = std::dynamic_pointer_cast<Crystal>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(crystal);
-  }
-  else if(const std::shared_ptr<MolecularCrystal> molecularCrystal = std::dynamic_pointer_cast<MolecularCrystal>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(molecularCrystal);
-  }
-  else if(const std::shared_ptr<Molecule> molecule = std::dynamic_pointer_cast<Molecule>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(molecule);
-  }
-  else if(const std::shared_ptr<ProteinCrystal> proteinCrystal = std::dynamic_pointer_cast<ProteinCrystal>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(proteinCrystal);
-  }
-  else if(const std::shared_ptr<Protein> protein = std::dynamic_pointer_cast<Protein>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(protein);
-  }
-  else if(const std::shared_ptr<CrystalCylinderPrimitive> crystalCylinderPrimitive = std::dynamic_pointer_cast<CrystalCylinderPrimitive>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(crystalCylinderPrimitive);
-  }
-  else if(const std::shared_ptr<CrystalEllipsoidPrimitive> crystalEllipsoidPrimitive = std::dynamic_pointer_cast<CrystalEllipsoidPrimitive>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(crystalEllipsoidPrimitive);
-  }
-  else if(const std::shared_ptr<CrystalPolygonalPrismPrimitive> crystalPolygonalPrismPrimitive = std::dynamic_pointer_cast<CrystalPolygonalPrismPrimitive>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(crystalPolygonalPrismPrimitive);
-  }
-  else if(const std::shared_ptr<CylinderPrimitive> cylinderPrimitive = std::dynamic_pointer_cast<CylinderPrimitive>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(cylinderPrimitive);
-  }
-  else if(const std::shared_ptr<EllipsoidPrimitive> ellipsoidPrimitive = std::dynamic_pointer_cast<EllipsoidPrimitive>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(ellipsoidPrimitive);
-  }
-  else if(const std::shared_ptr<PolygonalPrismPrimitive> polygonalPrismPrimitive = std::dynamic_pointer_cast<PolygonalPrismPrimitive>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(polygonalPrismPrimitive);
-  }
-  else if(const std::shared_ptr<GridVolume> volume = std::dynamic_pointer_cast<GridVolume>(iraspa_structure->object()))
-  {
-    return std::make_shared<T>(volume);
-  }
-  return std::make_shared<Object>();
-}
+
 
 void CellTreeWidgetChangeStructureCommand::redo()
 {
@@ -101,62 +50,98 @@ void CellTreeWidgetChangeStructureCommand::redo()
     {
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::crystal):
       {
-        iraspa_structure->setObject(createiRASPAObject<Crystal>(iraspa_structure), ObjectType::crystal);
+        std::shared_ptr<Object> newObject = std::make_shared<Crystal>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::crystal);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::molecularCrystal):
       {
-        iraspa_structure->setObject(createiRASPAObject<MolecularCrystal>(iraspa_structure), ObjectType::molecularCrystal);
+        std::shared_ptr<Object> newObject = std::make_shared<MolecularCrystal>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::molecularCrystal);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::molecule):
       {
-        iraspa_structure->setObject(createiRASPAObject<Molecule>(iraspa_structure), ObjectType::molecule);
+        std::shared_ptr<Object> newObject = std::make_shared<Molecule>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::molecule);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::protein):
       {
-        iraspa_structure->setObject(createiRASPAObject<Protein>(iraspa_structure), ObjectType::protein);
+        std::shared_ptr<Object> newObject = std::make_shared<Protein>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::protein);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::proteinCrystal):
       {
-        iraspa_structure->setObject(createiRASPAObject<ProteinCrystal>(iraspa_structure), ObjectType::proteinCrystal);
+        std::shared_ptr<Object> newObject = std::make_shared<ProteinCrystal>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::proteinCrystal);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::crystalEllipsoidPrimitive):
       {
-        iraspa_structure->setObject(createiRASPAObject<CrystalEllipsoidPrimitive>(iraspa_structure), ObjectType::crystalEllipsoidPrimitive);
+        std::shared_ptr<Object> newObject = std::make_shared<CrystalEllipsoidPrimitive>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::crystalEllipsoidPrimitive);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::crystalCylinderPrimitive):
       {
-        iraspa_structure->setObject(createiRASPAObject<CrystalCylinderPrimitive>(iraspa_structure), ObjectType::crystalCylinderPrimitive);
+        std::shared_ptr<Object> newObject = std::make_shared<CrystalCylinderPrimitive>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::crystalCylinderPrimitive);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::crystalPolygonalPrismPrimitive):
       {
-        iraspa_structure->setObject(createiRASPAObject<CrystalPolygonalPrismPrimitive>(iraspa_structure), ObjectType::crystalPolygonalPrismPrimitive);
+        std::shared_ptr<Object> newObject = std::make_shared<CrystalPolygonalPrismPrimitive>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::crystalPolygonalPrismPrimitive);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::ellipsoidPrimitive):
       {
-        iraspa_structure->setObject(createiRASPAObject<EllipsoidPrimitive>(iraspa_structure), ObjectType::ellipsoidPrimitive);
+        std::shared_ptr<Object> newObject = std::make_shared<EllipsoidPrimitive>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::ellipsoidPrimitive);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::cylinderPrimitive):
       {
-        iraspa_structure->setObject(createiRASPAObject<CylinderPrimitive>(iraspa_structure), ObjectType::cylinderPrimitive);
+        std::shared_ptr<Object> newObject = std::make_shared<CylinderPrimitive>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::cylinderPrimitive);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::polygonalPrismPrimitive):
       {
-        iraspa_structure->setObject(createiRASPAObject<PolygonalPrismPrimitive>(iraspa_structure), ObjectType::polygonalPrismPrimitive);
+        std::shared_ptr<Object> newObject = std::make_shared<PolygonalPrismPrimitive>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::polygonalPrismPrimitive);
         break;
       }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::gridVolume):
       {
-        iraspa_structure->setObject(createiRASPAObject<GridVolume>(iraspa_structure), ObjectType::gridVolume);
+        std::shared_ptr<Object> newObject = std::make_shared<GridVolume>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::gridVolume);
+        break;
+      }        
+      case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::RASPADensityVolume):
+      {
+        std::shared_ptr<Object> newObject = std::make_shared<RASPADensityVolume>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::RASPADensityVolume);
+        break;
+      }
+      case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::VTKDensityVolume):
+      {
+        std::shared_ptr<Object> newObject = std::make_shared<VTKDensityVolume>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::VTKDensityVolume);
+        break;
+      }
+      case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::VASPDensityVolume):
+      {
+        std::shared_ptr<Object> newObject = std::make_shared<VASPDensityVolume>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::VASPDensityVolume);
+        break;
+      }
+      case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::GaussianCubeVolume):
+      {
+        std::shared_ptr<Object> newObject = std::make_shared<GaussianCubeVolume>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::GaussianCubeVolume);
         break;
       }
       default:

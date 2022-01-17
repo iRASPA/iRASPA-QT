@@ -42,108 +42,24 @@ EllipsoidPrimitive::EllipsoidPrimitive(const EllipsoidPrimitive &ellipsoidPrimit
 {
 }
 
+EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<Object> object): Primitive(object)
+{
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    if(atomViewer->isFractional())
+    {
+      convertAsymmetricAtomsToCartesian();
+      expandSymmetry();
+    }
+    _atomsTreeController->setTags();
+    reComputeBoundingBox();
+  }
+}
+
 std::shared_ptr<Object> EllipsoidPrimitive::shallowClone()
 {
   return std::make_shared<EllipsoidPrimitive>(static_cast<const EllipsoidPrimitive&>(*this));
 }
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const Crystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  convertAsymmetricAtomsToCartesian();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const MolecularCrystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const Molecule> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const ProteinCrystal> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const Protein> structure): Primitive(structure)
-{
-  _cell = std::make_shared<SKCell>(*structure->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const CrystalCylinderPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const CrystalEllipsoidPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const CrystalPolygonalPrismPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  convertAsymmetricAtomsToFractional();
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const CylinderPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const EllipsoidPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const PolygonalPrismPrimitive> primitive): Primitive(primitive)
-{
-  _cell = std::make_shared<SKCell>(*primitive->cell());
-  expandSymmetry();
-  _atomsTreeController->setTags();
-  reComputeBoundingBox();
-}
-
-EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<const GridVolume> volume): Primitive(volume)
-{
-
-}
-
 
 
 // MARK: Rendering

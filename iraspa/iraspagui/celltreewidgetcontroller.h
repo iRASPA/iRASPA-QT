@@ -224,7 +224,7 @@ private:
   void setStructureLargestCavityDiameter(double value);
   std::optional<std::unordered_set<double>> structureRestrictingPoreLimitingDiameter();
   void setStructureRestrictingPoreLimitingDiameter(double value);
-  std::optional<std::unordered_set<double>> structureLargestCavityDiameterAlongAviablePath();
+  std::optional<std::unordered_set<double>> structureLargestCavityDiameterAlongAViablePath();
   void setStructureLargestCavityDiameterAlongAviablePath(double value);
 
   void reloadSymmetryProperties();
@@ -275,8 +275,8 @@ signals:
   void rendererReloadBoundingBoxData();
   void reloadAllViews();
   void redrawWithQuality(RKRenderQuality quality);
-  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures);
-  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures);
+  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures);
+  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures);
   void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
   void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };

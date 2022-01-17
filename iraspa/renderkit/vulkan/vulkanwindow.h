@@ -39,7 +39,7 @@ class VulkanWindow : public QWindow, public RKRenderViewController
     virtual void redraw() override final;
     virtual void redrawWithQuality(RKRenderQuality quality)  override final;
 
-    virtual void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)  override final;
+    virtual void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)  override final;
     virtual void setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)  override final;
     virtual void reloadData()  override final;
     virtual void reloadData(RKRenderQuality ambientOcclusionQuality)  override final;
@@ -52,10 +52,10 @@ class VulkanWindow : public QWindow, public RKRenderViewController
 
     virtual void reloadBackgroundImage()  override final;
 
-    virtual void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderStructure>> structures) override final;
-    virtual void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderStructure>> structures) override final;
-    virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderStructure>> structures)  override final;
-    virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderStructure>> structures)  override final;
+    virtual void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
+    virtual void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
+    virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)  override final;
+    virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)  override final;
 
     virtual void updateTransformUniforms()  override final;
     virtual void updateStructureUniforms()  override final;
@@ -81,7 +81,7 @@ class VulkanWindow : public QWindow, public RKRenderViewController
     LogReporting* _logReporter = nullptr;
     QStringList _logData{};
 
-    std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderStructure>>>{};
+    std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderObject>>>{};
 
     std::shared_ptr<RKCamera> _camera = std::make_shared<RKCamera>();
     TrackBall _trackBall = TrackBall();

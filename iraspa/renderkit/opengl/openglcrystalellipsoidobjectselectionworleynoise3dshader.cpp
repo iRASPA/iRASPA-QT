@@ -33,7 +33,7 @@ OpenGLCrystalEllipsoidObjectSelectionWorleyNoise3DShader::OpenGLCrystalEllipsoid
 }
 
 
-void OpenGLCrystalEllipsoidObjectSelectionWorleyNoise3DShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures)
+void OpenGLCrystalEllipsoidObjectSelectionWorleyNoise3DShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   deleteBuffers();
   _renderStructures = structures;

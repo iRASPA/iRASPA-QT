@@ -65,11 +65,11 @@ AtomTreeViewInvertSelectionCommand::AtomTreeViewInvertSelectionCommand(MainWindo
 
   if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_object))
   {
-    std::set<int> selectedBonds = bondViewer->bondSetController()->selectionIndexSet();
-    std::set<int> allBondIndices{};
+    BondSelectionIndexSet selectedBonds = bondViewer->bondSetController()->selectionIndexSet();
+    BondSelectionIndexSet allBondIndices{};
     std::generate_n( inserter( allBondIndices, allBondIndices.begin() ), selectedBonds.size(), [ i=0 ]() mutable { return i++; });
 
-    std::set<int> invertedBonds{};
+    BondSelectionIndexSet invertedBonds{};
     std::set_difference(allBondIndices.begin(), allBondIndices.end(), selectedBonds.begin(), selectedBonds.end(),
         std::inserter(invertedBonds, invertedBonds.end()));
 

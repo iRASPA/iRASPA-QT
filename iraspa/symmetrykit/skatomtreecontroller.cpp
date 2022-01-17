@@ -321,6 +321,8 @@ QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<SKAtomTreeCon
 {
   stream << controller->_versionNumber;
   stream << controller->_hiddenRootNode;
+  stream << controller->_selectionIndexPaths;
+
   return stream;
 }
 
@@ -334,5 +336,10 @@ QDataStream &operator>>(QDataStream& stream, std::shared_ptr<SKAtomTreeControlle
   }
 
   stream >> controller->_hiddenRootNode;
+
+  if(versionNumber >= 2) // introduced in version 2
+  {
+     stream >> controller->_selectionIndexPaths;
+  }
   return stream;
 }

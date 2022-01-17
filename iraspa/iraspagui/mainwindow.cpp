@@ -841,12 +841,20 @@ void MainWindow::importFile()
 
           ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
 
-          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), asSeparateProject, onlyAsymmetricUnit, asMolecule, ui->logPlainTextEdit);
-          std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
-          std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
+          try
+          {
+            std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), asSeparateProject, onlyAsymmetricUnit, asMolecule);
+            std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
+            std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 
-          ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
-          insertRow++;
+            ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
+            insertRow++;
+          }
+          catch(const char *error)
+          {
+           // ui->logPlainTextEdit
+          }
+
         }
       }
       else
@@ -857,11 +865,18 @@ void MainWindow::importFile()
 
         ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
 
-        std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), asSeparateProject, onlyAsymmetricUnit, asMolecule, ui->logPlainTextEdit);
-        std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
-        std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
+        try
+        {
+          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), asSeparateProject, onlyAsymmetricUnit, asMolecule);
+          std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
+          std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 
-        ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
+          ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
+        }
+        catch(const char *error)
+        {
+          // ui->logPlainTextEdit
+        }
       }
     }
   }

@@ -25,7 +25,7 @@
 
 BondListViewChangeSelectionCommand::BondListViewChangeSelectionCommand(std::weak_ptr<SKBondSetController> bondListController,
                                      MainWindow *main_window, std::shared_ptr<Object> object,
-                                     std::set<int> bondSelection, std::set<int> previousBondSelection, QUndoCommand *parent):
+                                     BondSelectionIndexSet bondSelection, BondSelectionIndexSet previousBondSelection, QUndoCommand *parent):
   _bondListController(bondListController),
   _main_window(main_window),
   _object(object),

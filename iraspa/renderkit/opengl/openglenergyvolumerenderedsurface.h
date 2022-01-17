@@ -48,8 +48,9 @@ class OpenGLEnergyVolumeRenderedSurface final: public OpenGLShader, public LogRe
 public:
   OpenGLEnergyVolumeRenderedSurface();
   void initializeOpenCL(bool isOpenCLInitialized, cl_context _clContext, cl_device_id _clDeviceId, cl_command_queue _clCommandQueue, QStringList &logData);
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> structures);
-  void paintGL(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
+  void paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
+  void paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
   void reloadData();
   void initializeTransferFunctionTexture();
   void initializeVertexArrayObject();
@@ -61,11 +62,11 @@ public:
   void setLogReportingWidget(LogReporting *logReporting)  override final;
   void deleteBuffers();
   void generateBuffers();
-  void invalidateIsosurface(std::vector<std::shared_ptr<RKRenderStructure>> structures);
+  void invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures);
 private:
   bool _isOpenCLInitialized;
   GLuint _program;
-  std::vector<std::vector<std::shared_ptr<RKRenderStructure>>> _renderStructures;
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
   LogReporting* _logReporter = nullptr;
 
@@ -100,7 +101,7 @@ private:
   cl_command_queue _clCommandQueue;
   SKOpenCLEnergyGridUnitCell _energyGridUnitCell;
 
-  QCache<RKRenderStructure*, std::vector<float4>> _cache;
+  QCache<RKRenderObject*, std::vector<float4>> _cache;
 
   inline unsigned modulo( int value, unsigned m) {
       int mod = value % (int)m;
@@ -120,5 +121,27 @@ private:
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;
 
-  static std::array<float4, 256> transferFunction;
+  static std::array<float4, 256> RASPA_PES_TransferFunction;
+  static std::array<float4, 256> CoolWarmTransferFunction;
+  static std::array<float4, 256> XrayTransferFunction;
+  static std::array<float4, 256> GrayTransferFunction;
+  static std::array<float4, 256> RainbowTransferFunction;
+  static std::array<float4, 256> TurboTransferFunction;
+  static std::array<float4, 256> GnuplotTransferFunction;
+  static std::array<float4, 256> SpectralTransferFunction;
+  static std::array<float4, 256> CoolTransferFunction;
+  static std::array<float4, 256> ViridisTransferFunction;
+  static std::array<float4, 256> PlasmaTransferFunction;
+  static std::array<float4, 256> InfernoTransferFunction;
+  static std::array<float4, 256> MagmaTransferFunction;
+  static std::array<float4, 256> CividisTransferFunction;
+  static std::array<float4, 256> SpringTransferFunction;
+  static std::array<float4, 256> SummerTransferFunction;
+  static std::array<float4, 256> AutumnTransferFunction;
+  static std::array<float4, 256> WinterTransferFunction;
+  static std::array<float4, 256> RedsTransferFunction;
+  static std::array<float4, 256> GreensTransferFunction;
+  static std::array<float4, 256> BluesTransferFunction;
+  static std::array<float4, 256> PurplesTransferFunction;
+  static std::array<float4, 256> OrangesTransferFunction;
 };

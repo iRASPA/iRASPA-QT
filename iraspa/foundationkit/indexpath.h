@@ -30,11 +30,11 @@ class IndexPath
 {
 public:
     IndexPath();
-    IndexPath(const size_t index);
+    IndexPath(const int64_t index);
     static IndexPath indexPath(QModelIndex index);
-    size_t& operator[] (const size_t index);
-    const size_t& operator[] (const size_t index) const;
-    inline size_t lastIndex() const {if (!_path.empty()) return _path.back(); return 0;}
+    int64_t& operator[] (const size_t index);
+    const int64_t& operator[] (const size_t index) const;
+    inline int64_t lastIndex() const {if (!_path.empty()) return _path.back(); return 0;}
     const IndexPath operator+(const IndexPath& rhs);
     void increaseValueAtLastIndex();
     void decreaseValueAtLastIndex();
@@ -47,8 +47,14 @@ public:
     bool operator>( const IndexPath& otherObject ) const;
     bool operator==( const IndexPath& otherObject ) const;
 private:
-    std::vector<size_t> _path;
+    std::vector<int64_t> _path;
     friend QDebug operator<<(QDebug debug, const IndexPath &c);
+
+    friend QDataStream &operator<<(QDataStream& stream, const std::vector<IndexPath>& val);
+    friend QDataStream &operator>>(QDataStream& stream, std::vector<IndexPath>& val);
+
+    friend QDataStream &operator<<(QDataStream &, const IndexPath &);
+    friend QDataStream &operator>>(QDataStream &, IndexPath &);
 };
 
 

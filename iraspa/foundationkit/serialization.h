@@ -24,10 +24,12 @@
 #include <iostream>
 #include <QDataStream>
 #include <QString>
+#include <QDebug>
 #include <vector>
 #include <map>
 #include <memory>
 #include <unordered_set>
+#include <set>
 #include <type_traits>
 
 #include <exception>
@@ -141,6 +143,29 @@ template<class T> QDataStream &operator>>(QDataStream& stream, std::unordered_se
   while(vecSize--)
   {
     stream >> tempVal;
+    val.insert(tempVal);
+  }
+  return stream;
+}
+
+template<class T> QDataStream &operator<<(QDataStream& stream, const std::set<T>& val)
+{
+  stream << static_cast<int32_t>(val.size());
+  for(const T& singleVal : val)
+    stream << singleVal;
+  return stream;
+}
+
+template<class T> QDataStream &operator>>(QDataStream& stream, std::set<T>& val)
+{
+  int32_t vecSize;
+  val.clear();
+  stream >> vecSize;
+  T tempVal;
+  while(vecSize--)
+  {
+    stream >> tempVal;
+    qDebug() << tempVal;
     val.insert(tempVal);
   }
   return stream;

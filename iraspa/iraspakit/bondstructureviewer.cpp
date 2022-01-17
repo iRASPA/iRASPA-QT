@@ -19,9 +19,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#include "cellviewer.h"
+#include "bondstructureviewer.h"
 
-CellViewer::~CellViewer()
+BondStructureViewer::~BondStructureViewer()
+{
+  // Compulsory virtual destructor definition
+}
+
+BondStructureEditor::~BondStructureEditor()
 {
   // Compulsory virtual destructor definition
 }
