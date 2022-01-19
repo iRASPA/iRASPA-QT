@@ -51,7 +51,10 @@ void OpenGLEnergyVolumeRenderedSurface::invalidateIsosurface(std::vector<std::sh
 {
   for(const std::shared_ptr<RKRenderObject> &structure : structures)
   {
-     _cache.remove(structure.get());
+    for(QCache<RKRenderObject*, std::vector<float4>> & cache: _caches)
+    {
+      cache.remove(structure.get());
+    }
   }
 }
 
@@ -320,19 +323,19 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
           {
             int3 dimensions = source->dimensions();
             int largestSize = std::max({dimensions.x,dimensions.y,dimensions.z});
-            int k = 1;
-            while(largestSize > pow(2,k))
+            int powerOfTwo = 1;
+            while(largestSize > pow(2,powerOfTwo))
             {
-              k += 1;
+              powerOfTwo += 1;
             }
-            int size = pow(2,k);
+            int size = pow(2,powerOfTwo);
 
             std::vector<float4> *textureData{};
 
-            if(_cache.contains(_renderStructures[i][j].get()))
+            if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
             {
                std::clock_t beginTime = clock();
-               textureData = _cache.object(_renderStructures[i][j].get());
+               textureData = _caches[powerOfTwo].object(_renderStructures[i][j].get());
                std::clock_t endTime = clock();
                double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
                _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
@@ -345,7 +348,7 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
               textureData = new std::vector<float4>();
               *textureData = std::move(gridData);
 
-              _cache.insert(_renderStructures[i][j].get(),textureData);
+              _caches[powerOfTwo].insert(_renderStructures[i][j].get(),textureData);
               std::clock_t endTime = clock();
               double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time computing grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");

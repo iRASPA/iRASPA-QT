@@ -36,7 +36,10 @@ OpenGLEnergySurface::OpenGLEnergySurface(): _isOpenCLInitialized(false)
 
 OpenGLEnergySurface::~OpenGLEnergySurface()
 {
-  _cache.clear();
+  for(QCache<RKRenderObject*, std::vector<cl_float>> & cache: _caches)
+  {
+    cache.clear();
+  }
 }
 
 void OpenGLEnergySurface::setLogReportingWidget(LogReporting *logReporting)
@@ -52,7 +55,10 @@ void OpenGLEnergySurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRen
 {
   for(const std::shared_ptr<RKRenderObject> &structure : structures)
   {
-     _cache.remove(structure.get());
+    for(QCache<RKRenderObject*, std::vector<cl_float>> & cache: _caches)
+    {
+      cache.remove(structure.get());
+    }
   }
 }
 
@@ -245,12 +251,21 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
             glVertexAttribPointer(_atomSurfaceVertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid *>(offsetof(RKVertex,position)));
             glVertexAttribPointer(_atomSurfaceVertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid *>(offsetof(RKVertex,normal)));
 
+            double isoValue = source->adsorptionSurfaceIsoValue();
+            int3 dimensions = source->dimensions();
+            int largestSize = std::max({dimensions.x,dimensions.y,dimensions.z});
+            int powerOfTwo = 1;
+            while(largestSize > pow(2,powerOfTwo))
+            {
+              powerOfTwo += 1;
+            }
+
             _surfaceNumberOfIndices[i][j] = 0;
             std::vector<cl_float> *energyGridPointer = nullptr;
-            if(_cache.contains(_renderStructures[i][j].get()))
+            if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
             {
                std::clock_t beginTime = clock();
-               energyGridPointer = _cache.object(_renderStructures[i][j].get());
+               energyGridPointer = _caches[powerOfTwo].object(_renderStructures[i][j].get());
                std::clock_t endTime = clock();
                double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
                _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
@@ -265,7 +280,7 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
               // move from stack to heap since the cache requires a pointer to the std::vector
               energyGridPointer = new std::vector<cl_float>();
               *energyGridPointer = std::move(gridData);
-              _cache.insert(_renderStructures[i][j].get(), energyGridPointer);
+              _caches[powerOfTwo].insert(_renderStructures[i][j].get(), energyGridPointer);
 
               std::clock_t endTime = clock();
               double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
@@ -275,8 +290,7 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
             if(energyGridPointer)
             {
               std::clock_t beginTime = clock();
-              double isoValue = source->adsorptionSurfaceIsoValue();
-              int3 dimensions = source->dimensions();
+
 
               try
               {

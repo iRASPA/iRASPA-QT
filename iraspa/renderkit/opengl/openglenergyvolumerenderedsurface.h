@@ -101,7 +101,7 @@ private:
   cl_command_queue _clCommandQueue;
   SKOpenCLEnergyGridUnitCell _energyGridUnitCell;
 
-  QCache<RKRenderObject*, std::vector<float4>> _cache;
+  std::array<QCache<RKRenderObject*, std::vector<float4>>,9> _caches;
 
   inline unsigned modulo( int value, unsigned m) {
       int mod = value % (int)m;

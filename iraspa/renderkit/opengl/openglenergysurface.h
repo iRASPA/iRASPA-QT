@@ -96,7 +96,7 @@ private:
   SKOpenCLFindMinmumEnergyGridUnitCell _findMinimumEnergyGridUnitCell;
   SKOpenCLVoidFractionUnitCell _voidFractionUnitCell;
 
-  QCache<RKRenderObject*, std::vector<cl_float>> _cache;
+  std::array<QCache<RKRenderObject*, std::vector<cl_float>>,9> _caches;
 
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;
