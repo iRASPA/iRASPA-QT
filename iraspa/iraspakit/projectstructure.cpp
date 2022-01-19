@@ -35,12 +35,12 @@ ProjectStructure::ProjectStructure(): _camera(std::make_shared<RKCamera>())
 }
 
 ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
-                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
+                                   bool proteinOnlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
 {
   QUrl url = QUrl::fromLocalFile(filename);
   if (url.isValid())
   {
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+    std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, proteinOnlyAsymmetricUnit, asMolecule);
     for(std::shared_ptr<Movie> movie : scene->movies())
     {
       movie->setParent(scene);
@@ -55,13 +55,13 @@ ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, For
 }
 
 ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
-                                   bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
+                                   SKParser::ImportType importType, bool onlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
 {
   foreach (const QUrl &url, fileURLs)
   {
     if (url.isValid())
     {
-      std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, asSeparateProject, onlyAsymmetricUnit, asMolecule);
+      std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, onlyAsymmetricUnit, asMolecule);
       for(std::shared_ptr<Movie> movie : scene->movies())
       {
         movie->setParent(scene);
@@ -69,6 +69,13 @@ ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets
       _sceneList->appendScene(scene);
     }
   }
+
+  if(importType == SKParser::ImportType::asMovieFrames)
+  {
+    std::vector<std::shared_ptr<iRASPAObject>> iraspaStructures = _sceneList->flattenedAllIRASPAStructures();
+    _sceneList = std::make_shared<SceneList>("NewMovie", iraspaStructures);
+  }
+
   _camera->resetForNewBoundingBox(this->renderBoundingBox());
 
   _backgroundImage = QImage(QSize(1024,1024), QImage::Format_ARGB32);

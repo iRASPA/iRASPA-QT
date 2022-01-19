@@ -46,7 +46,7 @@ public:
   void startParsing() override final;
 private:
   Scanner _scanner;
-  [[maybe_unused]] bool _onlyAsymmetricUnitCell;
+  [[maybe_unused]] bool _proteinOnlyAsymmetricUnitCell;
   [[maybe_unused]] bool _asMolecule;
   LogReporting *_log;
   [[maybe_unused]] QString::const_iterator _previousScanLocation;

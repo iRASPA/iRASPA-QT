@@ -750,6 +750,17 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
    _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(8, tr("256x256x256"));
    _appearanceAdsorptionSurfaceForm->qualityComboBox->insertItem(9, tr("512x512x512"));
 
+   QStandardItemModel *model = qobject_cast<QStandardItemModel *>( _appearanceAdsorptionSurfaceForm->qualityComboBox->model());
+   QStandardItem *itemEmpty = model->item(0);
+   itemEmpty->setFlags(itemEmpty->flags() & ~Qt::ItemIsEnabled);
+   QStandardItem *item2x2x2 = model->item(1);
+   item2x2x2->setFlags(item2x2x2->flags() & ~Qt::ItemIsEnabled);
+   QStandardItem *item4x4x4 = model->item(2);
+   item4x4x4->setFlags(item4x4x4->flags() & ~Qt::ItemIsEnabled);
+   QStandardItem *item8x8x8 = model->item(3);
+   item8x8x8->setFlags(item8x8x8->flags() & ~Qt::ItemIsEnabled);
+
+
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setMinimum(0.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setMaximum(10.0);
   _appearanceAdsorptionSurfaceForm->adsorptionSurfaceHueDoubleSpinBox->setDecimals(5);
@@ -9656,7 +9667,9 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity(double value)
       }
     }
     reloadAdsorptionSurfaceProperties();
-    emit rendererReloadData();
+    emit rendererReloadStructureUniforms();
+    emit redrawRenderer();
+    //emit rendererReloadData();
 
     _mainWindow->documentWasModified();
   }
@@ -9697,7 +9710,8 @@ void AppearanceTreeWidgetController::setAdsorptionTransparencyThreshold(double v
       }
     }
     reloadAdsorptionSurfaceProperties();
-    emit rendererReloadData();
+    emit rendererReloadStructureUniforms();
+    emit redrawRenderer();
 
     _mainWindow->documentWasModified();
   }

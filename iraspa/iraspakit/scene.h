@@ -32,6 +32,7 @@
 #include <sstream>
 #include <fstream>
 #include <simulationkit.h>
+#include <symmetrykit.h>
 #include "movie.h"
 #include "iraspakitprotocols.h"
 
@@ -43,7 +44,7 @@ public:
   Scene();
   Scene(QString displayName);
   static std::shared_ptr<Scene> create(std::shared_ptr<Movie> movie);
-  Scene(const QUrl url, const SKColorSets& colorSets, ForceFieldSets &forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule);
+  Scene(const QUrl url, const SKColorSets& colorSets, ForceFieldSets &forcefieldSets, bool proteinOnlyAsymmetricUnit, bool asMolecule);
   const std::vector<std::shared_ptr<Movie>> &movies() const {return _movies;}
   std::optional<int> findChildIndex(std::shared_ptr<Movie> movie);
   bool removeChild(size_t row);

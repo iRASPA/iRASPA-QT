@@ -2240,6 +2240,16 @@ void OpenGLWindow::reloadBackgroundImage()
   }
 }
 
+void OpenGLWindow::reloadStructureUniforms()
+{
+    makeCurrent();
+    if(_dataSource)
+    {
+      updateStructureUniforms();
+      updateIsosurfaceUniforms();
+    }
+}
+
 void OpenGLWindow::updateVertexArrays()
 {
 

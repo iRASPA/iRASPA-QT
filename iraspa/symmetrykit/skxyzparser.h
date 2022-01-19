@@ -42,7 +42,7 @@ public:
   void startParsing() override final;
 private:
   Scanner _scanner;
-  [[maybe_unused]] bool _onlyAsymmetricUnitCell;
+  [[maybe_unused]] bool _proteinOnlyAsymmetricUnitCell;
   bool _asMolecule;
   QString::const_iterator _previousScanLocation;
   std::optional<int> _spaceGroupHallNumber;

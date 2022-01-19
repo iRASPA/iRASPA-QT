@@ -36,11 +36,12 @@
 #include "skasymmetricatom.h"
 #include "skelement.h"
 
-SKGaussianCubeParser::SKGaussianCubeParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
-  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell),_asMolecule(asMolecule), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
+SKGaussianCubeParser::SKGaussianCubeParser(QUrl url, bool proteinOnlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+  _scanner(url, charactersToBeSkipped), _proteinOnlyAsymmetricUnitCell(proteinOnlyAsymmetricUnitCell),_asMolecule(asMolecule), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
 {
   _frame->kind = SKStructure::Kind::GaussianCubeVolume;
   _frame->displayName = _scanner.displayName();
+  _frame->drawUnitCell = true;
 }
 
 void SKGaussianCubeParser::startParsing()
@@ -53,6 +54,7 @@ void SKGaussianCubeParser::startParsing()
   QString scannedLine;
   QStringList termsScannedLined{};
 
+  double3 conversionFactor = double3(1.0,1.0,1.0);
   double bohrToAngstrom = 0.529177249;
 
   // skip first two lines
@@ -95,19 +97,21 @@ qDebug() << "CHECK2" << scannedLine;
   if(termsScannedLined.size()<3) {throw "Missing first lattice vector";}
 
   succes = false;
-  dimensions.x = termsScannedLined[0].toInt(&succes);
+  double dx = termsScannedLined[0].toInt(&succes);
   if(!succes) {throw "Could not read x-dimension";}
+  dimensions.x = fabs(dx);
+  conversionFactor.x = dx < 0.0 ? 1.0 : bohrToAngstrom;
 
   succes = false;
-  unitCell.ax = bohrToAngstrom * dimensions.x * termsScannedLined[1].toDouble(&succes);
+  unitCell.ax = conversionFactor.x * dimensions.x * termsScannedLined[1].toDouble(&succes);
   if(!succes) {throw "Count not parse the x-coordinate of first lattice vector";}
 
   succes = false;
-  unitCell.ay = bohrToAngstrom * dimensions.x * termsScannedLined[2].toDouble(&succes);
+  unitCell.ay = conversionFactor.x * dimensions.x * termsScannedLined[2].toDouble(&succes);
   if(!succes) {throw "Count not parse the y-coordinate of first lattice vector";}
 
   succes = false;
-  unitCell.az = bohrToAngstrom * dimensions.x * termsScannedLined[3].toDouble(&succes);
+  unitCell.az = conversionFactor.x * dimensions.x * termsScannedLined[3].toDouble(&succes);
   if(!succes) {throw "Count not parse the z-coordinate of first lattice vector";}
 
   // read second lattice vector
@@ -122,19 +126,21 @@ qDebug() << "CHECK2" << scannedLine;
   if(termsScannedLined.size()<3) {throw "Missing second lattice vector";}
 
   succes = false;
-  dimensions.y = termsScannedLined[0].toInt(&succes);
+  double dy = termsScannedLined[0].toInt(&succes);
   if(!succes) {throw "Could not read x-dimension";}
+  dimensions.y = fabs(dy);
+  conversionFactor.y = dy < 0.0 ? 1.0 : bohrToAngstrom;
 
   succes = false;
-  unitCell.bx = bohrToAngstrom * dimensions.y * termsScannedLined[1].toDouble(&succes);
+  unitCell.bx = conversionFactor.y * dimensions.y * termsScannedLined[1].toDouble(&succes);
   if(!succes) {throw "Count not parse the x-coordinate of first lattice vector";}
 
   succes = false;
-  unitCell.by = bohrToAngstrom * dimensions.y * termsScannedLined[2].toDouble(&succes);
+  unitCell.by = conversionFactor.y * dimensions.y * termsScannedLined[2].toDouble(&succes);
   if(!succes) {throw "Count not parse the y-coordinate of first lattice vector";}
 
   succes = false;
-  unitCell.bz = bohrToAngstrom * dimensions.y * termsScannedLined[3].toDouble(&succes);
+  unitCell.bz = conversionFactor.y * dimensions.y * termsScannedLined[3].toDouble(&succes);
   if(!succes) {throw "Count not parse the z-coordinate of first lattice vector";}
 
   // read third lattice vector
@@ -149,19 +155,21 @@ qDebug() << "CHECK2" << scannedLine;
   if(termsScannedLined.size()<3) {throw "Missing third lattice vector";}
 
   succes = false;
-  dimensions.z = termsScannedLined[0].toInt(&succes);
+  double dz = termsScannedLined[0].toInt(&succes);
   if(!succes) {throw "Could not read x-dimension";}
+  dimensions.z = fabs(dz);
+  conversionFactor.z = dz < 0.0 ? 1.0 : bohrToAngstrom;
 
   succes = false;
-  unitCell.cx = bohrToAngstrom * dimensions.z * termsScannedLined[1].toDouble(&succes);
+  unitCell.cx = conversionFactor.z * dimensions.z * termsScannedLined[1].toDouble(&succes);
   if(!succes) {throw "Count not parse the x-coordinate of first lattice vector";}
 
   succes = false;
-  unitCell.cy = bohrToAngstrom * dimensions.z * termsScannedLined[2].toDouble(&succes);
+  unitCell.cy = conversionFactor.z * dimensions.z * termsScannedLined[2].toDouble(&succes);
   if(!succes) {throw "Count not parse the y-coordinate of first lattice vector";}
 
   succes = false;
-  unitCell.cz = bohrToAngstrom * dimensions.z * termsScannedLined[3].toDouble(&succes);
+  unitCell.cz = conversionFactor.z * dimensions.z * termsScannedLined[3].toDouble(&succes);
   if(!succes) {throw "Count not parse the z-coordinate of first lattice vector";}
 
   // Create the unit cell
@@ -169,7 +177,7 @@ qDebug() << "CHECK2" << scannedLine;
   inverseUnitCell = (unitCell).inverse();
 
   // Read all the atoms
-  for(int i=0; i<numberOfAtoms;i++)
+  for(int i=0; i<abs(numberOfAtoms);i++)
   {
     _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
     #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
@@ -188,45 +196,45 @@ qDebug() << "CHECK2" << scannedLine;
     atom->setElementIdentifier(atomicNumber);
     atom->setDisplayName(PredefinedElements::predefinedElements[atomicNumber]._chemicalSymbol);
 
-
     double3 position;
     succes = false;
-    position.x = bohrToAngstrom * termsScannedLined[2].toDouble(&succes);
-    position.y = bohrToAngstrom * termsScannedLined[3].toDouble(&succes);
-    position.z = bohrToAngstrom * termsScannedLined[4].toDouble(&succes);
+    position.x = termsScannedLined[2].toDouble(&succes);
+    position.y = termsScannedLined[3].toDouble(&succes);
+    position.z = termsScannedLined[4].toDouble(&succes);
 
-    atom->setPosition(inverseUnitCell * position);
+    atom->setPosition(inverseUnitCell * conversionFactor * (position - origin));
 
     _frame->atoms.push_back(atom);
   }
 
-
+  // read orbital line
+  if(numberOfAtoms<0)
+  {
+    _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
+  }
 
   int numberOfElements = dimensions.x * dimensions.y * dimensions.z;
-  qDebug() << "numberOfElements: " << numberOfElements;
   std::vector<float> dataPoints;
   dataPoints.resize(numberOfElements);
   float maximumValue = std::numeric_limits<float>::lowest();
   float minimumValue = std::numeric_limits<float>::max();
   double sum=0.0;
   double sumSquared=0.0;
-  int index=0;
-  for(int z=0;z<dimensions.z;z++) // Z is the outer loop
+  for(int x=0;x<dimensions.x;x++) // X is the outer loop
   {
     for(int y=0;y<dimensions.y;y++) // Y is the middle loop
     {
-      for(int x=0;x<dimensions.x;x++) // X is the inner loop
+      for(int z=0;z<dimensions.z;z++) // Z is the inner loop
       {
         double value;
         _scanner.scanDouble(value);
+        int index = x+dimensions.x*y+z*dimensions.x*dimensions.y;
         dataPoints[index] = value;
 
         if(value>maximumValue) maximumValue = value;
         if(value<minimumValue) minimumValue = value;
         sum += value;
         sumSquared += value * value;
-
-        index++;
       }
     }
   }

@@ -27,8 +27,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
   _origin = frame->origin;
   _cell = frame->cell;
 
-  std::vector<float4> dataGrid(_dimensions.x*_dimensions.y*_dimensions.z);
-
+  std::vector<float> dataGrid(_dimensions.x*_dimensions.y*_dimensions.z);
   switch(frame->dataType)
   {
   case SKStructure::DataType::Uint8:
@@ -36,7 +35,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<uint8_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i])/float(std::numeric_limits<uint8_t>::max()),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i])/float(std::numeric_limits<uint8_t>::max()));
       }
     }
     break;
@@ -45,7 +44,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<int8_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i]-std::numeric_limits<int8_t>::lowest())/float(std::numeric_limits<int8_t>::max()),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i]-std::numeric_limits<int8_t>::lowest())/float(std::numeric_limits<int8_t>::max()));
       }
     }
     break;
@@ -54,7 +53,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<uint16_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i])/float(std::numeric_limits<uint16_t>::max()),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i])/float(std::numeric_limits<uint16_t>::max()));
       }
     }
     break;
@@ -63,7 +62,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<int16_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i]-std::numeric_limits<int16_t>::lowest())/float(std::numeric_limits<int16_t>::max()),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i]-std::numeric_limits<int16_t>::lowest())/float(std::numeric_limits<int16_t>::max()));
       }
     }
     break;
@@ -72,7 +71,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<uint32_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i])/float(std::numeric_limits<uint32_t>::max()),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i])/float(std::numeric_limits<uint32_t>::max()));
       }
     }
     break;
@@ -81,7 +80,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<int32_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i]-std::numeric_limits<int32_t>::lowest())/float(std::numeric_limits<int32_t>::max()),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i]-std::numeric_limits<int32_t>::lowest())/float(std::numeric_limits<int32_t>::max()));
       }
     }
     break;
@@ -90,7 +89,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<uint64_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i])/float(std::numeric_limits<uint16_t>::max()),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i])/float(std::numeric_limits<uint16_t>::max()));
       }
     }
     break;
@@ -99,7 +98,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<int64_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i]-std::numeric_limits<int64_t>::lowest())/float(std::numeric_limits<int64_t>::max()),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i]-std::numeric_limits<int64_t>::lowest())/float(std::numeric_limits<int64_t>::max()));
       }
     }
     break;
@@ -108,7 +107,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<float*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i]),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i]));
       }
     }
     break;
@@ -117,50 +116,45 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<double*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float4(float(p[i]),0.0,0.0,0.0);
+        dataGrid[i] = float(float(p[i]));
       }
     }
     break;
   }
 
-  for(int z=0;z<_dimensions.z;z++)
+  int largestSize = std::max({_dimensions.x,_dimensions.y,_dimensions.z});
+  int k = 1;
+  while(largestSize > pow(2,k))
   {
-    for(int y=0;y<_dimensions.y;y++)
-    {
-      for(int x=0;x<_dimensions.x;x++)
-      {
-        float value = Images(dataGrid,x,y,z);
+    k += 1;
+  }
+  _encompassingPowerOfTwoCubicGridSize = k;
+  _adsorptionVolumeStepLength = 0.5 / pow(2,k);
 
-        // x
-        int xi = (int)(x + 0.5f);
-        float xf = x + 0.5f - xi;
-        float xd0 = Images(dataGrid,x-1,y,z);
-        float xd1 = Images(dataGrid,x,y,z);
-        float xd2 = Images(dataGrid,x+1,y,z);
-        float gx = (xd1 - xd0) * (1.0f - xf) + (xd2 - xd1) * xf; // lerp
-
-        // y
-        int yi = (int)(y + 0.5f);
-        float yf = y + 0.5f - yi;
-        float yd0 = Images(dataGrid,x,y-1,z);
-        float yd1 = Images(dataGrid,x,y,z);
-        float yd2 = Images(dataGrid,x,y+1,z);
-        float gy = (yd1 - yd0) * (1.0f - yf) + (yd2 - yd1) * yf; // lerp
-
-        // z
-        int zi = (int)(z + 0.5f);
-        float zf = z + 0.5f - zi;
-        float zd0 =  Images(dataGrid,x,y,z-1);
-        float zd1 =  Images(dataGrid,x,y,z);
-        float zd2 =  Images(dataGrid,x,y,z+1);
-        float gz =  (zd1 - zd0) * (1.0f - zf) + (zd2 - zd1) * zf; // lerp
-
-        dataGrid[x+y*_dimensions.y+z*_dimensions.x*_dimensions.y] = float4(value, gx, gy, gz);
-      }
-    }
+  double maximumValue = std::numeric_limits<float>::lowest();
+  double minimumValue = std::numeric_limits<float>::max();
+  double sum=0.0;
+  double sumSquared=0.0;
+  size_t numberOfElements = _dimensions.x * _dimensions.y * _dimensions.z;
+  for(size_t i=0;i<numberOfElements;i++)
+  {
+    float dataPoint = dataGrid[i];
+    if(dataPoint>maximumValue) maximumValue = dataPoint;
+    if(dataPoint<minimumValue) minimumValue = dataPoint;
+    sum += dataPoint;
+    sumSquared += dataPoint * dataPoint;
   }
 
-  _data =  QByteArray(reinterpret_cast<const char*>(dataGrid.data()), dataGrid.size()*sizeof(float4));
+  _average = sum / (numberOfElements);
+  _variance = sumSquared / (numberOfElements - 1);
+
+  _range = std::pair<double,double>(minimumValue, maximumValue);
+  _adsorptionSurfaceIsoValue = _average;
+  _adsorptionSurfaceRenderingMethod = RKEnergySurfaceType::isoSurface;
+  _adsorptionVolumeTransferFunction = RKPredefinedVolumeRenderingTransferFunction::CoolWarmDiverging;
+  _drawAdsorptionSurface = true;
+
+  _data = QByteArray(reinterpret_cast<const char*>(dataGrid.data()), dataGrid.size()*sizeof(float));
 }
 
 

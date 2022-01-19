@@ -41,6 +41,7 @@ class SceneList: public std::enable_shared_from_this<SceneList>, public Displaya
 {
 public:
   SceneList();
+  SceneList(QString displayName, std::vector<std::shared_ptr<iRASPAObject>> objects);
   void appendScene(std::shared_ptr<Scene> scene);
   const std::vector<std::shared_ptr<Scene>> &scenes() const {return _scenes;}
 

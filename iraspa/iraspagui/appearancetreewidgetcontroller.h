@@ -532,6 +532,7 @@ private slots:
   void expandAnnotationItem();
 signals:
   void rendererReloadData();
+  void rendererReloadStructureUniforms();
   void redrawRenderer();
   void redrawWithQuality(RKRenderQuality quality);
 

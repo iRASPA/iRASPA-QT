@@ -818,6 +818,15 @@ void RenderStackedWidget::reloadData()
   redraw();
 }
 
+void RenderStackedWidget::reloadStructureUniforms()
+{
+  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+  {
+    widget->reloadStructureUniforms();
+  }
+  redraw();
+}
+
 void RenderStackedWidget::reloadBoundingBoxData()
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))

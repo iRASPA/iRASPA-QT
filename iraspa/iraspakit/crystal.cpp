@@ -58,6 +58,7 @@ Crystal::Crystal(std::shared_ptr<SKStructure> frame): Structure(frame)
   {
     this->_spaceGroup = *(frame->spaceGroupHallNumber);
   }
+  this->_drawUnitCell = frame->drawUnitCell;
   expandSymmetry();
   _atomsTreeController->setTags();
 }

@@ -36,21 +36,43 @@ ImportFileDialog::ImportFileDialog(QWidget *parent) : QFileDialog(parent)
                               "VASP Files (POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)"}));
   selectNameFilter(QString("all supported files (*.cif *.pdb *.xyz *.vtk POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)"));
 
-  checkboxSeperateProjects = new QCheckBox(this);
-  checkboxSeperateProjects->setText("As seperate projects");
-  layout()->addWidget(checkboxSeperateProjects);
-
-
   QWidget* frame = new QWidget(this);
   QHBoxLayout* horizontalLayout = new QHBoxLayout();
   frame->setLayout(horizontalLayout);
-  checkboxOnlyAsymmetricUnitCell = new QCheckBox(frame);
-  checkboxOnlyAsymmetricUnitCell->setText("Only asymmetric unit");
-  horizontalLayout->addWidget(checkboxOnlyAsymmetricUnitCell);
+
+  QWidget* verticalframe = new QWidget(this);
+  QVBoxLayout* verticalLayout = new QVBoxLayout();
+  verticalframe->setLayout(verticalLayout);
+
+  radioButtonAsProjects = new QRadioButton(this);
+  radioButtonAsProjects->setText("As Seperate Projects");
+  verticalLayout->addWidget(radioButtonAsProjects);
+  radioButtonAsMovies = new QRadioButton(this);
+  radioButtonAsMovies->setChecked(true);
+  radioButtonAsMovies->setText("As Single Project");
+  verticalLayout->addWidget(radioButtonAsMovies);
+  radioButtonAsFrames = new QRadioButton(this);
+  radioButtonAsFrames->setText("As Movie Frames");
+  verticalLayout->addWidget(radioButtonAsFrames);
+
+  horizontalLayout->addWidget(verticalframe);
+
+  horizontalLayout->addSpacing(20);
+
+  QWidget* verticalframe2 = new QWidget(this);
+  QVBoxLayout* verticalLayout2 = new QVBoxLayout();
+  verticalframe2->setLayout(verticalLayout2);
+
+  checkboxProteinsOnlyAsymmetricUnitCell = new QCheckBox(frame);
+  checkboxProteinsOnlyAsymmetricUnitCell->setCheckState(Qt::CheckState::Checked);
+  checkboxProteinsOnlyAsymmetricUnitCell->setText("For Proteins Only Asymmetric-Unit");
+  verticalLayout2->addWidget(checkboxProteinsOnlyAsymmetricUnitCell);
 
   checkboxImportAsMolecule = new QCheckBox(frame);
-  checkboxImportAsMolecule->setText("As molecule");
-  horizontalLayout->addWidget(checkboxImportAsMolecule);
+  checkboxImportAsMolecule->setText("As Molecule");
+  verticalLayout2->addWidget(checkboxImportAsMolecule);
+
+  horizontalLayout->addWidget(verticalframe2);
 
   layout()->addWidget(frame);
 }

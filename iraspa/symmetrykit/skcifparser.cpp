@@ -35,8 +35,8 @@
 #include <qmath.h>
 
 
-SKCIFParser::SKCIFParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
-  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule)
+SKCIFParser::SKCIFParser(QUrl url, bool proteinOnlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+  _scanner(url, charactersToBeSkipped), _proteinOnlyAsymmetricUnitCell(proteinOnlyAsymmetricUnitCell), _asMolecule(asMolecule)
 {
 
 }
@@ -99,6 +99,7 @@ void SKCIFParser::startParsing()
   structure->kind = SKStructure::Kind::crystal;
   structure->atoms = _atoms;
   structure->cell = std::make_shared<SKCell>(_a, _b, _c, _alpha * M_PI/180.0, _beta*M_PI/180.0, _gamma*M_PI/180.0);
+  structure->drawUnitCell = true;
   structure->spaceGroupHallNumber = _spaceGroupHallNumber;
   movieFrames.push_back(structure);
   _movies.push_back(movieFrames);
@@ -151,11 +152,6 @@ void SKCIFParser::parseCell(QString& string)
 
 void SKCIFParser::parseSymmetry(QString& string)
 {
-  if(_onlyAsymmetricUnitCell)
-  {
-    return;
-  }
-
   if(string == QString("_symmetry_cell_settings").toLower())
   {
     return;

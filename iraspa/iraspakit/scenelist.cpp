@@ -29,6 +29,13 @@ SceneList::SceneList()
 
 }
 
+SceneList::SceneList(QString displayName, std::vector<std::shared_ptr<iRASPAObject>> objects)
+{
+  _displayName = displayName;
+  const std::shared_ptr<Movie> movie = Movie::create(displayName, objects);
+  _scenes = {Scene::create(movie)};
+}
+
 void SceneList::appendScene(std::shared_ptr<Scene> scene)
 {
   _scenes.push_back(scene);

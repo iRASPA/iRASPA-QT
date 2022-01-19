@@ -45,12 +45,15 @@ public:
   void startParsing() override final;
 private:
   Scanner _scanner;
-  bool _onlyAsymmetricUnitCell;
+  bool _proteinOnlyAsymmetricUnitCell;
   bool _asMolecule;
   QString::const_iterator _previousScanLocation;
 
   int _numberOfAtoms = 0;
   int _numberOfAminoAcidAtoms = 0;
+  int _numberOfSolventAtoms = 0;
+  bool _proteinDetected = false;
+  bool _periodic = false;
   std::shared_ptr<SKStructure> _frame;
   std::optional<SKCell> _cell;
   int _spaceGroupHallNumber;

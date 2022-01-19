@@ -32,8 +32,8 @@
 #include "skasymmetricatom.h"
 #include "skelement.h"
 
-SKPDBParser::SKPDBParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
-  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
+SKPDBParser::SKPDBParser(QUrl url, bool proteinOnlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+  _scanner(url, charactersToBeSkipped), _proteinOnlyAsymmetricUnitCell(proteinOnlyAsymmetricUnitCell), _asMolecule(asMolecule), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
 {
   _frame->kind = SKStructure::Kind::molecule;
   _frame->displayName = _scanner.displayName();
@@ -49,31 +49,67 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
 
   if (currentFrame >= _movies[currentMovie].size())
   {
+     _frame->cell = std::make_shared<SKCell>(*_cell);
+
     if(double(_numberOfAminoAcidAtoms)/double(_numberOfAtoms) > 0.5)
     {
-      _frame->kind = SKStructure::Kind::protein;
-      _frame->spaceGroupHallNumber = 1;
-    }
-    if(_cell && !_asMolecule)
-    {
-      _frame->cell = std::make_shared<SKCell>(*_cell);
-      _frame->spaceGroupHallNumber = _spaceGroupHallNumber;
-      if(double(_numberOfAminoAcidAtoms)/double(_numberOfAtoms) > 0.5)
+      _proteinDetected = true;  // we have detected a protein, later solvent atoms are solvating the protein
+
+      if(_periodic && !_asMolecule)
       {
         _frame->kind = SKStructure::Kind::proteinCrystal;
+        _frame->drawUnitCell = !_proteinOnlyAsymmetricUnitCell;
+        _frame->spaceGroupHallNumber = _proteinOnlyAsymmetricUnitCell ? 1 : _spaceGroupHallNumber;
       }
       else
       {
-        _frame->kind = SKStructure::Kind::molecularCrystal;
+        _frame->kind = SKStructure::Kind::protein;
+        _frame->drawUnitCell = false;
+        _frame->spaceGroupHallNumber = 1;
+      }
+    }
+    else
+    {
+      if(_proteinDetected && double(_numberOfSolventAtoms)/double(_numberOfAtoms) > 0.9)
+      {
+        if(_periodic && !_asMolecule)
+        {
+          _frame->kind = SKStructure::Kind::proteinCrystal;
+          _frame->drawUnitCell = !_proteinOnlyAsymmetricUnitCell;
+          _frame->spaceGroupHallNumber = _proteinOnlyAsymmetricUnitCell ? 1 : _spaceGroupHallNumber;
+        }
+        else
+        {
+          _frame->kind = SKStructure::Kind::protein;
+          _frame->drawUnitCell = false;
+          _frame->spaceGroupHallNumber = 1;
+        }
+      }
+      else
+      {
+        if(_periodic && !_asMolecule)
+        {
+          _frame->kind = SKStructure::Kind::molecularCrystal;
+          _frame->drawUnitCell = true;
+          _frame->spaceGroupHallNumber = _spaceGroupHallNumber;
+        }
+        else
+        {
+          _frame->kind = SKStructure::Kind::molecule;
+          _frame->drawUnitCell = false;
+          _frame->spaceGroupHallNumber = 1;
+        }
       }
     }
 
     _movies[currentMovie].push_back(_frame);
 
     _frame = std::make_shared<SKStructure>();
+    _frame->atoms.clear();
     _frame->displayName = _scanner.displayName();
     _frame->kind = SKStructure::Kind::molecule;
     _numberOfAminoAcidAtoms=0;
+    _numberOfSolventAtoms=0;
     _numberOfAtoms=0;
   }
 }
@@ -104,13 +140,6 @@ void SKPDBParser::startParsing()
       #else
         QStringView shortKeyword(&scannedLine[0], 3);
       #endif
-
-      if(shortKeyword == QString("END"))
-      {
-        addFrameToStructure(currentMovie,currentFrame);
-        currentFrame += 1;
-        continue;
-      }
 
       if(shortKeyword == QString("TER"))
       {
@@ -175,7 +204,13 @@ void SKPDBParser::startParsing()
         }
         continue;
       }
-
+      if(keyword == QString("ENDMDL"))
+      {
+        // also frames with zero atoms are allowed in PDB movies from RASPA. This happens in grand-canonical ensembles at low fugacities.
+        addFrameToStructure(currentMovie,currentFrame);
+        currentFrame += 1;
+        continue;
+      }
       if(keyword == QString("SCALE1"))
       {
         continue;
@@ -275,12 +310,10 @@ void SKPDBParser::startParsing()
           _alpha = alphaAngleString.toDouble(&succes);
           _beta = betaAngleString.toDouble(&succes);
           _gamma = gammaAngleString.toDouble(&succes);
+          _periodic = true;
         }
         _cell = SKCell(_a, _b, _c, _alpha * M_PI/180.0, _beta*M_PI/180.0, _gamma*M_PI/180.0);
-        if(!_asMolecule)
-        {
-          _frame->kind = SKStructure::Kind::molecularCrystal;
-        }
+
         if(scannedLine.size()>=66)
         {
           #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -289,11 +322,7 @@ void SKPDBParser::startParsing()
             QStringView spaceGroupString(&scannedLine[55], 11);
           #endif
 
-          if(_onlyAsymmetricUnitCell)
-          {
-            _spaceGroupHallNumber = 1;
-          }
-          else if(std::optional<int> spaceGroupHallNumber = SKSpaceGroup::HallNumberFromHMString(spaceGroupString.toString().simplified()))
+          if(std::optional<int> spaceGroupHallNumber = SKSpaceGroup::HallNumberFromHMString(spaceGroupString.toString().simplified()))
           {
             _spaceGroupHallNumber = *spaceGroupHallNumber;
           }
@@ -343,6 +372,10 @@ void SKPDBParser::startParsing()
          //  78 - 79   2       LString(2)      Charge on the atom.
 
         _numberOfAtoms += 1;
+        if(keyword == QString("HETATM"))
+        {
+          _numberOfSolventAtoms++;
+        };
         std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
 
         #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -492,5 +525,8 @@ void SKPDBParser::startParsing()
   }
 
   // add current frame in case last TER, ENDMDL, or END is missing
-  addFrameToStructure(currentMovie,currentFrame);
+  if(_frame->atoms.size()>0)
+  {
+    addFrameToStructure(currentMovie,currentFrame);
+  }
 }

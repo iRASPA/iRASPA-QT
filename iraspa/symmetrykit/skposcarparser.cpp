@@ -35,11 +35,12 @@
 #include "skasymmetricatom.h"
 #include "skelement.h"
 
-SKPOSCARParser::SKPOSCARParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
-  _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell),_asMolecule(asMolecule), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
+SKPOSCARParser::SKPOSCARParser(QUrl url, bool proteinOnlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+  _scanner(url, charactersToBeSkipped), _proteinOnlyAsymmetricUnitCell(proteinOnlyAsymmetricUnitCell),_asMolecule(asMolecule), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
 {
   _frame->kind = SKStructure::Kind::crystal;
   _frame->displayName = _scanner.displayName();
+  _frame->drawUnitCell = true;
 }
 
 void SKPOSCARParser::startParsing()

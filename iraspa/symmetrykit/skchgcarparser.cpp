@@ -41,6 +41,7 @@ SKCHGCARParser::SKCHGCARParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMol
 {
   _frame->kind = SKStructure::Kind::VASPDensityVolume;
   _frame->displayName = _scanner.displayName();
+  _frame->drawUnitCell = true;
 }
 
 

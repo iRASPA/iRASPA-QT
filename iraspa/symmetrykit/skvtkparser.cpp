@@ -29,6 +29,7 @@
 SKVTKParser::SKVTKParser(QUrl url, QDataStream::ByteOrder byteorder): _url(url), _byteOrder(byteorder), _frame(std::make_shared<SKStructure>())
 {
   _frame->kind = SKStructure::Kind::VTKDensityVolume;
+  _frame->drawUnitCell = true;
 }
 
 template <typename T> static QByteArray readData(QTextStream &stream, size_t numberOfElements)
@@ -285,7 +286,7 @@ void SKVTKParser::startParsing()
       _frame->dataType = _dataType;
       _movies.push_back({_frame});
     }
-    throw "No VTK file found";
+
   }
 }
 

@@ -43,7 +43,7 @@ public:
   std::optional<int> spaceGroupHallNumber() {return _spaceGroupHallNumber;}
 private:
   Scanner _scanner;
-  bool _onlyAsymmetricUnitCell;
+  bool _proteinOnlyAsymmetricUnitCell;
   bool _asMolecule;
   QString::const_iterator _previousScanLocation;
   std::vector<QString> _keys;

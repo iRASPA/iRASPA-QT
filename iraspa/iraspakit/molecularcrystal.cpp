@@ -49,6 +49,7 @@ MolecularCrystal::MolecularCrystal(std::shared_ptr<SKStructure> frame): Structur
   {
     this->_spaceGroup = *(frame->spaceGroupHallNumber);
   }
+
   expandSymmetry();
   _atomsTreeController->setTags();
 }

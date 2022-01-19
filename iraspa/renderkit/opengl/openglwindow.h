@@ -114,6 +114,7 @@ public:
   void reloadBoundingBoxData() override final;
   void reloadGlobalAxesData() override final;
   void reloadBackgroundImage() override final;
+  void reloadStructureUniforms() override final;
 
   void setLogReportingWidget(LogReporting *logReporting)  override final;
 

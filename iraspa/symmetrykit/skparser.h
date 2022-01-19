@@ -33,6 +33,12 @@
 class SKParser
 {
 public:
+  enum class ImportType: int64_t
+  {
+    asSeperateProjects = 0,
+    asSingleProject = 1,
+    asMovieFrames = 2
+  };
   SKParser();
   virtual ~SKParser() = 0;
   virtual void startParsing() = 0;

@@ -41,9 +41,9 @@ public:
   };
 
   ProjectStructure();
+  ProjectStructure(QList<QUrl> fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, SKParser::ImportType importType, bool proteinOnlyAsymmetricUnit, bool asMolecule);
+  ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool proteinOnlyAsymmetricUnit, bool asMolecule);
   ~ProjectStructure() override;
-  ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule);
-  ProjectStructure(QList<QUrl> fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool asSeparateProject, bool onlyAsymmetricUnit, bool asMolecule);
 
   std::vector<size_t> numberOfScenes() const override final;
   int numberOfMovies(int sceneIndex) const override final;

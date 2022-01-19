@@ -132,6 +132,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
   // copnnect the appearance tab
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::rendererReloadData,ui->stackedRenderers, &RenderStackedWidget::reloadRenderData);
+  QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::rendererReloadStructureUniforms,ui->stackedRenderers, &RenderStackedWidget::reloadStructureUniforms);
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::redrawRenderer,ui->stackedRenderers, &RenderStackedWidget::redraw);
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::redrawWithQuality,ui->stackedRenderers, &RenderStackedWidget::redrawWithQuality);
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::invalidateCachedAmbientOcclusionTextures,ui->stackedRenderers, &RenderStackedWidget::invalidateCachedAmbientOcclusionTextures);
@@ -809,8 +810,28 @@ void MainWindow::importFile()
     }
     else
     {
-      bool asSeparateProject=dialog.checkboxSeperateProjects->checkState() == Qt::CheckState::Checked;
-      bool onlyAsymmetricUnit=dialog.checkboxOnlyAsymmetricUnitCell->checkState() == Qt::CheckState::Checked;
+      bool asSeparateProjects=dialog.radioButtonAsProjects->isChecked();
+      bool asSeparateMovies=dialog.radioButtonAsMovies->isChecked();
+      bool asSeparateFrames=dialog.radioButtonAsFrames->isChecked();
+
+      qDebug() << "RADIO: " << asSeparateProjects << asSeparateMovies << asSeparateFrames;
+
+      SKParser::ImportType importType = SKParser::ImportType::asSingleProject;
+      if(asSeparateProjects)
+      {
+        importType = SKParser::ImportType::asSeperateProjects;
+      };
+      if(asSeparateMovies)
+      {
+        importType = SKParser::ImportType::asSingleProject;
+      };
+      if(asSeparateFrames)
+      {
+          qDebug() << "asSeparateFrames";
+        importType = SKParser::ImportType::asMovieFrames;
+      };
+
+      bool proteinOnlyAsymmetricUnit=dialog.checkboxProteinsOnlyAsymmetricUnitCell->checkState() == Qt::CheckState::Checked;
       bool asMolecule=dialog.checkboxImportAsMolecule->checkState() == Qt::CheckState::Checked;
 
       ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(ui->projectTreeView->model());
@@ -832,7 +853,7 @@ void MainWindow::importFile()
         }
       }
 
-      if(asSeparateProject)
+      if(asSeparateProjects)
       {
         for(const QUrl &url : fileURLs)
         {
@@ -843,7 +864,7 @@ void MainWindow::importFile()
 
           try
           {
-            std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), asSeparateProject, onlyAsymmetricUnit, asMolecule);
+            std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), importType, proteinOnlyAsymmetricUnit, asMolecule);
             std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
             std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 
@@ -853,6 +874,7 @@ void MainWindow::importFile()
           catch(const char *error)
           {
            // ui->logPlainTextEdit
+              qDebug() << "Error import" << QString(error);
           }
 
         }
@@ -867,7 +889,7 @@ void MainWindow::importFile()
 
         try
         {
-          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), asSeparateProject, onlyAsymmetricUnit, asMolecule);
+          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), importType, proteinOnlyAsymmetricUnit, asMolecule);
           std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
           std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 
@@ -875,7 +897,7 @@ void MainWindow::importFile()
         }
         catch(const char *error)
         {
-          // ui->logPlainTextEdit
+          qDebug() << "Error import" << QString(error);
         }
       }
     }

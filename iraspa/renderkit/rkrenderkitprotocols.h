@@ -368,6 +368,7 @@ class RKRenderViewController
   virtual void reloadRenderMeasurePointsData() = 0;
   virtual void reloadBoundingBoxData() = 0;
   virtual void reloadGlobalAxesData() = 0;
+  virtual void reloadStructureUniforms() = 0;
 
   virtual void reloadBackgroundImage() = 0;
 

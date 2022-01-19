@@ -7,7 +7,7 @@ Object::Object(): _cell(std::make_shared<SKCell>())
 }
 
 
-Object::Object(const std::shared_ptr<const SKStructure> frame): _cell(frame->cell)
+Object::Object(const std::shared_ptr<const SKStructure> frame): _cell(frame->cell), _drawUnitCell(frame->drawUnitCell)
 {
   std::optional<QString> displayName = frame->displayName;
   if(displayName)

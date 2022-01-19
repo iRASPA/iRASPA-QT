@@ -101,6 +101,7 @@ public slots:
   void resetData();
   void reloadRenderData();
   void reloadData();
+  void reloadStructureUniforms();
   void reloadBoundingBoxData();
   void reloadAmbientOcclusionData();
   void reloadSelectionData();

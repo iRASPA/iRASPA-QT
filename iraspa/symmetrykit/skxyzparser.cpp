@@ -27,8 +27,8 @@
 #endif
 #include "skxyzparser.h"
 
-SKXYZParser::SKXYZParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
-    _scanner(url, charactersToBeSkipped), _onlyAsymmetricUnitCell(onlyAsymmetricUnitCell), _asMolecule(asMolecule), _frame(std::make_shared<SKStructure>())
+SKXYZParser::SKXYZParser(QUrl url, bool proteinOnlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped): SKParser(),
+    _scanner(url, charactersToBeSkipped), _proteinOnlyAsymmetricUnitCell(proteinOnlyAsymmetricUnitCell), _asMolecule(asMolecule), _frame(std::make_shared<SKStructure>())
 {
   _frame->kind = SKStructure::Kind::molecule;
   _frame->displayName = _scanner.displayName();
@@ -98,9 +98,11 @@ void SKXYZParser::startParsing()
       unitCell.cz = termsScannedLined[8].toDouble(&succes);
       if(!succes) {throw "Count not parse the cz-cell coordinate";}
 
+      _frame->drawUnitCell = false;
       if(!_asMolecule)
       {
         _frame->kind = SKStructure::Kind::molecularCrystal;
+        _frame->drawUnitCell = true;
       }
       _frame->cell = std::make_shared<SKCell>(unitCell);
     }

@@ -29,12 +29,16 @@
 #include <QBoxLayout>
 #include <QDebug>
 #include <QPushButton>
+#include <QRadioButton>
+#include <QSpacerItem>
 
 class ImportFileDialog : public QFileDialog
 {
 public:
   ImportFileDialog(QWidget *parent);
-  QCheckBox* checkboxSeperateProjects;
-  QCheckBox* checkboxOnlyAsymmetricUnitCell;
+  QRadioButton* radioButtonAsProjects;
+  QRadioButton* radioButtonAsMovies;
+  QRadioButton* radioButtonAsFrames;
+  QCheckBox* checkboxProteinsOnlyAsymmetricUnitCell;
   QCheckBox* checkboxImportAsMolecule;
 };
