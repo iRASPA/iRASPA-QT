@@ -86,16 +86,16 @@ public:
 
   // Protocol:  AtomViewer
   // ===============================================================================================
-  std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
+  std::shared_ptr<SKAtomTreeController> &atomsTreeController() override {return _atomsTreeController;}
   const std::shared_ptr<SKAtomTreeController> &atomsTreeController() const {return _atomsTreeController;}
   void expandSymmetry() override;
 
-  void clearSelection() override final;
-  void setAtomSelection(int asymmetricAtomId) override final;
-  void addAtomToSelection(int asymmetricAtomId) override final;
-  void toggleAtomSelection(int asymmetricAtomId) override final;
-  void setAtomSelection(std::set<int>& atomIds) override final;
-  void addToAtomSelection(std::set<int>& atomIds) override final;
+  void clearSelection() override;
+  void setAtomSelection(int asymmetricAtomId) override;
+  void addAtomToSelection(int asymmetricAtomId) override;
+  void toggleAtomSelection(int asymmetricAtomId) override;
+  void setAtomSelection(std::set<int>& atomIds) override;
+  void addToAtomSelection(std::set<int>& atomIds) override;
 
   std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override;
 
@@ -235,12 +235,12 @@ public:
   // Protocol:  BondViewer
   // ===============================================================================================
 
-  std::shared_ptr<SKBondSetController> bondSetController() override final {return _bondSetController;}
+  std::shared_ptr<SKBondSetController> bondSetController() override {return _bondSetController;}
   void computeBonds() override {;}
 
-  void setBondSelection(int asymmetricBondId) override final;
-  void addBondToSelection(int asymmetricBondId) override final;
-  void toggleBondSelection(int asymmetricAtomId) override final;
+  void setBondSelection(int asymmetricBondId) override;
+  void addBondToSelection(int asymmetricBondId) override;
+  void toggleBondSelection(int asymmetricAtomId) override;
 
    BondSelectionIndexSet filterCartesianBondPositions(std::function<bool(double3)> &) override;
 
@@ -362,7 +362,7 @@ public:
   virtual double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
   virtual double3x3 matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
 
-  virtual double bondLength(std::shared_ptr<SKBond> bond) const;
+  virtual double bondLength(std::shared_ptr<SKBond> bond) const override;
   virtual double3 bondVector(std::shared_ptr<SKBond> bond) const;
   virtual std::pair<double3, double3> computeChangedBondLength(std::shared_ptr<SKBond>, double) const;
 

@@ -28,7 +28,9 @@
 #include "primitivestructureviewer.h"
 #include "rkrenderkitprotocols.h"
 
-class Primitive: public Object, public AtomViewer, public PrimitiveEditor, public RKRenderPrimitiveObjectsSource
+class Primitive: public Object,
+                 public AtomEditor,
+                 public PrimitiveEditor, public RKRenderPrimitiveObjectsSource
 {
 public:
   Primitive();
@@ -39,11 +41,12 @@ public:
   Primitive(const std::shared_ptr<Object> object);
   std::shared_ptr<Object> shallowClone() override;
 
-  // Protocol: AtomViewer
+  // Protocol: AtomEditor
   // ===============================================================================================
   bool drawAtoms() const override {return _drawAtoms;}
   void setDrawAtoms(bool draw) { _drawAtoms = draw;}
   std::shared_ptr<SKAtomTreeController> &atomsTreeController() override final {return _atomsTreeController;}
+  void setAtomTreeController(std::shared_ptr<SKAtomTreeController> controller) override {_atomsTreeController = controller;}
   bool isFractional() override {return false;}
   virtual void expandSymmetry() override;
   virtual double3 centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const;
@@ -62,10 +65,6 @@ public:
   void toggleAtomSelection(int asymmetricAtomId) override final;
   void setAtomSelection(std::set<int>& atomIds) override final;
   void addToAtomSelection(std::set<int>& atomIds) override final;
-
-  // Protocol: AtomEditor
-  // ===============================================================================================
-  void setAtomTreeController(std::shared_ptr<SKAtomTreeController> controller) {_atomsTreeController = controller;}
 
   // To be overwritten and specialized by subclasses
   // ===============================================================================================

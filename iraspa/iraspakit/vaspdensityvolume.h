@@ -45,6 +45,7 @@ public:
   // ===============================================================================================
   std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override final;
 
+
   // RKRenderBondSource: overwritten from Structure
   // ===============================================================================================
   std::vector<RKInPerInstanceAttributesBonds> renderInternalBonds() const override final;
@@ -54,6 +55,7 @@ public:
   // ===============================================================================================
   void expandSymmetry() override final;
   void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);
+  bool isFractional() override  {return true;}
 
   // BondViewer: overwritten from Structure
   // ===============================================================================================

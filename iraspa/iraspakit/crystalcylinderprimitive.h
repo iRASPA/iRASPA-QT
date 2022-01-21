@@ -37,7 +37,8 @@
 #include "ellipsoidprimitive.h"
 #include "polygonalprismprimitive.h"
 
-class CrystalCylinderPrimitive: public Primitive, public RKRenderCrystalPrimitiveCylinderObjectsSource, public RKRenderUnitCellSource
+class CrystalCylinderPrimitive: public Primitive,
+                                public RKRenderCrystalPrimitiveCylinderObjectsSource, public RKRenderUnitCellSource
 {
 public:
   CrystalCylinderPrimitive();

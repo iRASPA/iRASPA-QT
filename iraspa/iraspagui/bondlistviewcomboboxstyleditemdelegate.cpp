@@ -135,6 +135,8 @@ QWidget * BondListViewComboBoxStyledItemDelegate::createEditor(QWidget *parent,
     realCombobox->addItem(*_partialDoubleBondIcon, QString(""));
     realCombobox->addItem(*_tripleBondIcon, QString(""));
     realCombobox->setCurrentIndex(value);
+    realCombobox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+    realCombobox->setEditable(index.flags() & Qt::ItemIsEditable);
 
     connect(realCombobox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), realCombobox,
             [this, realCombobox, index]([[maybe_unused]] int value){ setModelData(realCombobox, _treeView->model(), index);});

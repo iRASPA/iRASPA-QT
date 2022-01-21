@@ -510,7 +510,7 @@ void AtomTreeView::deleteSelection()
         {
           if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
           {
-            if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
+            if(std::shared_ptr<AtomEditor> atomViewer = std::dynamic_pointer_cast<AtomEditor>(_iraspaStructure->object()))
             {
               AtomSelectionNodesAndIndexPaths atomSelection = atomViewer->atomsTreeController()->selectionNodesAndIndexPaths();
               BondSelectionNodesAndIndexSet bondSelection{};
@@ -534,7 +534,7 @@ void AtomTreeView::addAtom()
 {
   if(_iraspaStructure)
   {
-    if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
+    if(std::shared_ptr<AtomEditor> atomViewer = std::dynamic_pointer_cast<AtomEditor>(_iraspaStructure->object()))
     {
       AtomSelectionNodesAndIndexPaths atomSelection = atomViewer->atomsTreeController()->selectionNodesAndIndexPaths();
       if(atomSelection.second.empty())
@@ -554,7 +554,7 @@ void AtomTreeView::addAtomGroup()
 {
   if(_iraspaStructure)
   {
-    if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
+    if(std::shared_ptr<AtomEditor> atomViewer = std::dynamic_pointer_cast<AtomEditor>(_iraspaStructure->object()))
     {
       AtomSelectionNodesAndIndexPaths atomSelection = atomViewer->atomsTreeController()->selectionNodesAndIndexPaths();
       if(atomSelection.second.empty())
@@ -574,7 +574,7 @@ void AtomTreeView::addAtom(QModelIndex index)
 {
   if(_iraspaStructure)
   {
-    if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
+    if(std::shared_ptr<AtomEditor> atomViewer = std::dynamic_pointer_cast<AtomEditor>(_iraspaStructure->object()))
     {
       if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(model()))
       {
@@ -596,7 +596,7 @@ void AtomTreeView::addAtomGroup(QModelIndex index)
 {
   if(_iraspaStructure)
   {
-    if(std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
+    if(std::shared_ptr<AtomEditor> atomViewer = std::dynamic_pointer_cast<AtomEditor>(_iraspaStructure->object()))
     {
       if(AtomTreeViewModel* pModel = qobject_cast<AtomTreeViewModel*>(model()))
       {

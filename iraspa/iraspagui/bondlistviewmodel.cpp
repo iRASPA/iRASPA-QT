@@ -39,11 +39,14 @@ QModelIndex BondListViewModel::index(int row, int column, const QModelIndex &par
 
   if(_iraspaStructure)
   {
-    const std::vector<std::shared_ptr<SKAsymmetricBond>> bonds = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->arrangedObjects();
-    if(bonds.empty())
-      return QModelIndex();
+    if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+    {
+      const std::vector<std::shared_ptr<SKAsymmetricBond>> bonds = bondViewer->bondSetController()->arrangedObjects();
+      if(bonds.empty())
+        return QModelIndex();
 
-    return createIndex(row, column, bonds[row].get());
+      return createIndex(row, column, bonds[row].get());
+    }
   }
   return QModelIndex();
 }
@@ -138,9 +141,9 @@ QVariant BondListViewModel::data(const QModelIndex &index, int role) const
         if(_iraspaStructure)
         {
           double bondLength = 0.0;
-          if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+          if (std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspaStructure->object()))
           {
-             bondLength = structure->bondLength(bond);
+             bondLength = bondViewer->bondLength(bond);
           }
           #if (QT_VERSION >= QT_VERSION_CHECK(5,5,0))
             return QString::asprintf("%5.4f", bondLength);
@@ -166,7 +169,7 @@ Qt::ItemFlags BondListViewModel::flags(const QModelIndex &index) const
 {
   if (!index.isValid()) return Qt::NoItemFlags;
 
-  Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+  Qt::ItemFlags flags = Qt::ItemIsSelectable;
 
   if ( index.column() == 0)
   {
@@ -177,12 +180,16 @@ Qt::ItemFlags BondListViewModel::flags(const QModelIndex &index) const
       flags |= Qt::ItemIsAutoTristate;
     #endif
     flags |= Qt::ItemIsEditable;
+    flags |= Qt::ItemIsEnabled;
   }
 
-
-  if ( index.column() != 2 && index.column() != 6)
+  if (std::shared_ptr<BondEditor> bondEditor = std::dynamic_pointer_cast<BondEditor>(_iraspaStructure->object()))
   {
-    flags |= Qt::ItemIsEditable;
+    if ( index.column() != 2 && index.column() != 6)
+    {
+      flags |= Qt::ItemIsEditable;
+    }
+    flags |= Qt::ItemIsEnabled;
   }
 
   return flags;
@@ -231,7 +238,6 @@ bool BondListViewModel::setData(const QModelIndex &index, const QVariant &value,
       {
         if ((Qt::CheckState)value.toInt() == Qt::Checked)
         {
-          qDebug() << "checked visibility";
           bond->setIsVisible(true);
           emit rendererReloadData();
           return true;
@@ -249,12 +255,14 @@ bool BondListViewModel::setData(const QModelIndex &index, const QVariant &value,
             qDebug() << "checked";
           }
         case 5:
-          if (role == Qt::EditRole)
+          if (std::shared_ptr<BondEditor> bondEditor = std::dynamic_pointer_cast<BondEditor>(_iraspaStructure->object()))
           {
-            bond->setBondType(SKAsymmetricBond::SKBondType(value.toInt()));
-            qDebug() << " Edit: " << value.toInt();
-            emit rendererReloadData();
-            return true;
+            if (role == Qt::EditRole)
+            {
+              bond->setBondType(SKAsymmetricBond::SKBondType(value.toInt()));
+              emit rendererReloadData();
+              return true;
+            }
           }
       default:
         break;
@@ -267,18 +275,26 @@ bool BondListViewModel::setData(const QModelIndex &index, const QVariant &value,
 
 bool BondListViewModel::insertRow(int position, std::shared_ptr<SKAsymmetricBond> bondNode)
 {
-  beginInsertRows(QModelIndex(), position, position);
-  bool success = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->insertBond(bondNode, position);
-  endInsertRows();
-  return success;
+  if (std::shared_ptr<BondEditor> bondEditor = std::dynamic_pointer_cast<BondEditor>(_iraspaStructure->object()))
+  {
+    beginInsertRows(QModelIndex(), position, position);
+    bool success = bondEditor->bondSetController()->insertBond(bondNode, position);
+    endInsertRows();
+    return success;
+  }
+  return false;
 }
 
 bool BondListViewModel::removeRow(int position)
 {
-  beginRemoveRows(QModelIndex(), position, position);
-  bool success = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object())->bondSetController()->removeBond(position);
-  endRemoveRows();
-  return success;
+  if (std::shared_ptr<BondEditor> bondEditor = std::dynamic_pointer_cast<BondEditor>(_iraspaStructure->object()))
+  {
+    beginRemoveRows(QModelIndex(), position, position);
+    bool success = bondEditor->bondSetController()->removeBond(position);
+    endRemoveRows();
+    return success;
+  }
+  return false;
 }
 
 QModelIndexList BondListViewModel::selectedIndexes()
@@ -286,11 +302,11 @@ QModelIndexList BondListViewModel::selectedIndexes()
   QModelIndexList list = QModelIndexList();
   if(_iraspaStructure)
   {
-    if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(_iraspaStructure->object()))
+    if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(_iraspaStructure->object()))
     {
-      for(int localRow : structure->bondSetController()->selectionIndexSet())
+      for(int localRow : bondViewer->bondSetController()->selectionIndexSet())
       {
-        std::shared_ptr<SKAsymmetricBond> node = structure->bondSetController()->arrangedObjects()[localRow];
+        std::shared_ptr<SKAsymmetricBond> node = bondViewer->bondSetController()->arrangedObjects()[localRow];
         QModelIndex index = createIndex(localRow,0,node.get());
         list.push_back(index);
       }
@@ -303,11 +319,11 @@ void BondListViewModel::deleteSelection(std::shared_ptr<Object> object, BondSele
 {
   this->beginResetModel();
 
-  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(object))
+  if(std::shared_ptr<BondEditor> bondEditor = std::dynamic_pointer_cast<BondEditor>(object))
   {
-    bondViewer->bondSetController()->deleteBonds(indexSet);
-    bondViewer->bondSetController()->selectionIndexSet().clear();
-    bondViewer->bondSetController()->setTags();
+    bondEditor->bondSetController()->deleteBonds(indexSet);
+    bondEditor->bondSetController()->selectionIndexSet().clear();
+    bondEditor->bondSetController()->setTags();
   }
 
   this->endResetModel();
@@ -317,11 +333,11 @@ void BondListViewModel::deleteSelection(std::shared_ptr<Object> object, BondSele
 {
   this->beginResetModel();
 
-  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(object))
+  if(std::shared_ptr<BondEditor> bondEditor = std::dynamic_pointer_cast<BondEditor>(object))
   {
-    bondViewer->bondSetController()->deleteBonds(selection);
-    bondViewer->bondSetController()->selectionIndexSet().clear();
-    bondViewer->bondSetController()->setTags();
+    bondEditor->bondSetController()->deleteBonds(selection);
+    bondEditor->bondSetController()->selectionIndexSet().clear();
+    bondEditor->bondSetController()->setTags();
   }
 
   this->endResetModel();
@@ -331,11 +347,11 @@ void BondListViewModel::insertSelection(std::shared_ptr<Object> object, std::vec
 {
   this->beginResetModel();
 
-  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(object))
+  if(std::shared_ptr<BondEditor> bondEditor = std::dynamic_pointer_cast<BondEditor>(object))
   {
-    bondViewer->bondSetController()->insertBonds(bonds, indexSet);
-    bondViewer->bondSetController()->selectionIndexSet().insert(indexSet.begin(), indexSet.end());
-    bondViewer->bondSetController()->setTags();
+    bondEditor->bondSetController()->insertBonds(bonds, indexSet);
+    bondEditor->bondSetController()->selectionIndexSet().insert(indexSet.begin(), indexSet.end());
+    bondEditor->bondSetController()->setTags();
   }
 
   this->endResetModel();
@@ -345,11 +361,10 @@ void BondListViewModel::insertSelection(std::shared_ptr<Object> object, BondSele
 {
   this->beginResetModel();
 
-  if(std::shared_ptr<BondViewer> bondViewer = std::dynamic_pointer_cast<BondViewer>(object))
+  if(std::shared_ptr<BondEditor> bondEditor = std::dynamic_pointer_cast<BondEditor>(object))
   {
-    bondViewer->bondSetController()->insertSelection(selection);
-    //structure->bondSetController()->selectionIndexSet().insert(indexSet.begin(), indexSet.end());
-    bondViewer->bondSetController()->setTags();
+    bondEditor->bondSetController()->insertSelection(selection);
+    bondEditor->bondSetController()->setTags();
   }
 
   this->endResetModel();

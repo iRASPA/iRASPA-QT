@@ -154,7 +154,7 @@ int AtomTreeViewModel::rowCount(const QModelIndex &parent) const
 {
   if(_iraspaStructure)
   {
-    if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
+    if (std::shared_ptr<AtomViewer> atomEditor = std::dynamic_pointer_cast<AtomViewer>(_iraspaStructure->object()))
     {
       SKAtomTreeNode *parentItem = nodeForIndex(parent);
       if(parentItem)
@@ -258,9 +258,12 @@ Qt::ItemFlags AtomTreeViewModel::flags(const QModelIndex &index) const
     flags |= Qt::ItemIsEditable;
   }
 
-  if ( index.column() >= 2 )
+  if(std::shared_ptr<AtomEditor> atomviewer = std::dynamic_pointer_cast<AtomEditor>(_iraspaStructure->object()))
   {
-    flags |= Qt::ItemIsEditable;
+    if ( index.column() >= 2 )
+    {
+      flags |= Qt::ItemIsEditable;
+    }
   }
 
   flags |= Qt::ItemIsDragEnabled;

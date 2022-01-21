@@ -30,7 +30,9 @@ class BondViewer
 public:
   virtual ~BondViewer() = 0;
   virtual std::shared_ptr<SKBondSetController> bondSetController() = 0;
+
   virtual void computeBonds() = 0;
+  virtual double bondLength(std::shared_ptr<SKBond> bond) const = 0;
 
   virtual void setBondSelection(int asymmetricBondId) = 0;
   virtual void addBondToSelection(int asymmetricBondId) = 0;
@@ -39,10 +41,23 @@ public:
   virtual BondSelectionIndexSet filterCartesianBondPositions(std::function<bool(double3)> &) = 0;
 };
 
+// Note: using inheritance has a problem: std::dynamic_pointer_cast<AtomViewer> on AtomEditor would fail.
+// Case: for example when 'Structure' is AtomViewer, and derived class 'Crystal' is AtomEditor.
+// Work-around: add the AtomViewer explicitly into AtomEditor.
 class BondEditor
 {
 public:
   virtual ~BondEditor() = 0;
 
   virtual void setBondSetController(std::shared_ptr<SKBondSetController> controller) = 0;
+  virtual std::shared_ptr<SKBondSetController> bondSetController() = 0;
+
+  virtual void computeBonds() = 0;
+  virtual double bondLength(std::shared_ptr<SKBond> bond) const = 0;
+
+  virtual void setBondSelection(int asymmetricBondId) = 0;
+  virtual void addBondToSelection(int asymmetricBondId) = 0;
+  virtual void toggleBondSelection(int asymmetricAtomId) = 0;
+
+  virtual BondSelectionIndexSet filterCartesianBondPositions(std::function<bool(double3)> &) = 0;
 };

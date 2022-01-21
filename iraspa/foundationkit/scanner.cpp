@@ -143,7 +143,6 @@ bool Scanner::scanUpToCharacters(CharacterSet set, QString &into)
   _scanLocation = _string.constEnd();
   into = QString("");
   return false;
-
 }
 
 bool Scanner::isAtEnd()
