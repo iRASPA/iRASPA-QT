@@ -58,9 +58,9 @@ void SKGaussianCubeParser::startParsing()
   double bohrToAngstrom = 0.529177249;
 
   // skip first two lines
-  _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
+  _scanner.scanLine(scannedLine);
   qDebug() << "CHECK1" << scannedLine;
-  _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
+  _scanner.scanLine(scannedLine);
 qDebug() << "CHECK2" << scannedLine;
 
   // read number of atoms and origin

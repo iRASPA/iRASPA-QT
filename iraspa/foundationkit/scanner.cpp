@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QFileInfo>
+#include "characterset.h"
 
 Scanner::Scanner(QUrl &url, CharacterSet charactersToBeSkipped): _charactersToBeSkipped(charactersToBeSkipped)
 {
@@ -90,6 +91,32 @@ bool Scanner::scanCharacters(CharacterSet set, QString &into)
   into = QString("");
   return false;
 
+}
+
+bool Scanner::scanLine(QString &into)
+{
+  QString::const_iterator newlineLocation = find_first_of(CharacterSet::newlineCharacter().string(), _string, _scanLocation);
+
+  // not found
+  if (newlineLocation>=_string.constEnd())
+  {
+    _scanLocation = _string.constEnd();
+    into = QString("");
+    return false;
+  }
+
+  // found
+  if(newlineLocation < _string.constEnd())
+  {
+    into = QString(_scanLocation, newlineLocation - _scanLocation);
+    _scanLocation = newlineLocation+1;
+    return true;
+  }
+
+  // found newline as the last character
+  _scanLocation = _string.constEnd();
+  into = QString("");
+  return false;
 }
 
 bool Scanner::scanUpToCharacters(CharacterSet set, QString &into)

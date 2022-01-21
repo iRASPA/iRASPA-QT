@@ -42,6 +42,7 @@ public:
   QString::const_iterator scanLocation() const {return _scanLocation;}
   void setScanLocation(QString::const_iterator location) {_scanLocation = location;}
   bool scanCharacters(CharacterSet set, QString &into);
+  bool scanLine(QString &into);
   bool scanUpToCharacters(CharacterSet set, QString &into);
   bool isAtEnd();
   bool scanDouble(double& value);

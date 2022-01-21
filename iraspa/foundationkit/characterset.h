@@ -32,6 +32,7 @@ public:
   CharacterSet();
   CharacterSet(QByteArray chars);
   QString string() {return _string;}
+  static CharacterSet newlineCharacter();
   static CharacterSet newlineCharacterSet();
   static CharacterSet whitespaceAndNewlineCharacterSet();
   static CharacterSet whitespaceCharacterSet();

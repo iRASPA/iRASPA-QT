@@ -37,6 +37,11 @@ CharacterSet::CharacterSet(QByteArray chars)
 // \x0D   \r    Carriage return (CR)
 // \x85   …
 
+CharacterSet CharacterSet::newlineCharacter()
+{
+  return CharacterSet(QByteArray("\x0A",1));
+}
+
 CharacterSet CharacterSet::newlineCharacterSet()
 {
   return CharacterSet(QByteArray("\x0A\x0B\x0C\x0D\x85",5));
