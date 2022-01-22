@@ -275,7 +275,7 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
               std::clock_t beginTime = clock();
 
               std::vector<cl_float> gridData = source->gridData();
-              if(gridData.size() <= 0) return;
+              if (gridData.empty()) return;
 
               // move from stack to heap since the cache requires a pointer to the std::vector
               energyGridPointer = new std::vector<cl_float>();

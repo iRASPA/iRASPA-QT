@@ -1,4 +1,5 @@
 #include "skopencl.h"
+#include <QDebug>
 
 SKOpenCL::SKOpenCL()
 {

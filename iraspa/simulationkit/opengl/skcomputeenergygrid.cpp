@@ -21,6 +21,7 @@
 
 
 #include "skcomputeenergygrid.h"
+#include <QString>
 
 SKComputeEnergyGrid::SKComputeEnergyGrid(): SKOpenCL()
 {
@@ -32,8 +33,16 @@ SKComputeEnergyGrid::SKComputeEnergyGrid(): SKOpenCL()
     if (err != CL_SUCCESS) {throw "clCreateProgramWithSource failed";}
 
     // Build the program executable
-    err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, this);
-    if (err != CL_SUCCESS) {throw "clBuildProgram failed";}
+    err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, nullptr);
+    if (err != CL_SUCCESS) 
+    {
+      size_t len;
+      char buffer[2048];
+      clGetProgramBuildInfo(_program, _clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+      QString message = QString("SKComputeEnergyGrid: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
+      qDebug() << message << _clDeviceId << err;
+      throw "clBuildProgram failed";
+    }
 
     _kernel = clCreateKernel(_program, "ComputeEnergyGrid", &err);
     if (err != CL_SUCCESS) {throw "clCreateKernel failed";}

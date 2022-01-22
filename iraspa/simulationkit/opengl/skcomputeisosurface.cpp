@@ -31,8 +31,16 @@ SKComputeIsosurface::SKComputeIsosurface(): SKOpenCL()
     if (err != CL_SUCCESS) {throw "clCreateProgramWithSource failed";}
 
     // Build the program executable
-    err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, this);
-    if (err != CL_SUCCESS) {throw "clCreateProgramWithSource failed";}
+    err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, nullptr);
+    if (err != CL_SUCCESS)
+    {
+        size_t len;
+        char buffer[2048];
+        clGetProgramBuildInfo(_program, _clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+        QString message = QString("SKComputeIsosurface: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
+        qDebug() << message << _clDeviceId << err;
+        throw "clBuildProgram failed";
+    }
 
     _constructHPLevelKernel = clCreateKernel(_program, "constructHPLevel", &err);
     if (err != CL_SUCCESS) {throw "clCreateProgramWithSource failed";}
@@ -683,7 +691,9 @@ int4 scanHPLevel(int target, __read_only image3d_t hp, int4 current) {
   cmp.s7*neighbors.s7;
   return current;
 }
+)foo") +
 
+std::string(R"foo(
 __kernel void traverseHP16(
                          __read_only image3d_t hp0, // Largest HP
                          __read_only image3d_t hp1,
@@ -757,7 +767,9 @@ __kernel void traverseHP16(
     vertexNr++;
   }
 }
+)foo") +
 
+std::string(R"foo(
 __kernel void traverseHP32(
                          __read_only image3d_t hp0, // Largest HP
                          __read_only image3d_t hp1,
@@ -833,7 +845,9 @@ __kernel void traverseHP32(
     vertexNr++;
   }
 }
+)foo") +
 
+std::string(R"foo(
 __kernel void traverseHP64(
                          __read_only image3d_t hp0, // Largest HP
                          __read_only image3d_t hp1,
@@ -912,7 +926,9 @@ __kernel void traverseHP64(
   }
 }
 
+)foo") +
 
+std::string(R"foo(
 __kernel void traverseHP128(
                          __read_only image3d_t hp0, // Largest HP
                          __read_only image3d_t hp1,
@@ -992,7 +1008,9 @@ __kernel void traverseHP128(
     vertexNr++;
   }
 }
+)foo") +
 
+std::string(R"foo(
 __kernel void traverseHP256(
                          __read_only image3d_t hp0, // Largest HP
                          __read_only image3d_t hp1,
@@ -1074,7 +1092,9 @@ __kernel void traverseHP256(
     vertexNr++;
   }
 }
+)foo") +
 
+std::string(R"foo(
 __kernel void traverseHP512(
                          __read_only image3d_t hp0, // Largest HP
                          __read_only image3d_t hp1,
@@ -1158,7 +1178,9 @@ __kernel void traverseHP512(
     vertexNr++;
   }
 }
+)foo") +
 
+std::string(R"foo(
 // The first part of the algorithm uses a table (edgeTable) which maps the vertices under the isosurface to the intersecting edges.
 // An 8 bit index is formed where each bit corresponds to a vertex.
 __kernel void classifyCubes(__write_only image3d_t histoPyramid,

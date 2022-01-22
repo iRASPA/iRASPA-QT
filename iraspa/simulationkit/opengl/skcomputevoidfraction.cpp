@@ -31,7 +31,7 @@ SKComputeVoidFraction::SKComputeVoidFraction(): SKOpenCL()
     if (err != CL_SUCCESS) {throw "clCreateProgramWithSource failed";}
 
     // Build the program executable
-    err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, this);
+    err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, nullptr);
     if (err != CL_SUCCESS) {throw "clBuildProgram failed";}
 
     _kernel = clCreateKernel(_program, "ComputeVoidFraction", &err);

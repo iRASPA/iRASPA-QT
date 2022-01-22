@@ -345,6 +345,8 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
               std::clock_t beginTime = clock();
 
               std::vector<float4> gridData = source->gridValueAndGradientData();
+              if (gridData.empty()) return;
+
               textureData = new std::vector<float4>();
               *textureData = std::move(gridData);
 

@@ -1818,12 +1818,15 @@ std::vector<float> Crystal::gridData()
   catch (char const* e)
   {
     std::cout << "Exception caught: " << e << std::endl;
+    qDebug() << QString::fromUtf8(e);
     return std::vector<float>();
   }
 }
 std::vector<float4> Crystal::gridValueAndGradientData()
 {
   std::vector<float> energyData = gridData();
+
+  if (energyData.empty()) { return std::vector<float4>(); }
 
   int encompassingcubicsize = pow(2,_encompassingPowerOfTwoCubicGridSize);
   std::vector<float4> gradientData(encompassingcubicsize*encompassingcubicsize*encompassingcubicsize);
