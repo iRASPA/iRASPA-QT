@@ -43,6 +43,8 @@ public:
   // RKRenderAtomSource: overwritten from Structure
   // ===============================================================================================
   std::vector<RKInPerInstanceAttributesAtoms> renderAtoms() const override final;
+  std::vector<RKInPerInstanceAttributesAtoms> renderSelectedAtoms() const override final;
+  std::vector<RKInPerInstanceAttributesText> atomTextData(RKFontAtlas *fontAtlas) const override final;
 
   // RKRenderBondSource: overwritten from Structure
   // ===============================================================================================
@@ -54,6 +56,7 @@ public:
   bool isFractional() override final {return true;}
   void expandSymmetry() override final;
   void expandSymmetry(std::shared_ptr<SKAsymmetricAtom> asymmetricAtom);
+  std::set<int> filterCartesianAtomPositions(std::function<bool(double3)> &) override final;
 
   // Protocol: RKRenderUnitCellSource
   // ===============================================================================================

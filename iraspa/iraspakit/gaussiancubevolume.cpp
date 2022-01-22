@@ -461,6 +461,306 @@ std::vector<RKInPerInstanceAttributesBonds> GaussianCubeVolume::renderUnitCellCy
   return data;
 }
 
+// MARK: Rendering selection
+// =====================================================================
+
+std::vector<RKInPerInstanceAttributesAtoms> GaussianCubeVolume::renderSelectedAtoms() const
+{
+  int minimumReplicaX = _cell->minimumReplicaX();
+  int minimumReplicaY = _cell->minimumReplicaY();
+  int minimumReplicaZ = _cell->minimumReplicaZ();
+
+  int maximumReplicaX = _cell->maximumReplicaX();
+  int maximumReplicaY = _cell->maximumReplicaY();
+  int maximumReplicaZ = _cell->maximumReplicaZ();
+
+  double3 contentShift = _cell->contentShift();
+  bool3 contentFlip = _cell->contentFlip();
+
+  std::set<std::shared_ptr<SKAtomTreeNode>> atomTreeNodes = _atomsTreeController->selectedTreeNodes();
+
+  std::vector<RKInPerInstanceAttributesAtoms> atomData = std::vector<RKInPerInstanceAttributesAtoms>();
+
+  for (const std::shared_ptr<SKAtomTreeNode> &node : atomTreeNodes)
+  {
+    if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+    {
+      uint32_t asymmetricAtomIndex = atom->asymmetricIndex();
+      for (std::shared_ptr<SKAtomCopy> copy : atom->copies())
+      {
+        if (copy->type() == SKAtomCopy::AtomCopyType::copy)
+        {
+          QColor color = atom->color();
+          double w = atom->isVisible() ? 1.0 : -1.0;
+
+          double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+
+          for (int k1 = minimumReplicaX;k1 <= maximumReplicaX;k1++)
+          {
+            for (int k2 = minimumReplicaY;k2 <= maximumReplicaY;k2++)
+            {
+              for (int k3 = minimumReplicaZ;k3 <= maximumReplicaZ;k3++)
+              {
+                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1, k2, k3)), w);
+
+                float4 ambient = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+                float4 diffuse = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+
+                float4 specular = float4(1.0, 1.0, 1.0, 1.0);
+                double radius = atom->drawRadius(); // * atom->occupancy();
+                float4 scale = float4(radius, radius, radius, 1.0);
+
+                RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+                atomData.push_back(atom1);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return atomData;
+}
+
+std::vector<RKInPerInstanceAttributesText> GaussianCubeVolume::atomTextData(RKFontAtlas *fontAtlas) const
+{
+  int minimumReplicaX = _cell->minimumReplicaX();
+  int minimumReplicaY = _cell->minimumReplicaY();
+  int minimumReplicaZ = _cell->minimumReplicaZ();
+
+  int maximumReplicaX = _cell->maximumReplicaX();
+  int maximumReplicaY = _cell->maximumReplicaY();
+  int maximumReplicaZ = _cell->maximumReplicaZ();
+
+  double3 contentShift = _cell->contentShift();
+  bool3 contentFlip = _cell->contentFlip();
+
+  std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+
+  std::vector<RKInPerInstanceAttributesText> atomData{};
+
+  uint32_t asymmetricAtomIndex = 0;
+  for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
+  {
+     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+     {
+       bool isVisible = atom->isVisible();
+
+       if(isVisible)
+       {
+         QColor color = atom->color();
+
+         float4 ambient = float4(color.redF(),color.greenF(),color.blueF(),color.alphaF());
+         float4 diffuse = float4(color.redF(),color.greenF(),color.blueF(),color.alphaF());
+
+         float4 specular = float4(1.0,1.0,1.0,1.0);
+
+         double radius = atom->drawRadius() * atom->occupancy();
+         float4 scale = float4(radius,radius,radius,1.0);
+
+         if(atom->occupancy()<1.0)
+         {
+           diffuse = float4(1.0,1.0,1.0,1.0);
+         }
+
+         for(std::shared_ptr<SKAtomCopy> copy : atom->copies())
+         {
+           if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+           {
+             double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+             for(int k1=minimumReplicaX;k1<=maximumReplicaX;k1++)
+             {
+               for(int k2=minimumReplicaY;k2<=maximumReplicaY;k2++)
+               {
+                 for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
+                 {
+                   float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), 1.0);
+                   int elementIdentifier = atom->elementIdentifier();
+
+                   QString text;
+                   switch(_atomTextType)
+                   {
+                   case RKTextType::none:
+                   case RKTextType::multiple_values:
+                     text = "";
+                     break;
+                   case RKTextType::displayName:
+                     text = atom->displayName();
+                     break;
+                   case RKTextType::identifier:
+                     text = QString::number(copy->tag());
+                     break;
+                   case RKTextType::chemicalElement:
+                     text = PredefinedElements::predefinedElements[elementIdentifier]._chemicalSymbol;
+                     break;
+                   case RKTextType::forceFieldType:
+                     text = atom->uniqueForceFieldName();
+                     break;
+                   case RKTextType::position:
+                     text = "(" + QString::number(copy->position().x) + "," + QString::number(copy->position().y) + "," + QString::number(copy->position().z) + ")";
+                     break;
+                   case RKTextType::charge:
+                     text = QString::number(atom->charge());
+                     break;
+                   }
+
+                   float x = 0.0;
+                   float y = 0.0;
+                   float sx = 1.0;
+                   float sy = 1.0;
+
+                   std::vector<RKInPerInstanceAttributesText> subdata{};
+                   QRectF rect = QRectF();
+                   for (int i = 0 ; i < text.size(); i++)
+                   {
+                     int id = fontAtlas->characterIndex[text[i].unicode()];
+                     if(id >= 0 && id<=255)
+                     {
+                       float x2 = x + fontAtlas->characters[id].xoff * sx;
+                       float y2 = -y - fontAtlas->characters[id].yoff * sy;
+                       float w = fontAtlas->characters[id].width * sx;
+                       float h = fontAtlas->characters[id].height * sy;
+
+                       x += fontAtlas->characters[id].xadv * sx;
+                       y += fontAtlas->characters[id].yadv * sy;
+
+                       float4 vertex = float4(x2,y2,w,h);
+                       rect=rect.united(QRectF(x2,y2,w,h));
+                       float4 uv = float4(fontAtlas->characters[id].x/fontAtlas->width,fontAtlas->characters[id].y/fontAtlas->height,
+                                          fontAtlas->characters[id].width/fontAtlas->width, fontAtlas->characters[id].height/fontAtlas->height);
+
+                       RKInPerInstanceAttributesText atomText = RKInPerInstanceAttributesText(position, scale, vertex, uv);
+                       subdata.push_back(atomText);
+                     }
+                   }
+
+                   float2 shift(0.0,0.0);
+                   switch(_atomTextAlignment)
+                   {
+                   case RKTextAlignment::center:
+                   case RKTextAlignment::multiple_values:
+                     shift = float2(0.0,0.0);
+                     break;
+                   case RKTextAlignment::left:
+                     shift = float2(-rect.center().x(),0.0);
+                     break;
+                   case RKTextAlignment::right:
+                     shift = float2(rect.center().x(),0.0);
+                     break;
+                   case RKTextAlignment::top:
+                     shift = float2(0.0,rect.center().y());
+                     break;
+                   case RKTextAlignment::bottom:
+                     shift = float2(0.0,-rect.center().y());
+                     break;
+                   case RKTextAlignment::topLeft:
+                     shift = float2(-rect.center().x(),rect.center().y());
+                     break;
+                   case RKTextAlignment::topRight:
+                     shift = float2(rect.center().x(),rect.center().y());
+                     break;
+                   case RKTextAlignment::bottomLeft:
+                     shift = float2(-rect.center().x(), -rect.center().y());
+                     break;
+                   case RKTextAlignment::bottomRight:
+                     shift = float2(rect.center().x(), -rect.center().y());
+                     break;
+                   }
+
+                   for(RKInPerInstanceAttributesText &subdataText: subdata)
+                   {
+                     subdataText.vertexCoordinatesData.x -= rect.center().x();
+                     subdataText.vertexCoordinatesData.y -= rect.center().y();
+                     subdataText.vertexCoordinatesData.x += shift.x;
+                     subdataText.vertexCoordinatesData.y += shift.y;
+
+                     subdataText.vertexCoordinatesData.x /= 50.0;
+                     subdataText.vertexCoordinatesData.y /= 50.0;
+                     subdataText.vertexCoordinatesData.z /= 50.0;
+                     subdataText.vertexCoordinatesData.w /= 50.0;
+                   }
+
+                   std::copy(subdata.begin(), subdata.end(), std::inserter(atomData, atomData.end()));
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+     asymmetricAtomIndex++;
+  }
+
+  return atomData;
+}
+
+std::set<int> GaussianCubeVolume::filterCartesianAtomPositions(std::function<bool(double3)> & closure)
+{
+  std::set<int> data;
+
+  if(_isVisible)
+  {
+    int minimumReplicaX = _cell->minimumReplicaX();
+    int minimumReplicaY = _cell->minimumReplicaY();
+    int minimumReplicaZ = _cell->minimumReplicaZ();
+
+    int maximumReplicaX = _cell->maximumReplicaX();
+    int maximumReplicaY = _cell->maximumReplicaY();
+    int maximumReplicaZ = _cell->maximumReplicaZ();
+
+    double3 contentShift = _cell->contentShift();
+    bool3 contentFlip = _cell->contentFlip();
+
+    double4x4 rotationMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(_orientation), boundingBox().center());
+
+    std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+
+    uint32_t asymmetricAtomIndex = 0;
+
+    for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
+    {
+      if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+      {
+        if (atom->isVisible())
+        {
+          for(std::shared_ptr<SKAtomCopy> copy : atom->copies())
+          {
+            if(copy->type() == SKAtomCopy::AtomCopyType::copy)
+            {
+              double3 pos = double3::flip(copy->position(), contentFlip, double3(1.0,1.0,1.0)) + contentShift;
+              for(int k1=minimumReplicaX;k1<=maximumReplicaX;k1++)
+              {
+                for(int k2=minimumReplicaY;k2<=maximumReplicaY;k2++)
+                {
+                  for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
+                  {
+                    double3 fractionalPosition = pos + double3(k1,k2,k3);
+                    double3 cartesianPosition = _cell->convertToCartesian(fractionalPosition);
+
+                    double4 position = rotationMatrix * double4(cartesianPosition.x, cartesianPosition.y, cartesianPosition.z, 1.0);
+
+                    double3 absoluteCartesianPosition = double3(position.x,position.y,position.z) + _origin;
+
+                    if(closure(absoluteCartesianPosition))
+                    {
+                      data.insert(asymmetricAtomIndex);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      asymmetricAtomIndex++;
+    }
+  }
+
+  return data;
+}
+
+
 std::vector<float> GaussianCubeVolume::gridData()
 {
   int encompassingcubicsize = pow(2, _encompassingPowerOfTwoCubicGridSize);
