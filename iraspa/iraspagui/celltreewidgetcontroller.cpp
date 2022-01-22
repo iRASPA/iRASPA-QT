@@ -3752,9 +3752,20 @@ void CellTreeWidgetController::setFrameworkProbeMolecule(int value)
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
-      if (std::shared_ptr<StructuralPropertyEditor> cellViewer = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+      if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
       {
-        cellViewer->setFrameworkProbeMolecule(ProbeMolecule(value));
+        volumetricDataEditor->setFrameworkProbeMolecule(ProbeMolecule(value));
+        try
+        {
+          double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceArea();
+          volumetricDataEditor->setStructureGravimetricNitrogenSurfaceArea(surfaceArea);
+          volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
+          volumetricDataEditor->recomputeDensityProperties();
+        }
+        catch(const char *e)
+        {
+          // print error
+        }
       }
       if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
       {
@@ -3762,13 +3773,7 @@ void CellTreeWidgetController::setFrameworkProbeMolecule(int value)
       }
     }
 
-    std::vector<std::shared_ptr<RKRenderObject>> render_structures{};
-    std::transform(_iraspa_structures.begin(),_iraspa_structures.end(),std::back_inserter(render_structures),
-                    [](std::shared_ptr<iRASPAObject> iraspastructure) -> std::shared_ptr<RKRenderObject> {return iraspastructure->object();});
-
-    emit computeNitrogenSurfaceArea(render_structures);
     this->reloadStructureProperties();
-
     reloadFrameworkProbeMoleculePopupBox();
 
     _mainWindow->documentWasModified();
@@ -4832,9 +4837,16 @@ void CellTreeWidgetController::computeHeliumVoidFractionPushButton()
   {
     if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
     {
-      double heliumVoidfraction = volumetricDataEditor->computeVoidFraction();
-      volumetricDataEditor->setStructureHeliumVoidFraction(heliumVoidfraction);
-      volumetricDataEditor->recomputeDensityProperties();
+      try
+      {
+        double heliumVoidfraction = volumetricDataEditor->computeVoidFraction();
+        volumetricDataEditor->setStructureHeliumVoidFraction(heliumVoidfraction);
+        volumetricDataEditor->recomputeDensityProperties();
+      }
+      catch(const char *e)
+      {
+        // print error
+      }
     }
   }
 
@@ -4849,10 +4861,17 @@ void CellTreeWidgetController::computeGravimetricSurfaceAreaPushButton()
   {
     if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
     {
-      double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceArea();
-      volumetricDataEditor->setStructureGravimetricNitrogenSurfaceArea(surfaceArea);
-      volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
-      volumetricDataEditor->recomputeDensityProperties();
+      try
+      {
+        double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceArea();
+        volumetricDataEditor->setStructureGravimetricNitrogenSurfaceArea(surfaceArea);
+        volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
+        volumetricDataEditor->recomputeDensityProperties();
+      }
+      catch(const char *e)
+      {
+         // print error
+      }
     }
   }
 

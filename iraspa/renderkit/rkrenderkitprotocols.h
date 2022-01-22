@@ -374,8 +374,8 @@ class RKRenderViewController
 
   virtual void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
   virtual void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
-  virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
-  virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
+ // virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
+ // virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures) = 0;
 
   virtual void updateTransformUniforms() = 0;
   virtual void updateStructureUniforms() = 0;

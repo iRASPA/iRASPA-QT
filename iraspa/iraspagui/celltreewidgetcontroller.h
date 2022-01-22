@@ -275,8 +275,6 @@ signals:
   void rendererReloadBoundingBoxData();
   void reloadAllViews();
   void redrawWithQuality(RKRenderQuality quality);
-  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures);
-  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures);
   void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
   void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };

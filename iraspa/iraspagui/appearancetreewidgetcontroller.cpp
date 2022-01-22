@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QComboBox>
 #include <QColorDialog>
+#include <QStandardItemModel>
+#include <QStandardItem>
 #include <QColor>
 #include <memory>
 #include "qcolorhash.h"

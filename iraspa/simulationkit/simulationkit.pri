@@ -1,7 +1,7 @@
 INCLUDEPATH += $$PWD
 
 contains(DEFINES,USE_OPENGL){
-   include(opengl/opengl.pri)
+   include(opencl/opencl.pri)
   }
 
 SOURCES += \

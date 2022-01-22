@@ -1641,23 +1641,6 @@ void RenderStackedWidget::updateControlPanel()
   hideToolBarMenuMenu();
 }
 
-
-void RenderStackedWidget::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)
-{
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
-  {
-    widget->computeHeliumVoidFraction(structures);
-  }
-}
-
-void RenderStackedWidget::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)
-{
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
-  {
-    widget->computeNitrogenSurfaceArea(structures);
-  }
-}
-
 void RenderStackedWidget::exportToPDB() const
 {
   if(std::shared_ptr<ProjectStructure> project = this->_project.lock())

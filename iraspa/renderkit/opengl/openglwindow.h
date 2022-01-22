@@ -60,7 +60,6 @@
 #include "openglenergyvolumerenderedsurface.h"
 #include "rkcamera.h"
 #include "trackball.h"
-#include "skopenclenergygridunitcell.h"
 #include "openglbondselectionshader.h"
 #include "openglboundingboxshader.h"
 #include "openglpickingshader.h"
@@ -134,14 +133,10 @@ public:
   QImage renderSceneToImage(int width, int height, RKRenderQuality quality) override final;
   std::array<int,4> pickTexture(int x, int y, int width, int height) override final;
 
-  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
-  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
-
   void setControlPanel(bool iskeyAltOn);
   void updateControlPanel();
 private:
   bool _isOpenGLInitialized;
-  bool _isOpenCLInitialized;
   GLuint _program;
   RKRenderQuality _quality = RKRenderQuality::high;
   std::shared_ptr<RKRenderDataSource> _dataSource;
@@ -197,17 +192,6 @@ private:
   OpenGLPickingShader _pickingShader;
 
   OpenGLTextRenderingShader _textShader;
-
-#if defined (Q_OS_OSX)
-  void initializeCL_Mac(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue);
-#elif defined(Q_OS_WIN)
-  void initializeCL_Windows(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue);
-#elif defined(Q_OS_LINUX)
-  void initializeCL_Linux(cl_context &_clContext, cl_device_id &_clDeviceId, cl_command_queue &_clCommandQueue);
-#endif
-  std::optional<cl_device_id> bestOpenCLDevice(cl_device_type device_type);
-  void printDeviceInformation(cl_device_id &clDeviceId);
-  bool supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId);
 
   void drawSceneOpaqueToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio);
   void drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio);

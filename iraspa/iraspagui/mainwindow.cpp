@@ -143,8 +143,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::rendererReloadData,ui->stackedRenderers, &RenderStackedWidget::reloadRenderData);
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::rendererReloadBoundingBoxData,ui->stackedRenderers, &RenderStackedWidget::reloadBoundingBoxData);
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::redrawWithQuality,ui->stackedRenderers, &RenderStackedWidget::redrawWithQuality);
-  QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::computeHeliumVoidFraction,ui->stackedRenderers, &RenderStackedWidget::computeHeliumVoidFraction);
-  QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::computeNitrogenSurfaceArea,ui->stackedRenderers, &RenderStackedWidget::computeNitrogenSurfaceArea);
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::invalidateCachedAmbientOcclusionTextures,ui->stackedRenderers, &RenderStackedWidget::invalidateCachedAmbientOcclusionTextures);
   QObject::connect(ui->cellTreeWidget, &CellTreeWidgetController::invalidateCachedIsoSurfaces,ui->stackedRenderers, &RenderStackedWidget::invalidateCachedIsoSurfaces);
 

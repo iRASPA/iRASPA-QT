@@ -29,7 +29,7 @@
 #include <exception>
 #include <stdexcept>
 
-OpenGLEnergySurface::OpenGLEnergySurface(): _isOpenCLInitialized(false)
+OpenGLEnergySurface::OpenGLEnergySurface()
 {
 
 }
@@ -45,10 +45,6 @@ OpenGLEnergySurface::~OpenGLEnergySurface()
 void OpenGLEnergySurface::setLogReportingWidget(LogReporting *logReporting)
 {
   _logReporter = logReporting;
-  _energyGridUnitCell.setLogReportingWidget(logReporting);
-  _energyGridMarchingCubes.setLogReportingWidget(logReporting);
-  _findMinimumEnergyGridUnitCell.setLogReportingWidget(logReporting);
-  _voidFractionUnitCell.setLogReportingWidget(logReporting);
 }
 
 void OpenGLEnergySurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures)
@@ -60,24 +56,6 @@ void OpenGLEnergySurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRen
       cache.remove(structure.get());
     }
   }
-}
-
-void OpenGLEnergySurface::initializeOpenCL(bool isOpenCLInitialized, cl_context context, cl_device_id deviceId, cl_command_queue commandQueue, QStringList &logData)
-{
-  _isOpenCLInitialized = isOpenCLInitialized;
-
-  _clContext = context;
-  _clDeviceId = deviceId;
-  _clCommandQueue = commandQueue;
-
-  _energyGridUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
-  check_gl_error();
-  _energyGridMarchingCubes.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
-  check_gl_error();
-  _findMinimumEnergyGridUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
-  check_gl_error();
-  _voidFractionUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
-  check_gl_error();
 }
 
 void OpenGLEnergySurface::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
@@ -144,11 +122,6 @@ void OpenGLEnergySurface::reloadData()
 
 void OpenGLEnergySurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer)
 {
-  if(!_isOpenCLInitialized)
-  {
-    return;
-  }
-
   glDisable(GL_CULL_FACE);
   size_t index=0;
   glUseProgram(_program);
@@ -180,11 +153,6 @@ void OpenGLEnergySurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint is
 
 void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer)
 {
-  if(!_isOpenCLInitialized)
-  {
-    return;
-  }
-
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -228,11 +196,6 @@ void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLui
 
 void OpenGLEnergySurface::initializeVertexArrayObject()
 {
-  if(!_isOpenCLInitialized)
-  {
-    return;
-  }
-
   for(size_t i=0;i<_renderStructures.size();i++)
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
@@ -341,37 +304,7 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
   }
 }
 
-void OpenGLEnergySurface::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)
-{
-  if(!_isOpenCLInitialized)
-  {
-    return;
-  }
-/*
-  for(const std::shared_ptr<RKRenderObject> &structure: structures)
-  {
-      if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(structure.get()))
-    if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(structure.get()))
-    {
-      std::vector<cl_float>* gridData;
 
-      int sizeX = 128;
-      int sizeY = 128;
-      int sizeZ = 128;
-
-      double2 probeParameter = double2(10.9, 2.64);
-      std::vector<double3> positions = source->atomUnitCellPositions();
-      std::vector<double2> potentialParameters = source->potentialParameters();
-      double3x3 unitCell = renderStructure->cell()->unitCell();
-      int3 numberOfReplicas = renderStructure->cell()->numberOfReplicas(12.0);
-      gridData = _energyGridUnitCell.ComputeEnergyGrid(sizeX, sizeY, sizeZ, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
-
-      double voidFraction = _voidFractionUnitCell.computeVoidFraction(gridData);
-      //source->setStructureHeliumVoidFraction(voidFraction);
-      //source->recomputeDensityProperties();
-    }
-  }*/
-}
 
 void OpenGLEnergySurface::initializeTransformUniforms()
 {
@@ -395,66 +328,6 @@ void OpenGLEnergySurface::initializeLightUniforms()
 {
   glUniformBlockBinding(_program, glGetUniformBlockIndex(_program, "LightsUniformBlock"), 3);
   check_gl_error();
-}
-
-void OpenGLEnergySurface::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)
-{
-  if(!_isOpenCLInitialized)
-  {
-    return;
-  }
-/*
-  for(const std::shared_ptr<RKRenderObject> &structure: structures)
-  {
-      if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(structure.get()))
-    if (RKRenderAdsorptionSurfaceSource* source = dynamic_cast<RKRenderAdsorptionSurfaceSource*>(structure.get()))
-    {
-      GLuint localbuffer;
-      glGenBuffers(1, &localbuffer);
-
-      std::vector<cl_float>* gridData; // = std::make_shared<std::vector<cl_float>>();
-
-      int sizeX = 128;
-      int sizeY = 128;
-      int sizeZ = 128;
-
-      double2 probeParameter = source->frameworkProbeParameters();
-      std::vector<double3> positions = source->atomUnitCellPositions();
-      std::vector<double2> potentialParameters = source->potentialParameters();
-      double3x3 unitCell = renderStructure->cell()->unitCell();
-      int3 numberOfReplicas = renderStructure->cell()->numberOfReplicas(12.0);
-      gridData = _energyGridUnitCell.ComputeEnergyGrid(sizeX, sizeY, sizeZ, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
-
-      double isoValue = 0.0;  // modified from -probeParameter.x (leads to artificats)
-
-      glBindBuffer(GL_ARRAY_BUFFER, localbuffer);
-      check_gl_error();
-      int numberOfTriangles = _energyGridMarchingCubes.computeIsosurface(128, gridData, isoValue, localbuffer);
-
-      float4* pointer = reinterpret_cast<float4*>(glMapBufferRange(GL_ARRAY_BUFFER, 0, 3 * 3 * numberOfTriangles * sizeof(float4), GL_MAP_READ_BIT));
-      check_gl_error();
-
-      double totalArea=0.0;
-      for(int i=0; i<3*3*numberOfTriangles; i+=9)
-      {
-         double3 p1 = unitCell * double3(pointer[i].x,pointer[i].y,pointer[i].z);
-         double3 p2 = unitCell * double3(pointer[i+3].x,pointer[i+3].y,pointer[i+3].z);
-         double3 p3 = unitCell * double3(pointer[i+6].x,pointer[i+6].y,pointer[i+6].z);
-         double3 v = double3::cross(p2-p1,p3-p1);
-         double area = 0.5 * v.length();
-         if(std::isfinite(area) && fabs(area) < 1.0 )
-         {
-             totalArea += area;
-         }
-      }
-
-      glUnmapBuffer(GL_ARRAY_BUFFER);
-      check_gl_error();
-
-      source->setStructureNitrogenSurfaceArea(totalArea);
-      source->recomputeDensityProperties();
-    }
-  }*/
 }
 
 void OpenGLEnergySurface::loadShader(void)

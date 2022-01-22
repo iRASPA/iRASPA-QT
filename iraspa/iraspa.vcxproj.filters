@@ -1104,13 +1104,13 @@
     <ClCompile Include="symmetrykit\skcolorsets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simulationkit\opengl\skcomputeenergygrid.cpp">
+    <ClCompile Include="simulationkit\opencl\skcomputeenergygrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simulationkit\opengl\skcomputeisosurface.cpp">
+    <ClCompile Include="simulationkit\opencl\skcomputeisosurface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simulationkit\opengl\skcomputevoidfraction.cpp">
+    <ClCompile Include="simulationkit\opencl\skcomputevoidfraction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\skelement.cpp">
@@ -1140,19 +1140,7 @@
     <ClCompile Include="symmetrykit\skonethirdseitzmatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simulationkit\opengl\skopencl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="simulationkit\opengl\skopenclenergygridunitcell.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="simulationkit\opengl\skopenclfindminmumenergygridunitcell.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="simulationkit\opengl\skopenclmarchingcubes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="simulationkit\opengl\skopenclvoidfractionunitcell.cpp">
+    <ClCompile Include="simulationkit\opencl\skopencl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="symmetrykit\skparser.cpp">
@@ -2348,13 +2336,13 @@
     <ClInclude Include="symmetrykit\skcolorsets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="simulationkit\opengl\skcomputeenergygrid.h">
+    <ClInclude Include="simulationkit\opencl\skcomputeenergygrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="simulationkit\opengl\skcomputeisosurface.h">
+    <ClInclude Include="simulationkit\opencl\skcomputeisosurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="simulationkit\opengl\skcomputevoidfraction.h">
+    <ClInclude Include="simulationkit\opencl\skcomputevoidfraction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skdefinitions.h">
@@ -2387,19 +2375,7 @@
     <ClInclude Include="symmetrykit\skonethirdseitzmatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="simulationkit\opengl\skopencl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simulationkit\opengl\skopenclenergygridunitcell.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simulationkit\opengl\skopenclfindminmumenergygridunitcell.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simulationkit\opengl\skopenclmarchingcubes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simulationkit\opengl\skopenclvoidfractionunitcell.h">
+    <ClInclude Include="simulationkit\opencl\skopencl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="symmetrykit\skparser.h">

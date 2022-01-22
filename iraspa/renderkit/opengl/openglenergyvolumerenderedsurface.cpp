@@ -25,7 +25,7 @@
 #include "rkrenderuniforms.h"
 #include <QDebug>
 
-OpenGLEnergyVolumeRenderedSurface::OpenGLEnergyVolumeRenderedSurface(): _isOpenCLInitialized(false)
+OpenGLEnergyVolumeRenderedSurface::OpenGLEnergyVolumeRenderedSurface()
 {
 
 }
@@ -33,18 +33,6 @@ OpenGLEnergyVolumeRenderedSurface::OpenGLEnergyVolumeRenderedSurface(): _isOpenC
 void OpenGLEnergyVolumeRenderedSurface::setLogReportingWidget(LogReporting *logReporting)
 {
   _logReporter = logReporting;
-}
-
-void OpenGLEnergyVolumeRenderedSurface::initializeOpenCL(bool isOpenCLInitialized, cl_context context, cl_device_id deviceId, cl_command_queue commandQueue, QStringList &logData)
-{
-  _isOpenCLInitialized = isOpenCLInitialized;
-
-  _clContext = context;
-  _clDeviceId = deviceId;
-  _clCommandQueue = commandQueue;
-
-  _energyGridUnitCell.initialize(isOpenCLInitialized, context, deviceId, commandQueue, logData);
-  check_gl_error();
 }
 
 void OpenGLEnergyVolumeRenderedSurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures)
@@ -118,9 +106,6 @@ void OpenGLEnergyVolumeRenderedSurface::setRenderStructures(std::vector<std::vec
 
 void OpenGLEnergyVolumeRenderedSurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture)
 {
-  if(!_isOpenCLInitialized)
-      return;
-
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 
@@ -188,9 +173,6 @@ void OpenGLEnergyVolumeRenderedSurface::paintGLOpaque(GLuint structureUniformBuf
 
 void OpenGLEnergyVolumeRenderedSurface::paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture)
 {
-  if(!_isOpenCLInitialized)
-      return;
-
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 
@@ -304,11 +286,6 @@ void OpenGLEnergyVolumeRenderedSurface::initializeTransferFunctionTexture()
 
 void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
 {
-  if(!_isOpenCLInitialized)
-  {
-    return;
-  }
-
   CubeGeometry sphere = CubeGeometry();
 
   for(size_t i=0;i<_renderStructures.size();i++)

@@ -24,6 +24,7 @@
 #include <QFontDatabase>
 #include <QTranslator>
 #include <QLibraryInfo>
+#include <QSurfaceFormat>
 
 #ifdef Q_OS_WIN
  #include <windows.h>

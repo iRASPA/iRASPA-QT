@@ -111,8 +111,6 @@ public slots:
   void resizeEvent(QResizeEvent *event) override final;
   void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
   void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
-  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures);
-  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures);
   void pressedTranslateCartesianMinusX();
   void pressedTranslateCartesianPlusX();
   void pressedTranslateCartesianMinusY();

@@ -49,7 +49,6 @@ public:
   OpenGLEnergySurface();
   ~OpenGLEnergySurface() override final;
   void loadShader(void) override final;
-  void initializeOpenCL(bool isOpenCLInitialized, cl_context _clContext, cl_device_id _clDeviceId, cl_command_queue _clCommandQueue, QStringList &logData);
   void deleteBuffers();
   void generateBuffers();
   void paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer);
@@ -62,16 +61,12 @@ public:
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   GLuint program() {return _program;}
   void invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures);
-  void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures);
-  void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures);
-  void setGLInteroperability(bool value) {_energyGridMarchingCubes.setGLInteroperability(value);}
 
   void initializeTransformUniforms();
   void initializeStructureUniforms();
   void initializeIsosurfaceUniforms();
   void initializeLightUniforms();
 private:
-  bool _isOpenCLInitialized;
   GLuint _program;
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
@@ -87,14 +82,6 @@ private:
   std::vector<std::vector<GLuint>> _surfaceVertexBuffer;
   std::vector<std::vector<GLuint>> _surfaceIndexBuffer;
   std::vector<std::vector<GLuint>> _surfaceInstancePositionBuffer;
-
-  cl_context _clContext;
-  cl_device_id _clDeviceId;
-  cl_command_queue _clCommandQueue;
-  SKOpenCLEnergyGridUnitCell _energyGridUnitCell;
-  SKOpenCLMarchingCubes _energyGridMarchingCubes;
-  SKOpenCLFindMinmumEnergyGridUnitCell _findMinimumEnergyGridUnitCell;
-  SKOpenCLVoidFractionUnitCell _voidFractionUnitCell;
 
   std::array<QCache<RKRenderObject*, std::vector<cl_float>>,9> _caches;
 

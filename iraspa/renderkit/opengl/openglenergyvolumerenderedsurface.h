@@ -47,7 +47,6 @@ class OpenGLEnergyVolumeRenderedSurface final: public OpenGLShader, public LogRe
 {
 public:
   OpenGLEnergyVolumeRenderedSurface();
-  void initializeOpenCL(bool isOpenCLInitialized, cl_context _clContext, cl_device_id _clDeviceId, cl_command_queue _clCommandQueue, QStringList &logData);
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   void paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
   void paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
@@ -64,7 +63,6 @@ public:
   void generateBuffers();
   void invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures);
 private:
-  bool _isOpenCLInitialized;
   GLuint _program;
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
@@ -99,7 +97,6 @@ private:
   cl_context _clContext;
   cl_device_id _clDeviceId;
   cl_command_queue _clCommandQueue;
-  SKOpenCLEnergyGridUnitCell _energyGridUnitCell;
 
   std::array<QCache<RKRenderObject*, std::vector<float4>>,9> _caches;
 
