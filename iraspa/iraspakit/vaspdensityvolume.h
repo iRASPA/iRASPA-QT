@@ -21,6 +21,7 @@
 
 #pragma  once
 
+#include <QDataStream>
 #include "structure.h"
 #include "gridvolume.h"
 #include "symmetrykit.h"

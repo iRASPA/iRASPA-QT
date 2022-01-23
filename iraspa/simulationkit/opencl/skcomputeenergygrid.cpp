@@ -22,6 +22,8 @@
 
 #include "skcomputeenergygrid.h"
 #include <QString>
+#include <cmath>
+#include <algorithm>
 
 SKComputeEnergyGrid::SKComputeEnergyGrid(): SKOpenCL()
 {
@@ -69,7 +71,79 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
   int temp = size.x*size.y*size.z;
   cl_int err = 0;
 
-  if(!_isOpenCLReady) {throw "OpenCL not ready";}
+  if(!_isOpenCLReady)
+  {
+    // brute-force implementation
+    std::vector<cl_float> outputData = std::vector<cl_float>(temp);
+
+    double3 correction = double3(1.0/double(numberOfReplicas.x), 1.0/double(numberOfReplicas.y), 1.0/double(numberOfReplicas.z));
+
+    double3x3 replicaCell = double3x3(double(numberOfReplicas.x) * unitCell[0],
+                                      double(numberOfReplicas.y) * unitCell[1],
+                                      double(numberOfReplicas.z) * unitCell[2]);
+
+    int totalNumberOfReplicas = numberOfReplicas.x * numberOfReplicas.y * numberOfReplicas.z;
+    std::vector<double3> replicaVector(totalNumberOfReplicas);
+    int index = 0;
+    for(int i=0; i<numberOfReplicas.x; i++)
+    {
+      for(int j=0; j<numberOfReplicas.y; j++)
+      {
+        for(int k=0; k<numberOfReplicas.z; k++)
+        {
+          replicaVector[index] = double3((double(i)/double(numberOfReplicas.x)),
+                                         (double(j)/double(numberOfReplicas.y)),
+                                         (double(k)/double(numberOfReplicas.z)));
+          index += 1;
+        }
+      }
+    }
+
+    for(int z=0; z<size.z;z++)
+    {
+      for(int y=0; y<size.y; y++)
+      {
+        for(int x=0 ; x<size.x; x++)
+        {
+          double3 gridPosition = correction * double3(double(x)/double(size.x-1),double(y)/double(size.y-1),double(z)/double(size.z-1));
+
+          double value = 0.0;
+          for(size_t i=0 ; i<numberOfAtoms; i++)
+          {
+            double3 position = correction * positions[i];
+            double2 currentPotentialParameters = potentialParameters[i];
+
+            // use 4 x epsilon for a probe epsilon of unity
+            double epsilon = cl_float(4.0*sqrt(currentPotentialParameters.x * probeParameter.x));
+
+            // mixing rule for the atom and the probe
+            double sigma = cl_float(0.5 * (currentPotentialParameters.y + probeParameter.y));
+
+            for(int j=0;j<totalNumberOfReplicas;j++)
+            {
+              double3 ds = gridPosition - position - replicaVector[j];
+              ds.x -= std::rint(ds.x);
+              ds.y -= std::rint(ds.y);
+              ds.z -= std::rint(ds.z);
+              double3 dr = replicaCell * ds;
+
+              double rr = dr.x*dr.x + dr.y*dr.y + dr.z*dr.z;
+              if (rr<12.0*12.0)
+              {
+                double sigma2rr = sigma*sigma/rr;
+                double rri3 = sigma2rr * sigma2rr * sigma2rr;
+                value += epsilon*(rri3*(rri3-1.0f));
+              }
+            }
+          }
+
+          outputData[x + y* size.x + z * size.x * size.y] += std::min(value,10000000.0);
+        }
+      }
+    }
+
+    return outputData;
+  }
 
   // make sure the the global work size is an multiple of the work group size
   // (detected on NVIDIA)

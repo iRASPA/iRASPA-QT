@@ -5,6 +5,5 @@ error("Use the qmake include with Qt5 or greater, on Ubuntu that is qmake");
 }
 
 TEMPLATE = subdirs
-SUBDIRS  = iraspa \
-           tests
+SUBDIRS  = iraspa
 CONFIG += ordered warn_on qt debug_and_release

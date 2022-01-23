@@ -23,6 +23,7 @@
 
 #include <QDebug>
 #include <QModelIndex>
+#include <QDataStream>
 #include <vector>
 
 

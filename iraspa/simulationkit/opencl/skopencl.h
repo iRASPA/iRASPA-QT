@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <array>
 #include <vector>
+#include <optional>
 
 #define CL_TARGET_OPENCL_VERSION 120
 #ifdef Q_OS_MACOS

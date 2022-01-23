@@ -1519,7 +1519,7 @@ void Structure::toggleAtomSelection(int asymmetricAtomId)
 
 void Structure::toggleBondSelection(int asymmetricBondId)
 {
-  std::set<int64_t>::const_iterator search = _bondSetController->selectionIndexSet().find(asymmetricBondId);
+  std::set<qint64>::const_iterator search = _bondSetController->selectionIndexSet().find(asymmetricBondId);
   if (search != _bondSetController->selectionIndexSet().end())
   {
     _bondSetController->selectionIndexSet().erase(*search);

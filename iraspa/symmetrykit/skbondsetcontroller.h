@@ -48,7 +48,7 @@ struct bond_indexSet_compare_greater_than
   }
 };
 
-using BondSelectionIndexSet = std::set<int64_t>;
+using BondSelectionIndexSet = std::set<qint64>;
 using BondSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<SKAsymmetricBond>, int64_t>, bond_indexSet_compare_less>;
 using ReversedBondSelectionNodesAndIndexSet = std::set<std::pair<std::shared_ptr<SKAsymmetricBond>, int64_t>, bond_indexSet_compare_greater_than>;
 

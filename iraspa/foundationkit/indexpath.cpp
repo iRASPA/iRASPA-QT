@@ -199,7 +199,7 @@ QDebug operator<<(QDebug debug, const IndexPath &c)
 
 QDataStream &operator<<(QDataStream& stream, const std::vector<IndexPath>& val)
 {
-  stream << static_cast<int32_t>(val.size());
+  stream << static_cast<qint32>(val.size());
   for(const IndexPath& singleVal : val)
     stream << singleVal;
   return stream;
@@ -207,7 +207,7 @@ QDataStream &operator<<(QDataStream& stream, const std::vector<IndexPath>& val)
 
 QDataStream &operator>>(QDataStream& stream, std::vector<IndexPath>& val)
 {
-  int32_t vecSize;
+  qint32 vecSize;
   val.clear();
   stream >> vecSize;
   val.reserve(vecSize);
@@ -224,7 +224,7 @@ QDataStream &operator>>(QDataStream& stream, std::vector<IndexPath>& val)
 
 QDataStream &operator<<(QDataStream &stream, const IndexPath &indexPath)
 {
-  stream << static_cast<int32_t>(indexPath._path.size());
+  stream << static_cast<qint32>(indexPath._path.size());
   for(const size_t singleVal : indexPath._path)
      stream << qint64(singleVal);
   return stream;
@@ -232,7 +232,7 @@ QDataStream &operator<<(QDataStream &stream, const IndexPath &indexPath)
 
 QDataStream &operator>>(QDataStream &stream, IndexPath &indexPath)
 {
-  int32_t vecSize;
+  qint32 vecSize;
   indexPath._path.clear();
   stream >> vecSize;
   indexPath._path.reserve(vecSize);

@@ -21,6 +21,7 @@
 
 #pragma  once
 
+#include <QDataStream>
 #include <vector>
 #include <tuple>
 #include <mathkit.h>
@@ -156,7 +157,7 @@ protected:
   double _adsorptionSurfaceOpacity = 1.0;
   double _adsorptionTransparencyThreshold = 0.0;
   double _adsorptionSurfaceIsoValue = 0.0;
-  int64_t _encompassingPowerOfTwoCubicGridSize= 7;
+  qint64 _encompassingPowerOfTwoCubicGridSize= 7;
 
   ProbeMolecule _adsorptionSurfaceProbeMolecule = ProbeMolecule::helium;
 

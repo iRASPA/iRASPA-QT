@@ -24,6 +24,7 @@
 #include <QString>
 #include <QColor>
 #include <QDate>
+#include <QDataStream>
 #include <utility>
 #include <type_traits>
 #include <mathkit.h>
