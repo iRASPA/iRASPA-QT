@@ -1609,7 +1609,7 @@ std::vector<float> MolecularCrystal::gridData()
     _adsorptionVolumeStepLength = 0.25 / double(size);
 
     const auto [min, max] = std::minmax_element(begin(gridData), end(gridData));
-    _range = std::pair(double(*min),double(*max));
+    _range = std::pair(double(*min), 0.0);
     return gridData;
   }
   catch (char const* e)

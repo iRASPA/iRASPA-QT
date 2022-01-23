@@ -20,6 +20,7 @@
  ********************************************************************************************************************/
 
 #include "skcomputeisosurface.h"
+#include "marchingcubes.h"
 
 SKComputeIsosurface::SKComputeIsosurface(): SKOpenCL()
 {
@@ -118,7 +119,56 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
   std::vector<cl_mem> images;
   std::vector<cl_mem> buffers;
 
-  if(!_isOpenCLReady) {throw "OpenCL not ready";}
+  if(!_isOpenCLReady)
+  {
+    // brute force implementation
+    // Create marching cubes object
+    MarchingCubes cube(dimensions.x,dimensions.y,dimensions.z);
+
+    // Initiate the cube
+    cube.init_all();
+
+    // Set the data
+    for(int i=0; i<dimensions.x; i++)
+    {
+      for(int j=0; j<dimensions.y; j++)
+      {
+        for(int k=0; k<dimensions.z; k++)
+        {
+          double value = (*voxels)[i + dimensions.x * j + k * dimensions.x * dimensions.y];
+          cube.set_data(value, i, j, k);
+        }
+      }
+    }
+
+    cube.run( isoValue );
+
+    int numberOfTriangles = cube.ntrigs();
+    std::vector<float4> data{};
+    data.reserve(3*3*numberOfTriangles);
+
+    // Fetch the info
+    for(int i=0; i<cube.ntrigs(); i++)
+    {
+      const Triangle* tri = cube.trig(i);
+
+      const Vertex* vertex1 = cube.vert(tri->v1);
+      data.push_back(double4(vertex1->x/dimensions.x,vertex1->y/dimensions.y,vertex1->z/dimensions.z,1.0));
+      data.push_back(double4(vertex1->nx,vertex1->ny,vertex1->nz,0.0));
+      data.push_back(double4(0.0,0.0,0.0,0.0));
+
+      const Vertex* vertex2 = cube.vert(tri->v2);
+      data.push_back(double4(vertex2->x/dimensions.x,vertex2->y/dimensions.y,vertex2->z/dimensions.z,1.0));
+      data.push_back(double4(vertex2->nx,vertex2->ny,vertex2->nz,0.0));
+      data.push_back(double4(0.0,0.0,0.0,0.0));
+
+      const Vertex* vertex3 = cube.vert(tri->v3);
+      data.push_back(double4(vertex3->x/dimensions.x,vertex3->y/dimensions.y,vertex3->z/dimensions.z,1.0));
+      data.push_back(double4(vertex3->nx,vertex3->ny,vertex3->nz,0.0));
+      data.push_back(double4(0.0,0.0,0.0,0.0));
+    }
+    return data;
+  }
 
   for(int i=1; i<powerOfTwo; i++)
   {

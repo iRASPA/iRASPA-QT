@@ -516,6 +516,9 @@
     <ClCompile Include="iraspagui\mainwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simulationkit\marchingcubes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="iraspagui\masterstackedwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1727,9 +1730,15 @@
     <CustomBuild Include="iraspagui\logviewcontroller.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <ClInclude Include="simulationkit\lookuptable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <CustomBuild Include="iraspagui\mainwindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <ClInclude Include="simulationkit\marchingcubes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <CustomBuild Include="iraspagui\masterstackedwidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>

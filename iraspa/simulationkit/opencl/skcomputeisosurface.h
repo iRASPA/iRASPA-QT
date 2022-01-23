@@ -43,7 +43,8 @@
 class SKComputeIsosurface: public SKOpenCL
 {
 public:
-
+    SKComputeIsosurface(SKOpenCL const&) = delete;
+    void operator=(SKComputeIsosurface const&) = delete;
   static std::vector<float4> computeIsosurface(int3 dimensions, std::vector<cl_float>* voxels, double isoValue);
 private:
   SKComputeIsosurface();
@@ -63,7 +64,4 @@ private:
     return instance;
   }
   std::vector<float4> computeIsosurfaceImpl(int3 dimensions, std::vector<cl_float>* voxels, double isoValue);
-public:
-  SKComputeIsosurface(SKOpenCL const&) = delete;
-  void operator=(SKComputeIsosurface const&) = delete;
 };
