@@ -1609,6 +1609,7 @@ std::vector<float> MolecularCrystal::gridData()
     _adsorptionVolumeStepLength = 0.25 / double(size);
 
     const auto [min, max] = std::minmax_element(begin(gridData), end(gridData));
+            qDebug() << "FOUND min/max: " << *min << *max;
     _range = std::pair(double(*min), 0.0);
     return gridData;
   }

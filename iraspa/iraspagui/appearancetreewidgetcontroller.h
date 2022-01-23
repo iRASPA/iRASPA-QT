@@ -438,15 +438,16 @@ private:
   void setAdsorptionSurfaceProbeMolecule(int value);
   std::optional<std::unordered_set<ProbeMolecule, enum_hash> > adsorptionSurfaceProbeMolecule();
   void setAdsorptionSurfaceIsovalue(double value);
-  std::optional<std::unordered_set<double>> adsorptionSurfaceIsovalue();
-  std::optional<std::unordered_set<double>> adsorptionSurfaceMinimumValue();
-  std::optional<std::unordered_set<double>> adsorptionSurfaceMaximumValue();
+  std::optional<std::set<double>> adsorptionSurfaceIsovalue();
+  double adsorptionSurfaceMinimumValue();
+  double adsorptionSurfaceMaximumValue();
   void setAdsorptionSurfaceOpacity(double value);
   std::optional<std::unordered_set<double>> adsorptionSurfaceOpacity();
   void setAdsorptionTransparencyThreshold(double value);
   std::optional<std::unordered_set<double>> adsorptionTransparencyThreshold();
   void setAdsorptionQualityIndex(int value);
   std::optional<std::unordered_set<int> > adsorptionQualityIndex();
+  std::optional<std::unordered_set<bool> > adsorptionQualityIndexIsImmutable();
 
   void setAdsorptionSurfaceHue(double value);
   std::optional<std::unordered_set<double> > adsorptionSurfaceHue();

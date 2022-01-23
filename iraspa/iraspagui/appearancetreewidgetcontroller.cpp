@@ -8633,7 +8633,6 @@ void AppearanceTreeWidgetController::reloadAdsorptionVolumeTransferFunction()
 
 void AppearanceTreeWidgetController::reloadAdsorptionVolumeStepLength()
 {
-  qDebug() << "reloadAdsorptionVolumeStepLength";
   _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setDisabled(true);
 
   if(_projectTreeNode)
@@ -8647,7 +8646,6 @@ void AppearanceTreeWidgetController::reloadAdsorptionVolumeStepLength()
 
         if(values->size()==1)
         {
-          qDebug() << "Set value to: " << *(values->begin());
           whileBlocking(_appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox)->setValue(*(values->begin()));
         }
       }
@@ -8664,34 +8662,22 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceIsovalue()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceMinimumValue(); values)
+      double minimumValue = adsorptionSurfaceMinimumValue();
+      whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleMinimum(minimumValue);
+      whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setMinimum(minimumValue);
+
+      double maximumValue = adsorptionSurfaceMaximumValue();
+      whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleMaximum(maximumValue);
+      whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setMaximum(100000.0); //do not limit the doubleSpinBox to a maximum
+
+      if (std::optional<std::set<double>> values = adsorptionSurfaceIsovalue(); values)
       {
         _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setEnabled(true);
         _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
         _appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider->setEnabled(_projectTreeNode->isEditable());
 
-        if(values->size()>=1)
-        {
-          // TODO: perhaps better to find min and max in set
-          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleMinimum(*(values->begin()));
-          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setMinimum(*(values->begin()));
-        }
-      }
-
-      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceMaximumValue(); values)
-      {
-        if(values->size()>=1)
-        {
-          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleMaximum(*(values->begin()));
-          whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setMaximum(*(values->begin()));
-        }
-      }
-
-      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceIsovalue(); values)
-      {
         if(values->size()==1)
         {
-            qDebug() << "Isovalue: " << *(values->begin());
           whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox)->setValue(*(values->begin()));
           whileBlocking(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider)->setDoubleValue(*(values->begin()));
         }
@@ -8776,6 +8762,13 @@ void AppearanceTreeWidgetController::reloadAdsorptionQuality()
 
         if(values->size()==1)
         {
+          if (std::optional<std::unordered_set<bool>> immvalues = adsorptionQualityIndexIsImmutable(); immvalues)
+          {
+            if(immvalues->size()==1)
+            {
+              _appearanceAdsorptionSurfaceForm->qualityComboBox->setDisabled(*(immvalues->begin()));
+            }
+          }
           if(int index = _appearanceAdsorptionSurfaceForm->qualityComboBox->findText("Multiple values"); index>=0)
           {
             whileBlocking(_appearanceAdsorptionSurfaceForm->qualityComboBox)->removeItem(index);
@@ -9587,13 +9580,13 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue(double value)
   _mainWindow->documentWasModified();
 }
 
-std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceIsovalue()
+std::optional<std::set<double> > AppearanceTreeWidgetController::adsorptionSurfaceIsovalue()
 {
   if(_iraspa_structures.empty())
   {
     return std::nullopt;
   }
-  std::unordered_set<double> set = std::unordered_set<double>{};
+  std::set<double> set = std::set<double>{};
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
     if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
@@ -9611,50 +9604,43 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorp
 }
 
 
-std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceMinimumValue()
+double AppearanceTreeWidgetController::adsorptionSurfaceMinimumValue()
 {
   if(_iraspa_structures.empty())
   {
-    return std::nullopt;
+    return 0.0;
   }
-  std::unordered_set<double> set = std::unordered_set<double>{};
+
+  double minimumValue = std::numeric_limits<double>::max();
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
     if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->range().first;
-      set.insert(value);
+      if(value < minimumValue) minimumValue = value;
     }
   }
 
-  if(!set.empty())
-  {
-    return set;
-  }
-  return std::nullopt;
+  return minimumValue;
 }
 
-std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceMaximumValue()
+double AppearanceTreeWidgetController::adsorptionSurfaceMaximumValue()
 {
   if(_iraspa_structures.empty())
   {
-    return std::nullopt;
+    return 1.0;
   }
-  std::unordered_set<double> set = std::unordered_set<double>{};
+  double maximumValue = std::numeric_limits<double>::lowest();
   for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
   {
     if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       double value = adsorptionViewer->range().second;
-      set.insert(value);
+      if(value > maximumValue) maximumValue = value;
     }
   }
 
-  if(!set.empty())
-  {
-    return set;
-  }
-  return std::nullopt;
+  return maximumValue;
 }
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity(double value)
@@ -9750,12 +9736,7 @@ void AppearanceTreeWidgetController::setAdsorptionQualityIndex(int value)
     {
       if (std::shared_ptr<VolumetricDataEditor> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataEditor>(iraspa_structure->object()))
       {
-          // FIX
-        //if(!adsorptionViewer->isImmutable())
-        //{
-          qDebug() << "SETTING setEncompassingPowerOfTwoCubicGridSize";
-          adsorptionViewer->setEncompassingPowerOfTwoCubicGridSize(value);
-        //}
+        adsorptionViewer->setEncompassingPowerOfTwoCubicGridSize(value);
       }
     }
 
@@ -9783,6 +9764,29 @@ std::optional<std::unordered_set<int>> AppearanceTreeWidgetController::adsorptio
     if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
     {
       int value = adsorptionViewer->encompassingPowerOfTwoCubicGridSize();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::adsorptionQualityIndexIsImmutable()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<bool> set = {};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      bool value = adsorptionViewer->isImmutable();
       set.insert(value);
     }
   }

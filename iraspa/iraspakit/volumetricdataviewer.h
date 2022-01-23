@@ -40,6 +40,7 @@ public:
   virtual bool drawAdsorptionSurface() const  = 0;
   virtual void setDrawAdsorptionSurface(bool state)  = 0;
   virtual int encompassingPowerOfTwoCubicGridSize() const = 0;
+  virtual bool isImmutable() const = 0;
   virtual std::pair<double,double> range() const = 0;
   virtual int3 dimensions() const = 0;
   virtual double3 spacing() const = 0;
