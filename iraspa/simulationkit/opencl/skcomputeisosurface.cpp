@@ -135,7 +135,7 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
       {
         for(int k=0; k<dimensions.z; k++)
         {
-          double value = (*voxels)[i + dimensions.x * j + k * dimensions.x * dimensions.y];
+          double value = (*voxels)[i + size * j + k * size * size];
           cube.set_data(value, i, j, k);
         }
       }
