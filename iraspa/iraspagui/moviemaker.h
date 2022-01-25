@@ -45,12 +45,12 @@ extern "C"
 class MovieWriter
 {
 public :
-  enum class Type: qint64
+  enum class Format: qint64
   {
     h265 = 0, h264 = 1, vp9 = 2, av1 = 3
   };
 
-  MovieWriter(const unsigned int width, const unsigned int height, int fps, LogReporting *logReporting, Type type);
+  MovieWriter(const unsigned int width, const unsigned int height, int fps, LogReporting *logReporting, Format type);
   ~MovieWriter();
   int initialize(const std::string& filename);
   int finalize();
@@ -59,7 +59,7 @@ public :
 
 private:
   LogReporting *_logReporter = nullptr;
-  Type _type;
+  Format _type;
 
   void encodeFrame(AVFrame *frame);
 

@@ -23,7 +23,7 @@
 #include <QDebug>
 #include <iostream>
 
-MovieWriter::MovieWriter(const unsigned int width, const unsigned int height, int fps, LogReporting* logReporter, Type type) :
+MovieWriter::MovieWriter(const unsigned int width, const unsigned int height, int fps, LogReporting* logReporter, Format type) :
     _logReporter(logReporter), _type(type), _width(width), _height(height), _fps(fps)
 {
 }
@@ -57,16 +57,16 @@ int MovieWriter::initialize(const std::string& filename)
   }
   switch(_type)
   {
-  case Type::h265:
+  case Format::h265:
     _oformat->video_codec = AV_CODEC_ID_HEVC;
     break;
-  case Type::h264:
+  case Format::h264:
     _oformat->video_codec = AV_CODEC_ID_H264;
     break;
-  case Type::vp9:
+  case Format::vp9:
     _oformat->video_codec = AV_CODEC_ID_VP9;
     break;
-  case Type::av1:
+  case Format::av1:
     _oformat->video_codec = AV_CODEC_ID_AV1;
     break;
   default:
@@ -158,17 +158,17 @@ int MovieWriter::initialize(const std::string& filename)
   codecpar->codec_tag = 0;
   switch(_type)
   {
-  case Type::h265:
+  case Format::h265:
     codecpar->codec_tag = MKTAG('h', 'v', 'c', '1'); // for h265
     codecpar->bit_rate = 5000000;
     break;
-  case Type::h264:
+  case Format::h264:
     codecpar->bit_rate = 5000000;
     break;
-  case Type::vp9:
+  case Format::vp9:
     codecpar->bit_rate = 5000000;
     break;
-  case Type::av1:
+  case Format::av1:
     codecpar->bit_rate = 5000000;
     break;
   default:

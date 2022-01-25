@@ -979,13 +979,13 @@ int nearestEvenInt(int to)
   return (to % 2 == 0) ? to : (to + 1);
 }
 
-void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, MovieWriter::Type type)
+void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, MovieWriter::Format format, ProjectStructure::MovieType movieType)
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     if (std::shared_ptr<ProjectStructure> project = _project.lock())
     {
-      MovieWriter movie(nearestEvenInt(width), nearestEvenInt(height), project->movieFramesPerSecond(), _logReporter, type);
+      MovieWriter movie(nearestEvenInt(width), nearestEvenInt(height), project->movieFramesPerSecond(), _logReporter, format);
       int ret = movie.initialize(fileURL.toLocalFile().toStdString());
       if (ret < 0)
       {
@@ -993,20 +993,41 @@ void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, Movie
         return;
       }
 
-      size_t numberOfFrames = project->maxNumberOfMoviesFrames();
-      for (size_t iframe = 0; iframe < numberOfFrames; iframe++)
+      switch(movieType)
       {
-        project->sceneList()->setSelectedFrameIndex(iframe);
+      case ProjectStructure::MovieType::frames:
+        {
+          size_t numberOfFrames = project->maxNumberOfMoviesFrames();
+          for (size_t iframe = 0; iframe < numberOfFrames; iframe++)
+          {
+            project->sceneList()->setSelectedFrameIndex(iframe);
 
-        std::vector<std::vector<std::shared_ptr<RKRenderObject>>> render_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
+            std::vector<std::vector<std::shared_ptr<RKRenderObject>>> render_structures = _project.lock()->sceneList()->selectediRASPARenderStructures();
 
-        renderViewController->setRenderStructures(render_structures);
-        renderViewController->reloadData();
+            renderViewController->setRenderStructures(render_structures);
+            renderViewController->reloadData();
 
-        invalidateCachedAmbientOcclusionTextures(project->sceneList()->allIRASPAStructures());
-        QImage image = widget->renderSceneToImage(nearestEvenInt(width), nearestEvenInt(height), RKRenderQuality::picture);
+            invalidateCachedAmbientOcclusionTextures(project->sceneList()->allIRASPAStructures());
+            QImage image = widget->renderSceneToImage(nearestEvenInt(width), nearestEvenInt(height), RKRenderQuality::picture);
 
-        movie.addFrame(image.bits(), iframe);
+            movie.addFrame(image.bits(), iframe);
+          }
+        }
+        break;
+      case ProjectStructure::MovieType::rotationY:
+        {
+          double theta = -3.0 * M_PI/180.0;
+          std::shared_ptr<RKCamera> camera = project->camera();
+          for(size_t iframe=0; iframe<120;iframe++)
+          {
+            QImage image = widget->renderSceneToImage(nearestEvenInt(width), nearestEvenInt(height), RKRenderQuality::picture);
+            movie.addFrame(image.bits(), iframe);
+            camera->rotateCameraAroundAxisY(theta);
+          }
+        }
+        break;
+      default:
+        break;
       }
       movie.finalize();
 

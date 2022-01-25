@@ -427,9 +427,12 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   _cameraPicturesForm->qualityComboBox->insertItem(2,"8-bits, CMYK");
   _cameraPicturesForm->qualityComboBox->insertItem(3,"16-bits, CMYK");
 
-  _cameraPicturesForm->movieTypeComboBox->insertItem(0,"hevc (h265)");
-  _cameraPicturesForm->movieTypeComboBox->insertItem(1,"h264");
-  _cameraPicturesForm->movieTypeComboBox->insertItem(2,"vp9");
+  _cameraPicturesForm->movieFormatComboBox->insertItem(0,"hevc (h265)");
+  _cameraPicturesForm->movieFormatComboBox->insertItem(1,"Format");
+  _cameraPicturesForm->movieFormatComboBox->insertItem(2,"vp9");
+
+  _cameraPicturesForm->movieTypeComboBox->insertItem(0,"Frames");
+  _cameraPicturesForm->movieTypeComboBox->insertItem(1,"Rotation Around Y");
 
   QObject::connect(_cameraPicturesForm->dotsPerInchComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CameraTreeWidgetController::setPictureDotsPerInch);
   QObject::connect(_cameraPicturesForm->qualityComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CameraTreeWidgetController::setPictureQuality);
@@ -445,7 +448,9 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   QObject::connect(_cameraPicturesForm->createPicturePushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::savePicture);
   QObject::connect(_cameraPicturesForm->createMoviePushButton,&QPushButton::clicked,this,&CameraTreeWidgetController::saveMovie);
 
+  QObject::connect(_cameraPicturesForm->movieFormatComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CameraTreeWidgetController::setMovieFormat);
   QObject::connect(_cameraPicturesForm->movieTypeComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CameraTreeWidgetController::setMovieType);
+  QObject::connect(_cameraPicturesForm->framesPerSecondSpinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),this,&CameraTreeWidgetController::setNumberOfFramesPerSecond);
 
 
   // Background
@@ -2044,6 +2049,7 @@ void CameraTreeWidgetController::reloadPictureProperties()
 
   _cameraPicturesForm->inchRadioButton->setDisabled(true);
   _cameraPicturesForm->cmRadioButton->setDisabled(true);
+  _cameraPicturesForm->movieFormatComboBox->setDisabled(true);
   _cameraPicturesForm->movieTypeComboBox->setDisabled(true);
   _cameraPicturesForm->framesPerSecondSpinBox->setDisabled(true);
 
@@ -2070,6 +2076,7 @@ void CameraTreeWidgetController::reloadPictureProperties()
 
     _cameraPicturesForm->inchRadioButton->setEnabled(true);
     _cameraPicturesForm->cmRadioButton->setEnabled(true);
+    _cameraPicturesForm->movieFormatComboBox->setEnabled(true);
     _cameraPicturesForm->movieTypeComboBox->setEnabled(true);
     _cameraPicturesForm->framesPerSecondSpinBox->setEnabled(true);
 
@@ -2121,7 +2128,8 @@ void CameraTreeWidgetController::reloadPictureProperties()
       break;
     }
 
-    whileBlocking(_cameraPicturesForm->movieTypeComboBox)->setCurrentIndex(int(_movieType));
+    whileBlocking(_cameraPicturesForm->movieFormatComboBox)->setCurrentIndex(int(_movieFormat));
+    whileBlocking(_cameraPicturesForm->movieTypeComboBox)->setCurrentIndex(int(_project->movieType()));
 
     whileBlocking(_cameraPicturesForm->framesPerSecondSpinBox)->setValue(_project->movieFramesPerSecond());
   }
@@ -2314,17 +2322,38 @@ void CameraTreeWidgetController::saveMovie()
       {
         int width = _project->renderImageNumberOfPixels();
         int height = _project->renderImageNumberOfPixels() / _project->imageAspectRatio();
-        emit rendererCreateMovie(fileURLs.first(), width, height, _movieType);
+        ProjectStructure::MovieType movieType = _project->movieType();
+        emit rendererCreateMovie(fileURLs.first(), width, height, _movieFormat, movieType);
       }
     }
   }
 }
 
-void CameraTreeWidgetController::setMovieType(int value)
+void CameraTreeWidgetController::setNumberOfFramesPerSecond(int value)
 {
-  _movieType = MovieWriter::Type(value);
+  if(_project)
+  {
+    _project->setMovieFramesPerSecond(value);
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+void CameraTreeWidgetController::setMovieFormat(int value)
+{
+  _movieFormat = MovieWriter::Format(value);
 
   _mainWindow->documentWasModified();
+}
+
+void CameraTreeWidgetController::setMovieType(int value)
+{
+  if(_project)
+  {
+    _project->setMovieType(ProjectStructure::MovieType(value));
+
+    _mainWindow->documentWasModified();
+  }
 }
 
 // Background properties

@@ -343,6 +343,29 @@ void RKCamera::resetCameraToDirection()
   resetCameraDistance();
 }
 
+void RKCamera::rotateCameraAroundAxisX(double theta)
+{
+  simd_quatd trackBallRotation = simd_quatd::fromAxisAngle(theta, double3(1.0,0.0,0.0));
+
+  _worldRotation = _worldRotation * trackBallRotation;
+}
+
+void RKCamera::rotateCameraAroundAxisY(double theta)
+{
+  simd_quatd trackBallRotation = simd_quatd::fromAxisAngle(theta, double3(0.0,1.0,0.0));
+
+  _worldRotation = _worldRotation * trackBallRotation;
+}
+
+void RKCamera::rotateCameraAroundAxisZ(double theta)
+{
+  simd_quatd trackBallRotation = simd_quatd::fromAxisAngle(theta, double3(0.0,0.0,1.0));
+
+  _worldRotation = _worldRotation * trackBallRotation;
+}
+
+
+
 void RKCamera::resetCameraDistance()
 {
   double3 delta = double3();

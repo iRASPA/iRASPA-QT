@@ -93,8 +93,11 @@ public:
   void setImageDimensions(RKImageDimensions dimensions) {_imageDimensions = dimensions;}
   RKImageQuality renderImageQuality() {return _renderImageQuality;}
   void setImageQuality(RKImageQuality quality) {_renderImageQuality = quality;}
+
   int movieFramesPerSecond() {return _movieFramesPerSecond;}
   void setMovieFramesPerSecond(int fps) {_movieFramesPerSecond = fps;}
+  MovieType movieType() {return _movieType;}
+  void setMovieType(MovieType value) {_movieType = value;}
   double imageDotsPerInchValue();
 
   size_t maxNumberOfMoviesFrames();

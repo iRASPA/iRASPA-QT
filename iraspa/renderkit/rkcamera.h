@@ -86,6 +86,10 @@ public:
   double rotationAngle() {return _rotationDelta;}
   void setRotationAngle(double angle) {_rotationDelta=angle;}
 
+  void rotateCameraAroundAxisX(double theta);
+  void rotateCameraAroundAxisY(double theta);
+  void rotateCameraAroundAxisZ(double theta);
+
   double bloomLevel() const {return _bloomLevel;}
   void setBloomLevel(double level) {_bloomLevel = level;}
   double bloomPulse() const {return _bloomPulse;}

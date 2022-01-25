@@ -72,7 +72,7 @@ private:
   std::weak_ptr<RKCamera> _camera;
   std::shared_ptr<ProjectStructure> _project;
 
-  MovieWriter::Type _movieType = MovieWriter::Type::h265;
+  MovieWriter::Format _movieFormat = MovieWriter::Format::h265;
 private slots:
   void expandCameraItem();
   void expandSelectionItem();
@@ -151,7 +151,10 @@ private slots:
   void setPictureUnitsToInch(bool checked);
   void setPictureUnitsToCentimeters(bool checked);
   void savePicture();
+
   void saveMovie();
+  void setNumberOfFramesPerSecond(int value);
+  void setMovieFormat(int value);
   void setMovieType(int value);
 
   void setBackgroundColor();
@@ -196,7 +199,7 @@ signals:
   void rendererReloadBackgroundImage();
   void updateRenderer();
   void rendererCreatePicture(QUrl filenName, int width, int height);
-  void rendererCreateMovie(QUrl filenName, int width, int height, MovieWriter::Type);
+  void rendererCreateMovie(QUrl filenName, int width, int height, MovieWriter::Format, ProjectStructure::MovieType);
   void invalidateCachedAmbientOcclusionTexture(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
 };
 

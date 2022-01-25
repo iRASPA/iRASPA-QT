@@ -34,6 +34,7 @@
 #include "symmetrykit.h"
 #include "logreporting.h"
 #include "moviemaker.h"
+#include "projectstructure.h"
 
 class RenderStackedWidget : public QWidget, public ProjectConsumer, public MainWindowConsumer, public LogReportingConsumer
 {
@@ -107,7 +108,7 @@ public slots:
   void reloadSelectionData();
   void reloadBackgroundImage();
   void createPicture(QUrl fileURL, int width, int height);
-  void createMovie(QUrl fileURL, int width, int height, MovieWriter::Type type);
+  void createMovie(QUrl fileURL, int width, int height, MovieWriter::Format format, ProjectStructure::MovieType movieType);
   void resizeEvent(QResizeEvent *event) override final;
   void invalidateCachedAmbientOcclusionTextures(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
   void invalidateCachedIsoSurfaces(std::vector<std::vector<std::shared_ptr<iRASPAObject>>> structures);
