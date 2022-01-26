@@ -55,11 +55,11 @@ Molecule::Molecule(const std::shared_ptr<Object> object): Structure(object)
   {
     if(!atomViewer->isFractional())
     {
-      convertAsymmetricAtomsToFractional();
+      Molecule::convertAsymmetricAtomsToFractional();
       expandSymmetry();
     }
     _atomsTreeController->setTags();
-    reComputeBoundingBox();
+    Molecule::reComputeBoundingBox();
     computeBonds();
   }
 }

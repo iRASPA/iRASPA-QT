@@ -25,6 +25,7 @@
 #include "quadgeometry.h"
 #include "glgeterror.h"
 #include "openglatomselectionworleynoise3dshader.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomSelectionGlowShader::OpenGLAtomSelectionGlowShader(OpenGLAtomSelectionWorleyNoise3DShader &atomSelectionShader): _atomSelectionShader(atomSelectionShader)
 {
@@ -228,10 +229,10 @@ void OpenGLAtomSelectionGlowShader::loadShader(void)
 
 
 const std::string OpenGLAtomSelectionGlowShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 out VS_OUT
@@ -268,9 +269,9 @@ void main(void)
 )foo";
 
 const std::string OpenGLAtomSelectionGlowShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 in VS_OUT

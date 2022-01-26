@@ -260,7 +260,7 @@ const simd_quatd simd_quatd::data120[120] =
     simd_quatd(-0.5, double3(-0.5, -0.5, -0.5))
   };
 
-const simd_quatd data60[60] =
+const simd_quatd simd_quatd::data60[60] =
   {
     simd_quatd(0.0, double3(1.0, 0.0, 0.0)),
     simd_quatd(0.0, double3(0.0, 1.0, 0.0)),

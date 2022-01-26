@@ -25,6 +25,7 @@
 #include "glgeterror.h"
 #include "openglatomselectionworleynoise3dshader.h"
 #include "quadgeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomSelectionStripesPerspectiveImposterShader::OpenGLAtomSelectionStripesPerspectiveImposterShader(OpenGLAtomSelectionWorleyNoise3DShader &atomSelectionShader): _atomSelectionShader(atomSelectionShader)
 {
@@ -217,10 +218,10 @@ void OpenGLAtomSelectionStripesPerspectiveImposterShader::loadShader(void)
 
 
 const std::string  OpenGLAtomSelectionStripesPerspectiveImposterShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 out VS_OUT
@@ -271,10 +272,10 @@ void main(void)
 )foo";
 
 const std::string  OpenGLAtomSelectionStripesPerspectiveImposterShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 in VS_OUT

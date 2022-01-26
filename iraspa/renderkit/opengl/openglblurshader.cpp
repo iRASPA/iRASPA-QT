@@ -27,6 +27,7 @@
 #include <QtDebug>
 #include <QtGlobal>
 #include <QDebug>
+#include "opengluniformstringliterals.h"
 
 OpenGLBlurShader::OpenGLBlurShader()
 {
@@ -495,7 +496,7 @@ void OpenGLBlurShader::loadShader(void)
 }
 
 const std::string OpenGLBlurShader::_downSamplerVertexShaderSource =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 std::string(R"foo(
 in vec4 position;
 
@@ -509,7 +510,7 @@ void main()
 )foo");
 
 const std::string OpenGLBlurShader::_downSamplerFragmentShaderSource =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 //OpenGLFrameUniformBlockStringLiteral +
 std::string(R"foo(
 in vec2 texcoord;
@@ -529,7 +530,7 @@ void main()
 )foo");
 
 const std::string OpenGLBlurShader::_blurHorizontalVertexShaderSource =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 std::string(R"foo(
 in vec4 position;
 
@@ -560,7 +561,7 @@ void main()
 
 
 const std::string OpenGLBlurShader::_blurVerticalVertexShaderSource =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 std::string(R"foo(
 in vec4 position;
 
@@ -590,7 +591,7 @@ void main()
 
 
 const std::string OpenGLBlurShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 std::string(R"foo(
 uniform sampler2D s_texture;
 

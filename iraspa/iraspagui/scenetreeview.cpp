@@ -239,7 +239,8 @@ void SceneTreeView::selectionChanged(const QItemSelection &selected, const QItem
 
     if(selectedIndexes().size() == 1)
     {
-      QModelIndex current = selectedIndexes().front();
+      QModelIndexList indices = selectedIndexes();
+      QModelIndex current = indices.front();
 
       DisplayableProtocol *currentItem = static_cast<DisplayableProtocol*>(current.internalPointer());
       if(Movie* movie = dynamic_cast<Movie*>(currentItem))

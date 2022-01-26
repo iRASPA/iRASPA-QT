@@ -21,6 +21,7 @@
 
 #include "openglcrystalpolygonalprismobjectpickingshader.h"
 #include "glgeterror.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLCrystalPolygonalPrismObjectPickingShader::OpenGLCrystalPolygonalPrismObjectPickingShader(OpenGLObjectShader &objectShader):
       _crystalPolygonalPrismShader(objectShader._crystalPolygonalPrismObjectShader)
@@ -170,9 +171,9 @@ void OpenGLCrystalPolygonalPrismObjectPickingShader::loadShader(void)
 
 
 const std::string  OpenGLCrystalPolygonalPrismObjectPickingShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 instancePosition;
@@ -193,9 +194,9 @@ void main(void)
 )foo";
 
 const std::string  OpenGLCrystalPolygonalPrismObjectPickingShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

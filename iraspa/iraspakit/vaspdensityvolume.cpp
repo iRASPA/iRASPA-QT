@@ -16,7 +16,7 @@ VASPDensityVolume::VASPDensityVolume(const std::shared_ptr<Object> object): Stru
     }
     _atomsTreeController->setTags();
     reComputeBoundingBox();
-    computeBonds();
+    VASPDensityVolume::computeBonds();
   }
 }
 

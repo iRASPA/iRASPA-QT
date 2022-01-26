@@ -24,11 +24,11 @@
 #include <iostream>
 #include "glgeterror.h"
 #include "spheregeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomSphereShader::OpenGLAtomSphereShader()
 {
 }
-
 
 void OpenGLAtomSphereShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
@@ -309,10 +309,10 @@ void OpenGLAtomSphereShader::loadShader(void)
 }
 
 const std::string OpenGLAtomSphereShader::_vertexShaderSource  =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 std::string(R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -390,10 +390,10 @@ void main(void)
 
 
 const std::string OpenGLAtomSphereShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 std::string(R"foo(
 // Input from vertex shader
 in VS_OUT

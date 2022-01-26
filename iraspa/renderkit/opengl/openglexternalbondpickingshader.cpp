@@ -26,6 +26,7 @@
 #include "cylindergeometry.h"
 #include <algorithm>
 #include <type_traits>
+#include "opengluniformstringliterals.h"
 
 OpenGLExternalBondPickingShader::OpenGLExternalBondPickingShader(OpenGLBondShader &bondShader): _externalBondShader(bondShader._externalBondShader)
 {
@@ -407,9 +408,9 @@ void OpenGLExternalBondPickingShader::loadShader(void)
 }
 
 const std::string  OpenGLExternalBondPickingShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 instancePosition1;
@@ -513,8 +514,8 @@ void main(void)
 )foo";
 
 const std::string  OpenGLExternalBondPickingShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 
 // Input from vertex shader

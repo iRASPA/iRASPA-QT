@@ -27,6 +27,7 @@
 #include "nspheregeometry.h"
 #include "cubeprimitivegeometry.h"
 #include "arrowxgeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLGlobalAxesSystemShader::OpenGLGlobalAxesSystemShader()
 {
@@ -191,10 +192,10 @@ void OpenGLGlobalAxesSystemShader::loadShader(void)
 
 
 const std::string  OpenGLGlobalAxesSystemShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLGlobalAxesUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLGlobalAxesUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -229,8 +230,8 @@ void main(void)
 )foo";
 
 const std::string  OpenGLGlobalAxesSystemShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

@@ -26,6 +26,7 @@
 #include "cylindergeometry.h"
 #include "cappedcylindergeometry.h"
 #include "uncappedcylindergeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLCylinderObjectSelectionWorleyNoise3DShader::OpenGLCylinderObjectSelectionWorleyNoise3DShader(OpenGLCylinderSelectionInstanceShader &instanceShader, OpenGLCylinderObjectShader &cylinderShader):
      _instanceShader(instanceShader), _cylinderShader(cylinderShader)
@@ -206,10 +207,10 @@ void OpenGLCylinderObjectSelectionWorleyNoise3DShader::loadShader(void)
 }
 
 const std::string OpenGLCylinderObjectSelectionWorleyNoise3DShader::_vertexShaderSource  =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 std::string(R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -249,12 +250,12 @@ void main(void)
 
 
 const std::string OpenGLCylinderObjectSelectionWorleyNoise3DShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral +
-OpenGLWorleyNoise3DStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral +
+OpenGLUniformStringLiterals::OpenGLWorleyNoise3DStringLiteral +
 std::string(R"foo(
 // Input from vertex shader
 in VS_OUT

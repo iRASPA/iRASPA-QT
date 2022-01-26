@@ -28,6 +28,7 @@
 #include "skcomputeisosurface.h"
 #include <exception>
 #include <stdexcept>
+#include "opengluniformstringliterals.h"
 
 OpenGLEnergySurface::OpenGLEnergySurface()
 {
@@ -232,6 +233,30 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
                std::clock_t endTime = clock();
                double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
                _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+
+               beginTime = clock();
+
+               try
+               {
+                 std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGridPointer, isoValue);
+                 _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+
+                 if(triangleData.size()>0)
+                 {
+                   glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                   check_gl_error();
+                 }
+               }
+               catch (char const* e)
+               {
+                 std::cout << "Exception caught: " << e << std::endl;
+                 _surfaceNumberOfIndices[i][j] = 0;
+                 return;
+               }
+
+               endTime = clock();
+               elapsedTime = double(endTime - beginTime) * 1000.0/ CLOCKS_PER_SEC;
+               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Extracting surface " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
             }
             else
             {
@@ -243,17 +268,13 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
               // move from stack to heap since the cache requires a pointer to the std::vector
               energyGridPointer = new std::vector<cl_float>();
               *energyGridPointer = std::move(gridData);
-              _caches[powerOfTwo].insert(_renderStructures[i][j].get(), energyGridPointer);
+
 
               std::clock_t endTime = clock();
               double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time computing grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
-            }
 
-            if(energyGridPointer)
-            {
-              std::clock_t beginTime = clock();
-
+              beginTime = clock();
 
               try
               {
@@ -273,10 +294,14 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
                 return;
               }
 
-              std::clock_t endTime = clock();
-              double elapsedTime = double(endTime - beginTime) * 1000.0/ CLOCKS_PER_SEC;
+              endTime = clock();
+              elapsedTime = double(endTime - beginTime) * 1000.0/ CLOCKS_PER_SEC;
               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Extracting surface " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+
+              // insert as last to avoid use of memory after free in case the insertion fails.
+              _caches[powerOfTwo].insert(_renderStructures[i][j].get(), energyGridPointer);
             }
+
 
             std::vector<float4> renderLatticeVectors = renderStructure->cell()->renderTranslationVectors();
             _surfaceNumberOfInstances[i][j] = renderLatticeVectors.size();
@@ -364,11 +389,11 @@ void OpenGLEnergySurface::loadShader(void)
 }
 
 const std::string  OpenGLEnergySurface::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLIsosurfaceUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLIsosurfaceUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -403,11 +428,11 @@ void main(void)
 
 
 const std::string  OpenGLEnergySurface::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLIsosurfaceUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLIsosurfaceUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

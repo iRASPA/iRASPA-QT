@@ -30,6 +30,7 @@
 #include <QImage>
 #include "openglatomsphereshader.h"
 #include "openglatomorthographicimpostershader.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAmbientOcclusionShadowMapShader::OpenGLAmbientOcclusionShadowMapShader(OpenGLAtomSphereShader &atomShader, OpenGLAtomOrthographicImposterShader &atomOrthographicImposterShader): _atomShader(atomShader), _atomOrthographicImposterShader(atomOrthographicImposterShader)
 {
@@ -625,9 +626,9 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
 }
 
 const std::string OpenGLAmbientOcclusionShadowMapShader::_vertexAmbientOcclusionShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLShadowUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLShadowUniformBlockStringLiteral +
 std::string(R"foo(
 
 // Inputs from vertex shader
@@ -670,9 +671,9 @@ void main()
 
 
 const std::string OpenGLAmbientOcclusionShadowMapShader::_fragmentAmbientOcclusionShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLShadowUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLShadowUniformBlockStringLiteral +
 std::string(R"foo(
 
 vec3 coordinateFromTexturePosition(vec2 texturePosition)
@@ -731,9 +732,9 @@ void main()
 )foo");
 
 const std::string OpenGLAmbientOcclusionShadowMapShader::_vertexShadowMapShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLShadowUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLShadowUniformBlockStringLiteral +
 std::string(R"foo(
 
 in vec4 vertexPosition;

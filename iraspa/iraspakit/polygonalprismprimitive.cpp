@@ -52,7 +52,7 @@ PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<Object> o
       expandSymmetry();
     }
     _atomsTreeController->setTags();
-    reComputeBoundingBox();
+    PolygonalPrismPrimitive::reComputeBoundingBox();
   }
 }
 

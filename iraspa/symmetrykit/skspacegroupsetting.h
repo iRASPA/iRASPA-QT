@@ -58,6 +58,7 @@ public:
   const std::vector<int3> latticeTranslations() const {return _latticeTranslations;}
   Centring centring() const {return _centring;}
 
+  // check
   SKAsymmetricUnit asymmetricUnit() const {return _asymmetricUnit;}
 
   friend std::ostream& operator<<(std::ostream& os, const SKSpaceGroupSetting& setting);

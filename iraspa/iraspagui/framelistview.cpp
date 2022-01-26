@@ -201,7 +201,8 @@ void FrameListView::selectionChanged(const QItemSelection &selected, const QItem
     // result: extending the selection does not change the selected frame
     if(selectedIndexes().size() == 1)
     {
-      QModelIndex current = selectedIndexes().front();
+      QModelIndexList indices = selectedIndexes();
+      QModelIndex current = indices.front();
 
       if(iRASPAObject* iraspa_structure = static_cast<iRASPAObject*>(current.internalPointer()))
       {
@@ -377,7 +378,7 @@ QPixmap FrameListView::selectionToPixmap()
       }
     }
 
-    QRect rect = QRect(QPoint(0,0), QSize(maxWidth, height));
+    //QRect rect = QRect(QPoint(0,0), QSize(maxWidth, height));
     QPixmap pix = QPixmap(maxWidth, height);
     pix.fill(Qt::transparent);
 

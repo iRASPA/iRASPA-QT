@@ -25,6 +25,7 @@
 #include "glgeterror.h"
 #include "spheregeometry.h"
 #include "cylindergeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLUnitCellCylinderShader::OpenGLUnitCellCylinderShader()
 {
@@ -218,10 +219,10 @@ void OpenGLUnitCellCylinderShader::loadShader(void)
 
 
 const std::string  OpenGLUnitCellCylinderShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 out VS_OUT
@@ -279,9 +280,9 @@ void main(void)
 )foo";
 
 const std::string  OpenGLUnitCellCylinderShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

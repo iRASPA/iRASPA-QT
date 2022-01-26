@@ -26,6 +26,7 @@
 #include "cylindergeometry.h"
 #include <algorithm>
 #include <type_traits>
+#include "opengluniformstringliterals.h"
 
 OpenGLInternalBondShader::OpenGLInternalBondShader()
 {
@@ -648,10 +649,10 @@ void OpenGLInternalBondShader::loadShader(void)
 }
 
 const std::string  OpenGLInternalBondShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -726,11 +727,11 @@ void main(void)
 )foo";
 
 const std::string  OpenGLInternalBondShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral +
 R"foo(
 
 out vec4 vFragColor;

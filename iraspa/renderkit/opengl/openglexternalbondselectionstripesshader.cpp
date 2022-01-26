@@ -26,6 +26,7 @@
 #include "cylindergeometry.h"
 #include <algorithm>
 #include <type_traits>
+#include "opengluniformstringliterals.h"
 
 OpenGLExternalBondSelectionStripesShader::OpenGLExternalBondSelectionStripesShader(OpenGLExternalBondSelectionInstanceShader &instanceShader, OpenGLBondShader &bondShader):
    _instanceShader(instanceShader), _bondShader(bondShader._externalBondShader)
@@ -423,10 +424,10 @@ void OpenGLExternalBondSelectionStripesShader::loadShader(void)
 }
 
 const std::string  OpenGLExternalBondSelectionStripesShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -523,14 +524,12 @@ void main(void)
 )foo";
 
 const std::string  OpenGLExternalBondSelectionStripesShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral +
 R"foo(
-
-
 out vec4 vFragColor;
 
 // Input from vertex shader

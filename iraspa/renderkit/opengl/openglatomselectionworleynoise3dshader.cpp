@@ -24,6 +24,7 @@
 #include <iostream>
 #include "glgeterror.h"
 #include "spheregeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomSelectionWorleyNoise3DShader::OpenGLAtomSelectionWorleyNoise3DShader()
 {
@@ -264,10 +265,10 @@ void OpenGLAtomSelectionWorleyNoise3DShader::loadShader(void)
 }
 
 const std::string  OpenGLAtomSelectionWorleyNoise3DShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 out VS_OUT
@@ -316,12 +317,12 @@ void main(void)
 )foo";
 
 const std::string  OpenGLAtomSelectionWorleyNoise3DShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral+
-OpenGLWorleyNoise3DStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral+
+OpenGLUniformStringLiterals::OpenGLWorleyNoise3DStringLiteral +
 R"foo(
 
 // Inputs from vertex shader

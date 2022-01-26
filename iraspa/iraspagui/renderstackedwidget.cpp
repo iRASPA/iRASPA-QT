@@ -1569,7 +1569,10 @@ void RenderStackedWidget::pressedRotateBodyFramePlusZ()
 
 void RenderStackedWidget::redraw()
 {
-  renderViewController->redraw();
+  if(renderViewController)
+  {
+    renderViewController->redraw();
+  }
 }
 
 void RenderStackedWidget::redrawWithQuality(RKRenderQuality quality)

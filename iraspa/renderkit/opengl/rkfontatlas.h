@@ -62,8 +62,6 @@ struct RKFontAtlas
   int fontSizeForTextureSize(QRawFont &rawFont, int texture_size, const std::vector< int > &render_list, std::vector< FontCharacter > &characters);
   bool gen_pack_list(QRawFont &rawFont, int pixel_size, int pack_tex_size, const std::vector< int > &render_list, std::vector< FontCharacter > &packed_glyphs);
 
-  int save_png_SDFont(const char* orig_filename, const char* font_name, int img_width, int img_height, const std::vector< unsigned char > &img_data, const std::vector< FontCharacter > &packed_glyphs );
-
   unsigned char get_SDF_radial(unsigned char *fontmap, int w, int h, int x, int y, int max_radius );
 
   std::vector<RKInPerInstanceAttributesText> buildMeshWithString(float4 position, float4 scale, QString text, RKTextAlignment alignment);

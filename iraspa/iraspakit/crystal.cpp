@@ -81,7 +81,7 @@ Crystal::Crystal(const std::shared_ptr<Object> object): Structure(object)
   {
     if(!atomViewer->isFractional())
     {
-      convertAsymmetricAtomsToFractional();
+      Crystal::convertAsymmetricAtomsToFractional();
       expandSymmetry();
     }
     _atomsTreeController->setTags();

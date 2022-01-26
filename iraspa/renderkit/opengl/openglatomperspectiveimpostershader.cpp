@@ -25,6 +25,7 @@
 #include "glgeterror.h"
 #include "quadgeometry.h"
 #include "openglatomsphereshader.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomPerspectiveImposterShader::OpenGLAtomPerspectiveImposterShader(OpenGLAtomSphereShader &atomShader): _atomShader(atomShader)
 {
@@ -269,10 +270,10 @@ void OpenGLAtomPerspectiveImposterShader::loadShader(void)
 }
 
 const std::string  OpenGLAtomPerspectiveImposterShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 out VS_OUT
@@ -351,10 +352,10 @@ void main(void)
 )foo";
 
 const std::string  OpenGLAtomPerspectiveImposterShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 in VS_OUT

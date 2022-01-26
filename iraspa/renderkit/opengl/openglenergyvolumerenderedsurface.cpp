@@ -23,6 +23,7 @@
 #include "glgeterror.h"
 #include "cubegeometry.h"
 #include "rkrenderuniforms.h"
+#include "opengluniformstringliterals.h"
 #include <QDebug>
 
 OpenGLEnergyVolumeRenderedSurface::OpenGLEnergyVolumeRenderedSurface()
@@ -307,8 +308,18 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
             }
             int size = pow(2,powerOfTwo);
 
-            std::vector<float4> *textureData{};
 
+
+            glBindTexture(GL_TEXTURE_3D, _volumeTextures[i][j]);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            check_gl_error();
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // The array on the host has 1 byte alignment
+
+            std::vector<float4> *textureData{};
             if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
             {
                std::clock_t beginTime = clock();
@@ -316,6 +327,11 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
                std::clock_t endTime = clock();
                double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
                _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+
+               glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, size, size, size, 0, GL_RGBA, GL_FLOAT, textureData->data());
+               check_gl_error();
+               glBindTexture(GL_TEXTURE_3D, 0);
+               check_gl_error();
             }
             else
             {
@@ -327,25 +343,22 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
               textureData = new std::vector<float4>();
               *textureData = std::move(gridData);
 
-              _caches[powerOfTwo].insert(_renderStructures[i][j].get(),textureData);
+
               std::clock_t endTime = clock();
               double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time computing grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
+
+              glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, size, size, size, 0, GL_RGBA, GL_FLOAT, textureData->data());
+              check_gl_error();
+              glBindTexture(GL_TEXTURE_3D, 0);
+              check_gl_error();
+
+              // insert as last to avoid use of memory after free in case the insertion fails.
+              _caches[powerOfTwo].insert(_renderStructures[i][j].get(),textureData);
             }
 
-            glBindTexture(GL_TEXTURE_3D, _volumeTextures[i][j]);
-            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            check_gl_error();
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // The array on the host has 1 byte alignment
 
-            glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, size, size, size, 0, GL_RGBA, GL_FLOAT, textureData->data());
-            check_gl_error();
-            glBindTexture(GL_TEXTURE_3D, 0);
-            check_gl_error();
+
 
             glBindVertexArray(_vertexArrayObject[i][j]);
             check_gl_error();
@@ -449,11 +462,11 @@ void OpenGLEnergyVolumeRenderedSurface::initializeLightUniforms()
 // Based on: page 168 "Real-Time Volume Graphics", Klaus Engels et al.
 
 const std::string  OpenGLEnergyVolumeRenderedSurface::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLIsosurfaceUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLIsosurfaceUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 
@@ -483,11 +496,11 @@ void main()
 )foo";
 
 const std::string  OpenGLEnergyVolumeRenderedSurface::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLIsosurfaceUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLIsosurfaceUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 out vec4 vFragColor;
 // Input from vertex shader

@@ -26,6 +26,7 @@
 #include "cylindergeometry.h"
 #include "cappedcylindergeometry.h"
 #include "uncappedcylindergeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLPolygonalPrismObjectSelectionStripesShader::OpenGLPolygonalPrismObjectSelectionStripesShader(OpenGLPolygonalPrismSelectionInstanceShader &instanceShader, OpenGLPolygonalPrismObjectShader &polygonalPrismShader):
      _instanceShader(instanceShader), _polygonalPrismShader(polygonalPrismShader)
@@ -205,10 +206,10 @@ void OpenGLPolygonalPrismObjectSelectionStripesShader::loadShader(void)
 }
 
 const std::string OpenGLPolygonalPrismObjectSelectionStripesShader::_vertexShaderSource  =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 std::string(R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -249,11 +250,11 @@ void main(void)
 
 
 const std::string OpenGLPolygonalPrismObjectSelectionStripesShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral +
 std::string(R"foo(
 // Input from vertex shader
 in VS_OUT

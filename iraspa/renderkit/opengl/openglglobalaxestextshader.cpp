@@ -28,6 +28,7 @@
 #include "glgeterror.h"
 #include "opengltextrenderingshader.h"
 #include <rkfontatlas.h>
+#include "opengluniformstringliterals.h"
 
 #if defined (Q_OS_OSX)
   const QString OpenGLGlobalAxesTextShader::fontString = QString("Helvetica");
@@ -264,9 +265,9 @@ void OpenGLGlobalAxesTextShader::loadShader(void)
 
 
 const std::string  OpenGLGlobalAxesTextShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLGlobalAxesUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLGlobalAxesUniformBlockStringLiteral +
 R"foo(
 
 in vec4 instancePosition;
@@ -300,9 +301,9 @@ void main(void)
 )foo";
 
 const std::string  OpenGLGlobalAxesTextShader::_geometryShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLGlobalAxesUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLGlobalAxesUniformBlockStringLiteral +
 R"foo(
 layout (points) in;
 layout (triangle_strip) out;
@@ -368,9 +369,9 @@ void main(void)
  )foo";
 
 const std::string  OpenGLGlobalAxesTextShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLGlobalAxesUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLGlobalAxesUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in GS_OUT

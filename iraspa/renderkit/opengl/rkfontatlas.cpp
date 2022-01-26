@@ -267,56 +267,7 @@ bool RKFontAtlas::gen_pack_list(QRawFont &rawFont, int pixel_size, int pack_tex_
   return false;
 }
 
-int RKFontAtlas::save_png_SDFont(
-    const char* orig_filename,
-    const char* font_name,
-    int img_width, int img_height,
-    const std::vector< unsigned char > &img_data,
-    const std::vector< FontCharacter > &packed_glyphs )
-{
-  //	save my image
-  size_t fn_size = strlen( orig_filename ) + 100;
-  char *fn = new char[ fn_size ];
-  sprintf( fn, "%s_sdf.png", orig_filename );
-  printf( "'%s'\n", fn );
-  LodePNG::Encoder encoder;
-  encoder.addText("Comment", "Signed Distance Font: lonesock tools");
-  encoder.getSettings().zlibsettings.windowSize = 512; //	faster, not much worse compression
-  std::vector<unsigned char> buffer;
-  int tin = clock();
-  encoder.encode( buffer, img_data.empty() ? 0 : &img_data[0], img_width, img_height );
-  LodePNG::saveFile( buffer, fn );
-  tin = clock() - tin;
 
-  //	now save the acompanying info
-  sprintf( fn, "%s_sdf.txt", orig_filename );
-  FILE *fp = fopen( fn, "w" );
-  if( fp )
-  {
-    fprintf( fp, "info face=\"%s\"\n",
-        font_name  );
-    fprintf( fp, "chars count=%i\n", int(packed_glyphs.size()) );
-    for( unsigned int i = 0; i < packed_glyphs.size(); ++i )
-    {
-      fprintf( fp, "char id=%-6ix=%-6iy=%-6iwidth=%-6iheight=%-6i",
-        packed_glyphs[i].ID,
-        packed_glyphs[i].x,
-        packed_glyphs[i].y,
-        packed_glyphs[i].width,
-        packed_glyphs[i].height
-        );
-      fprintf( fp, "xoffset=%-10.3fyoffset=%-10.3fxadvance=%-10.3f",
-        packed_glyphs[i].xoff,
-        packed_glyphs[i].yoff,
-        packed_glyphs[i].xadv
-        );
-      fprintf( fp, "  page=0  chnl=0\n" );
-    }
-    fclose( fp );
-  }
-  delete [] fn;
-  return tin;
-}
 
 unsigned char RKFontAtlas::get_SDF_radial(
     unsigned char *fontmap,

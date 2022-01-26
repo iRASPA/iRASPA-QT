@@ -26,6 +26,7 @@
 #include "backplanegeometry.h"
 #include "quadgeometry.h"
 #include "glgeterror.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLBackgroundShader::OpenGLBackgroundShader()
 {
@@ -164,7 +165,7 @@ void OpenGLBackgroundShader::loadShader(void)
 }
 
 const std::string OpenGLBackgroundShader::_vertexShaderSource  =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 std::string(R"foo(
 in vec4 vertexPosition;
 out vec2 texcoord;
@@ -177,7 +178,7 @@ void main()
 )foo");
 
 const std::string OpenGLBackgroundShader::_fragmentShaderSource  =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 std::string(R"foo(
 uniform sampler2D backgroundTexture;
 

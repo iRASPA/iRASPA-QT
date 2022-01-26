@@ -94,10 +94,6 @@ private:
   GLuint _vertexPositionAttributeLocation{0};
   GLuint _stepLengthUniformLocation{0};
 
-  cl_context _clContext;
-  cl_device_id _clDeviceId;
-  cl_command_queue _clCommandQueue;
-
   std::array<QCache<RKRenderObject*, std::vector<float4>>,9> _caches;
 
   inline unsigned modulo( int value, unsigned m) {

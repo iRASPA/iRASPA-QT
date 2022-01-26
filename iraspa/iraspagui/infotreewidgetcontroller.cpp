@@ -347,7 +347,7 @@ InfoTreeWidgetController::InfoTreeWidgetController(QWidget* parent): QTreeWidget
   QTreeWidgetItem *childCreationItem = new QTreeWidgetItem(creationItem);
   this->setItemWidget(childCreationItem,0, _infoCreationForm);
 
-  QObject::connect(_infoCreationForm->methodComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
+  QObject::connect(_infoCreationForm->methodComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [=](int index) {
       switch(index)
       {
       case 0:

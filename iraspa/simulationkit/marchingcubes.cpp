@@ -717,10 +717,11 @@ void MarchingCubes::add_triangle( const char* trig, char n, int v12 ) {
                 default : break ;
             }
 
-            if( tv[t] == -1 ) {
-              std::cout << "Marching Cubes: invalid triangle " << (ntrigs() + 1) << "\n";
-                //print_cube() ;
-            }
+            // left operand is garbage
+            //if( tv[t] == -1 ) {
+            //  std::cout << "Marching Cubes: invalid triangle " << (ntrigs() + 1) << "\n";
+            //    //print_cube() ;
+            //}
         }
 
         _triangles.push_back(Triangle{tv[0], tv[1], tv[2]});

@@ -26,6 +26,7 @@
 #include "spheregeometry.h"
 #include "cylindergeometry.h"
 #include "glgeterror.h"
+#include "opengluniformstringliterals.h"
 
 QCache<QString, RKFontAtlas> OpenGLTextRenderingShader::_cachedFontAtlas{};
 
@@ -317,9 +318,9 @@ void OpenGLTextRenderingShader::loadShader(void)
 
 
 const std::string  OpenGLTextRenderingShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 
 in vec4 instancePosition;
@@ -347,9 +348,9 @@ void main(void)
 )foo";
 
 const std::string  OpenGLTextRenderingShader::_geometryShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 layout (points) in;
 layout (triangle_strip) out;
@@ -411,9 +412,9 @@ void main(void)
  )foo";
 
 const std::string  OpenGLTextRenderingShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in GS_OUT

@@ -583,7 +583,7 @@ void MainWindow::createMenus()
   QObject::connect(ui->addMovieToolButton, &QToolButton::customContextMenuRequested, this, &MainWindow::ShowContextAddStructureMenu);
 
   ui->addProjectToolButton->setContextMenuPolicy(Qt::CustomContextMenu);
-  QObject::connect(ui->addProjectToolButton, &QToolButton::customContextMenuRequested, [this](const QPoint &p){
+  QObject::connect(ui->addProjectToolButton, &QToolButton::customContextMenuRequested, this, [=](const QPoint &p){
        QPoint q = ui->addProjectToolButton->mapToGlobal(p);
        ui->projectTreeView->ShowToolButtonContextMenu(q);
      });

@@ -25,6 +25,7 @@
 #include "glgeterror.h"
 #include "nsidedprismgeometry.h"
 #include "cappednsidedprismgeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLCrystalPolygonalPrismObjectShader::OpenGLCrystalPolygonalPrismObjectShader()
 {
@@ -327,10 +328,10 @@ void OpenGLCrystalPolygonalPrismObjectShader::loadShader(void)
 }
 
 const std::string OpenGLCrystalPolygonalPrismObjectShader::_vertexShaderSource  =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 std::string(R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -371,11 +372,11 @@ void main(void)
 
 
 const std::string OpenGLCrystalPolygonalPrismObjectShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral +
 std::string(R"foo(
 // Input from vertex shader
 in VS_OUT

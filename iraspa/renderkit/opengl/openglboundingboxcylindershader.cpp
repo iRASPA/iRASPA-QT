@@ -25,6 +25,7 @@
 #include "glgeterror.h"
 #include "spheregeometry.h"
 #include "cylindergeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLBoundingBoxCylinderShader::OpenGLBoundingBoxCylinderShader()
 {
@@ -168,9 +169,9 @@ void OpenGLBoundingBoxCylinderShader::loadShader(void)
 
 
 const std::string  OpenGLBoundingBoxCylinderShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 out VS_OUT
@@ -233,8 +234,8 @@ void main(void)
 )foo";
 
 const std::string  OpenGLBoundingBoxCylinderShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

@@ -26,6 +26,7 @@
 #include "cylindergeometry.h"
 #include "cappedcylindergeometry.h"
 #include "uncappedcylindergeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLCylinderObjectSelectionStripesShader::OpenGLCylinderObjectSelectionStripesShader(OpenGLCylinderSelectionInstanceShader &instanceShader, OpenGLCylinderObjectShader &cylinderShader):
      _instanceShader(instanceShader), _cylinderShader(cylinderShader)
@@ -210,10 +211,10 @@ void OpenGLCylinderObjectSelectionStripesShader::loadShader(void)
 }
 
 const std::string OpenGLCylinderObjectSelectionStripesShader::_vertexShaderSource  =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 std::string(R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -254,11 +255,11 @@ void main(void)
 
 
 const std::string OpenGLCylinderObjectSelectionStripesShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral +
 std::string(R"foo(
 // Input from vertex shader
 in VS_OUT

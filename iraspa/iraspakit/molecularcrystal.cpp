@@ -60,7 +60,7 @@ MolecularCrystal::MolecularCrystal(const std::shared_ptr<Object> object): Struct
   {
     if(!atomViewer->isFractional())
     {
-      convertAsymmetricAtomsToFractional();
+      MolecularCrystal::convertAsymmetricAtomsToFractional();
       expandSymmetry();
     }
     _atomsTreeController->setTags();

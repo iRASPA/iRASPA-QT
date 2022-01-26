@@ -535,5 +535,3 @@ RKGlobalAxesUniforms::RKGlobalAxesUniforms(std::shared_ptr<RKRenderDataSource> p
                        1.0);
   }
 }
-
-

@@ -59,7 +59,7 @@ ProteinCrystal::ProteinCrystal(const std::shared_ptr<Object> object): Structure(
   {
     if(!atomViewer->isFractional())
     {
-      convertAsymmetricAtomsToFractional();
+      ProteinCrystal::convertAsymmetricAtomsToFractional();
       expandSymmetry();
     }
     _atomsTreeController->setTags();

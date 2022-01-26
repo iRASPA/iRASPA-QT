@@ -8,7 +8,6 @@ macx{
 SOURCES += \
     $$PWD/binpacker.cpp \
     $$PWD/indexpath.cpp \
-    $$PWD/lodepng.cpp \
     $$PWD/scanner.cpp \
     $$PWD/characterset.cpp \
     $$PWD/logreporting.cpp \
@@ -18,7 +17,6 @@ HEADERS += \
     $$PWD/binpacker.h \
     $$PWD/foundationkit.h \
     $$PWD/indexpath.h \
-    $$PWD/lodepng.h \
     $$PWD/scanner.h \
     $$PWD/characterset.h \
     $$PWD/flatten.h \

@@ -30,6 +30,5 @@
 #include <serialization.h>
 #include <zipreader.h>
 #include <zipwriter.h>
-#include <lodepng.h>
 #include <binpacker.h>
 

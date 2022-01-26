@@ -25,6 +25,7 @@
 #include "glgeterror.h"
 #include "backplanegeometry.h"
 #include "quadgeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLGlobalAxesBackgroundShader::OpenGLGlobalAxesBackgroundShader()
 {
@@ -144,7 +145,7 @@ void OpenGLGlobalAxesBackgroundShader::loadShader(void)
 
 
 const std::string  OpenGLGlobalAxesBackgroundShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 
@@ -158,8 +159,8 @@ void main()
 )foo";
 
 const std::string  OpenGLGlobalAxesBackgroundShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLGlobalAxesUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLGlobalAxesUniformBlockStringLiteral +
 R"foo(
 in vec2 texcoord;
 out vec4 vFragColor;

@@ -856,14 +856,14 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
 
   QAction actionAddAtom(tr("Add Atom"), this);
   actionAddAtom.setEnabled(isEnabled);
-  connect(&actionAddAtom, &QAction::triggered, [this, index](void) {
+  connect(&actionAddAtom, &QAction::triggered, this, [=](void) {
      this->addAtom(index);
   });
   contextMenu.addAction(&actionAddAtom);
 
   QAction actionAddAtomGroup(tr("Add Atom Group"), this);
   actionAddAtomGroup.setEnabled(isEnabled);
-  connect(&actionAddAtomGroup, &QAction::triggered, [this, index](void) {
+  connect(&actionAddAtomGroup, &QAction::triggered, this, [=](void) {
      this->addAtomGroup(index);
   });
   contextMenu.addAction(&actionAddAtomGroup);

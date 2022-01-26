@@ -22,6 +22,7 @@
 #include "openglatompickingshader.h"
 #include "openglatomshader.h"
 #include "openglatomorthographicimpostershader.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomPickingShader::OpenGLAtomPickingShader(OpenGLAtomShader &atomShader):
    _atomShader(atomShader._atomShader), _atomOrthographicImposterShader(atomShader._atomOrthographicImposterShader)
@@ -176,9 +177,9 @@ void OpenGLAtomPickingShader::loadShader(void)
 
 
 const std::string  OpenGLAtomPickingShader::_atomVertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 
@@ -217,9 +218,9 @@ void main(void)
 )foo";
 
 const std::string  OpenGLAtomPickingShader::_atomFragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 in VS_OUT

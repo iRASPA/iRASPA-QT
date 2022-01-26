@@ -25,6 +25,7 @@
 #include "quadgeometry.h"
 #include "glgeterror.h"
 #include "openglatomselectionworleynoise3dshader.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomSelectionWorleyNoise3DOrthographicImposterShader::OpenGLAtomSelectionWorleyNoise3DOrthographicImposterShader(OpenGLAtomSelectionWorleyNoise3DShader &atomSelectionShader): _atomSelectionShader(atomSelectionShader)
 {
@@ -241,10 +242,10 @@ void OpenGLAtomSelectionWorleyNoise3DOrthographicImposterShader::loadShader(void
 
 
 const std::string  OpenGLAtomSelectionWorleyNoise3DOrthographicImposterShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 out VS_OUT
@@ -309,12 +310,12 @@ void main(void)
 )foo";
 
 const std::string  OpenGLAtomSelectionWorleyNoise3DOrthographicImposterShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral+
-OpenGLWorleyNoise3DStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral+
+OpenGLUniformStringLiterals::OpenGLWorleyNoise3DStringLiteral +
 R"foo(
 // Inputs from vertex shader
 in VS_OUT

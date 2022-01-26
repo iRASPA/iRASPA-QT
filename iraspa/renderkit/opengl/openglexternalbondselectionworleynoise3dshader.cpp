@@ -26,6 +26,7 @@
 #include "cylindergeometry.h"
 #include <algorithm>
 #include <type_traits>
+#include "opengluniformstringliterals.h"
 
 OpenGLExternalBondSelectionWorleyNoise3DShader::OpenGLExternalBondSelectionWorleyNoise3DShader(OpenGLExternalBondSelectionInstanceShader &instanceShader, OpenGLBondShader &bondShader):
   _instanceShader(instanceShader),  _bondShader(bondShader._externalBondShader)
@@ -497,10 +498,10 @@ void OpenGLExternalBondSelectionWorleyNoise3DShader::loadShader(void)
 }
 
 const std::string  OpenGLExternalBondSelectionWorleyNoise3DShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -627,12 +628,12 @@ void main(void)
 )foo";
 
 const std::string  OpenGLExternalBondSelectionWorleyNoise3DShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
-OpenGLRGBHSVStringLiteral+
-OpenGLWorleyNoise3DStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLRGBHSVStringLiteral+
+OpenGLUniformStringLiterals::OpenGLWorleyNoise3DStringLiteral +
 R"foo(
 
 out vec4 vFragColor;

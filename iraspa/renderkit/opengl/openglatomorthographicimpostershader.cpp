@@ -25,14 +25,12 @@
 #include "glgeterror.h"
 #include "quadgeometry.h"
 #include "openglatomsphereshader.h"
-
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomOrthographicImposterShader::OpenGLAtomOrthographicImposterShader(OpenGLAtomSphereShader &atomShader): _atomShader(atomShader)
 {
 
 }
-
-
 
 void OpenGLAtomOrthographicImposterShader::deleteBuffers()
 {
@@ -268,10 +266,10 @@ void OpenGLAtomOrthographicImposterShader::loadShader(void)
 }
 
 const std::string  OpenGLAtomOrthographicImposterShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 out VS_OUT
@@ -349,10 +347,10 @@ void main(void)
 )foo";
 
 const std::string  OpenGLAtomOrthographicImposterShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Inputs from vertex shader
 in VS_OUT

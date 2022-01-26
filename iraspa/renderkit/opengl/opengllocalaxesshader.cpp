@@ -29,6 +29,7 @@
 #include "axessystemdefaultgeometry.h"
 #include "skboundingbox.h"
 #include "rkrenderkitprotocols.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLLocalAxesShader::OpenGLLocalAxesShader()
 {
@@ -265,10 +266,10 @@ void OpenGLLocalAxesShader::initializeLightUniforms()
 }
 
 const std::string  OpenGLLocalAxesShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -302,8 +303,8 @@ void main(void)
 )foo";
 
 const std::string  OpenGLLocalAxesShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

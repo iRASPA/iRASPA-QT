@@ -22,7 +22,8 @@
 #include "openglobjectshader.h"
 #include "openglellipseobjectpickingshader.h"
 #include "glgeterror.h"
-
+#include "opengluniformstringliterals.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLEllipseObjectPickingShader::OpenGLEllipseObjectPickingShader(OpenGLObjectShader &objectShader):
       _ellipseShader(objectShader._ellipseObjectShader)
@@ -174,9 +175,9 @@ void OpenGLEllipseObjectPickingShader::loadShader(void)
 
 
 const std::string  OpenGLEllipseObjectPickingShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 instancePosition;
@@ -197,9 +198,9 @@ void main(void)
 )foo";
 
 const std::string  OpenGLEllipseObjectPickingShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

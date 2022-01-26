@@ -21,6 +21,7 @@
 
 #include "openglcylinderobjectpickingshader.h"
 #include "glgeterror.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLCylinderObjectPickingShader::OpenGLCylinderObjectPickingShader(OpenGLObjectShader &objectShader):
       _cylinderShader(objectShader._cylinderObjectShader)
@@ -172,9 +173,9 @@ void OpenGLCylinderObjectPickingShader::loadShader(void)
 
 
 const std::string  OpenGLCylinderObjectPickingShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 instancePosition;
@@ -195,9 +196,9 @@ void main(void)
 )foo";
 
 const std::string  OpenGLCylinderObjectPickingShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

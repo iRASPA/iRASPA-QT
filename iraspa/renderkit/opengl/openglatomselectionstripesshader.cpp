@@ -24,6 +24,7 @@
 #include <iostream>
 #include "glgeterror.h"
 #include "spheregeometry.h"
+#include "opengluniformstringliterals.h"
 
 OpenGLAtomSelectionStripesShader::OpenGLAtomSelectionStripesShader()
 {
@@ -232,10 +233,10 @@ void OpenGLAtomSelectionStripesShader::loadShader(void)
 }
 
 const std::string  OpenGLAtomSelectionStripesShader::_vertexShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 in vec4 vertexPosition;
 in vec4 vertexNormal;
@@ -275,10 +276,10 @@ void main(void)
 )foo";
 
 const std::string  OpenGLAtomSelectionStripesShader::_fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
-OpenGLStructureUniformBlockStringLiteral +
-OpenGLLightUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLStructureUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLLightUniformBlockStringLiteral +
 R"foo(
 // Input from vertex shader
 in VS_OUT

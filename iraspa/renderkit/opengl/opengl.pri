@@ -5,6 +5,7 @@ include(geometry/geometry.pri)
 SOURCES += \
     $$PWD/openglenergyvolumerenderedsurface.cpp \
     $$PWD/opengllocalaxesshader.cpp \
+    $$PWD/opengluniformstringliterals.cpp \
     $$PWD/openglwindow.cpp \
     $$PWD/openglglobalaxesbackgroundshader.cpp \
     $$PWD/openglglobalaxesshader.cpp \
@@ -96,6 +97,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/openglenergyvolumerenderedsurface.h \
     $$PWD/opengllocalaxesshader.h \
+    $$PWD/opengluniformstringliterals.h \
     $$PWD/openglwindow.h \
     $$PWD/openglglobalaxesbackgroundshader.h \
     $$PWD/openglglobalaxesshader.h \

@@ -37,6 +37,7 @@
 #include <optional>
 #include <QPainter>
 #include <QStylePainter>
+#include "opengluniformstringliterals.h"
 
 #if defined(Q_OS_WIN)
   #include "wingdi.h"
@@ -1642,7 +1643,7 @@ void OpenGLWindow::loadShader(void)
 }
 
 const std::string OpenGLWindow::_vertexShaderSource =
-OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
 std::string(R"foo(
 in vec4 position;
 
@@ -1656,8 +1657,8 @@ void main()
 )foo");
 
 const std::string OpenGLWindow:: _fragmentShaderSource =
-OpenGLVersionStringLiteral +
-OpenGLFrameUniformBlockStringLiteral +
+OpenGLUniformStringLiterals::OpenGLVersionStringLiteral +
+OpenGLUniformStringLiterals::OpenGLFrameUniformBlockStringLiteral +
 std::string(R"foo(
 in vec2 texcoord;
 out vec4 vFragColor;

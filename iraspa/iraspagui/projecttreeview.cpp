@@ -377,7 +377,8 @@ void ProjectTreeView::selectionChanged(const QItemSelection &selected, const QIt
     // (this avoids that selecting multiple project continuously change the shown main project)
     if(selectedIndexes().size() == 1)
     {
-      QModelIndex current = selectedIndexes().front();
+      QModelIndexList indices = selectedIndexes();
+      QModelIndex current = indices.front();
       if(ProjectTreeNode *selectedTreeNode = static_cast<ProjectTreeNode*>(current.internalPointer()))
       {
         IndexPath selectedTreeNodeIndexPath = IndexPath::indexPath(current);
@@ -420,7 +421,7 @@ void ProjectTreeView::ShowToolButtonContextMenu(const QPoint &pos)
 
   QAction actionAddStructureProject("Add Structure Project", this);
   actionAddStructureProject.setEnabled(true);
-  connect(&actionAddStructureProject, &QAction::triggered, [this](void) {
+  connect(&actionAddStructureProject, &QAction::triggered, this, [=](void) {
      this->addStructureProject(QModelIndex());
   });
   contextMenu.addAction(&actionAddStructureProject);
@@ -428,7 +429,7 @@ void ProjectTreeView::ShowToolButtonContextMenu(const QPoint &pos)
 
   QAction actionGroupProject("Add Group Project", this);
   actionGroupProject.setEnabled(true);
-  connect(&actionGroupProject, &QAction::triggered, [this](void) {
+  connect(&actionGroupProject, &QAction::triggered, this, [=](void) {
      this->addGroupProject(QModelIndex());
   });
   contextMenu.addAction(&actionGroupProject);
@@ -447,7 +448,7 @@ void ProjectTreeView::ShowContextMenu(const QPoint &pos)
 
     QAction actionAddStructureProject(tr("Add Structure Project"), this);
     actionAddStructureProject.setEnabled(true);
-    connect(&actionAddStructureProject, &QAction::triggered, [this, index](void) {
+    connect(&actionAddStructureProject, &QAction::triggered, this, [=](void) {
        this->addStructureProject(index);
     });
     contextMenu.addAction(&actionAddStructureProject);
@@ -455,7 +456,7 @@ void ProjectTreeView::ShowContextMenu(const QPoint &pos)
 
     QAction actionGroupProject(tr("Add Group Project"), this);
     actionGroupProject.setEnabled(true);
-    connect(&actionGroupProject, &QAction::triggered, [this, index](void) {
+    connect(&actionGroupProject, &QAction::triggered, this, [=](void) {
        this->addGroupProject(index);
     });
     contextMenu.addAction(&actionGroupProject);
