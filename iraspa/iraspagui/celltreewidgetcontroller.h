@@ -38,13 +38,15 @@
 #include "celltransformcontentform.h"
 #include "cellstructuralform.h"
 #include "cellsymmetryform.h"
+#include "logreporting.h"
 
-class CellTreeWidgetController : public QTreeWidget, public MainWindowConsumer, public ProjectConsumer, public Reloadable
+class CellTreeWidgetController : public QTreeWidget, public MainWindowConsumer, public ProjectConsumer, public Reloadable, public LogReportingConsumer
 {
   Q_OBJECT
 
 public:
   CellTreeWidgetController(QWidget* parent = nullptr);
+  void setLogReportingWidget(LogReporting *logReporting) override final {_logReporter = logReporting;}
   void setMainWindow(MainWindow *mainWindow)  override{_mainWindow = mainWindow;}
   void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures);
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override;
@@ -63,6 +65,7 @@ private:
   QPushButton* pushButtonStructural;
   QPushButton* pushButtonSymmetry;
 
+  LogReporting* _logReporter = nullptr;
   MainWindow *_mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
   std::shared_ptr<ProjectStructure> _projectStructure;

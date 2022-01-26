@@ -44,12 +44,13 @@
 #include "appearanceadsorptionsurfaceform.h"
 #include "appearanceannotationform.h"
 
-class AppearanceTreeWidgetController: public QTreeWidget, public MainWindowConsumer, public ProjectConsumer, public Reloadable
+class AppearanceTreeWidgetController: public QTreeWidget, public MainWindowConsumer, public ProjectConsumer, public Reloadable, public LogReportingConsumer
 {
   Q_OBJECT
 
 public:
   AppearanceTreeWidgetController(QWidget* parent = nullptr);
+  void setLogReportingWidget(LogReporting *logReporting) override final {_logReporter = logReporting;}
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override final;
   void setMainWindow(MainWindow *mainWindow) override final {_mainWindow = mainWindow;}
   void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures);
@@ -71,6 +72,7 @@ private:
   QPushButton* pushButtonAdsorptionSurface;
   QPushButton* pushButtonAnnotation;
 
+  LogReporting* _logReporter = nullptr;
   MainWindow *_mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
   std::shared_ptr<ProjectStructure> _projectStructure;

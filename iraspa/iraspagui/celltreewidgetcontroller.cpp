@@ -4843,9 +4843,12 @@ void CellTreeWidgetController::computeHeliumVoidFractionPushButton()
         volumetricDataEditor->setStructureHeliumVoidFraction(heliumVoidfraction);
         volumetricDataEditor->recomputeDensityProperties();
       }
-      catch(const char *e)
+      catch(std::exception const& e)
       {
-        // print error
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+        }
       }
     }
   }
@@ -4868,9 +4871,12 @@ void CellTreeWidgetController::computeGravimetricSurfaceAreaPushButton()
         volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
         volumetricDataEditor->recomputeDensityProperties();
       }
-      catch(const char *e)
+      catch(std::exception const& e)
       {
-         // print error
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+        }
       }
     }
   }

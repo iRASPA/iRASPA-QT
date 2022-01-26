@@ -776,9 +776,19 @@ void RenderStackedWidget::reloadRenderData()
 
     if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
     {
-      widget->setRenderStructures(render_structures);
-      widget->reloadRenderData();
-      widget->redraw();
+      try
+      {
+        widget->setRenderStructures(render_structures);
+        widget->reloadRenderData();
+        widget->redraw();
+      }
+      catch(std::exception const& e)
+      {
+        if(_logReporter)
+        {
+          _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+        }
+      }
     }
   }
 }
@@ -803,8 +813,18 @@ void RenderStackedWidget::resetData()
 
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
-    widget->setRenderStructures(render_structures);
-    widget->reloadData();
+    try
+    {
+      widget->setRenderStructures(render_structures);
+      widget->reloadData();
+    }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+      }
+    }
   }
   redraw();
 }
@@ -813,7 +833,17 @@ void RenderStackedWidget::reloadData()
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
-    widget->reloadData();
+    try
+    {
+      widget->reloadData();
+    }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+      }
+    }
   }
   redraw();
 }
@@ -822,7 +852,17 @@ void RenderStackedWidget::reloadStructureUniforms()
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
-    widget->reloadStructureUniforms();
+    try
+    {
+      widget->reloadStructureUniforms();
+    }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+      }
+    }
   }
   redraw();
 }
@@ -831,7 +871,17 @@ void RenderStackedWidget::reloadBoundingBoxData()
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
-    widget->reloadBoundingBoxData();
+    try
+    {
+      widget->reloadBoundingBoxData();
+    }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+      }
+    }
   }
   redraw();
 }
@@ -840,7 +890,17 @@ void RenderStackedWidget::reloadAmbientOcclusionData()
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
-    widget->reloadAmbientOcclusionData();
+    try
+    {
+      widget->reloadAmbientOcclusionData();
+    }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+      }
+    }
   }
   redraw();
 }
@@ -849,7 +909,17 @@ void RenderStackedWidget::reloadSelectionData()
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
-    widget->reloadData();
+    try
+    {
+      widget->reloadData();
+    }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+      }
+    }
   }
   redraw();
 }
@@ -858,7 +928,17 @@ void RenderStackedWidget::reloadBackgroundImage()
 {
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
-    widget->reloadBackgroundImage();
+    try
+    {
+      widget->reloadBackgroundImage();
+    }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+      }
+    }
   }
   redraw();
 }
