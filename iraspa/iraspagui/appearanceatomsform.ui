@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>757</width>
-    <height>734</height>
+    <height>767</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,48 +15,113 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
+    <layout class="QGridLayout" name="gridLayout_3" columnstretch="3,2,2,2">
+     <item row="1" column="2">
+      <widget class="QDoubleSlider" name="atomAtomicSizeScalingSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_24">
+       <property name="text">
+        <string>Atom Size Scaling</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="3">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="1">
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="2">
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="atomDrawAtomsCheckBox">
+       <property name="text">
+        <string>Show Atoms</string>
+       </property>
+       <property name="tristate">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="CustomDoubleSpinBox" name="atomSizeScalingSpinBox">
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::UpDownArrows</enum>
+       </property>
+       <property name="keyboardTracking">
+        <bool>false</bool>
+       </property>
+       <property name="decimals">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <double>3.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.700000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Representation Type</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="1">
         <widget class="QComboBox" name="atomRepresentationType"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Representation Style</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="atomRepresentationStyle"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Color Set</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="colorSchemeComboBox"/>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Order</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QComboBox" name="colorSchemeOrderComboBox"/>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_5">
@@ -65,8 +130,38 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QComboBox" name="forceFieldComboBox"/>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="colorSchemeComboBox"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="atomRepresentationStyle"/>
+       </item>
+       <item row="3" column="3">
+        <widget class="QComboBox" name="forceFieldSchemeOrderComboBox"/>
+       </item>
+       <item row="2" column="3">
+        <widget class="QComboBox" name="colorSchemeOrderComboBox"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Order</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Representation Type</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Representation Style</string>
+         </property>
+        </widget>
        </item>
        <item row="3" column="2">
         <widget class="QLabel" name="label_7">
@@ -75,8 +170,15 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="3">
-        <widget class="QComboBox" name="forceFieldSchemeOrderComboBox"/>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="forceFieldComboBox"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Color Set</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -296,110 +398,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_18">
-     <item>
-      <layout class="QGridLayout" name="gridLayout_3" columnstretch="3,2,2,2">
-       <item row="1" column="2">
-        <widget class="QDoubleSlider" name="atomAtomicSizeScalingSlider">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_24">
-         <property name="text">
-          <string>Atom Size Scaling</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="3">
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="1">
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="2">
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="atomDrawAtomsCheckBox">
-         <property name="text">
-          <string>Show Atoms</string>
-         </property>
-         <property name="tristate">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="CustomDoubleSpinBox" name="atomSizeScalingSpinBox">
-         <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::UpDownArrows</enum>
-         </property>
-         <property name="keyboardTracking">
-          <bool>false</bool>
-         </property>
-         <property name="decimals">
-          <number>5</number>
-         </property>
-         <property name="maximum">
-          <double>3.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.050000000000000</double>
-         </property>
-         <property name="value">
-          <double>0.700000000000000</double>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+    <layout class="QHBoxLayout" name="horizontalLayout_18"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
