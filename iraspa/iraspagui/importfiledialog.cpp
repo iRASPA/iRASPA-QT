@@ -23,18 +23,20 @@
 
 ImportFileDialog::ImportFileDialog(QWidget *parent) : QFileDialog(parent)
 {
-  setWindowTitle("Import structures");
-  setOption(QFileDialog::DontUseNativeDialog);
-  setFileMode(QFileDialog::ExistingFiles);
+  this->setWindowTitle("Import structures");
+  this->setOption(QFileDialog::DontUseNativeDialog);
+  this->setFileMode(QFileDialog::ExistingFiles);
 
-  setNameFilters(QStringList({"all supported files (*.cif *.pdb *.xyz *.vtk *.cube POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)",
-                              "CIF files (*.cif)",
-                              "PDB files (*.pdb)",
-                              "XYZ files (*.xyz)",
-                              "VTK files (*.vtk)",
-                              "CUBE files (*.cube)"
-                              "VASP Files (POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)"}));
-  selectNameFilter(QString("all supported files (*.cif *.pdb *.xyz *.vtk POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)"));
+  this->setDirectory(QDir::home());
+
+  this->setNameFilters(QStringList({"all supported files (*.cif *.pdb *.xyz *.vtk *.cube POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)",
+                                    "CIF files (*.cif)",
+                                    "PDB files (*.pdb)",
+                                    "XYZ files (*.xyz)",
+                                    "VTK files (*.vtk)",
+                                    "CUBE files (*.cube)"
+                                    "VASP Files (POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)"}));
+  this->selectNameFilter(QString("all supported files (*.cif *.pdb *.xyz *.vtk POSCAR CONTCAR CHGCAR ELFCAR LOCPOT)"));
 
   QWidget* frame = new QWidget(this);
   QHBoxLayout* horizontalLayout = new QHBoxLayout();

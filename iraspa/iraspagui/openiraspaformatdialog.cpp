@@ -25,15 +25,14 @@
 
 OpeniRASPAFormatDialog::OpeniRASPAFormatDialog(QWidget *parent) : QFileDialog(parent)
 {
-  setWindowTitle("Save document");
-  setOption(QFileDialog::DontUseNativeDialog);
-  setFileMode(QFileDialog::ExistingFile);
-  setAcceptMode(QFileDialog::AcceptOpen);
+  this->setWindowTitle("Save document");
+  this->setOption(QFileDialog::DontUseNativeDialog);
+  this->setFileMode(QFileDialog::ExistingFile);
+  this->setAcceptMode(QFileDialog::AcceptOpen);
 
-  setNameFilter("iRASPA Files (*.irspdoc)");
-  selectNameFilter("iRASPA Files (*.irspdoc)");
+  this->setNameFilter("iRASPA Files (*.irspdoc)");
+  this->selectNameFilter("iRASPA Files (*.irspdoc)");
 
-  QDir desktopDir(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-  setDirectory(desktopDir);
-  selectFile("document.irspdoc");
+  this->setDirectory(QDir::home());
+  this->selectFile("document.irspdoc");
 }
