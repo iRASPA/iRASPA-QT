@@ -43,7 +43,7 @@
   #include <CL/opencl.h>
 #endif
 
-class OpenGLEnergySurface final: public OpenGLShader, public LogReportingConsumer
+class OpenGLEnergySurface final: public OpenGLShader
 {
 public:
   OpenGLEnergySurface();
@@ -53,8 +53,6 @@ public:
   void generateBuffers();
   void paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer);
   void paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer);
-
-  void setLogReportingWidget(LogReporting *logReporting)  override final;
 
   void reloadData();
   void initializeVertexArrayObject();
@@ -69,8 +67,6 @@ public:
 private:
   GLuint _program;
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
-
-  LogReporting* _logReporter = nullptr;
 
   GLuint _atomSurfaceVertexNormalAttributeLocation;
   GLuint _atomSurfaceVertexPositionAttributeLocation;

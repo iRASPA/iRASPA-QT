@@ -43,9 +43,8 @@
   #include "wingdi.h"
 #endif
 
-OpenGLWindow::OpenGLWindow(QWidget* parent, LogReporting *logReporter ): QOpenGLWindow(),
+OpenGLWindow::OpenGLWindow(QWidget* parent): QOpenGLWindow(),
     _isOpenGLInitialized(false),
-    _logReporter(logReporter),
     _backgroundShader(),
     _blurShader(),
     _energySurfaceShader(),
@@ -80,19 +79,6 @@ OpenGLWindow::~OpenGLWindow()
 {
   makeCurrent();
   _bondShader.deletePermanentBuffers();
-}
-
-void OpenGLWindow::setLogReportingWidget(LogReporting *logReporting)
-{
-  _logReporter = logReporting;
-
-  _energySurfaceShader.setLogReportingWidget(logReporting);
-  _energyVolumeRenderedSurface.setLogReportingWidget(logReporting);
-
-  if(!_logData.isEmpty())
-  {
-    _logReporter->insert(_logData);
-  }
 }
 
 void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
@@ -219,15 +205,7 @@ void OpenGLWindow::initializeGL()
 
   _textShader.initializeOpenGLFunctions();
 
-  if(_logReporter)
-  {
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL initialized");
-  }
-  else
-  {
-    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenGL initialized"));
-  }
-
+  _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>" + "OpenGL initialized"));
 
   GLint majorVersion = 0;
   GLint minorVersion = 0;
@@ -238,18 +216,10 @@ void OpenGLWindow::initializeGL()
   glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &profile);
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 
-  if(_logReporter)
-  {
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL major version: " + QString::number(majorVersion));
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL minor version: " + QString::number(minorVersion));
-  }
-  else
-  {
-    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
-                    + "OpenGL major version: " + QString::number(majorVersion)));
-    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
-                    + "OpenGL major version: " + QString::number(minorVersion)));
-  }
+  _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                  + "OpenGL major version: " + QString::number(majorVersion)));
+  _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                  + "OpenGL major version: " + QString::number(minorVersion)));
 
   if(majorVersion <= 3 && minorVersion < 3)
   {
@@ -261,30 +231,16 @@ void OpenGLWindow::initializeGL()
 
   if(profile & GL_CONTEXT_CORE_PROFILE_BIT)
   {
-    if(_logReporter)
-    {
-      _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "OpenGL core profile");
-    }
-    else
-    {
-      _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
-                        + "OpenGL core profile"));
-    }
+    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                      + "OpenGL core profile"));
   }
 
   // get OpenGL capabilities
   glGetIntegerv(GL_MAX_CLIP_DISTANCES, &_maxNumberOfClipPlanes);
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &_maxTextureSize);
 
-  if(_logReporter)
-  {
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "max texture size: " + QString::number(_maxTextureSize));
-  }
-  else
-  {
-    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
-                        + "max texture size: " + QString::number(_maxTextureSize)));
-  }
+  _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                      + "max texture size: " + QString::number(_maxTextureSize)));
 
   glGetIntegerv(GLenum(GL_MAX_SAMPLES), &_maxSampleCount);
   glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, &_maxSampleColorCount);
@@ -292,29 +248,16 @@ void OpenGLWindow::initializeGL()
   _maxMultiSampling = std::min(_maxSampleCount, std::min(_maxSampleColorCount, _maxSampleDepthCount));
   _multiSampling = std::max(1,std::min(8, std::min(_maxSampleCount, std::min(_maxSampleColorCount, _maxSampleDepthCount))));
 
-  if(_logReporter)
-  {
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "multisampling: " + QString::number(_multiSampling));
-  }
-  else
-  {
-    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
-                          + "multisampling: " + QString::number(_multiSampling)));
-  }
+
+  _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                        + "multisampling: " + QString::number(_multiSampling)));
 
   _devicePixelRatio = devicePixelRatio();
   _width = std::max(512, this->width());
   _height = std::max(512, this->height());
 
-  if(_logReporter)
-  {
-    _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "pixel device ratio: " + QString::number(_devicePixelRatio));
-  }
-  else
-  {
-    _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
-                            + "pixel device ratio: " + QString::number(_devicePixelRatio)));
-  }
+  _logData.append(QString("<font color=\"Magenta\">verbose (" + QDateTime::currentDateTime().toString("hh:mm:ss") +  "): </font>"
+                          + "pixel device ratio: " + QString::number(_devicePixelRatio)));
 
   glGenFramebuffers(1, &_sceneFrameBuffer);
   check_gl_error();
@@ -646,10 +589,10 @@ void OpenGLWindow::paintGL()
     glViewport(0,0,_width,_height);
 
     // pass mouse coordinates (real coordinates twice larger for retina-displays)
-    _pickingShader.paintGL(_width, _height, _structureUniformBuffer);
+    _pickingShader.paintGL(_structureUniformBuffer);
 
     glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
-    drawSceneOpaqueToFramebuffer(_sceneFrameBuffer, _width, _height, _devicePixelRatio);
+    drawSceneOpaqueToFramebuffer(_sceneFrameBuffer);
     check_gl_error();
 
     // resolve depth-buffer
@@ -661,7 +604,7 @@ void OpenGLWindow::paintGL()
     check_gl_error();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
-    drawSceneVolumeRenderedSurfacesToFramebuffer(_sceneFrameBuffer, _sceneResolvedDepthTexture, _width, _height, _devicePixelRatio);
+    drawSceneVolumeRenderedSurfacesToFramebuffer(_sceneFrameBuffer, _sceneResolvedDepthTexture);
 
     // resolve depth-buffer
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _sceneFrameBuffer);
@@ -864,7 +807,7 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   glViewport(0,0,width,height);
 
 
-  drawSceneOpaqueToFramebuffer(sceneFrameBuffer, width, height, 1);
+  drawSceneOpaqueToFramebuffer(sceneFrameBuffer);
 
   // resolve depth-buffer
   glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFrameBuffer);
@@ -875,7 +818,7 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   check_gl_error();
   glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
-  drawSceneVolumeRenderedSurfacesToFramebuffer(sceneFrameBuffer, sceneResolvedDepthTexture, width, height, 1);
+  drawSceneVolumeRenderedSurfacesToFramebuffer(sceneFrameBuffer, sceneResolvedDepthTexture);
 
   // resolve depth-buffer
   glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFrameBuffer);
@@ -967,7 +910,7 @@ QImage OpenGLWindow::renderSceneToImage(int width, int height, RKRenderQuality q
   return img.mirrored();
 }
 
-void OpenGLWindow::drawSceneOpaqueToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio)
+void OpenGLWindow::drawSceneOpaqueToFramebuffer(GLuint framebuffer)
 {
   glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
   check_gl_error();
@@ -1011,7 +954,7 @@ void OpenGLWindow::drawSceneOpaqueToFramebuffer(GLuint framebuffer, int width, i
 
 
 
-void OpenGLWindow::drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio)
+void OpenGLWindow::drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture)
 {
   glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
   if (std::shared_ptr<RKCamera> camera = _camera.lock())

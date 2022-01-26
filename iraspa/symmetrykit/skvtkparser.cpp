@@ -49,7 +49,7 @@ template <typename T> static QByteArray readData(QTextStream &stream, size_t num
   return QByteArray(reinterpret_cast<char*>(dataPoints.data()), dataPoints.size() * sizeof(T));
 }
 
-void SKVTKParser::startParsing()
+void SKVTKParser::startParsing() noexcept(false)
 {
   QFile file(_url.toLocalFile());
   QFileInfo info(file);
@@ -73,7 +73,7 @@ void SKVTKParser::startParsing()
         if (line.isEmpty())
         {
           file.close();
-          {throw "Cannot read VTK header";}
+          {throw std::runtime_error("Cannot read VTK header");}
         }
         else
         {
@@ -98,7 +98,7 @@ void SKVTKParser::startParsing()
             if(geometryType != "STRUCTURED_POINTS")
             {
               file.close();
-              {throw "VTK DataSet type must be STRUCTURED_POINTS";}
+              {throw std::runtime_error("VTK DataSet type must be STRUCTURED_POINTS");}
             }
           }
         }
@@ -183,7 +183,7 @@ void SKVTKParser::startParsing()
             else
             {
               file.close();
-              {throw "Cannot read VTK SCALARS type";}
+              {throw std::runtime_error("Cannot read VTK SCALARS type");}
             }
 
             if(strSplited.size()>=4)

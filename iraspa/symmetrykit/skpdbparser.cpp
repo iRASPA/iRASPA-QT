@@ -114,7 +114,7 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
   }
 }
 
-void SKPDBParser::startParsing()
+void SKPDBParser::startParsing() noexcept(false)
 {
   int lineNumber = 0;
   int modelNumber = 0;

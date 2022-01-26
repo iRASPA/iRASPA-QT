@@ -35,7 +35,7 @@ ProjectStructure::ProjectStructure(): _camera(std::make_shared<RKCamera>())
 }
 
 ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
-                                   bool proteinOnlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
+                                   bool proteinOnlyAsymmetricUnit, bool asMolecule) noexcept(false): _camera(std::make_shared<RKCamera>())
 {
   QUrl url = QUrl::fromLocalFile(filename);
   if (url.isValid())
@@ -55,7 +55,7 @@ ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, For
 }
 
 ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
-                                   SKParser::ImportType importType, bool onlyAsymmetricUnit, bool asMolecule): _camera(std::make_shared<RKCamera>())
+                                   SKParser::ImportType importType, bool onlyAsymmetricUnit, bool asMolecule) noexcept(false): _camera(std::make_shared<RKCamera>())
 {
   foreach (const QUrl &url, fileURLs)
   {

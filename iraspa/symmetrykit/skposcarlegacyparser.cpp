@@ -41,7 +41,7 @@ SKPOSCARLegacyParser::SKPOSCARLegacyParser(QUrl url, bool proteinOnlyAsymmetricU
   _frame->kind = SKStructure::Kind::crystal;
 }
 
-void SKPOSCARLegacyParser::startParsing()
+void SKPOSCARLegacyParser::startParsing() noexcept(false)
 {
   double3x3 unitCell{};
   double3x3 inverseUnitCell{};
@@ -51,11 +51,11 @@ void SKPOSCARLegacyParser::startParsing()
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw "Empty file";}
+  if(scannedLine.isEmpty()) {throw std::runtime_error("Empty file");}
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw "POSCAR file near empty";}
+  if(scannedLine.isEmpty()) {throw std::runtime_error("POSCAR file near empty");}
 
   // read first lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -66,17 +66,17 @@ void SKPOSCARLegacyParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing first lattice vector in POSCAR";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing first lattice vector in POSCAR");}
 
   bool succes = false;
   unitCell.ax = termsScannedLined[0].toDouble(&succes);
-  if(!succes) {throw "Could not parse the x-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of first lattice vector");}
 
   unitCell.ay = termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Could not parse the y-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of first lattice vector");}
 
   unitCell.az = termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Could not parse the z-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of first lattice vector");}
 
 
   // read second lattice vector
@@ -88,16 +88,16 @@ void SKPOSCARLegacyParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing second lattice vector in POSCAR";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing second lattice vector in POSCAR");}
 
   unitCell.bx = termsScannedLined[0].toDouble(&succes);
-  if(!succes) {throw "Could not parse the x-coordinate of second lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of second lattice vector");}
 
   unitCell.by = termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Could not parse the y-coordinate of second lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of second lattice vector");}
 
   unitCell.bz = termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Could not parse the z-coordinate of second lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of second lattice vector");}
 
   // read third lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -108,17 +108,17 @@ void SKPOSCARLegacyParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing third lattice vector in POSCAR";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing third lattice vector in POSCAR");}
 
 
   unitCell.cx = termsScannedLined[0].toDouble(&succes);
-  if(!succes) {throw "Could not parse the x-coordinate of third lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of third lattice vector");}
 
   unitCell.cy = termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Could not parse the y-coordinate of third lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of third lattice vector");}
 
   unitCell.cz = termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Could not parse the z-coordinate of third lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of third lattice vector");}
 
   _frame->cell = std::make_shared<SKCell>(unitCell);
   inverseUnitCell = unitCell.inverse();
@@ -151,7 +151,7 @@ void SKPOSCARLegacyParser::startParsing()
   #else
     QStringList amountList = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(amountList.empty()) {throw "List of amount of atoms is empty";}
+  if(amountList.empty()) {throw std::runtime_error("List of amount of atoms is empty");}
 
   /*
   if(elementList.size() != amountList.size())
@@ -208,7 +208,7 @@ void SKPOSCARLegacyParser::startParsing()
       #else
         termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
       #endif
-      if(termsScannedLined.empty()) {throw "Error reading atoms";}
+      if(termsScannedLined.empty()) {throw std::runtime_error("Error reading atoms");}
 
 
       atom->setElementIdentifier(k+1);
@@ -216,13 +216,13 @@ void SKPOSCARLegacyParser::startParsing()
 
       double3 position;
       position.x = termsScannedLined[0].toDouble(&succes);
-      if(!succes) {throw "Could not parse the x-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the x-coordinate");}
 
       position.y = termsScannedLined[1].toDouble(&succes);
-      if(!succes) {throw "Could not parse the y-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the y-coordinate");}
 
       position.z = termsScannedLined[2].toDouble(&succes);
-      if(!succes) {throw "Could not parse the z-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the z-coordinate");}
 
 
       // convert to fractional position if Cartesian coordinates are specified

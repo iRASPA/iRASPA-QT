@@ -83,9 +83,9 @@ public :
 // Accessors
 public :
   /** accesses the number of vertices of the generated mesh */
-  inline const int nverts() const { return _vertices.size() ; }
+  inline int nverts() const { return _vertices.size() ; }
   /** accesses the number of triangles of the generated mesh */
-  inline const int ntrigs() const { return _triangles.size() ; }
+  inline int ntrigs() const { return _triangles.size() ; }
   /** accesses a specific vertex of the generated mesh */
   inline const Vertex   * vert( const int i ) const { if( i < 0  || i >= nverts() ) return ( Vertex *)NULL ; return _vertices.data()  + i ; }
   /** accesses a specific triangle of the generated mesh */
@@ -97,11 +97,11 @@ public :
   inline Triangle *triangles() { return _triangles.data() ; }
 
   /**  accesses the width  of the grid */
-  inline const int size_x() const { return _size_x ; }
+  inline int size_x() const { return _size_x ; }
   /**  accesses the depth  of the grid */
-  inline const int size_y() const { return _size_y ; }
+  inline int size_y() const { return _size_y ; }
   /**  accesses the height of the grid */
-  inline const int size_z() const { return _size_z ; }
+  inline int size_z() const { return _size_z ; }
 
   /**
    * changes the size of the grid
@@ -123,7 +123,7 @@ public :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-    inline const float get_data(const int3 &coord) const {
+    inline float get_data(const int3 &coord) const {
         return _data[ coord.x + coord.y*_size_x + coord.z*_size_x*_size_y];
     }
 

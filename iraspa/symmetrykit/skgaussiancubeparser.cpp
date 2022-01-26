@@ -44,7 +44,7 @@ SKGaussianCubeParser::SKGaussianCubeParser(QUrl url, bool proteinOnlyAsymmetricU
   _frame->drawUnitCell = true;
 }
 
-void SKGaussianCubeParser::startParsing()
+void SKGaussianCubeParser::startParsing() noexcept(false)
 {
   int3 dimensions;
   bool succes = false;
@@ -73,7 +73,7 @@ qDebug() << "CHECK2" << scannedLine;
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.isEmpty()) {throw "Empty line in cube file (missing number of atoms and origin)";}
+  if(termsScannedLined.isEmpty()) {throw std::runtime_error("Empty line in cube file (missing number of atoms and origin)");}
 
   int numberOfAtoms = termsScannedLined[0].toInt(&succes);
   double3 origin = double3(0.0, 0.0, 0.0);
@@ -94,25 +94,25 @@ qDebug() << "CHECK2" << scannedLine;
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing first lattice vector";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing first lattice vector");}
 
   succes = false;
   double dx = termsScannedLined[0].toInt(&succes);
-  if(!succes) {throw "Could not read x-dimension";}
+  if(!succes) {throw std::runtime_error("Could not read x-dimension");}
   dimensions.x = fabs(dx);
   conversionFactor.x = dx < 0.0 ? 1.0 : bohrToAngstrom;
 
   succes = false;
   unitCell.ax = conversionFactor.x * dimensions.x * termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Count not parse the x-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the x-coordinate of first lattice vector");}
 
   succes = false;
   unitCell.ay = conversionFactor.x * dimensions.x * termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Count not parse the y-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the y-coordinate of first lattice vector");}
 
   succes = false;
   unitCell.az = conversionFactor.x * dimensions.x * termsScannedLined[3].toDouble(&succes);
-  if(!succes) {throw "Count not parse the z-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the z-coordinate of first lattice vector");}
 
   // read second lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -123,25 +123,25 @@ qDebug() << "CHECK2" << scannedLine;
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing second lattice vector";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing second lattice vector");}
 
   succes = false;
   double dy = termsScannedLined[0].toInt(&succes);
-  if(!succes) {throw "Could not read x-dimension";}
+  if(!succes) {throw std::runtime_error("Could not read x-dimension");}
   dimensions.y = fabs(dy);
   conversionFactor.y = dy < 0.0 ? 1.0 : bohrToAngstrom;
 
   succes = false;
   unitCell.bx = conversionFactor.y * dimensions.y * termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Count not parse the x-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the x-coordinate of first lattice vector");}
 
   succes = false;
   unitCell.by = conversionFactor.y * dimensions.y * termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Count not parse the y-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the y-coordinate of first lattice vector");}
 
   succes = false;
   unitCell.bz = conversionFactor.y * dimensions.y * termsScannedLined[3].toDouble(&succes);
-  if(!succes) {throw "Count not parse the z-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the z-coordinate of first lattice vector");}
 
   // read third lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -152,25 +152,25 @@ qDebug() << "CHECK2" << scannedLine;
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing third lattice vector";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing third lattice vector");}
 
   succes = false;
   double dz = termsScannedLined[0].toInt(&succes);
-  if(!succes) {throw "Could not read x-dimension";}
+  if(!succes) {throw std::runtime_error("Could not read x-dimension");}
   dimensions.z = fabs(dz);
   conversionFactor.z = dz < 0.0 ? 1.0 : bohrToAngstrom;
 
   succes = false;
   unitCell.cx = conversionFactor.z * dimensions.z * termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Count not parse the x-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the x-coordinate of first lattice vector");}
 
   succes = false;
   unitCell.cy = conversionFactor.z * dimensions.z * termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Count not parse the y-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the y-coordinate of first lattice vector");}
 
   succes = false;
   unitCell.cz = conversionFactor.z * dimensions.z * termsScannedLined[3].toDouble(&succes);
-  if(!succes) {throw "Count not parse the z-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Count not parse the z-coordinate of first lattice vector");}
 
   // Create the unit cell
   _frame->cell = std::make_shared<SKCell>(unitCell);
@@ -187,10 +187,10 @@ qDebug() << "CHECK2" << scannedLine;
     #else
       termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
     #endif
-    if(termsScannedLined.size()<5) {throw "Missing atom information";}
+    if(termsScannedLined.size()<5) {throw std::runtime_error("Missing atom information");}
 
     int atomicNumber = termsScannedLined[0].toInt(&succes);
-    if(!succes) {throw "Atomic number not an int";}
+    if(!succes) {throw std::runtime_error("Atomic number not an int");}
 
     std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
     atom->setElementIdentifier(atomicNumber);

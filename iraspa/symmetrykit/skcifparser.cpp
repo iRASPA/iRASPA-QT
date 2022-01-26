@@ -41,7 +41,7 @@ SKCIFParser::SKCIFParser(QUrl url, bool proteinOnlyAsymmetricUnitCell, bool asMo
 
 }
 
-void SKCIFParser::startParsing()
+void SKCIFParser::startParsing() noexcept(false)
 {
   while(!_scanner.isAtEnd())
   {

@@ -92,12 +92,12 @@ enum class Tracking
   other = 10
 };
 
-class OpenGLWindow : public QOpenGLWindow, public RKRenderViewController, public OpenGLShader, public LogReportingConsumer
+class OpenGLWindow : public QOpenGLWindow, public RKRenderViewController, public OpenGLShader
 {
   Q_OBJECT
 
 public:
-  OpenGLWindow(QWidget* parent = nullptr , LogReporting *logReporter = nullptr);
+  OpenGLWindow(QWidget* parent = nullptr);
   ~OpenGLWindow();
   void redraw() override final;
   void redrawWithQuality(RKRenderQuality quality) override final;
@@ -114,8 +114,6 @@ public:
   void reloadGlobalAxesData() override final;
   void reloadBackgroundImage() override final;
   void reloadStructureUniforms() override final;
-
-  void setLogReportingWidget(LogReporting *logReporting)  override final;
 
   void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) override;
   void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) override;
@@ -140,7 +138,6 @@ private:
   GLuint _program;
   RKRenderQuality _quality = RKRenderQuality::high;
   std::shared_ptr<RKRenderDataSource> _dataSource;
-  LogReporting* _logReporter = nullptr;
   QStringList _logData{};
 
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderObject>>>{};
@@ -193,8 +190,8 @@ private:
 
   OpenGLTextRenderingShader _textShader;
 
-  void drawSceneOpaqueToFramebuffer(GLuint framebuffer, int width, int height, qreal devicePixelRatio);
-  void drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio);
+  void drawSceneOpaqueToFramebuffer(GLuint framebuffer);
+  void drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture);
   void drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture, int width, int height, qreal devicePixelRatio);
 
   void adjustAmbientOcclusionTextureSize();

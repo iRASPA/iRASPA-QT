@@ -32,7 +32,7 @@ SKComputeEnergyGrid::SKComputeEnergyGrid(): SKOpenCL()
     cl_int err;
     const char* shaderSourceCode = SKComputeEnergyGrid::_energyGridKernel;
     _program = clCreateProgramWithSource(_clContext, 1, &shaderSourceCode, nullptr, &err);
-    if (err != CL_SUCCESS) {throw "clCreateProgramWithSource failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateProgramWithSource failed");}
 
     // Build the program executable
     err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, nullptr);
@@ -43,14 +43,14 @@ SKComputeEnergyGrid::SKComputeEnergyGrid(): SKOpenCL()
       clGetProgramBuildInfo(_program, _clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
       QString message = QString("SKComputeEnergyGrid: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
       qDebug() << message << _clDeviceId << err;
-      throw "clBuildProgram failed";
+      throw std::runtime_error("clBuildProgram failed");
     }
 
     _kernel = clCreateKernel(_program, "ComputeEnergyGrid", &err);
-    if (err != CL_SUCCESS) {throw "clCreateKernel failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
 
     err = clGetKernelWorkGroupInfo(_kernel, _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_workGroupSize, nullptr);
-    if (err != CL_SUCCESS) {throw "clGetKernelWorkGroupInfo failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
 
     _isOpenCLReady = true;
   }
@@ -194,28 +194,28 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
     }
 
     cl_mem inputPos = clCreateBuffer(_clContext,  CL_MEM_READ_ONLY,  sizeof(float4) * pos.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw "clCreateBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, inputPos, CL_TRUE, 0, sizeof(float4) * pos.size(), pos.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw "_clCommandQueue failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("_clCommandQueue failed");}
 
     cl_mem inputGridPos = clCreateBuffer(_clContext, CL_MEM_READ_ONLY,  sizeof(cl_float4) * gridPositions.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw "clCreateBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, inputGridPos, CL_TRUE, 0, sizeof(cl_float4) * gridPositions.size(), gridPositions.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw "clEnqueueWriteBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueWriteBuffer failed");}
 
     cl_mem inputEpsilon = clCreateBuffer(_clContext, CL_MEM_READ_ONLY,  sizeof(cl_float) * epsilon.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw "clCreateBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, inputEpsilon, CL_TRUE, 0, sizeof(cl_float) * epsilon.size(), epsilon.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw "clEnqueueWriteBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueWriteBuffer failed");}
 
     cl_mem inputSigma = clCreateBuffer(_clContext, CL_MEM_READ_ONLY, sizeof(cl_float) * sigma.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw "clCreateBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, inputSigma, CL_TRUE, 0, sizeof(cl_float) * sigma.size(), sigma.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw "_clCommandQueue failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("_clCommandQueue failed");}
 
     // set work-item dimensions
     size_t totalNumberOfReplicas = numberOfReplicas.x * numberOfReplicas.y * numberOfReplicas.z;
@@ -240,17 +240,17 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
 
     // allocate xpos memory and queue it to the device
     cl_mem replicaCellBuffer = clCreateBuffer(_clContext, CL_MEM_READ_ONLY,  sizeof(cl_float4) * replicaVector.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw "clCreateBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, replicaCellBuffer, CL_TRUE, 0, sizeof(cl_float4) * replicaVector.size(), replicaVector.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw "clEnqueueWriteBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueWriteBuffer failed");}
 
     // allocate memory for the output and queue it to the device
     cl_mem outputMemory = clCreateBuffer(_clContext, CL_MEM_READ_WRITE, sizeof(cl_float) * output.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw "clCreateBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, outputMemory, CL_TRUE, 0, sizeof(cl_float) * output.size(), output.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw "clEnqueueWriteBuffer failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueWriteBuffer failed");}
 
     double3x3 replicaCell = double3x3(double(numberOfReplicas.x) * unitCell[0],
                                       double(numberOfReplicas.y) * unitCell[1],
@@ -281,7 +281,7 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
       err |= clSetKernelArg(_kernel,  10, sizeof(cl_int), &startIndex);
       err |= clSetKernelArg(_kernel,  11, sizeof(cl_int), &endIndex);
       err |= clEnqueueNDRangeKernel(_clCommandQueue, _kernel, 1, nullptr, &global_work_size, &_workGroupSize, 0, nullptr, nullptr);
-      if (err != CL_SUCCESS) {throw "clEnqueueNDRangeKernel failed";}
+      if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueNDRangeKernel failed");}
 
       clFinish(_clCommandQueue);
 
@@ -290,7 +290,7 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
 
     // read output image using SAME size as before
     err = clEnqueueReadBuffer(_clCommandQueue, outputMemory, CL_TRUE, 0, sizeof(cl_float) * outputData.size(), outputData.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw "_clCommandQueue failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("_clCommandQueue failed");}
 
     clFinish(_clCommandQueue);
 

@@ -43,7 +43,7 @@ class SKPOSCARLegacyParser: public SKParser
 {
 public:
   SKPOSCARLegacyParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
-  void startParsing() override final;
+  void startParsing() noexcept(false) override final;
 private:
   Scanner _scanner;
   [[maybe_unused]] bool _proteinOnlyAsymmetricUnitCell;

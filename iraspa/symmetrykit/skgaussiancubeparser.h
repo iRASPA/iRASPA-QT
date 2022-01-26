@@ -42,7 +42,7 @@ class SKGaussianCubeParser: public SKParser
 {
 public:
   SKGaussianCubeParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
-  void startParsing() override final;
+  void startParsing() noexcept(false) override final;
 private:
   Scanner _scanner;
   [[maybe_unused]] bool _proteinOnlyAsymmetricUnitCell;

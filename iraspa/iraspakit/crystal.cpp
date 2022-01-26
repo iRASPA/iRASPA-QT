@@ -1815,10 +1815,10 @@ std::vector<float> Crystal::gridData()
     _range = std::pair(double(*min),0.0);
     return gridData;
   }
-  catch (char const* e)
+  catch (std::exception const& e)
   {
-    std::cout << "Exception caught: " << e << std::endl;
-    qDebug() << QString::fromUtf8(e);
+    std::cout << "Exception caught: " << e.what() << std::endl;
+    qDebug() << QString::fromUtf8(e.what());
     return std::vector<float>();
   }
 }
@@ -1915,9 +1915,9 @@ double Crystal::computeVoidFraction() const
     }
     return (double)sumBoltzmannWeight/(double)(size.x*size.y*size.z);
   }
-  catch (char const* e)
+  catch (std::exception const& e)
   {
-    std::cout << "Exception caught: " << e << std::endl;
+    std::cout << "Exception caught: " << e.what() << std::endl;
     return 0.0;
   }
   return 0.0;
@@ -1957,9 +1957,9 @@ double Crystal::computeNitrogenSurfaceArea() const
     }
     return totalArea;
   }
-  catch (char const* e)
+  catch (std::exception const& e)
   {
-    std::cout << "Exception caught: " << e << std::endl;
+    std::cout << "Exception caught: " << e.what() << std::endl;
     return 0.0;
   }
   return 0.0;

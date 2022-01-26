@@ -43,7 +43,7 @@
   #include <CL/opencl.h>
 #endif
 
-class OpenGLEnergyVolumeRenderedSurface final: public OpenGLShader, public LogReportingConsumer
+class OpenGLEnergyVolumeRenderedSurface final: public OpenGLShader
 {
 public:
   OpenGLEnergyVolumeRenderedSurface();
@@ -58,7 +58,6 @@ public:
   void initializeIsosurfaceUniforms();
   void initializeLightUniforms();
   void loadShader(void) override final;
-  void setLogReportingWidget(LogReporting *logReporting)  override final;
   void deleteBuffers();
   void generateBuffers();
   void invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures);
@@ -66,26 +65,21 @@ private:
   GLuint _program;
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
-  LogReporting* _logReporter = nullptr;
+  std::vector<std::vector<size_t>> _numberOfIndices{};
 
-  std::vector<std::vector<size_t>> _numberOfIndices;
+  std::vector<std::vector<GLuint>> _volumeTextures{};
+  GLuint _transferFunctionTexture{0};
 
-  std::vector<std::vector<GLuint>> _volumeTextures;
-  GLuint _transferFunctionTexture;
+  std::vector<std::vector<GLuint>> _vertexBuffer{};
+  std::vector<std::vector<GLuint>> _indexBuffer{};
 
-  std::vector<std::vector<GLuint>> _vertexBuffer;
-  std::vector<std::vector<GLuint>> _indexBuffer;
-  //std::vector<std::vector<GLuint>> _instancePositionBuffer;
+  std::vector<std::vector<GLuint>> _vertexArrayObject{};
+  std::vector<std::vector<GLuint>> _specularColorBuffer{};
 
-  std::vector<std::vector<GLuint>> _vertexArrayObject;
-  //std::vector<std::vector<GLuint>> _ambientColorBuffer;
-  //std::vector<std::vector<GLuint>> _diffuseColorBuffer;
-  std::vector<std::vector<GLuint>> _specularColorBuffer;
-
-  std::pair<double, double> _range;
-  double3 _origin;
-  double3 _spacing;
-  int3 _size;
+  std::pair<double, double> _range{};
+  double3 _origin{};
+  double3 _spacing{};
+  int3 _size{};
 
   GLint _volumeTextureUniformLocation{-1};
   GLint _transferFunctionUniformLocation{-1};

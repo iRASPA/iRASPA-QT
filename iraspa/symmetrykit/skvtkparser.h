@@ -40,7 +40,7 @@ class SKVTKParser: public SKParser
 {
 public:
   SKVTKParser(QUrl url, QDataStream::ByteOrder byteorder);
-  void startParsing() override final;
+  void startParsing() noexcept(false) override final;
 private:
   QUrl _url;
   QDataStream::ByteOrder _byteOrder;

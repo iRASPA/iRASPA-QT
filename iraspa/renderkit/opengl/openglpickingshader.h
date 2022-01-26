@@ -68,7 +68,7 @@ public:
   void initializeStructureUniforms();
   void generateFrameBuffers();
 
-  void paintGL(int width,int height,GLuint structureUniformBuffer);
+  void paintGL(GLuint structureUniformBuffer);
   void resizeGL(int w, int h);
 
   std::array<int,4> pickTexture(int x, int y, int width, int height);

@@ -42,7 +42,7 @@ class SKPDBParser: public SKParser
 {
 public:
   SKPDBParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
-  void startParsing() override final;
+  void startParsing() noexcept(false) override final;
 private:
   Scanner _scanner;
   bool _proteinOnlyAsymmetricUnitCell;

@@ -28,17 +28,17 @@ SKComputeVoidFraction::SKComputeVoidFraction(): SKOpenCL()
     cl_int err;
     const char* shaderSourceCode = SKComputeVoidFraction::_voidFractionKernel;
     _program = clCreateProgramWithSource(_clContext, 1, &shaderSourceCode, nullptr, &err);
-    if (err != CL_SUCCESS) {throw "clCreateProgramWithSource failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateProgramWithSource failed");}
 
     // Build the program executable
     err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw "clBuildProgram failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clBuildProgram failed");}
 
     _kernel = clCreateKernel(_program, "ComputeVoidFraction", &err);
-    if (err != CL_SUCCESS) {throw "clCreateKernel failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
 
     err = clGetKernelWorkGroupInfo(_kernel, _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_workGroupSize, nullptr);
-    if (err != CL_SUCCESS) {throw "clGetKernelWorkGroupInfo failed";}
+    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
 
     _isOpenCLReady = true;
   }
@@ -53,9 +53,9 @@ double SKComputeVoidFraction::ComputeVoidFractionImpl(std::vector<cl_float> *vox
 {
   cl_int err;
 
-  if(!_isOpenCLInitialized) {throw "OpenCL voidfraction: OpenCL not available";}
+  if(!_isOpenCLInitialized) {throw std::runtime_error("OpenCL voidfraction: OpenCL not available");}
 
-  if(!_isOpenCLReady) {throw "OpenCL voidfraction: OpenCL not ready";}
+  if(!_isOpenCLReady) {throw std::runtime_error("OpenCL voidfraction: OpenCL not ready");}
 
   // make sure the the global work size is an multiple of the work group size
   size_t temp = voxels->size();
@@ -65,7 +65,7 @@ double SKComputeVoidFraction::ComputeVoidFractionImpl(std::vector<cl_float> *vox
 
   // Transfer dataset to device
   cl_mem rawData = clCreateBuffer(_clContext,  CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,  sizeof(cl_float) * voxels->size(), voxels->data(), &err);
-  if (err != CL_SUCCESS) {throw "SKComputeVoidFraction: error in clCreateBuffer";}
+  if (err != CL_SUCCESS) {throw std::runtime_error("SKComputeVoidFraction: error in clCreateBuffer");}
 
   size_t nWorkGroups = numberOfGridPoints/_workGroupSize;
 
@@ -74,7 +74,7 @@ double SKComputeVoidFraction::ComputeVoidFractionImpl(std::vector<cl_float> *vox
   cl_mem reductionBuffer = clCreateBuffer(_clContext, CL_MEM_READ_ONLY, nWorkGroups*sizeof(float), nullptr, &err);
 
   err = clEnqueueWriteBuffer(_clCommandQueue, reductionBuffer, CL_TRUE, 0, nWorkGroups*sizeof(float), sumReduction, 0, nullptr, nullptr);
-  if (err != CL_SUCCESS) {throw "SKComputeVoidFraction: error in clEnqueueWriteBuffer";}
+  if (err != CL_SUCCESS) {throw std::runtime_error("SKComputeVoidFraction: error in clEnqueueWriteBuffer");}
 
   // Set the arguments of the kernel
   clSetKernelArg(_kernel, 0, sizeof(cl_mem), &rawData);
@@ -83,11 +83,11 @@ double SKComputeVoidFraction::ComputeVoidFractionImpl(std::vector<cl_float> *vox
 
   // Execute kernel code
   err = clEnqueueNDRangeKernel(_clCommandQueue, _kernel, 1, nullptr, &global_work_size, &_workGroupSize, 0, nullptr, nullptr);
-  if (err != CL_SUCCESS) {throw "SKComputeVoidFraction: error in clEnqueueNDRangeKernel";}
+  if (err != CL_SUCCESS) {throw std::runtime_error("SKComputeVoidFraction: error in clEnqueueNDRangeKernel");}
 
   // Read the buffer back to the array
   err = clEnqueueReadBuffer(_clCommandQueue, reductionBuffer, CL_TRUE, 0, nWorkGroups*sizeof(float), sumReduction, 0, nullptr, nullptr);
-  if (err != CL_SUCCESS) {throw "SKComputeVoidFraction: error in clEnqueueReadBuffer";}
+  if (err != CL_SUCCESS) {throw std::runtime_error("SKComputeVoidFraction: error in clEnqueueReadBuffer");}
 
   clFinish(_clCommandQueue);
 

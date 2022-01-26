@@ -34,7 +34,7 @@ SKXYZParser::SKXYZParser(QUrl url, bool proteinOnlyAsymmetricUnitCell, bool asMo
   _frame->displayName = _scanner.displayName();
 }
 
-void SKXYZParser::startParsing()
+void SKXYZParser::startParsing() noexcept(false)
 {
   int lineNumber = 0;
   int numberOfAtoms = 0;
@@ -43,11 +43,11 @@ void SKXYZParser::startParsing()
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw "Empty file";}
+  if(scannedLine.isEmpty()) {throw std::runtime_error("Empty file");}
 
   // scan second line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw "XYZ file near empty";}
+  if(scannedLine.isEmpty()) {throw std::runtime_error("XYZ file near empty");}
 
   QString simplifiedLine = scannedLine.simplified().toLower();
   if(simplifiedLine.startsWith("lattice=\""))
@@ -70,33 +70,33 @@ void SKXYZParser::startParsing()
       bool succes = false;
 
       unitCell.ax = termsScannedLined[0].toDouble(&succes);
-      if(!succes) {throw "Count not parse the ax-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the ax-cell coordinate");}
 
       unitCell.ay = termsScannedLined[1].toDouble(&succes);
-      if(!succes) {throw "Count not parse the ay-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the ay-cell coordinate");}
 
       unitCell.az = termsScannedLined[2].toDouble(&succes);
-      if(!succes) {throw "Count not parse the az-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the az-cell coordinate");}
 
 
       unitCell.bx = termsScannedLined[3].toDouble(&succes);
-      if(!succes) {throw "Count not parse the bx-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the bx-cell coordinate");}
 
       unitCell.by = termsScannedLined[4].toDouble(&succes);
-      if(!succes) {throw "Count not parse the by-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the by-cell coordinate");}
 
       unitCell.bz = termsScannedLined[5].toDouble(&succes);
-      if(!succes) {throw "Count not parse the bz-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the bz-cell coordinate");}
 
 
       unitCell.cx = termsScannedLined[6].toDouble(&succes);
-      if(!succes) {throw "Count not parse the cx-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the cx-cell coordinate");}
 
       unitCell.cy = termsScannedLined[7].toDouble(&succes);
-      if(!succes) {throw "Count not parse the cy-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the cy-cell coordinate");}
 
       unitCell.cz = termsScannedLined[8].toDouble(&succes);
-      if(!succes) {throw "Count not parse the cz-cell coordinate";}
+      if(!succes) {throw std::runtime_error("Count not parse the cz-cell coordinate");}
 
       _frame->drawUnitCell = false;
       if(!_asMolecule)
@@ -127,7 +127,7 @@ void SKXYZParser::startParsing()
       #else
         QStringList termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
       #endif
-      if(termsScannedLined.size()<4) {throw "Missing data";}
+      if(termsScannedLined.size()<4) {throw std::runtime_error("Missing data");}
 
       numberOfAtoms += 1;
       std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
@@ -137,13 +137,13 @@ void SKXYZParser::startParsing()
 
       bool succes = false;
       position.x = termsScannedLined[1].toDouble(&succes);
-      if(!succes) {throw "Could not parse the x-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the x-coordinate");}
 
       position.y = termsScannedLined[2].toDouble(&succes);
-      if(!succes) {throw "Could not parse the y-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the y-coordinate");}
 
       position.z = termsScannedLined[3].toDouble(&succes);
-      if(!succes) {throw "Could not parse the z-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the z-coordinate");}
 
 
       if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(chemicalElement); index != PredefinedElements::atomicNumberData.end())

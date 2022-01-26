@@ -31,11 +31,6 @@ OpenGLEnergyVolumeRenderedSurface::OpenGLEnergyVolumeRenderedSurface()
 
 }
 
-void OpenGLEnergyVolumeRenderedSurface::setLogReportingWidget(LogReporting *logReporting)
-{
-  _logReporter = logReporting;
-}
-
 void OpenGLEnergyVolumeRenderedSurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
   for(const std::shared_ptr<RKRenderObject> &structure : structures)
@@ -249,8 +244,10 @@ void OpenGLEnergyVolumeRenderedSurface::reloadData()
 
 void OpenGLEnergyVolumeRenderedSurface::initializeTransferFunctionTexture()
 {
+  //glDeleteTextures silently ignores 0's and names that do not correspond to existing textures.
   glDeleteTextures(1, &_transferFunctionTexture);
   check_gl_error();
+  // All texture names will be nonzero, unsigned integers.
   glGenTextures(1, &_transferFunctionTexture);
   check_gl_error();
   glBindTexture(GL_TEXTURE_1D_ARRAY, _transferFunctionTexture);
@@ -322,11 +319,7 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
             std::vector<float4> *textureData{};
             if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
             {
-               std::clock_t beginTime = clock();
                textureData = _caches[powerOfTwo].object(_renderStructures[i][j].get());
-               std::clock_t endTime = clock();
-               double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
-               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
 
                glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, size, size, size, 0, GL_RGBA, GL_FLOAT, textureData->data());
                check_gl_error();
@@ -335,18 +328,11 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
             }
             else
             {
-              std::clock_t beginTime = clock();
-
               std::vector<float4> gridData = source->gridValueAndGradientData();
               if (gridData.empty()) return;
 
               textureData = new std::vector<float4>();
               *textureData = std::move(gridData);
-
-
-              std::clock_t endTime = clock();
-              double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
-              _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time computing grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
 
               glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, size, size, size, 0, GL_RGBA, GL_FLOAT, textureData->data());
               check_gl_error();
@@ -356,8 +342,6 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
               // insert as last to avoid use of memory after free in case the insertion fails.
               _caches[powerOfTwo].insert(_renderStructures[i][j].get(),textureData);
             }
-
-
 
 
             glBindVertexArray(_vertexArrayObject[i][j]);

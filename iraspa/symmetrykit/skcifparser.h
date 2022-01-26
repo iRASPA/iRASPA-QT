@@ -39,7 +39,7 @@ class SKCIFParser: public SKParser
 {
 public:
   SKCIFParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
-  void startParsing() override final;
+  void startParsing() noexcept(false) override final;
   std::optional<int> spaceGroupHallNumber() {return _spaceGroupHallNumber;}
 private:
   Scanner _scanner;

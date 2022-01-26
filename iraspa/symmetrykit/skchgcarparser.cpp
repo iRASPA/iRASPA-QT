@@ -56,11 +56,11 @@ void SKCHGCARParser::startParsing()
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw "Empty file";}
+  if(scannedLine.isEmpty()) {throw std::runtime_error("Empty file");}
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw "POSCAR file near empty";}
+  if(scannedLine.isEmpty()) {throw std::runtime_error("POSCAR file near empty");}
 
   // read first lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -71,17 +71,17 @@ void SKCHGCARParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing first lattice vector in POSCAR";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing first lattice vector in POSCAR");}
 
   bool succes = false;
   unitCell.ax = termsScannedLined[0].toDouble(&succes);
-  if(!succes) {throw "Could not parse the x-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of first lattice vector");}
 
   unitCell.ay = termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Could not parse the y-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of first lattice vector");}
 
   unitCell.az = termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Could not parse the z-coordinate of first lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of first lattice vector");}
 
   // read second lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -92,16 +92,16 @@ void SKCHGCARParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing second lattice vector in POSCAR";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing second lattice vector in POSCAR");}
 
   unitCell.bx = termsScannedLined[0].toDouble(&succes);
-  if(!succes) {throw "Could not parse the x-coordinate of second lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of second lattice vector");}
 
   unitCell.by = termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Could not parse the y-coordinate of second lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of second lattice vector");}
 
   unitCell.bz = termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Could not parse the z-coordinate of second lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of second lattice vector");}
 
   // read third lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -112,16 +112,16 @@ void SKCHGCARParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing third lattice vector in POSCAR";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing third lattice vector in POSCAR");}
 
   unitCell.cx = termsScannedLined[0].toDouble(&succes);
-  if(!succes) {throw "Could not parse the x-coordinate of third lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of third lattice vector");}
 
   unitCell.cy = termsScannedLined[1].toDouble(&succes);
-  if(!succes) {throw "Could not parse the y-coordinate of third lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of third lattice vector");}
 
   unitCell.cz = termsScannedLined[2].toDouble(&succes);
-  if(!succes) {throw "Could not parse the z-coordinate of third lattice vector";}
+  if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of third lattice vector");}
 
   std::shared_ptr<SKCell> cell = std::make_shared<SKCell>(unitCell);
   inverseUnitCell = unitCell.inverse();
@@ -135,7 +135,7 @@ void SKCHGCARParser::startParsing()
   #else
     QStringList elementList = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(elementList.empty()) {throw "List of elements is empty";}
+  if(elementList.empty()) {throw std::runtime_error("List of elements is empty");}
 
   // read amount of atoms per element
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -146,9 +146,9 @@ void SKCHGCARParser::startParsing()
   #else
     QStringList amountList = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(amountList.empty()) {throw "List of amount of atoms is empty";}
+  if(amountList.empty()) {throw std::runtime_error("List of amount of atoms is empty");}
 
-  if(elementList.size() != amountList.size()) {throw "The number of atoms list does not match the element list";}
+  if(elementList.size() != amountList.size()) {throw std::runtime_error("The number of atoms list does not match the element list");}
 
   // skip first line
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -195,7 +195,7 @@ void SKCHGCARParser::startParsing()
       #else
         termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
       #endif
-      if(termsScannedLined.empty()) {throw "Error reading atoms";}
+      if(termsScannedLined.empty()) {throw std::runtime_error("Error reading atoms");}
 
       QString chemicalElement = chemicalElementString.simplified().toLower();
       chemicalElement.replace(0, 1, chemicalElement[0].toUpper());
@@ -212,13 +212,13 @@ void SKCHGCARParser::startParsing()
 
       double3 position;
       position.x = termsScannedLined[0].toDouble(&succes);
-      if(!succes) {throw "Could not parse the atom x-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the atom x-coordinate");}
 
       position.y = termsScannedLined[1].toDouble(&succes);
-      if(!succes) {throw "Could not parse the atom y-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the atom y-coordinate");}
 
       position.z = termsScannedLined[2].toDouble(&succes);
-      if(!succes) {throw "Could not parse the atom z-coordinate";}
+      if(!succes) {throw std::runtime_error("Could not parse the atom z-coordinate");}
 
       // convert to fractional position if Cartesian coordinates are specified
       if(cartesian)
@@ -243,17 +243,17 @@ void SKCHGCARParser::startParsing()
   #else
     termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(termsScannedLined.size()<3) {throw "Missing dimensions";}
+  if(termsScannedLined.size()<3) {throw std::runtime_error("Missing dimensions");}
 
   int3 dimensions;
   dimensions.x = termsScannedLined[0].toInt(&succes);
-  if(!succes) {throw "Could not parse x-dimension";}
+  if(!succes) {throw std::runtime_error("Could not parse x-dimension");}
 
   dimensions.y = termsScannedLined[1].toInt(&succes);
-  if(!succes) {throw "Could not parse y-dimension";}
+  if(!succes) {throw std::runtime_error("Could not parse y-dimension");}
 
   dimensions.z = termsScannedLined[2].toInt(&succes);
-  if(!succes) {throw "Could not parse z-dimension";}
+  if(!succes) {throw std::runtime_error("Could not parse z-dimension");}
 
   double inverseVolume = 1.0/cell->volume();
 

@@ -128,7 +128,7 @@ void OpenGLPickingShader::reloadData()
   _polygonalPrismPickingShader.reloadData();
 }
 
-void OpenGLPickingShader::paintGL(int width,int height,GLuint structureUniformBuffer)
+void OpenGLPickingShader::paintGL(GLuint structureUniformBuffer)
 {
   GLfloat black[4] = {0.0,0.0,0.0,0.0};
 

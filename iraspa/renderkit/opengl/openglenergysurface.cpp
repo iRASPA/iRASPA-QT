@@ -43,11 +43,6 @@ OpenGLEnergySurface::~OpenGLEnergySurface()
   }
 }
 
-void OpenGLEnergySurface::setLogReportingWidget(LogReporting *logReporting)
-{
-  _logReporter = logReporting;
-}
-
 void OpenGLEnergySurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
   for(const std::shared_ptr<RKRenderObject> &structure : structures)
@@ -228,13 +223,7 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
             std::vector<cl_float> *energyGridPointer = nullptr;
             if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
             {
-               std::clock_t beginTime = clock();
                energyGridPointer = _caches[powerOfTwo].object(_renderStructures[i][j].get());
-               std::clock_t endTime = clock();
-               double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
-               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time for grid-cache lookup " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
-
-               beginTime = clock();
 
                try
                {
@@ -253,28 +242,15 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
                  _surfaceNumberOfIndices[i][j] = 0;
                  return;
                }
-
-               endTime = clock();
-               elapsedTime = double(endTime - beginTime) * 1000.0/ CLOCKS_PER_SEC;
-               _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Extracting surface " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
             }
             else
             {
-              std::clock_t beginTime = clock();
-
               std::vector<cl_float> gridData = source->gridData();
               if (gridData.empty()) return;
 
               // move from stack to heap since the cache requires a pointer to the std::vector
               energyGridPointer = new std::vector<cl_float>();
               *energyGridPointer = std::move(gridData);
-
-
-              std::clock_t endTime = clock();
-              double elapsedTime = double(endTime - beginTime) * 1000.0 / CLOCKS_PER_SEC;
-              _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Elapsed time computing grid " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
-
-              beginTime = clock();
 
               try
               {
@@ -293,10 +269,6 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
                 _surfaceNumberOfIndices[i][j] = 0;
                 return;
               }
-
-              endTime = clock();
-              elapsedTime = double(endTime - beginTime) * 1000.0/ CLOCKS_PER_SEC;
-              _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "Extracting surface " + _renderStructures[i][j]->displayName() + ": " + QString::number(elapsedTime) + " milliseconds.");
 
               // insert as last to avoid use of memory after free in case the insertion fails.
               _caches[powerOfTwo].insert(_renderStructures[i][j].get(), energyGridPointer);

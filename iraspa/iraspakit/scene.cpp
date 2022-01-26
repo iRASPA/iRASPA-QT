@@ -83,14 +83,12 @@ void Scene::setSelectedMovies(std::set<std::shared_ptr<Movie>> movies)
   _selectedMovies = movies;
 }
 
-Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool proteinOnlyAsymmetricUnit, bool asMolecule)
+Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool proteinOnlyAsymmetricUnit, bool asMolecule) noexcept(false)
 {
   QFile file(url.toLocalFile());
   QFileInfo info(file);
 
   std::shared_ptr<SKParser> parser;
-
-  qDebug() << "Read Scene";
 
   if((info.fileName().toUpper() == "POSCAR" && info.suffix().isEmpty()) ||
      (info.fileName().toUpper() == "CONTCAR" && info.suffix().isEmpty()) ||
@@ -124,7 +122,6 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
   }
   else if (info.suffix().toLower() == "vtk")
   {
-    qDebug() << "Read SKVTKParser";
     parser = std::make_shared<SKVTKParser>(url, QDataStream::BigEndian);
   }
   else if (info.suffix().toLower() == "cube")
@@ -177,7 +174,7 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
         iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<GaussianCubeVolume>(frame));
         break;
       default:
-        throw "Unknown structure format";
+        throw std::runtime_error("Unknown structure format");
       }
 
       if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspastructure->object()))
