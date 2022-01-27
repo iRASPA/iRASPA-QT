@@ -24,6 +24,7 @@
 #include <iostream>
 #include <type_traits>
 #include <tuple>
+#include <QApplication>
 #include <QLabel>
 #include <QSpinBox>
 #include <QStandardItemModel>
@@ -3755,16 +3756,24 @@ void CellTreeWidgetController::setFrameworkProbeMolecule(int value)
       if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
       {
         volumetricDataEditor->setFrameworkProbeMolecule(ProbeMolecule(value));
+
         try
         {
-          double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceArea();
+          double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceAreaAccelerated();
           volumetricDataEditor->setStructureGravimetricNitrogenSurfaceArea(surfaceArea);
           volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
           volumetricDataEditor->recomputeDensityProperties();
         }
-        catch(const char *e)
+        catch(std::exception const &e)
         {
-          // print error
+          if(_logReporter)
+          {
+            _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+          }
+          double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceArea();
+          volumetricDataEditor->setStructureGravimetricNitrogenSurfaceArea(surfaceArea);
+          volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
+          volumetricDataEditor->recomputeDensityProperties();
         }
       }
       if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
@@ -4835,54 +4844,77 @@ void CellTreeWidgetController::computeHeliumVoidFractionPushButton()
 {
   for(const std::shared_ptr<iRASPAObject>&iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+    try
     {
-      try
+      if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
       {
-        double heliumVoidfraction = volumetricDataEditor->computeVoidFraction();
+        double heliumVoidfraction = volumetricDataEditor->computeVoidFractionAccelerated();
         volumetricDataEditor->setStructureHeliumVoidFraction(heliumVoidfraction);
         volumetricDataEditor->recomputeDensityProperties();
-      }
-      catch(std::exception const& e)
-      {
-        if(_logReporter)
-        {
-          _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
-        }
+
+        this->reloadStructureProperties();
+        _mainWindow->documentWasModified();
       }
     }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+        _logReporter->logMessage(LogReporting::ErrorLevel::info,"Trying CPU fallback (slow)");
+        qApp->processEvents();
+      }
+      QTimer::singleShot(0, this, [&]{
+        if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+        {
+          double heliumVoidfraction = volumetricDataEditor->computeVoidFraction();
+          volumetricDataEditor->setStructureHeliumVoidFraction(heliumVoidfraction);
+          volumetricDataEditor->recomputeDensityProperties();
+
+          this->reloadStructureProperties();
+          _mainWindow->documentWasModified();
+        }
+      });
+    }
   }
-
-  this->reloadStructureProperties();
-
-  _mainWindow->documentWasModified();
 }
 
 void CellTreeWidgetController::computeGravimetricSurfaceAreaPushButton()
 {
   for(const std::shared_ptr<iRASPAObject>&iraspa_structure: _iraspa_structures)
   {
-    if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+    try
     {
-      try
+      if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
       {
-        double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceArea();
+        double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceAreaAccelerated();
         volumetricDataEditor->setStructureGravimetricNitrogenSurfaceArea(surfaceArea);
         volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
         volumetricDataEditor->recomputeDensityProperties();
       }
-      catch(std::exception const& e)
+      this->reloadStructureProperties();
+      _mainWindow->documentWasModified();
+    }
+    catch(std::exception const& e)
+    {
+      if(_logReporter)
       {
-        if(_logReporter)
-        {
-          _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
-        }
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, e.what());
+        _logReporter->logMessage(LogReporting::ErrorLevel::info,"Trying CPU fallback (slow)");
+        qApp->processEvents();
       }
+      QTimer::singleShot(0, this, [&]{
+          if (std::shared_ptr<StructuralPropertyEditor> volumetricDataEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+          {
+            double surfaceArea = volumetricDataEditor->computeNitrogenSurfaceArea();
+            volumetricDataEditor->setStructureGravimetricNitrogenSurfaceArea(surfaceArea);
+            volumetricDataEditor->setStructureVolumetricNitrogenSurfaceArea(surfaceArea);
+            volumetricDataEditor->recomputeDensityProperties();
+          }
+          this->reloadStructureProperties();
+          _mainWindow->documentWasModified();
+      });
     }
   }
-
-  this->reloadStructureProperties();
-
-  _mainWindow->documentWasModified();
 }
 

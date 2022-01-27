@@ -246,8 +246,10 @@ public:
   // Protocol: StructuralPropertyViewer
   // ===============================================================================================
 
-  double computeVoidFraction() const override final;
-  double computeNitrogenSurfaceArea() const override final;
+  double computeVoidFractionAccelerated() const noexcept(false) override final;
+  double computeNitrogenSurfaceAreaAccelerated() const noexcept(false) override final;
+  double computeVoidFraction() const noexcept override final;
+  double computeNitrogenSurfaceArea() const noexcept override final;
   void recomputeDensityProperties() override final {Structure::recomputeDensityProperties();}
 
   QString structureMaterialType() const override final {return _structureMaterialType;}

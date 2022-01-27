@@ -30,8 +30,12 @@ public:
   virtual ~StructuralPropertyViewer() = 0;
 
   virtual void recomputeDensityProperties() = 0;
-  virtual double computeVoidFraction() const = 0;
-  virtual double computeNitrogenSurfaceArea() const = 0;
+
+  virtual double computeVoidFractionAccelerated() const noexcept(false) = 0;
+  virtual double computeNitrogenSurfaceAreaAccelerated() const noexcept(false) = 0;
+
+  virtual double computeVoidFraction() const noexcept = 0 ;
+  virtual double computeNitrogenSurfaceArea() const noexcept = 0;
 
   //   var structureType: Structure.StructureType {get}
   virtual QString structureMaterialType() const = 0;

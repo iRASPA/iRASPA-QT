@@ -501,9 +501,6 @@
     <ClCompile Include="iraspagui\linenumberplaintextedit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="foundationkit\lodepng.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="foundationkit\logreporting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -802,6 +799,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderkit\opengl\opengltextrenderingshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderkit\opengl\opengluniformstringliterals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderkit\opengl\openglunitcellcylindershader.cpp">
@@ -1721,9 +1721,6 @@
     <CustomBuild Include="iraspagui\linenumberplaintextedit.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="foundationkit\lodepng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="foundationkit\logreporting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2025,6 +2022,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="renderkit\opengl\opengltextrenderingshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderkit\opengl\opengluniformstringliterals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="renderkit\opengl\openglunitcellcylindershader.h">

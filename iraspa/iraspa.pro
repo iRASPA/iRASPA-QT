@@ -133,7 +133,7 @@ win32{
   QMAKE_LFLAGS_RELEASE   += /STACK:4194304  /DEBUG /INCREMENTAL
 
   INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include"
-  INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include/python2.7/"
+  INCLUDEPATH += "C:/vcpkg/installed/x64-windows/include/python3.10/"
 
 
   CONFIG(debug, debug|release){
@@ -148,7 +148,7 @@ win32{
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/libx264.lib"
     LIBS += "C:/vcpkg/installed/x64-windows/debug/lib/x265-static.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/vpx.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/python27_d.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows/lib/python310.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/lzmad.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/zlibd.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/OpenCL.lib"
@@ -165,7 +165,7 @@ win32{
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/libx264.lib"
     LIBS += "C:/vcpkg/installed/x64-windows/lib/x265-static.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/vpx.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows-static/lib/python27.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows/lib/python310.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/lzma.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/zlib.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/OpenCL.lib"

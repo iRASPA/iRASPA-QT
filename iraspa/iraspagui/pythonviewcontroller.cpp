@@ -61,11 +61,15 @@ PythonViewController::PythonViewController(QWidget *parent): LineNumberPlainText
     #endif
   #endif
 
+#if defined(Q_OS_WIN)
+  Py_IgnoreEnvironmentFlag = 1;
+  QDir dir(QCoreApplication::applicationDirPath());
+  QUrl fileURL(dir.absoluteFilePath("python310.zip"));
+  const std::wstring path = fileURL.path().toStdWString();
+  Py_SetPath(path.c_str());
+#endif
 
-  Py_NoSiteFlag = 1;
   Py_Initialize();
-
-  
 
   // have a new interpreter per document
   _state = Py_NewInterpreter();

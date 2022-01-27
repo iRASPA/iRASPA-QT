@@ -40,6 +40,9 @@ int main(int argc, char *argv[])
     format.setStencilBufferSize(0);
     format.setVersion(3, 3);
     format.setProfile(QSurfaceFormat::CoreProfile);
+    #ifdef QT_DEBUG
+      format.setOption(QSurfaceFormat::DebugContext);
+    #endif
 
     #if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
       QSurfaceFormat::setDefaultFormat(format);

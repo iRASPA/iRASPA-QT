@@ -428,7 +428,7 @@ CameraTreeWidgetController::CameraTreeWidgetController(QWidget* parent): QTreeWi
   _cameraPicturesForm->qualityComboBox->insertItem(3,"16-bits, CMYK");
 
   _cameraPicturesForm->movieFormatComboBox->insertItem(0,"hevc (h265)");
-  _cameraPicturesForm->movieFormatComboBox->insertItem(1,"Format");
+  _cameraPicturesForm->movieFormatComboBox->insertItem(1,"h264");
   _cameraPicturesForm->movieFormatComboBox->insertItem(2,"vp9");
 
   _cameraPicturesForm->movieTypeComboBox->insertItem(0,"Frames");

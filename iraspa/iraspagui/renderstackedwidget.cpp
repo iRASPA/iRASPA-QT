@@ -185,7 +185,6 @@ void RenderStackedWidget::setLogReportingWidget(LogReporting *logReporting)
   {
     if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
     {
-        qDebug() << "EMPTY? : " << widget->logData();
       _logReporter->insert(widget->logData());
     }
   }

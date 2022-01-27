@@ -57,9 +57,9 @@ ProteinCrystal::ProteinCrystal(const std::shared_ptr<Object> object): Structure(
 {
   if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
   {
-    if(!atomViewer->isFractional())
+    if(atomViewer->isFractional())
     {
-      ProteinCrystal::convertAsymmetricAtomsToFractional();
+      ProteinCrystal::convertAsymmetricAtomsToCartesian();
       expandSymmetry();
     }
     _atomsTreeController->setTags();
@@ -1597,7 +1597,7 @@ std::vector<float> ProteinCrystal::gridData()
 
   try
   {
-    std::vector<float> gridData = SKComputeEnergyGrid::ComputeEnergyGrid(int3(size,size,size),
+    std::vector<float> gridData = SKComputeEnergyGrid::computeEnergyGrid(int3(size,size,size),
                                                         probeParameter, positions, parameters, unitCell, numberOfReplicas);
     _adsorptionVolumeStepLength = 0.25 / double(size);
 
@@ -1685,7 +1685,7 @@ void ProteinCrystal::setEncompassingPowerOfTwoCubicGridSize(int value)
   _adsorptionVolumeStepLength = 0.25 / double(size);
 }
 
-double ProteinCrystal::computeVoidFraction() const
+double ProteinCrystal::computeVoidFractionAccelerated() const noexcept(false)
 {
   int3 size = int3(128,128,128);
   double2 probeParameter = double2(10.9, 2.64);
@@ -1694,26 +1694,16 @@ double ProteinCrystal::computeVoidFraction() const
   double3x3 unitCell = cell()->unitCell();
   int3 numberOfReplicas = cell()->numberOfReplicas(12.0);
 
-  try
+  std::vector<float> gridData = SKComputeEnergyGrid::computeEnergyGrid(size, probeParameter, positions, parameters, unitCell, numberOfReplicas);
+  double sumBoltzmannWeight = 0.0;
+  for(const float &value: gridData)
   {
-    std::vector<float> gridData = SKComputeEnergyGrid::ComputeEnergyGrid(size, probeParameter, positions,
-                                                                         parameters, unitCell, numberOfReplicas);
-    double sumBoltzmannWeight = 0.0;
-    for(const float &value: gridData)
-    {
-      sumBoltzmannWeight += exp(-(1.0/298.0) * value);  // K_B  chosen as 1.0 (energy units are Kelvin)
-    }
-    return (double)sumBoltzmannWeight/(double)(size.x*size.y*size.z);
+    sumBoltzmannWeight += exp(-(1.0/298.0) * value);  // K_B  chosen as 1.0 (energy units are Kelvin)
   }
-  catch (std::exception const& e)
-  {
-    std::cout << "Exception caught: " << e.what() << std::endl;
-    return 0.0;
-  }
-  return 0.0;
+  return (double)sumBoltzmannWeight/(double)(size.x*size.y*size.z);
 }
 
-double ProteinCrystal::computeNitrogenSurfaceArea() const
+double ProteinCrystal::computeNitrogenSurfaceAreaAccelerated() const noexcept(false)
 {
   int3 size = int3(128,128,128);
 
@@ -1723,36 +1713,75 @@ double ProteinCrystal::computeNitrogenSurfaceArea() const
   double3x3 unitCell = cell()->unitCell();
   int3 numberOfReplicas = cell()->numberOfReplicas(12.0);
 
-  try
+  std::vector<float> gridData = SKComputeEnergyGrid::computeEnergyGrid(size, probeParameter, positions,
+                                                                       parameters, unitCell, numberOfReplicas);
+
+  double isoValue = 0.0;
+
+  std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(size, &gridData, isoValue);
+
+  double totalArea=0.0;
+  for(size_t i=0; i<triangleData.size(); i+=9)
   {
-    std::vector<float> gridData = SKComputeEnergyGrid::ComputeEnergyGrid(size, probeParameter, positions,
-                                                                         parameters, unitCell, numberOfReplicas);
-
-    double isoValue = 0.0;
-
-    std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(size, &gridData, isoValue);
-
-    double totalArea=0.0;
-    for(size_t i=0; i<triangleData.size(); i+=9)
+    double3 p1 = unitCell * double3(triangleData[i].x,triangleData[i].y,triangleData[i].z);
+    double3 p2 = unitCell * double3(triangleData[i+3].x,triangleData[i+3].y,triangleData[i+3].z);
+    double3 p3 = unitCell * double3(triangleData[i+6].x,triangleData[i+6].y,triangleData[i+6].z);
+    double3 v = double3::cross(p2-p1,p3-p1);
+    double area = 0.5 * v.length();
+    if(std::isfinite(area) && fabs(area) < 1.0 )
     {
-      double3 p1 = unitCell * double3(triangleData[i].x,triangleData[i].y,triangleData[i].z);
-      double3 p2 = unitCell * double3(triangleData[i+3].x,triangleData[i+3].y,triangleData[i+3].z);
-      double3 p3 = unitCell * double3(triangleData[i+6].x,triangleData[i+6].y,triangleData[i+6].z);
-      double3 v = double3::cross(p2-p1,p3-p1);
-      double area = 0.5 * v.length();
-      if(std::isfinite(area) && fabs(area) < 1.0 )
-      {
-        totalArea += area;
-      }
+      totalArea += area;
     }
-    return totalArea;
   }
-  catch (std::exception const& e)
+  return totalArea;
+}
+
+double ProteinCrystal::computeVoidFraction() const noexcept
+{
+  int3 size = int3(128,128,128);
+  double2 probeParameter = double2(10.9, 2.64);
+  std::vector<double3> positions = atomUnitCellPositions();
+  std::vector<double2> parameters = potentialParameters();
+  double3x3 unitCell = cell()->unitCell();
+  int3 numberOfReplicas = cell()->numberOfReplicas(12.0);
+
+  std::vector<float> gridData = SKComputeEnergyGrid::computeEnergyGridCPUImplementation(size, probeParameter, positions, parameters, unitCell, numberOfReplicas);
+  double sumBoltzmannWeight = 0.0;
+  for(const float &value: gridData)
   {
-    std::cout << "Exception caught: " << e.what() << std::endl;
-    return 0.0;
+    sumBoltzmannWeight += exp(-(1.0/298.0) * value);  // K_B  chosen as 1.0 (energy units are Kelvin)
   }
-  return 0.0;
+  return (double)sumBoltzmannWeight/(double)(size.x*size.y*size.z);
+}
+
+double ProteinCrystal::computeNitrogenSurfaceArea() const noexcept
+{
+  int3 size = int3(128,128,128);
+
+  double2 probeParameter = frameworkProbeParameters();
+  std::vector<double3> positions = atomUnitCellPositions();
+  std::vector<double2> parameters = potentialParameters();
+  double3x3 unitCell = cell()->unitCell();
+  int3 numberOfReplicas = cell()->numberOfReplicas(12.0);
+
+  std::vector<float> gridData = SKComputeEnergyGrid::computeEnergyGridCPUImplementation(size, probeParameter, positions, parameters, unitCell, numberOfReplicas);
+
+  std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(size, &gridData, 0.0);
+
+  double totalArea=0.0;
+  for(size_t i=0; i<triangleData.size(); i+=9)
+  {
+    double3 p1 = unitCell * double3(triangleData[i].x,triangleData[i].y,triangleData[i].z);
+    double3 p2 = unitCell * double3(triangleData[i+3].x,triangleData[i+3].y,triangleData[i+3].z);
+    double3 p3 = unitCell * double3(triangleData[i+6].x,triangleData[i+6].y,triangleData[i+6].z);
+    double3 v = double3::cross(p2-p1,p3-p1);
+    double area = 0.5 * v.length();
+    if(std::isfinite(area) && fabs(area) < 1.0 )
+    {
+      totalArea += area;
+    }
+  }
+  return totalArea;
 }
 
 void ProteinCrystal::setStructureVolumetricNitrogenSurfaceArea(double value)

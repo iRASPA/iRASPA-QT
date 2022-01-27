@@ -515,7 +515,6 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
 
               // clear the ambient-occlusion texture
               int textureSize = source->atomAmbientOcclusionTextureSize();
-              qDebug() << "size: " << textureSize;
               glViewport(0,0,textureSize,textureSize);
               check_gl_error();
 

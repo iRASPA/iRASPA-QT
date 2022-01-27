@@ -243,8 +243,11 @@ std::shared_ptr<DocumentData> MainWindow::readDatabase(QString fileName)
     {
       stream >> libraryData;
     }
-    catch (std::exception e)
+    catch (std::exception const &e)
     {
+      QString msg =  QString("Reading database file failed, %1 (line: %2 file: %3)").arg(e.what()).arg(__LINE__).arg(__FILE__);
+      this->ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error, msg);
+      reader.close();
       return nullptr;
     }
 
@@ -811,8 +814,6 @@ void MainWindow::importFile()
       bool asSeparateMovies=dialog.radioButtonAsMovies->isChecked();
       bool asSeparateFrames=dialog.radioButtonAsFrames->isChecked();
 
-      qDebug() << "RADIO: " << asSeparateProjects << asSeparateMovies << asSeparateFrames;
-
       SKParser::ImportType importType = SKParser::ImportType::asSingleProject;
       if(asSeparateProjects)
       {
@@ -824,7 +825,6 @@ void MainWindow::importFile()
       };
       if(asSeparateFrames)
       {
-          qDebug() << "asSeparateFrames";
         importType = SKParser::ImportType::asMovieFrames;
       };
 
@@ -857,7 +857,13 @@ void MainWindow::importFile()
           QString fileName = url.toString();
           QFileInfo fileInfo(fileName);
 
-          ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
+          if(ui)
+          {
+            if(ui->logPlainTextEdit)
+            {
+              ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
+            }
+          }
 
           try
           {
@@ -868,12 +874,17 @@ void MainWindow::importFile()
             ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
             insertRow++;
           }
-          catch(const char *error)
+          catch(std::exception const &e)
           {
-           // ui->logPlainTextEdit
-              qDebug() << "Error import" << QString(error);
+            if(ui)
+            {
+              if(ui->logPlainTextEdit)
+              {
+                QString msg =  QString("Import failed, %1 (line: %2 file: %3)").arg(e.what()).arg(__LINE__).arg(__FILE__);
+                this->ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error, msg);
+              }
+            }
           }
-
         }
       }
       else
@@ -881,8 +892,6 @@ void MainWindow::importFile()
         QString fileName = fileURLs.first().toString();
 
         QFileInfo fileInfo(fileName);
-
-        ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::info,"start reading CIF-file: " + fileInfo.baseName());
 
         try
         {
@@ -892,9 +901,16 @@ void MainWindow::importFile()
 
           ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
         }
-        catch(const char *error)
+        catch(std::exception const &e)
         {
-          qDebug() << "Error import" << QString(error);
+          if(ui)
+          {
+            if(ui->logPlainTextEdit)
+            {
+              QString msg =  QString("Import failed, %1 (line: %2 file: %3)").arg(e.what()).arg(__LINE__).arg(__FILE__);
+              this->ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error, msg);
+            }
+          }
         }
       }
     }
@@ -1218,29 +1234,26 @@ void MainWindow::openFile(const QString &fileName)
 
   try
   {
-    qDebug() << "start reading color data: " << colorData.size();
     colorStream >> documentData->colorSets();
   }
-  catch(std::exception e)
+  catch(std::exception const &e)
   {
-    std::cout << "Error: " << e.what() << std::endl;
+    QString msg =  QString("No color data, %1 (line: %2 file: %3)").arg(e.what()).arg(__LINE__).arg(__FILE__);
+    this->ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error, msg);
   }
-
-  qDebug() << "done reading color data" << colorData.size();
 
   QByteArray forceFieldData = reader.fileData("nl.darkwing.iRASPA_forceFieldData");
   QDataStream forceFieldStream(&forceFieldData, QIODevice::ReadOnly);
 
   try
   {
-    qDebug() << "start reading force field data" << forceFieldData.size();
     forceFieldStream >> documentData->forceFieldSets();
   }
-  catch(std::exception e)
+  catch(std::exception const &e)
   {
-    std::cout << "Error: " << e.what() << std::endl;
+    QString msg =  QString("No forcefield data, %1 (line: %2 file: %3)").arg(e.what()).arg(__LINE__).arg(__FILE__);
+    this->ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error, msg);
   }
-  qDebug() << "done reading force field data: " << forceFieldData.size();
 
   QByteArray data = reader.fileData("nl.darkwing.iRASPA_projectData");
   QDataStream stream(&data, QIODevice::ReadOnly);
@@ -1250,21 +1263,20 @@ void MainWindow::openFile(const QString &fileName)
     qDebug() << "start reading document data: " << data.size();
     stream >> documentData;
   }
-  catch (InvalidArchiveVersionException ex)
+  catch (InvalidArchiveVersionException e)
   {
-    std::cout << "Error: " << ex.message().toStdString() << std::endl;
-    std::cout << ex.what() << ex.get_file() << std::endl;
-    std::cout << "Function: " << ex.get_func() << std::endl;
+    QString msg =  QString("Invalid archive, %1 (%2 func: %3)").arg(e.message().toStdString().c_str(),e.get_file(),e.get_func());
+    this->ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error, msg);
   }
-  catch(InconsistentArchiveException ex)
+  catch(InconsistentArchiveException e)
   {
-    std::cout << "Error: " << ex.message().toStdString() << std::endl;
-    std::cout << ex.what() << ex.get_file() << std::endl;
-    std::cout << "Function: " << ex.get_func() << std::endl;
+    QString msg =  QString("Invalid archive, %1 (%2 func: %3)").arg(e.message().toStdString().c_str(),e.get_file(),e.get_func());
+    this->ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error, msg);
   }
   catch(std::exception e)
   {
-    std::cout << "Error: " << e.what() << std::endl;
+    QString msg =  QString("Open file failed, %1 (line: %2 file: %3)").arg(e.what()).arg(__LINE__).arg(__FILE__);
+    this->ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error, msg);
   }
 
   documentData->projectTreeController()->localProjects()->setIsDropEnabled(true);

@@ -56,11 +56,17 @@ public:
       multiple_values = 10
     };
 
-  static std::vector<cl_float> ComputeEnergyGrid(int3 size, double2 probeParameter,
+  SKComputeEnergyGrid(SKOpenCL const&) = delete;
+  void operator=(SKComputeEnergyGrid const&) = delete;
+  static std::vector<cl_float> computeEnergyGrid(int3 size, double2 probeParameter,
                                           std::vector<double3> positions, std::vector<double2> potentialParameters,
-                                          double3x3 unitCell, int3 numberOfReplicas);
+                                          double3x3 unitCell, int3 numberOfReplicas) noexcept(false);
+  static std::vector<cl_float> computeEnergyGridCPUImplementation(int3 size, double2 probeParameter,
+                                                                  std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                                                  double3x3 unitCell, int3 numberOfReplicas) noexcept;
 private:
   SKComputeEnergyGrid();
+  ~SKComputeEnergyGrid();
   cl_program _program;
   cl_kernel _kernel;
   size_t _workGroupSize;
@@ -71,10 +77,7 @@ private:
     static SKComputeEnergyGrid  instance;
     return instance;
   }
-  std::vector<cl_float> ComputeEnergyGridImpl(int3 size, double2 probeParameter,
-                                              std::vector<double3> positions, std::vector<double2> potentialParameters,
-                                              double3x3 unitCell, int3 numberOfReplicas);
-public:
-  SKComputeEnergyGrid(SKOpenCL const&) = delete;
-  void operator=(SKComputeEnergyGrid const&) = delete;
+  std::vector<cl_float> computeEnergyGridGPUImplementation(int3 size, double2 probeParameter,
+                                                           std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                                           double3x3 unitCell, int3 numberOfReplicas) noexcept(false);
 };

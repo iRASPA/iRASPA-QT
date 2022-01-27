@@ -22,6 +22,11 @@
 #include "skcomputeisosurface.h"
 #include "marchingcubes.h"
 
+// two macros ensures any macro passed will
+// be expanded before being stringified
+#define STRINGIZE_DETAIL(x) #x
+#define STRINGIZE(x) STRINGIZE_DETAIL(x)
+
 SKComputeIsosurface::SKComputeIsosurface(): SKOpenCL()
 {
   if(_isOpenCLInitialized)
@@ -29,54 +34,53 @@ SKComputeIsosurface::SKComputeIsosurface(): SKOpenCL()
     cl_int err;
     const char* shaderSourceCode = SKComputeIsosurface::_marchingCubesKernel.c_str();
     _program = clCreateProgramWithSource(_clContext, 1, &shaderSourceCode, nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateProgramWithSource failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateProgramWithSource failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
     // Build the program executable
     err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, nullptr);
     if (err != CL_SUCCESS)
     {
-        size_t len;
-        char buffer[2048];
-        clGetProgramBuildInfo(_program, _clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
-        QString message = QString("SKComputeIsosurface: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
-        qDebug() << message << _clDeviceId << err;
-        throw std::runtime_error("clBuildProgram failed");
+      size_t len;
+      char buffer[2048];
+      clGetProgramBuildInfo(_program, _clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+      QString message = QString("SKComputeIsosurface: OpenCL Failed to build program at %1 (line %2 error: %3)").arg(__FILE__, QString::number(__LINE__), QString::fromUtf8(buffer));
+      throw std::runtime_error(message.toStdString().c_str());
     }
 
     _constructHPLevelKernel = clCreateKernel(_program, "constructHPLevel", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateProgramWithSource failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateProgramWithSource failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     err = clGetKernelWorkGroupInfo(_constructHPLevelKernel, _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_constructHPLevelKernelWorkGroupSize, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
     _classifyCubesKernel = clCreateKernel(_program, "classifyCubes", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateProgramWithSource failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateProgramWithSource failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     err = clGetKernelWorkGroupInfo(_constructHPLevelKernel, _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_classifyCubesKernelWorkGroupSize, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
     _traverseHPKernel[4] = clCreateKernel(_program, "traverseHP16", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     err = clGetKernelWorkGroupInfo(_traverseHPKernel[4], _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_traverseHPKernelWorkGroupSize[4], nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("cOpenCL lGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     _traverseHPKernel[5] = clCreateKernel(_program, "traverseHP32", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     err = clGetKernelWorkGroupInfo(_traverseHPKernel[5], _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_traverseHPKernelWorkGroupSize[5], nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     _traverseHPKernel[6] = clCreateKernel(_program, "traverseHP64", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     err = clGetKernelWorkGroupInfo(_traverseHPKernel[6], _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_traverseHPKernelWorkGroupSize[6], nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     _traverseHPKernel[7] = clCreateKernel(_program, "traverseHP128", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     err = clGetKernelWorkGroupInfo(_traverseHPKernel[7], _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_traverseHPKernelWorkGroupSize[7], nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     _traverseHPKernel[8] = clCreateKernel(_program, "traverseHP256", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     err = clGetKernelWorkGroupInfo(_traverseHPKernel[8], _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_traverseHPKernelWorkGroupSize[8], nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     _traverseHPKernel[9] = clCreateKernel(_program, "traverseHP512", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     err = clGetKernelWorkGroupInfo(_traverseHPKernel[9], _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_traverseHPKernelWorkGroupSize[9], nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
     _isOpenCLReady = true;
   }
@@ -100,10 +104,14 @@ SKComputeIsosurface::~SKComputeIsosurface()
 
 std::vector<float4> SKComputeIsosurface::computeIsosurface(int3 dimensions, std::vector<cl_float> *voxels, double isoValue)
 {
-  return getInstance().computeIsosurfaceImpl(dimensions, voxels, isoValue);
+  if(getInstance()._isOpenCLReady)
+  {
+    return getInstance().computeIsosurfaceGPUImplementation(dimensions, voxels, isoValue);
+  }
+  return SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, voxels, isoValue);
 }
 
-std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, std::vector<cl_float> *voxels, double isoValue)
+std::vector<float4> SKComputeIsosurface::computeIsosurfaceGPUImplementation(int3 dimensions, std::vector<cl_float> *voxels, double isoValue) noexcept(false)
 {
   cl_int err;
 
@@ -118,57 +126,6 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
   size_t bufferSize = size;
   std::vector<cl_mem> images;
   std::vector<cl_mem> buffers;
-
-  if(!_isOpenCLReady)
-  {
-    // brute force implementation
-    // Create marching cubes object
-    MarchingCubes cube(dimensions.x,dimensions.y,dimensions.z);
-
-    // Initiate the cube
-    cube.init_all();
-
-    // Set the data
-    for(int i=0; i<dimensions.x; i++)
-    {
-      for(int j=0; j<dimensions.y; j++)
-      {
-        for(int k=0; k<dimensions.z; k++)
-        {
-          double value = (*voxels)[i + size * j + k * size * size];
-          cube.set_data(value, i, j, k);
-        }
-      }
-    }
-
-    cube.run( isoValue );
-
-    int numberOfTriangles = cube.ntrigs();
-    std::vector<float4> data{};
-    data.reserve(3*3*numberOfTriangles);
-
-    // Fetch the info
-    for(int i=0; i<cube.ntrigs(); i++)
-    {
-      const Triangle* tri = cube.trig(i);
-
-      const Vertex* vertex1 = cube.vert(tri->v1);
-      data.push_back(double4(vertex1->x/dimensions.x,vertex1->y/dimensions.y,vertex1->z/dimensions.z,1.0));
-      data.push_back(double4(vertex1->nx,vertex1->ny,vertex1->nz,0.0));
-      data.push_back(double4(0.0,0.0,0.0,0.0));
-
-      const Vertex* vertex2 = cube.vert(tri->v2);
-      data.push_back(double4(vertex2->x/dimensions.x,vertex2->y/dimensions.y,vertex2->z/dimensions.z,1.0));
-      data.push_back(double4(vertex2->nx,vertex2->ny,vertex2->nz,0.0));
-      data.push_back(double4(0.0,0.0,0.0,0.0));
-
-      const Vertex* vertex3 = cube.vert(tri->v3);
-      data.push_back(double4(vertex3->x/dimensions.x,vertex3->y/dimensions.y,vertex3->z/dimensions.z,1.0));
-      data.push_back(double4(vertex3->nx,vertex3->ny,vertex3->nz,0.0));
-      data.push_back(double4(0.0,0.0,0.0,0.0));
-    }
-    return data;
-  }
 
   for(int i=1; i<powerOfTwo; i++)
   {
@@ -194,7 +151,7 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
 
     cl_image_desc imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
     images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateImage failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateImage failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     bufferSize /= 2;
   }
 
@@ -202,14 +159,14 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
   cl_image_format imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT32};
   cl_image_desc imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, bufferSize, bufferSize, bufferSize, 0, 0, 0, 0, 0, nullptr};
   images.push_back(clCreateImage(_clContext, CL_MEM_READ_WRITE, &imageFormat, &imageDescriptor, nullptr, &err));
-  if (err != CL_SUCCESS) {throw std::runtime_error("clCreateImage failed");}
+  if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateImage failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
 
   // Transfer dataset to device
   imageFormat = cl_image_format{CL_R, CL_FLOAT};
   imageDescriptor = cl_image_desc{CL_MEM_OBJECT_IMAGE3D, size, size, size, 0, 0, 0, 0, 0, nullptr};
   cl_mem rawData = clCreateImage(_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, &imageFormat, &imageDescriptor, voxels->data(), nullptr);
-  if (err != CL_SUCCESS) {throw std::runtime_error("clCreateImage failed");}
+  if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateImage failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
 
   // update scalar field
@@ -230,7 +187,7 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
   size_t global_work_size[3] = {size, size, size};
 
   err = clEnqueueNDRangeKernel(_clCommandQueue, _classifyCubesKernel, 3, nullptr, global_work_size, nullptr, 0, nullptr, nullptr);
-  if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueNDRangeKernel classifyCubesKernel failed");}
+  if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueNDRangeKernel classifyCubesKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
   // histoPyramidConstruction
   //===================================================================================================================================
@@ -242,7 +199,7 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
   size_t global_work_size2[3] = {size/2, size/2, size/2};
 
   err = clEnqueueNDRangeKernel(_clCommandQueue, _constructHPLevelKernel, 3, nullptr, global_work_size2, nullptr, 0, nullptr, nullptr);
-  if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueNDRangeKernel constructHPLevelKernel failed");}
+  if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueNDRangeKernel constructHPLevelKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
 
   size_t previous = size / 2;
@@ -255,9 +212,8 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
     previous /= 2;
     size_t global_work_size3[3] = {previous, previous, previous};
     err = clEnqueueNDRangeKernel(_clCommandQueue, _constructHPLevelKernel, 3, nullptr, global_work_size3, nullptr, 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueNDRangeKernel constructHPLevelKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueNDRangeKernel constructHPLevelKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
   }
-
 
   // Read top of histoPyramid an use this size to allocate VBO below
   //===================================================================================================================================
@@ -267,19 +223,25 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
   size_t region[3] = {2,2,2};
 
   err = clEnqueueReadImage(_clCommandQueue, images[images.size()-1], CL_FALSE, origin, region, 0, 0, &sum, 0, nullptr, nullptr);
-  if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueReadImage failed");}
+  if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueReadImage failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
   clFinish(_clCommandQueue);
 
   cl_int sum2 = sum[0] + sum[1] + sum[2] + sum[3] + sum[4] + sum[5] + sum[6] + sum[7];
   int numberOfTriangles = int(sum2);
 
-  if(numberOfTriangles == 0) {throw std::runtime_error("No triangles found");}
+
 
   // get the results and convert them to an OpenGL Vertex buffer object
   //===================================================================================================================================
 
   std::vector<float4> triangleData(numberOfTriangles*3*3);
+
+  if(numberOfTriangles == 0)
+  {
+    return triangleData;
+  }
+
   if(numberOfTriangles>0)
   {
     cl_int clSum = cl_int(numberOfTriangles);
@@ -298,7 +260,7 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
 
     size_t i = images.size() + 1;
     cl_mem  VBOBuffer = clCreateBuffer(_clContext, CL_MEM_READ_WRITE, triangleData.size()*sizeof(cl_float4), nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateBuffer failed at " __FILE__ ":" STRINGIZE(__LINE__));}
     clSetKernelArg(_traverseHPKernel[powerOfTwo], static_cast<cl_uint>(i), sizeof(cl_mem), &VBOBuffer);
     clSetKernelArg(_traverseHPKernel[powerOfTwo], static_cast<cl_uint>(i+1), sizeof(cl_int4), &clDimensions);
     clSetKernelArg(_traverseHPKernel[powerOfTwo], static_cast<cl_uint>(i+2), sizeof(cl_float), &clIsoValue);
@@ -306,12 +268,12 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
 
     // Run a NDRange kernel over this buffer which traverses back to the base level
     err = clEnqueueNDRangeKernel(_clCommandQueue, _traverseHPKernel[powerOfTwo], 1, nullptr, global_work_size4, local_work_size, 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueNDRangeKernel _traverseHPKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueNDRangeKernel _traverseHPKernel failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
     clFinish(_clCommandQueue);
 
     err = clEnqueueReadBuffer(_clCommandQueue, VBOBuffer, CL_TRUE, 0, triangleData.size() * sizeof(float4), triangleData.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueReadBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueReadBuffer failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
     clFinish(_clCommandQueue);
 
@@ -332,6 +294,68 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceImpl(int3 dimensions, 
 
   return triangleData;
 }
+
+std::vector<float4> SKComputeIsosurface::computeIsosurfaceCPUImplementation(int3 dimensions, std::vector<cl_float> *voxels, double isoValue) noexcept
+{
+  int largestSize = std::max({dimensions.x,dimensions.y,dimensions.z});
+  int powerOfTwo = 1;
+  while(largestSize > pow(2,powerOfTwo))
+  {
+    powerOfTwo += 1;
+  }
+  size_t size = pow(2,powerOfTwo); // the encompassing size to use as textures (size 16,32,64,128,256, and 512 are supported).
+
+  // brute force implementation
+  // Create marching cubes object
+  MarchingCubes cube(dimensions.x,dimensions.y,dimensions.z);
+
+  // Initiate the cube
+  cube.init_all();
+
+  // Set the data
+  for(int i=0; i<dimensions.x; i++)
+  {
+    for(int j=0; j<dimensions.y; j++)
+    {
+      for(int k=0; k<dimensions.z; k++)
+      {
+        double value = (*voxels)[i + size * j + k * size * size];
+        cube.set_data(value, i, j, k);
+      }
+    }
+  }
+
+  cube.run( isoValue );
+
+  int numberOfTriangles = cube.ntrigs();
+  std::vector<float4> data{};
+  data.reserve(3*3*numberOfTriangles);
+
+  // Fetch the info
+  for(int i=0; i<cube.ntrigs(); i++)
+  {
+    const Triangle* tri = cube.trig(i);
+
+    const Vertex* vertex1 = cube.vert(tri->v1);
+    data.push_back(double4(vertex1->x/dimensions.x,vertex1->y/dimensions.y,vertex1->z/dimensions.z,1.0));
+    data.push_back(double4(vertex1->nx,vertex1->ny,vertex1->nz,0.0));
+    data.push_back(double4(0.0,0.0,0.0,0.0));
+
+    const Vertex* vertex2 = cube.vert(tri->v2);
+    data.push_back(double4(vertex2->x/dimensions.x,vertex2->y/dimensions.y,vertex2->z/dimensions.z,1.0));
+    data.push_back(double4(vertex2->nx,vertex2->ny,vertex2->nz,0.0));
+    data.push_back(double4(0.0,0.0,0.0,0.0));
+
+    const Vertex* vertex3 = cube.vert(tri->v3);
+    data.push_back(double4(vertex3->x/dimensions.x,vertex3->y/dimensions.y,vertex3->z/dimensions.z,1.0));
+    data.push_back(double4(vertex3->nx,vertex3->ny,vertex3->nz,0.0));
+    data.push_back(double4(0.0,0.0,0.0,0.0));
+  }
+  return data;
+}
+
+
+
 std::string SKComputeIsosurface::_marchingCubesKernel = std::string(R"foo(
 
 #pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable

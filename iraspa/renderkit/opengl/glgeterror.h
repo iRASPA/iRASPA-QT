@@ -28,7 +28,8 @@
 
 
 #ifdef QT_DEBUG
-  #define check_gl_error() check_gl_error_local(__FILE__,__LINE__)
+  //#define check_gl_error() check_gl_error_local(__FILE__,__LINE__)
+  #define check_gl_error() {}
 #else
   #define check_gl_error() {}
 #endif

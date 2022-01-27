@@ -99,6 +99,7 @@ class OpenGLWindow : public QOpenGLWindow, public RKRenderViewController, public
 public:
   OpenGLWindow(QWidget* parent = nullptr);
   ~OpenGLWindow();
+
   void redraw() override final;
   void redrawWithQuality(RKRenderQuality quality) override final;
 
@@ -142,6 +143,8 @@ private:
 
   QWidget* _parent;
   QStringList _logData{};
+  QOpenGLDebugLogger *_logger{};
+  void handleLoggedMessage(const QOpenGLDebugMessage &debugMessage);
 
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderObject>>>{};
   GLuint _sceneFrameBuffer;

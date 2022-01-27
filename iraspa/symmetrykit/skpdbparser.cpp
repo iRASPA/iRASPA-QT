@@ -49,7 +49,10 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
 
   if (currentFrame >= _movies[currentMovie].size())
   {
-     _frame->cell = std::make_shared<SKCell>(*_cell);
+    if(_cell)
+    {
+      _frame->cell = std::make_shared<SKCell>(*_cell);
+    }
 
     if(double(_numberOfAminoAcidAtoms)/double(_numberOfAtoms) > 0.5)
     {

@@ -25,6 +25,11 @@
 #include <cmath>
 #include <algorithm>
 
+// two macros ensures any macro passed will
+// be expanded before being stringified
+#define STRINGIZE_DETAIL(x) #x
+#define STRINGIZE(x) STRINGIZE_DETAIL(x)
+
 SKComputeEnergyGrid::SKComputeEnergyGrid(): SKOpenCL()
 {
   if(_isOpenCLInitialized)
@@ -32,7 +37,7 @@ SKComputeEnergyGrid::SKComputeEnergyGrid(): SKOpenCL()
     cl_int err;
     const char* shaderSourceCode = SKComputeEnergyGrid::_energyGridKernel;
     _program = clCreateProgramWithSource(_clContext, 1, &shaderSourceCode, nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateProgramWithSource failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateProgramWithSource failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
     // Build the program executable
     err = clBuildProgram(_program, 0, nullptr, nullptr, nullptr, nullptr);
@@ -41,109 +46,48 @@ SKComputeEnergyGrid::SKComputeEnergyGrid(): SKOpenCL()
       size_t len;
       char buffer[2048];
       clGetProgramBuildInfo(_program, _clDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
-      QString message = QString("SKComputeEnergyGrid: Failed to build program (error: %1)").arg(QString::fromUtf8(buffer));
-      qDebug() << message << _clDeviceId << err;
-      throw std::runtime_error("clBuildProgram failed");
+      QString message = QString("SKComputeIsosurface: OpenCL Failed to build program at %1 (line %2 error: %3)").arg(__FILE__, QString::number(__LINE__), QString::fromUtf8(buffer));
+      throw std::runtime_error(message.toStdString().c_str());
     }
 
     _kernel = clCreateKernel(_program, "ComputeEnergyGrid", &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateKernel failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateKernel failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     err = clGetKernelWorkGroupInfo(_kernel, _clDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &_workGroupSize, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clGetKernelWorkGroupInfo failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clGetKernelWorkGroupInfo failed at " __FILE__ ":" STRINGIZE(__LINE__));}
 
     _isOpenCLReady = true;
   }
 };
 
-std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGrid(int3 size, double2 probeParameter,
-                                        std::vector<double3> positions, std::vector<double2> potentialParameters,
-                                        double3x3 unitCell, int3 numberOfReplicas)
+SKComputeEnergyGrid::~SKComputeEnergyGrid()
 {
-    return getInstance().ComputeEnergyGridImpl(size, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
+  if(_isOpenCLReady)
+  {
+    clReleaseKernel(_kernel);
+    clReleaseProgram(_program);
+  }
 }
 
-std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, double2 probeParameter,
-                                                                           std::vector<double3> positions, std::vector<double2> potentialParameters,
-                                                                           double3x3 unitCell, int3 numberOfReplicas)
+std::vector<cl_float> SKComputeEnergyGrid::computeEnergyGrid(int3 size, double2 probeParameter,
+                                        std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                        double3x3 unitCell, int3 numberOfReplicas) noexcept(false)
+{
+
+  if(getInstance()._isOpenCLInitialized)
+  {
+    return getInstance().computeEnergyGridGPUImplementation(size, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
+  }
+  return SKComputeEnergyGrid::computeEnergyGridCPUImplementation(size, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
+}
+
+std::vector<cl_float> SKComputeEnergyGrid::computeEnergyGridGPUImplementation(int3 size, double2 probeParameter,
+                                                                              std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                                                              double3x3 unitCell, int3 numberOfReplicas) noexcept(false)
 {
   size_t numberOfAtoms = positions.size();
   int temp = size.x*size.y*size.z;
   cl_int err = 0;
-
-  if(!_isOpenCLReady)
-  {
-    // brute-force implementation
-    std::vector<cl_float> outputData = std::vector<cl_float>(temp);
-
-    double3 correction = double3(1.0/double(numberOfReplicas.x), 1.0/double(numberOfReplicas.y), 1.0/double(numberOfReplicas.z));
-
-    double3x3 replicaCell = double3x3(double(numberOfReplicas.x) * unitCell[0],
-                                      double(numberOfReplicas.y) * unitCell[1],
-                                      double(numberOfReplicas.z) * unitCell[2]);
-
-    int totalNumberOfReplicas = numberOfReplicas.x * numberOfReplicas.y * numberOfReplicas.z;
-    std::vector<double3> replicaVector(totalNumberOfReplicas);
-    int index = 0;
-    for(int i=0; i<numberOfReplicas.x; i++)
-    {
-      for(int j=0; j<numberOfReplicas.y; j++)
-      {
-        for(int k=0; k<numberOfReplicas.z; k++)
-        {
-          replicaVector[index] = double3((double(i)/double(numberOfReplicas.x)),
-                                         (double(j)/double(numberOfReplicas.y)),
-                                         (double(k)/double(numberOfReplicas.z)));
-          index += 1;
-        }
-      }
-    }
-
-    for(int z=0; z<size.z;z++)
-    {
-      for(int y=0; y<size.y; y++)
-      {
-        for(int x=0 ; x<size.x; x++)
-        {
-          double3 gridPosition = correction * double3(double(x)/double(size.x-1),double(y)/double(size.y-1),double(z)/double(size.z-1));
-
-          double value = 0.0;
-          for(size_t i=0 ; i<numberOfAtoms; i++)
-          {
-            double3 position = correction * positions[i];
-            double2 currentPotentialParameters = potentialParameters[i];
-
-            // use 4 x epsilon for a probe epsilon of unity
-            double epsilon = cl_float(4.0*sqrt(currentPotentialParameters.x * probeParameter.x));
-
-            // mixing rule for the atom and the probe
-            double sigma = cl_float(0.5 * (currentPotentialParameters.y + probeParameter.y));
-
-            for(int j=0;j<totalNumberOfReplicas;j++)
-            {
-              double3 ds = gridPosition - position - replicaVector[j];
-              ds.x -= std::rint(ds.x);
-              ds.y -= std::rint(ds.y);
-              ds.z -= std::rint(ds.z);
-              double3 dr = replicaCell * ds;
-
-              double rr = dr.x*dr.x + dr.y*dr.y + dr.z*dr.z;
-              if (rr<12.0*12.0)
-              {
-                double sigma2rr = sigma*sigma/rr;
-                double rri3 = sigma2rr * sigma2rr * sigma2rr;
-                value += epsilon*(rri3*(rri3-1.0f));
-              }
-            }
-          }
-
-          outputData[x + y* size.x + z * size.x * size.y] += std::min(value,10000000.0);
-        }
-      }
-    }
-
-    return outputData;
-  }
 
   // make sure the the global work size is an multiple of the work group size
   // (detected on NVIDIA)
@@ -194,28 +138,28 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
     }
 
     cl_mem inputPos = clCreateBuffer(_clContext,  CL_MEM_READ_ONLY,  sizeof(float4) * pos.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, inputPos, CL_TRUE, 0, sizeof(float4) * pos.size(), pos.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("_clCommandQueue failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCommandQueue failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     cl_mem inputGridPos = clCreateBuffer(_clContext, CL_MEM_READ_ONLY,  sizeof(cl_float4) * gridPositions.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, inputGridPos, CL_TRUE, 0, sizeof(cl_float4) * gridPositions.size(), gridPositions.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueWriteBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueWriteBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     cl_mem inputEpsilon = clCreateBuffer(_clContext, CL_MEM_READ_ONLY,  sizeof(cl_float) * epsilon.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, inputEpsilon, CL_TRUE, 0, sizeof(cl_float) * epsilon.size(), epsilon.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueWriteBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueWriteBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     cl_mem inputSigma = clCreateBuffer(_clContext, CL_MEM_READ_ONLY, sizeof(cl_float) * sigma.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, inputSigma, CL_TRUE, 0, sizeof(cl_float) * sigma.size(), sigma.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("_clCommandQueue failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCommandQueue failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     // set work-item dimensions
     size_t totalNumberOfReplicas = numberOfReplicas.x * numberOfReplicas.y * numberOfReplicas.z;
@@ -240,17 +184,17 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
 
     // allocate xpos memory and queue it to the device
     cl_mem replicaCellBuffer = clCreateBuffer(_clContext, CL_MEM_READ_ONLY,  sizeof(cl_float4) * replicaVector.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, replicaCellBuffer, CL_TRUE, 0, sizeof(cl_float4) * replicaVector.size(), replicaVector.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueWriteBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueWriteBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     // allocate memory for the output and queue it to the device
     cl_mem outputMemory = clCreateBuffer(_clContext, CL_MEM_READ_WRITE, sizeof(cl_float) * output.size(), nullptr, &err);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clCreateBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCreateBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     err = clEnqueueWriteBuffer(_clCommandQueue, outputMemory, CL_TRUE, 0, sizeof(cl_float) * output.size(), output.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueWriteBuffer failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueWriteBuffer failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     double3x3 replicaCell = double3x3(double(numberOfReplicas.x) * unitCell[0],
                                       double(numberOfReplicas.y) * unitCell[1],
@@ -281,7 +225,7 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
       err |= clSetKernelArg(_kernel,  10, sizeof(cl_int), &startIndex);
       err |= clSetKernelArg(_kernel,  11, sizeof(cl_int), &endIndex);
       err |= clEnqueueNDRangeKernel(_clCommandQueue, _kernel, 1, nullptr, &global_work_size, &_workGroupSize, 0, nullptr, nullptr);
-      if (err != CL_SUCCESS) {throw std::runtime_error("clEnqueueNDRangeKernel failed");}
+      if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clEnqueueNDRangeKernel failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
       clFinish(_clCommandQueue);
 
@@ -290,7 +234,7 @@ std::vector<cl_float> SKComputeEnergyGrid::ComputeEnergyGridImpl(int3 size, doub
 
     // read output image using SAME size as before
     err = clEnqueueReadBuffer(_clCommandQueue, outputMemory, CL_TRUE, 0, sizeof(cl_float) * outputData.size(), outputData.data(), 0, nullptr, nullptr);
-    if (err != CL_SUCCESS) {throw std::runtime_error("_clCommandQueue failed");}
+    if (err != CL_SUCCESS) {throw std::runtime_error("OpenCL clCommandQueue failed " __FILE__ ":" STRINGIZE(__LINE__));}
 
     clFinish(_clCommandQueue);
 
@@ -362,3 +306,82 @@ __kernel void ComputeEnergyGrid(__global float4 *position,
 }
 )foo";
 
+// brute-force implementation
+std::vector<cl_float> SKComputeEnergyGrid::computeEnergyGridCPUImplementation(int3 size, double2 probeParameter,
+                                                                              std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                                                              double3x3 unitCell, int3 numberOfReplicas) noexcept
+{
+
+  size_t numberOfAtoms = positions.size();
+  int temp = size.x*size.y*size.z;
+
+  std::vector<cl_float> outputData = std::vector<cl_float>(temp);
+
+  double3 correction = double3(1.0/double(numberOfReplicas.x), 1.0/double(numberOfReplicas.y), 1.0/double(numberOfReplicas.z));
+
+  double3x3 replicaCell = double3x3(double(numberOfReplicas.x) * unitCell[0],
+                                    double(numberOfReplicas.y) * unitCell[1],
+                                    double(numberOfReplicas.z) * unitCell[2]);
+
+  int totalNumberOfReplicas = numberOfReplicas.x * numberOfReplicas.y * numberOfReplicas.z;
+  std::vector<double3> replicaVector(totalNumberOfReplicas);
+  int index = 0;
+  for(int i=0; i<numberOfReplicas.x; i++)
+  {
+    for(int j=0; j<numberOfReplicas.y; j++)
+    {
+      for(int k=0; k<numberOfReplicas.z; k++)
+      {
+        replicaVector[index] = double3((double(i)/double(numberOfReplicas.x)),
+                                       (double(j)/double(numberOfReplicas.y)),
+                                       (double(k)/double(numberOfReplicas.z)));
+        index += 1;
+      }
+    }
+  }
+
+  for(int z=0; z<size.z;z++)
+  {
+    for(int y=0; y<size.y; y++)
+    {
+      for(int x=0 ; x<size.x; x++)
+      {
+        double3 gridPosition = correction * double3(double(x)/double(size.x-1),double(y)/double(size.y-1),double(z)/double(size.z-1));
+
+        double value = 0.0;
+        for(size_t i=0 ; i<numberOfAtoms; i++)
+        {
+          double3 position = correction * positions[i];
+          double2 currentPotentialParameters = potentialParameters[i];
+
+          // use 4 x epsilon for a probe epsilon of unity
+          double epsilon = cl_float(4.0*sqrt(currentPotentialParameters.x * probeParameter.x));
+
+          // mixing rule for the atom and the probe
+          double sigma = cl_float(0.5 * (currentPotentialParameters.y + probeParameter.y));
+
+          for(int j=0;j<totalNumberOfReplicas;j++)
+          {
+            double3 ds = gridPosition - position - replicaVector[j];
+            ds.x -= std::rint(ds.x);
+            ds.y -= std::rint(ds.y);
+            ds.z -= std::rint(ds.z);
+            double3 dr = replicaCell * ds;
+
+            double rr = dr.x*dr.x + dr.y*dr.y + dr.z*dr.z;
+            if (rr<12.0*12.0)
+            {
+              double sigma2rr = sigma*sigma/rr;
+              double rri3 = sigma2rr * sigma2rr * sigma2rr;
+              value += epsilon*(rri3*(rri3-1.0f));
+            }
+          }
+        }
+
+        outputData[x + y* size.x + z * size.x * size.y] += std::min(value,10000000.0);
+      }
+    }
+  }
+
+  return outputData;
+}

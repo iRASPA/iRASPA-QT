@@ -235,11 +235,17 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
                   check_gl_error();
                 }
               }
-              catch (char const* e)
+              catch (std::exception const &e)
               {
-                std::cout << "Exception caught: " << e << std::endl;
-                _surfaceNumberOfIndices[i][j] = 0;
-                return;
+                // fall back to CPU implementation (noexcept) in case of problems with the accelerated version.
+                std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, energyGridPointer, isoValue);
+                _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+
+                if(triangleData.size()>0)
+                {
+                  glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                  check_gl_error();
+                }
               }
             }
             else
@@ -262,11 +268,17 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
                   check_gl_error();
                 }
               }
-              catch (char const* e)
+              catch (std::exception const &e)
               {
-                std::cout << "Exception caught: " << e << std::endl;
-                _surfaceNumberOfIndices[i][j] = 0;
-                return;
+                // fall back to CPU implementation (noexcept) in case of problems with the accelerated version.
+                std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, energyGridPointer, isoValue);
+                _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+
+                if(triangleData.size()>0)
+                {
+                  glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                  check_gl_error();
+                }
               }
 
               // insert as last to avoid use of memory after free in case the insertion fails.

@@ -41,11 +41,12 @@
 
 #if defined(Q_OS_WIN)
   #include "wingdi.h"
+  #include <windows.h>
 #endif
 
 OpenGLWindow::OpenGLWindow(QWidget* parent): QOpenGLWindow(),
-    _parent(parent),
     _isOpenGLInitialized(false),
+    _parent(parent),
     _backgroundShader(),
     _blurShader(),
     _energySurfaceShader(),
@@ -70,11 +71,13 @@ OpenGLWindow::OpenGLWindow(QWidget* parent): QOpenGLWindow(),
   format.setStencilBufferSize(0);
   format.setVersion(3,3);
   format.setProfile(QSurfaceFormat::CoreProfile);
+#ifdef QT_DEBUG
+  format.setOption(QSurfaceFormat::DebugContext);
+#endif
   setFormat(format);
 
   setSurfaceType(QWindow::OpenGLSurface);
 }
-
 
 OpenGLWindow::~OpenGLWindow()
 {
@@ -150,9 +153,6 @@ void OpenGLWindow::redrawWithQuality(RKRenderQuality quality)
   update();
 }
 
-
-
-
 void OpenGLWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
   makeCurrent();
@@ -172,9 +172,32 @@ std::array<int,4> OpenGLWindow::pickTexture(int x, int y, int width, int height)
   return _pickingShader.pickTexture(x,y,width,height);
 }
 
+void OpenGLWindow::handleLoggedMessage(const QOpenGLDebugMessage &debugMessage)
+{
+  if(_logger)
+  {
+    switch(debugMessage.type())
+    {
+    case QOpenGLDebugMessage::Type::PerformanceType:
+      // print in yellow
+      qDebug() << (QString("\033[33m") + QString(debugMessage.message()) + QString("\033[30m")).toStdString().c_str();
+      break;
+    case QOpenGLDebugMessage::Type::ErrorType:
+      // print in red
+      qDebug() << (QString("\033[31m\033[20m") + QString(debugMessage.message()) + QString("\033[30m\033[21m")).toStdString().c_str();
+      break;
+    default:
+      // print in basket color
+      qDebug() << (QString("\033[34m") + QString(debugMessage.message()) + QString("\033[30m")).toStdString().c_str();
+      break;
+    }
+  }
+}
+
 void OpenGLWindow::initializeGL()
 {
-  if(!context())
+  QOpenGLContext *ctx = context();
+  if(!ctx)
   {
     QMessageBox messageBox;
     messageBox.setFixedSize(650, 200);
@@ -184,6 +207,25 @@ void OpenGLWindow::initializeGL()
 
   if (!initializeOpenGLFunctions()) 
 	  qFatal("Failed to initialize OpenGL functions");
+
+  #ifdef QT_DEBUG
+    if(ctx)
+    {
+      if(ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
+      {
+        qDebug("\033[32mOpenGL Debug extension FOUND!\033[30m");
+        _logger = new QOpenGLDebugLogger(this);
+        _logger->initialize();
+        _logger->enableMessages();
+        connect(_logger, &QOpenGLDebugLogger::messageLogged, this, &OpenGLWindow::handleLoggedMessage);
+        _logger->startLogging(QOpenGLDebugLogger::LoggingMode::SynchronousLogging);
+      }
+      else
+      {
+        qDebug("\033[31mOpenGL Debug extension NOT found!\033[30m");
+      }
+    }
+  #endif
 
   glEnable(GL_MULTISAMPLE);
 
@@ -337,7 +379,7 @@ void OpenGLWindow::initializeGL()
   glGenTextures(1, &_sceneResolvedDepthTexture);
   check_gl_error();
 
-  glBindFramebuffer(GL_FRAMEBUFFER, _sceneResolveDepthFrameBuffer);
+
   glBindTexture(GL_TEXTURE_2D, _sceneResolvedDepthTexture);
   check_gl_error();
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -345,8 +387,13 @@ void OpenGLWindow::initializeGL()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   check_gl_error();
+
   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, _width * _devicePixelRatio, _height * _devicePixelRatio, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
   check_gl_error();
+
+  glBindFramebuffer(GL_FRAMEBUFFER, _sceneResolveDepthFrameBuffer);
+  check_gl_error();
+
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _sceneResolvedDepthTexture, 0);
   check_gl_error();
 

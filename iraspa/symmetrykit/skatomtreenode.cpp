@@ -76,7 +76,6 @@ bool SKAtomTreeNode::insertChild(size_t row, std::shared_ptr<SKAtomTreeNode> chi
 {
   if (row < 0 || row > _childNodes.size())
   {
-    qDebug() << "Error insertion at: " << row << ", size: " << _childNodes.size();
     return false;
   }
 
