@@ -21,13 +21,18 @@
 
 #pragma once
 
-#include <forcefieldset.h>
-#include <forcefieldsets.h>
-#include <forcefieldtype.h>
-#include <constants.h>
-
-#include <skcomputeenergygrid.h>
-#include <skcomputeisosurface.h>
-#include <skcomputevoidfraction.h>
+#include <QtGlobal>
+#include <QStringList>
+#include <array>
+#include <vector>
+#include <optional>
+#include <mathkit.h>
 
 
+
+class SKComputeIsosurface
+{
+  public:
+    SKComputeIsosurface();
+    static std::vector<float4> computeIsosurface(int3 dimensions, std::vector<float>* voxels, double isoValue);
+};

@@ -29,7 +29,7 @@ VulkanWindow::VulkanWindow(QWindow *parent) : QWindow(parent) {
         std::vector<tinyobj::material_t> materials;
         std::string err;
 #if defined(Q_OS_WIN)
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, "C:/Users/ddubb/Porsche_911_GT2.obj")) {
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, "C:/Users/ddubb//Research/Codes/QtVulkan/Porsche_911_GT2.obj")) {
                    throw std::runtime_error(err);
 #else
         if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, "/Users/dubbelda/Research/Codes/QtVulkan/Porsche_911_GT2.obj")) {
@@ -122,6 +122,7 @@ void VulkanWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<R
 {
   _renderStructures = structures;
 }
+
 void VulkanWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
 {
   qDebug() << "setRenderDataSource";
@@ -137,14 +138,17 @@ void VulkanWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> sourc
   }
   drawFrame();
 }
+
 void VulkanWindow::reloadData()
 {
 
 }
+
 void VulkanWindow::reloadData(RKRenderQuality ambientOcclusionQuality)
 {
 
 }
+
 void VulkanWindow::reloadAmbientOcclusionData()
 {
 
@@ -153,6 +157,7 @@ void VulkanWindow::reloadRenderData()
 {
 
 }
+
 void VulkanWindow::reloadSelectionData()
 {
 
@@ -177,35 +182,37 @@ void VulkanWindow::reloadBackgroundImage()
 
 }
 
+void VulkanWindow::reloadStructureUniforms()
+{
+
+}
+
 void VulkanWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }
+
 void VulkanWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
 }
-void VulkanWindow::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)
-{
 
-}
-void VulkanWindow::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)
-{
-
-}
 
 void VulkanWindow::updateTransformUniforms()
 {
   vulkanRenderer->updateUniformBuffer(_camera);
 }
+
 void VulkanWindow::updateStructureUniforms()
 {
 
 }
+
 void VulkanWindow::updateIsosurfaceUniforms()
 {
 
 }
+
 void VulkanWindow::updateLightUniforms()
 {
 
@@ -220,6 +227,8 @@ void VulkanWindow::updateVertexArrays()
 {
 
 }
+
+
 
 QImage VulkanWindow::renderSceneToImage(int width, int height, RKRenderQuality quality)
 {
@@ -334,7 +343,7 @@ void VulkanWindow::mouseMoveEvent(QMouseEvent *event)
 
 void VulkanWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug() << "Mouse release event";
+  qDebug() << "Mouse release event";
   switch(_tracking)
   {
     case Tracking::none:

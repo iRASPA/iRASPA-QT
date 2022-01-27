@@ -130,6 +130,11 @@ void DirectXWindow::reloadBackgroundImage()
 
 }
 
+void DirectXWindow::reloadStructureUniforms()
+{
+
+}
+
 void DirectXWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
 
@@ -138,14 +143,7 @@ void DirectXWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRe
 {
 
 }
-void DirectXWindow::computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)
-{
 
-}
-void DirectXWindow::computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)
-{
-
-}
 
 void DirectXWindow::updateTransformUniforms()
 {

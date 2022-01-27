@@ -19,15 +19,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#pragma once
+#include "skcomputevoidfraction.h"
 
-#include <forcefieldset.h>
-#include <forcefieldsets.h>
-#include <forcefieldtype.h>
-#include <constants.h>
+SKComputeVoidFraction::SKComputeVoidFraction()
+{
 
-#include <skcomputeenergygrid.h>
-#include <skcomputeisosurface.h>
-#include <skcomputevoidfraction.h>
+};
 
-
+double SKComputeVoidFraction::ComputeVoidFraction(std::vector<float> *voxels)
+{
+  return 0.0;
+};

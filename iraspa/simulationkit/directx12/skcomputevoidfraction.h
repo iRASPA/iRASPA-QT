@@ -21,13 +21,17 @@
 
 #pragma once
 
-#include <forcefieldset.h>
-#include <forcefieldsets.h>
-#include <forcefieldtype.h>
-#include <constants.h>
-
-#include <skcomputeenergygrid.h>
-#include <skcomputeisosurface.h>
-#include <skcomputevoidfraction.h>
+#include <QtGlobal>
+#include <QStringList>
+#include <array>
+#include <vector>
+#include <optional>
+#include <mathkit.h>
 
 
+class SKComputeVoidFraction
+{
+public:
+  SKComputeVoidFraction();
+  static double ComputeVoidFraction(std::vector<float> *voxels);
+};

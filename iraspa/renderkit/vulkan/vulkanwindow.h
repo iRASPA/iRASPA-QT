@@ -36,6 +36,7 @@ class VulkanWindow : public QWindow, public RKRenderViewController
     void mouseReleaseEvent(QMouseEvent *event) override final;
     void wheelEvent(QWheelEvent *event) override final;
 
+    const QStringList& logData() const override final {return _logData;};
     virtual void redraw() override final;
     virtual void redrawWithQuality(RKRenderQuality quality)  override final;
 
@@ -54,14 +55,13 @@ class VulkanWindow : public QWindow, public RKRenderViewController
 
     virtual void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
     virtual void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
-    virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)  override final;
-    virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)  override final;
 
     virtual void updateTransformUniforms()  override final;
     virtual void updateStructureUniforms()  override final;
     virtual void updateIsosurfaceUniforms()  override final;
     virtual void updateLightUniforms()  override final;
     virtual void updateGlobalAxesUniforms() override final;
+    virtual void reloadStructureUniforms() override final;
 
     virtual void updateVertexArrays() override final;
 

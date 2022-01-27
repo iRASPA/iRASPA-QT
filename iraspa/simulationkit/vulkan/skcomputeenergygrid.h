@@ -21,13 +21,34 @@
 
 #pragma once
 
-#include <forcefieldset.h>
-#include <forcefieldsets.h>
-#include <forcefieldtype.h>
-#include <constants.h>
-
-#include <skcomputeenergygrid.h>
-#include <skcomputeisosurface.h>
-#include <skcomputevoidfraction.h>
+#include <QtGlobal>
+#include <QStringList>
+#include <array>
+#include <vector>
+#include <optional>
+#include <mathkit.h>
 
 
+class SKComputeEnergyGrid
+{
+  public:
+    enum class GridSizeType: qint64
+    {
+      custom = 0,
+      size2x2x2 = 1,
+      size4x4x4 = 2,
+      size8x8x8 = 3,
+      size16x16x16 = 4,
+      size32x32x32 = 5,
+      size64x64x64 = 6,
+      size128x128x128 = 7,
+      size256x256x256 = 8,
+      size512x512x512 = 9,
+      multiple_values = 10
+    };
+
+    SKComputeEnergyGrid();
+    static std::vector<float> ComputeEnergyGrid(int3 size, double2 probeParameter,
+                                              std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                              double3x3 unitCell, int3 numberOfReplicas);
+};

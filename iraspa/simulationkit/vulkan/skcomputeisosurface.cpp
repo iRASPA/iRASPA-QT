@@ -19,15 +19,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#pragma once
+#include "skcomputeisosurface.h"
+#include "marchingcubes.h"
 
-#include <forcefieldset.h>
-#include <forcefieldsets.h>
-#include <forcefieldtype.h>
-#include <constants.h>
+SKComputeIsosurface::SKComputeIsosurface()
+{
 
-#include <skcomputeenergygrid.h>
-#include <skcomputeisosurface.h>
-#include <skcomputevoidfraction.h>
+};
 
-
+std::vector<float4> SKComputeIsosurface::computeIsosurface(int3 dimensions, std::vector<float> *voxels, double isoValue)
+{
+  return std::vector<float4>();
+}

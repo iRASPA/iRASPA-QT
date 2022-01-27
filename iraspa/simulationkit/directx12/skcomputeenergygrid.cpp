@@ -19,15 +19,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************************************************/
 
-#pragma once
 
-#include <forcefieldset.h>
-#include <forcefieldsets.h>
-#include <forcefieldtype.h>
-#include <constants.h>
+#include "skcomputeenergygrid.h"
+#include <QString>
+#include <cmath>
+#include <algorithm>
 
-#include <skcomputeenergygrid.h>
-#include <skcomputeisosurface.h>
-#include <skcomputevoidfraction.h>
+SKComputeEnergyGrid::SKComputeEnergyGrid()
+{
 
+};
+
+std::vector<float> SKComputeEnergyGrid::ComputeEnergyGrid(int3 size, double2 probeParameter,
+                                        std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                        double3x3 unitCell, int3 numberOfReplicas)
+{
+    return std::vector<float>();
+}
 

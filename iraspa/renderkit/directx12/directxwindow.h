@@ -31,6 +31,7 @@ public:
     void paintD3D() Q_DECL_OVERRIDE;
     void afterPresent() Q_DECL_OVERRIDE;
 
+    const QStringList& logData() const override final {return _logData;};
     virtual void redraw() override final;
     virtual void redrawWithQuality(RKRenderQuality quality)  override final;
 
@@ -44,13 +45,12 @@ public:
     virtual void reloadRenderMeasurePointsData() override final;
     virtual void reloadBoundingBoxData() override final;
     virtual void reloadGlobalAxesData() override final;
+    virtual void reloadStructureUniforms() override final;
 
     virtual void reloadBackgroundImage()  override final;
 
     virtual void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
     virtual void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
-    virtual void computeHeliumVoidFraction(std::vector<std::shared_ptr<RKRenderObject>> structures)  override final;
-    virtual void computeNitrogenSurfaceArea(std::vector<std::shared_ptr<RKRenderObject>> structures)  override final;
 
     virtual void updateTransformUniforms() override final;
     virtual void updateStructureUniforms() override final;
