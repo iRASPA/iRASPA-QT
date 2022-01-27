@@ -52,6 +52,8 @@ public:
 
   void hideToolBarMenuMenu();
   void showToolBarMenuMenu();
+
+  LogReporting* logReporter() const override final {return _logReporter;};
 private:
   enum class Tracking
   {

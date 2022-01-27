@@ -46,7 +46,7 @@ class CellTreeWidgetController : public QTreeWidget, public MainWindowConsumer, 
 
 public:
   CellTreeWidgetController(QWidget* parent = nullptr);
-  void setLogReportingWidget(LogReporting *logReporting) override final {_logReporter = logReporting;}
+
   void setMainWindow(MainWindow *mainWindow)  override{_mainWindow = mainWindow;}
   void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures);
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override;
@@ -54,6 +54,9 @@ public:
   void resetData();
   void reloadData() override;
   void reloadSelection() override;
+
+  void setLogReportingWidget(LogReporting *logReporting) override final {_logReporter = logReporting;}
+  LogReporting* logReporter() const override final {return _logReporter;};
 private:
   CellCellForm* _cellCellForm;
   CellTransformContentForm* _cellTransformContentForm;

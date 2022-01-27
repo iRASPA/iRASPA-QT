@@ -46,6 +46,7 @@ public:
   QSize sizeHint() const override;
 
   void setLogReportingWidget(LogReporting *logReporting) override final;
+  LogReporting* logReporter() const override final {return _logReporting;};
 
   bool hasSelection() const override final;
   void paintEvent(QPaintEvent *event) override final;
@@ -53,7 +54,7 @@ public:
   void reloadSelection() override final;
   void reloadData() override final;
 
-	bool insertRows(int position, int rows, const QModelIndex &parent, std::shared_ptr<ProjectTreeNode> item);
+  bool insertRows(int position, int rows, const QModelIndex &parent, std::shared_ptr<ProjectTreeNode> item);
 
   void addStructureProject(QModelIndex index);
   void addGroupProject(QModelIndex index);

@@ -133,11 +133,14 @@ public:
 
   void setControlPanel(bool iskeyAltOn);
   void updateControlPanel();
+  const QStringList& logData() const override final {return _logData;};
 private:
   bool _isOpenGLInitialized;
   GLuint _program;
   RKRenderQuality _quality = RKRenderQuality::high;
   std::shared_ptr<RKRenderDataSource> _dataSource;
+
+  QWidget* _parent;
   QStringList _logData{};
 
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderObject>>>{};

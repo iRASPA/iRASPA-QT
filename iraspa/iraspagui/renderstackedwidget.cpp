@@ -67,11 +67,10 @@ RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QWidget(parent )
   layout->setContentsMargins(0,0,0,0);
 
 #if defined (USE_OPENGL)
-   OpenGLWindow *w = new OpenGLWindow(parent);
+   OpenGLWindow *w = new OpenGLWindow(this);
    if(!w)
    {
-       qDebug() << "WINDOW IS NULL";
-       exit(0);
+     qFatal("OPENGL WINDOW IS NULL");
    }
    renderWindow = w;
    w->installEventFilter(this);
@@ -182,9 +181,13 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
 void RenderStackedWidget::setLogReportingWidget(LogReporting *logReporting)
 {
   _logReporter = logReporting;
-  if (LogReportingConsumer* widget = dynamic_cast<LogReportingConsumer*>(renderViewController))
+  if(_logReporter)
   {
-    widget->setLogReportingWidget(logReporting);
+    if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+    {
+        qDebug() << "EMPTY? : " << widget->logData();
+      _logReporter->insert(widget->logData());
+    }
   }
 }
 

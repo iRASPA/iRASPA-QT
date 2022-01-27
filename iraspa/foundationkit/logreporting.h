@@ -40,5 +40,6 @@ public:
 struct LogReportingConsumer
 {
   virtual void setLogReportingWidget(LogReporting *logReporting) = 0;
+  virtual LogReporting* logReporter() const = 0;
   virtual ~LogReportingConsumer() = 0;
 };

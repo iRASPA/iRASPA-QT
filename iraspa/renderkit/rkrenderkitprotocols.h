@@ -355,6 +355,8 @@ class RKRenderViewController
 {
  public:
   virtual ~RKRenderViewController() = 0;
+
+  virtual const QStringList& logData() const = 0;
   virtual void redraw() = 0;
   virtual void redrawWithQuality(RKRenderQuality quality) = 0;
 

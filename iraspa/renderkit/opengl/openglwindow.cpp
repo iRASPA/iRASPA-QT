@@ -44,6 +44,7 @@
 #endif
 
 OpenGLWindow::OpenGLWindow(QWidget* parent): QOpenGLWindow(),
+    _parent(parent),
     _isOpenGLInitialized(false),
     _backgroundShader(),
     _blurShader(),
@@ -437,14 +438,21 @@ void OpenGLWindow::initializeGL()
   glEnableVertexAttribArray(_downSamplePositionAttributeLocation);
   check_gl_error();
 
- // glActiveTexture(GL_TEXTURE0);
- // glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _sceneTexture);
- // check_gl_error();
-
   glBindVertexArray(0);
   check_gl_error();
 
   _isOpenGLInitialized = true;
+
+  // It is undefined when initializeGL() is called. Most likely it is after the UI is up.
+  // In that case _parent (the RenderStackedWidget that created this OpenGL window) has a valid (non-nil) log-reporter.
+  if(LogReportingConsumer* object = dynamic_cast<LogReportingConsumer*>(_parent))
+  {
+    if(LogReporting *logReporter = object->logReporter())
+    {
+      logReporter->insert(_logData);
+      _logData.clear();
+    }
+  }
 }
 
 

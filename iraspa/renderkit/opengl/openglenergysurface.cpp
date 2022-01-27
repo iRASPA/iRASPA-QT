@@ -189,7 +189,6 @@ void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLui
   glDepthMask(GL_TRUE);
 }
 
-
 void OpenGLEnergySurface::initializeVertexArrayObject()
 {
   for(size_t i=0;i<_renderStructures.size();i++)
@@ -223,25 +222,25 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
             std::vector<cl_float> *energyGridPointer = nullptr;
             if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
             {
-               energyGridPointer = _caches[powerOfTwo].object(_renderStructures[i][j].get());
+              energyGridPointer = _caches[powerOfTwo].object(_renderStructures[i][j].get());
 
-               try
-               {
-                 std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGridPointer, isoValue);
-                 _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+              try
+              {
+                std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGridPointer, isoValue);
+                _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
 
-                 if(triangleData.size()>0)
-                 {
-                   glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
-                   check_gl_error();
-                 }
-               }
-               catch (char const* e)
-               {
-                 std::cout << "Exception caught: " << e << std::endl;
-                 _surfaceNumberOfIndices[i][j] = 0;
-                 return;
-               }
+                if(triangleData.size()>0)
+                {
+                  glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                  check_gl_error();
+                }
+              }
+              catch (char const* e)
+              {
+                std::cout << "Exception caught: " << e << std::endl;
+                _surfaceNumberOfIndices[i][j] = 0;
+                return;
+              }
             }
             else
             {

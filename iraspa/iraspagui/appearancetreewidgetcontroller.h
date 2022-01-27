@@ -50,11 +50,14 @@ class AppearanceTreeWidgetController: public QTreeWidget, public MainWindowConsu
 
 public:
   AppearanceTreeWidgetController(QWidget* parent = nullptr);
-  void setLogReportingWidget(LogReporting *logReporting) override final {_logReporter = logReporting;}
+
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode) override final;
   void setMainWindow(MainWindow *mainWindow) override final {_mainWindow = mainWindow;}
   void setFlattenedSelectedFrames(std::vector<std::shared_ptr<iRASPAObject>> iraspa_structures);
   void resetData();
+
+  void setLogReportingWidget(LogReporting *logReporting) override final {_logReporter = logReporting;}
+  LogReporting* logReporter() const override final {return _logReporter;};
 private:
   AppearancePrimitiveForm* _appearancePrimitiveForm;
   AppearanceAtomsForm* _appearanceAtomsForm;

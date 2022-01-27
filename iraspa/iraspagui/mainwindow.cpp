@@ -180,7 +180,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   QObject::connect(ui->addAtomToolButton, &QToolButton::pressed, ui->atomTreeView, static_cast<void (AtomTreeView::*)()>(&AtomTreeView::addAtom));
   QObject::connect(ui->removeAtomToolButton, &QToolButton::pressed, ui->atomTreeView, &AtomTreeView::deleteSelection);
 
-
   recheckRemovalButtons();
   updateMenuToProjectTab();
 
