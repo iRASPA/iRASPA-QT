@@ -49,8 +49,8 @@ CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared
     if(!atomViewer->isFractional())
     {
       convertAsymmetricAtomsToFractional();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
   }

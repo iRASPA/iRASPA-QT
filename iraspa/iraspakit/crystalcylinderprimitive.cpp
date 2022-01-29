@@ -50,8 +50,8 @@ CrystalCylinderPrimitive::CrystalCylinderPrimitive(const std::shared_ptr<Object>
     if(!atomViewer->isFractional())
     {
       convertAsymmetricAtomsToFractional();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
   }

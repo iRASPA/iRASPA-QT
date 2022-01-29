@@ -55,13 +55,18 @@ ProteinCrystal::ProteinCrystal(std::shared_ptr<SKStructure> frame): Structure(fr
 
 ProteinCrystal::ProteinCrystal(const std::shared_ptr<Object> object): Structure(object)
 {
+  if (std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(object))
+  {
+    _spaceGroup = spaceGroupViewer->spaceGroup();
+  }
+
   if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
   {
     if(atomViewer->isFractional())
     {
       ProteinCrystal::convertAsymmetricAtomsToCartesian();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
     computeBonds();

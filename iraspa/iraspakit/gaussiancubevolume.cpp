@@ -17,7 +17,6 @@ GaussianCubeVolume::GaussianCubeVolume(std::shared_ptr<SKStructure> frame): Stru
     _cell = frame->cell;
     _data = frame->byteData;
     _range = std::pair(frame->range.first, frame->range.second);
-    qDebug() << "RANGE: " << _range;
     _average = frame->average;
     _variance = frame->variance;
 
@@ -46,8 +45,8 @@ GaussianCubeVolume::GaussianCubeVolume(const std::shared_ptr<Object> object): St
     if(!atomViewer->isFractional())
     {
       convertAsymmetricAtomsToFractional();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
     computeBonds();

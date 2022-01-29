@@ -49,8 +49,8 @@ PolygonalPrismPrimitive::PolygonalPrismPrimitive(const std::shared_ptr<Object> o
     if(atomViewer->isFractional())
     {
       convertAsymmetricAtomsToCartesian();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     PolygonalPrismPrimitive::reComputeBoundingBox();
   }

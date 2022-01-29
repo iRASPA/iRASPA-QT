@@ -49,8 +49,8 @@ EllipsoidPrimitive::EllipsoidPrimitive(const std::shared_ptr<Object> object): Pr
     if(atomViewer->isFractional())
     {
       convertAsymmetricAtomsToCartesian();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
   }

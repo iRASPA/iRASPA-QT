@@ -49,8 +49,8 @@ CylinderPrimitive::CylinderPrimitive(const std::shared_ptr<Object> object): Prim
     if(atomViewer->isFractional())
     {
       convertAsymmetricAtomsToCartesian();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
   }

@@ -56,17 +56,23 @@ MolecularCrystal::MolecularCrystal(std::shared_ptr<SKStructure> frame): Structur
 
 MolecularCrystal::MolecularCrystal(const std::shared_ptr<Object> object): Structure(object)
 {
+  if (std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(object))
+  {
+    _spaceGroup = spaceGroupViewer->spaceGroup();
+  }
+
   if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
   {
     if(atomViewer->isFractional())
     {
       MolecularCrystal::convertAsymmetricAtomsToCartesian();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
     computeBonds();
   }
+  _drawUnitCell = true;
 }
 
 std::shared_ptr<Object> MolecularCrystal::shallowClone()

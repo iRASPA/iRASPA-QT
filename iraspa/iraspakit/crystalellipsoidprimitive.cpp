@@ -49,8 +49,8 @@ CrystalEllipsoidPrimitive::CrystalEllipsoidPrimitive(const std::shared_ptr<Objec
     if(!atomViewer->isFractional())
     {
       convertAsymmetricAtomsToFractional();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
   }

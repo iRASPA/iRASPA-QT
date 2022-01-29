@@ -12,8 +12,8 @@ VASPDensityVolume::VASPDensityVolume(const std::shared_ptr<Object> object): Stru
     if(!atomViewer->isFractional())
     {
       convertAsymmetricAtomsToFractional();
-      expandSymmetry();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     reComputeBoundingBox();
     VASPDensityVolume::computeBonds();

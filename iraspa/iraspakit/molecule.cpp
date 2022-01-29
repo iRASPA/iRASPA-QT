@@ -53,11 +53,11 @@ Molecule::Molecule(const std::shared_ptr<Object> object): Structure(object)
 {
   if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
   {
-    if(!atomViewer->isFractional())
+    if(atomViewer->isFractional())
     {
-      Molecule::convertAsymmetricAtomsToFractional();
-      expandSymmetry();
+      Molecule::convertAsymmetricAtomsToCartesian();
     }
+    expandSymmetry();
     _atomsTreeController->setTags();
     Molecule::reComputeBoundingBox();
     computeBonds();
