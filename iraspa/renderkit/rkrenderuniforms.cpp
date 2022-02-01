@@ -46,7 +46,7 @@ RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, d
     double4 camera_position = double4x4::inverse(modifiedCameraViewMatrix * modelMatrix) * double4(0.0, 0.0, 0.0, 1.0);
     this->cameraPosition = float4(camera_position);
 
-    double3x3 currentNormalMatrix = double3x3::transpose(double3x3::inverse(double3x3(modelViewMatrix)));
+    double3x3 currentNormalMatrix = double3x3::transpose(double3x3::inverse(modelViewMatrix.toDouble3x3()));
     this->normalMatrix = float4x4(double4x4(currentNormalMatrix));
     this->bloomLevel = float(bloomLevel);
     this->bloomPulse = float(bloomPulse);
@@ -381,7 +381,7 @@ RKShadowUniforms::RKShadowUniforms(double4x4 projectionMatrix, double4x4 viewMat
   this->viewMatrix = float4x4(viewMatrix * modelMatrix);
   this->shadowMatrix = float4x4(ViewToOpenGLDepthTextureMatrix * mvpMatrix);
 
-  this->normalMatrix = float4x4(double4x4(double3x3::transpose(double3x3::inverse(double3x3(viewMatrix * modelMatrix)))));
+  this->normalMatrix = float4x4(double4x4(double3x3::transpose(double3x3::inverse((viewMatrix * modelMatrix).toDouble3x3()))));
 }
 
 RKIsosurfaceUniforms::RKIsosurfaceUniforms()

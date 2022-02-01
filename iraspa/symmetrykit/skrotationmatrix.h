@@ -24,8 +24,6 @@
 #include <ostream>
 #include <mathkit.h>
 
-struct SKTransformationMatrix;
-
 struct SKRotationMatrix
 {
   union int3x3 int3x3;
@@ -42,7 +40,6 @@ struct SKRotationMatrix
 
 
   SKRotationMatrix();
-  SKRotationMatrix(SKTransformationMatrix m);
   SKRotationMatrix(union int3x3 m) {this->int3x3 = m;}
   SKRotationMatrix(int3 v1, int3 v2, int3 v3);
 

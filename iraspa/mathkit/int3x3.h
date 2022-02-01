@@ -25,8 +25,6 @@
 #include "double3.h"
 #include "hashcombine.h"
 
-union double3x3;
-
 union int3x3
 {
   int m[9];
@@ -44,7 +42,6 @@ union int3x3
   int3x3();
   int3x3(int value);
   int3x3(int3 v1, int3 v2, int3 v3);
-  int3x3(double3x3 m);
 
   inline int3 & operator [] (int i) { return v[i]; }
   inline const int3 & operator [] (int i) const { return v[i]; }

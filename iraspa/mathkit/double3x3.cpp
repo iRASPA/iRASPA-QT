@@ -36,14 +36,6 @@
 double dlambda_limit = 1.0E-3;
 double iszero_limit = 1.0E-20;
 
-
-double3x3::double3x3(double4x4 a)
-{
-   m11=a.m11; m21=a.m21; m31=a.m31;
-   m12=a.m12; m22=a.m22; m32=a.m32;
-   m13=a.m13; m23=a.m23; m33=a.m33;
-}
-
 double3x3::double3x3(simd_quatd q)
 {
    double sqw = q.r*q.r;

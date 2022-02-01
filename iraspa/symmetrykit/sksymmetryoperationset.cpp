@@ -61,7 +61,7 @@ const SKSymmetryOperationSet SKSymmetryOperationSet::changedBasis(SKTransformati
     SKTransformationMatrix inverseTransformation = transformationMatrix.adjugate();
     SKTransformationMatrix rotation = (inverseTransformation * seitzMatrix.rotation * transformationMatrix) / transformationMatrix.determinant();
     double3 translation = inverseTransformation * seitzMatrix.translation;
-    SKSeitzMatrix transformedSeitzMatrix = SKSeitzMatrix(rotation, translation / double(transformationMatrix.determinant()));
+    SKSeitzMatrix transformedSeitzMatrix = SKSeitzMatrix(rotation.transformation, translation / double(transformationMatrix.determinant()));
     newSet.push_back(transformedSeitzMatrix);
   }
   return SKSymmetryOperationSet(newSet);

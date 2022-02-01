@@ -24,8 +24,6 @@
 #include "float3.h"
 #include "simd_quatd.h"
 
-union float4x4;
-
 union float3x3
 {
   float m[9];
@@ -53,7 +51,7 @@ union float3x3
           {
 
           };
-  float3x3(float4x4);
+  //float3x3(float4x4);
   float3x3(float3 v1, float3 v2, float3 v3):
           m11(v1.x), m21(v1.y), m31(v1.z),
           m12(v2.x), m22(v2.y), m32(v2.z),

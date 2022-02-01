@@ -78,9 +78,8 @@ SKSymmetryCell SKSymmetryCell::createFromUnitCell(double3x3 unitCell)
   return cell;
 }
 
-SKSymmetryCell SKSymmetryCell::idealized(const SKSpaceGroup &spaceGroup)
+SKSymmetryCell SKSymmetryCell::idealized(int pointGroupNumber, QString qualifier)
 {
-  int pointGroupNumber = spaceGroup.spaceGroupSetting().pointGroupNumber();
   Holohedry holohedry = SKPointGroup::pointGroupData[pointGroupNumber].holohedry();
   switch(holohedry)
   {
@@ -102,7 +101,7 @@ SKSymmetryCell SKSymmetryCell::idealized(const SKSpaceGroup &spaceGroup)
   case Holohedry::tetragonal:
     return SKSymmetryCell::createFromUnitCell(double3x3(double3(0.5*(_a+_b),0.0,0.0),double3(0.0,0.5*(_a+_b),0.0),double3(0.0,0.0,_c)));
   case Holohedry::trigonal:
-    if(spaceGroup.spaceGroupSetting().qualifier() == "R")
+    if(qualifier == "R")
     {
       double avg = (_a+_b+_c)/3.0;
       double angle = acos((cos(_gamma) + cos(_beta) + cos(_alpha)) / 3.0);
@@ -225,7 +224,8 @@ double3x3 SKSymmetryCell::findSmallestPrimitiveCell(std::vector<std::tuple<doubl
             double3x3 relativeLattice = double3x3(translationVectors[i],translationVectors[j],translationVectors[k]);
 
             // inverse is nearly integer
-            return unitCell * double3x3(int3x3(relativeLattice.inverse())).inverse();
+            double3x3 temp = relativeLattice.inverse();
+            return unitCell * double3x3(temp.toInt3x3()).inverse();
           }
         }
       }
@@ -540,7 +540,8 @@ SKPointSymmetrySet SKSymmetryCell::findLatticeSymmetry(double3x3 reducedLattice,
     std::vector<SKRotationMatrix> newpointSymmetries{};
     for(const SKRotationMatrix & pointSymmetry: pointSymmetries)
     {
-      SKRotationMatrix mat = SKRotationMatrix(transform.inverse() * double3x3(pointSymmetry.int3x3) * transform);
+      double3x3 temp = transform.inverse() * double3x3(pointSymmetry.int3x3) * transform;
+      SKRotationMatrix mat = SKRotationMatrix(temp.toInt3x3());
 
       // avoid duplicate rotation matrices
       if(!(std::find(newpointSymmetries.begin(),newpointSymmetries.end(), mat) != newpointSymmetries.end()))

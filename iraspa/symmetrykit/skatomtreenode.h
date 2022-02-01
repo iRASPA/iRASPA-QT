@@ -32,7 +32,7 @@
 #include "indexpath.h"
 #include "skasymmetricatom.h"
 
-class SKAtomTreeController;
+class SKAtomTreeController; // FIX
 
 class SKAtomTreeNode: public std::enable_shared_from_this<SKAtomTreeNode>
 {
@@ -93,7 +93,7 @@ private:
     bool _isGroup = false;
     bool _isEditable = false;
 
-    friend SKAtomTreeController ;
+    friend SKAtomTreeController;
 
     friend QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAtomTreeNode>>& val);
     friend QDataStream &operator>>(QDataStream& stream, std::vector<std::shared_ptr<SKAtomTreeNode>>& val);

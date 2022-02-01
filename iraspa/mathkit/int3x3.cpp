@@ -42,14 +42,6 @@ int3x3::int3x3(int3 v1, int3 v2, int3 v3)
   m13 = v3.x; m23 = v3.y; m33 = v3.z;
 }
 
-int3x3::int3x3(double3x3 m)
-{
-  m11 = int(rint(m.m11)); m21 = int(rint(m.m21)); m31 = int(rint(m.m31));
-  m12 = int(rint(m.m12)); m22 = int(rint(m.m22)); m32 = int(rint(m.m32));
-  m13 = int(rint(m.m13)); m23 = int(rint(m.m23)); m33 = int(rint(m.m33));
-}
-
-
 int int3x3::determinant(void) const
 {
   int determinant =
@@ -79,7 +71,7 @@ int3x3 int3x3::adjugate() const
 int int3x3::greatestCommonDivisor()
 {
   std::vector<int> v1{m11,m12,m13,m21,m22,m23,m31,m32,m33};
-  return std::accumulate(v1.begin(), v1.end(), 0, [&](double a, double b){return Ring::greatestCommonDivisor(a,b);});
+  return std::accumulate(v1.begin(), v1.end(), 0, [&](int a, int b){return Ring::greatestCommonDivisor(a,b);});
 }
 
 int int3x3::trace() const

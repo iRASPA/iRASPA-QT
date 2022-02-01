@@ -25,10 +25,7 @@
 #include <iostream>
 #include <memory>
 #include <tuple>
-
-//class SKAsymmetricAtom;
-class SKAtomCopy;
-
+#include "skatomcopy.h"
 
 class SKBond: public std::enable_shared_from_this<SKBond>
 {

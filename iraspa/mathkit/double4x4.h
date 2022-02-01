@@ -24,8 +24,7 @@
 #include "double3.h"
 #include "double4.h"
 #include "simd_quatd.h"
-
-union double3x3;
+#include "double3x3.h"
 
 union double4x4
 {
@@ -61,6 +60,14 @@ union double4x4
   double4x4(double4 v1, double4 v2, double4 v3, double4 v4): v{v1,v2,v3,v4} {}
   double4x4(double3x3);
 
+  double3x3 toDouble3x3() const
+  {
+    double3x3 w;
+    w.m11=this->m11; w.m21=this->m21; w.m31=this->m31;
+    w.m12=this->m12; w.m22=this->m22; w.m32=this->m32;
+    w.m13=this->m13; w.m23=this->m23; w.m33=this->m33;
+    return w;
+  }
 
   inline bool operator==(const double4x4& b) const
   {

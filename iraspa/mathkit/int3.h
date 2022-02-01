@@ -27,9 +27,6 @@
 #include <functional>
 #include "hashcombine.h"
 
-union double3x3;
-union double3;
-
 union int3
 {
   int32_t v[3];

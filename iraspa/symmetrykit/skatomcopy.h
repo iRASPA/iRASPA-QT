@@ -27,7 +27,6 @@
 #include <mathkit.h>
 #include <type_traits>
 #include <foundationkit.h>
-#include "skbond.h"
 
 class SKAsymmetricAtom;
 
@@ -67,7 +66,6 @@ private:
       }
     };
     double3 _position;
-    //std::unordered_set<SKBond*, SKAtomCopy::Hash, SKAtomCopy::Compare> _bonds;
     qint64 _tag;
     AtomCopyType _type;
     std::weak_ptr<SKAsymmetricAtom> _parent;
@@ -78,7 +76,4 @@ private:
 
     friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<SKAsymmetricAtom> &);
     friend QDataStream &operator>>(QDataStream &, std::shared_ptr<SKAsymmetricAtom> &);
-
-    friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<SKBond> &);
-    friend QDataStream &operator>>(QDataStream &, std::shared_ptr<SKBond> &);
 };

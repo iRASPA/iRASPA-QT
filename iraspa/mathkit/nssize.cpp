@@ -21,9 +21,8 @@
 
 #include "nssize.h"
 
-NSSize::NSSize()
+NSSize::NSSize(): width(), height()
 {
-
 }
 
 NSSize::NSSize(double width, double height)

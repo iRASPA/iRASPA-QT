@@ -41,6 +41,12 @@ SKPOSCARLegacyParser::SKPOSCARLegacyParser(QUrl url, bool proteinOnlyAsymmetricU
   _frame->kind = SKStructure::Kind::crystal;
 }
 
+SKPOSCARLegacyParser::SKPOSCARLegacyParser(QString content, bool proteinOnlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log): SKParser(),
+  _scanner(content, charactersToBeSkipped), _proteinOnlyAsymmetricUnitCell(proteinOnlyAsymmetricUnitCell), _asMolecule(asMolecule), _log(log), _frame(std::make_shared<SKStructure>()), _spaceGroupHallNumber(1)
+{
+  _frame->kind = SKStructure::Kind::crystal;
+}
+
 void SKPOSCARLegacyParser::startParsing() noexcept(false)
 {
   double3x3 unitCell{};
@@ -50,12 +56,12 @@ void SKPOSCARLegacyParser::startParsing() noexcept(false)
   QStringList termsScannedLined{};
 
   // skip first line
-  _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
+  _scanner.scanLine(scannedLine);
   if(scannedLine.isEmpty()) {throw std::runtime_error("Empty file");}
 
   // skip first line
-  _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw std::runtime_error("POSCAR file near empty");}
+  _scanner.scanLine(scannedLine);
+  if(scannedLine.isEmpty()) {throw std::runtime_error("Empty file");}
 
   // read first lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);

@@ -24,10 +24,7 @@
 #include "double3.h"
 #include "simd_quatd.h"
 #include <QDebug>
-
-union double4x4;
-
-union int3x3;
+#include "int3x3.h"
 
 union double3x3
 {
@@ -52,7 +49,6 @@ union double3x3
           {
 
           };
-  double3x3(double4x4);
   double3x3(double3 v1, double3 v2, double3 v3):
           m11(v1.x), m21(v1.y), m31(v1.z),
           m12(v2.x), m22(v2.y), m32(v2.z),
@@ -86,6 +82,15 @@ union double3x3
   void EigenSystemSymmetric(double3 &eigenvalues,double3x3 &eigenvectors);
 
   inline double3x3 operator-() const {return double3x3(-this->v[0], -this->v[1], -this->v[2]);}
+
+  inline int3x3 toInt3x3() const
+  {
+      int3x3 w;
+      w.m11 = int(rint(this->m11)); w.m21 = int(rint(this->m21)); w.m31 = int(rint(this->m31));
+      w.m12 = int(rint(this->m12)); w.m22 = int(rint(this->m22)); w.m32 = int(rint(this->m32));
+      w.m13 = int(rint(this->m13)); w.m23 = int(rint(this->m23)); w.m33 = int(rint(this->m33));
+      return w;
+  };
   inline bool operator==(const double3x3& b) const
   {
     return ( (abs(this->m11-b.m11) < 1e-5) && (abs(this->m12-b.m12) < 1e-5) &&  (abs(this->m13-b.m13) < 1e-5) &&

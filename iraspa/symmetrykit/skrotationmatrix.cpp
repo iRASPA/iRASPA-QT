@@ -29,12 +29,6 @@ SKRotationMatrix::SKRotationMatrix()
 
 }
 
-SKRotationMatrix::SKRotationMatrix(SKTransformationMatrix m)
-{
-  assert(abs(m.determinant()) == 1);
-  this->int3x3 = m.transformation;
-}
-
 SKRotationMatrix::SKRotationMatrix(int3 v1, int3 v2, int3 v3)
 {
   this->int3x3.m11 = v1.x; this->int3x3.m21 = v1.y; this->int3x3.m31 = v1.z;

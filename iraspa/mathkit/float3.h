@@ -23,7 +23,6 @@
 
 #include <cmath>
 #include <ostream>
-
 #include "int3.h"
 
 union float3

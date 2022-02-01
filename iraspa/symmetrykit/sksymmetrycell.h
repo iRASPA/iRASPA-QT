@@ -26,9 +26,6 @@
 #include "skpointsymmetryset.h"
 #include "sktransformationmatrix.h"
 
-
-class SKSpaceGroup;
-
 class SKSymmetryCell
 {
 public:
@@ -36,7 +33,7 @@ public:
     SKSymmetryCell(double a, double b, double c, double alpha, double beta, double gamma);
     static SKSymmetryCell createFromMetricTensor(double3x3 metricTensor);
     static SKSymmetryCell createFromUnitCell(double3x3 unitCell);
-    SKSymmetryCell idealized(const SKSpaceGroup &spaceGroup);
+    SKSymmetryCell idealized(int pointGroupNumber, QString qualifier);
     double3x3 unitCell() const;
     double3x3 metricTensor();
     double volume();

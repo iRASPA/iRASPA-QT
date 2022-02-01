@@ -26,8 +26,7 @@
 #include "double3x3.h"
 #include "double4x4.h"
 #include "simd_quatd.h"
-
-union float3x3;
+#include "float3x3.h"
 
 union float4x4
 {

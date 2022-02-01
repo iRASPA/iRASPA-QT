@@ -42,7 +42,8 @@
 class SKPOSCARLegacyParser: public SKParser
 {
 public:
-  SKPOSCARLegacyParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
+  SKPOSCARLegacyParser(QUrl, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
+  SKPOSCARLegacyParser(QString, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, LogReporting *log);
   void startParsing() noexcept(false) override final;
 private:
   Scanner _scanner;

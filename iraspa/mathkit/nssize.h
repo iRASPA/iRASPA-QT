@@ -25,7 +25,6 @@ struct NSSize
 {
   NSSize();
   NSSize(double width, double height);
-  NSSize( const NSSize &obj) {this->width = obj.width; this->height = obj.height;} // copy constructor
   double width;
   double height;
 };

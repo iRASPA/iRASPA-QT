@@ -41,6 +41,12 @@ Scanner::Scanner(QUrl &url, CharacterSet charactersToBeSkipped): _charactersToBe
    _scanLocation = _string.constBegin();
 }
 
+Scanner::Scanner(QString &content, CharacterSet charactersToBeSkipped): _charactersToBeSkipped(charactersToBeSkipped)
+{
+  _string = content;
+  _scanLocation = _string.constBegin();
+}
+
 QString::const_iterator Scanner::find_first_not_of(const QString & chars, const QString & text, QString::const_iterator location)
 {
   QString::const_iterator it = location;
