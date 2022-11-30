@@ -114,6 +114,8 @@ std::optional<cl_device_id> SKOpenCL::bestOpenCLDevice(cl_device_type device_typ
         continue;
       }
 
+      //printSupportedImageFormatCapabilities(context);
+
       if(supportsImageFormatCapabilities(context, devices[j]))
       {
         cl_command_queue clCommandQueue = clCreateCommandQueue(context, devices[j], 0, &err);
@@ -137,6 +139,7 @@ std::optional<cl_device_id> SKOpenCL::bestOpenCLDevice(cl_device_type device_typ
           bestDevice = std::make_pair(devices[j], maxComputeUnits);
         }
       }
+
       clReleaseContext(context);
     }
   }
@@ -164,7 +167,7 @@ bool SKOpenCL::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_d
   }
 
   // check the needed image formats
-  cl_image_format imageFormat_RGBA_INT8{CL_RGBA,CL_UNSIGNED_INT8};
+  cl_image_format imageFormat_RGBA_INT8{CL_RGBA, CL_UNSIGNED_INT8};
   cl_image_desc imageDescriptor_RGBA_INT8{CL_MEM_OBJECT_IMAGE3D, 256, 256, 256, 0, 0, 0, 0, 0, nullptr};
   cl_mem image_RGBA_INT8 = clCreateImage(trial_clContext, CL_MEM_READ_WRITE, &imageFormat_RGBA_INT8, &imageDescriptor_RGBA_INT8, nullptr, &err);
   if (err != CL_SUCCESS)
@@ -173,7 +176,7 @@ bool SKOpenCL::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_d
   }
   clReleaseMemObject(image_RGBA_INT8);
 
-  cl_image_format imageFormat_R_INT8{CL_R,CL_UNSIGNED_INT8};
+  cl_image_format imageFormat_R_INT8{CL_R, CL_UNSIGNED_INT8};
   cl_image_desc imageDescriptor_R_INT8{CL_MEM_OBJECT_IMAGE3D, 256, 256, 256, 0, 0, 0, 0, 0, nullptr};
   cl_mem image_R_INT8 = clCreateImage(trial_clContext, CL_MEM_READ_WRITE, &imageFormat_R_INT8, &imageDescriptor_R_INT8, nullptr, &err);
   if (err != CL_SUCCESS)
@@ -182,7 +185,7 @@ bool SKOpenCL::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_d
   }
   clReleaseMemObject(image_R_INT8);
 
-  cl_image_format imageFormat_R_INT16{CL_R,CL_UNSIGNED_INT16};
+  cl_image_format imageFormat_R_INT16{CL_R, CL_UNSIGNED_INT16};
   cl_image_desc imageDescriptor_R_INT16{CL_MEM_OBJECT_IMAGE3D, 256, 256, 256, 0, 0, 0, 0, 0, nullptr};
   cl_mem image_R_INT16 = clCreateImage(trial_clContext, CL_MEM_READ_WRITE, &imageFormat_R_INT16, &imageDescriptor_R_INT16, nullptr, &err);
   if (err != CL_SUCCESS)
@@ -191,7 +194,7 @@ bool SKOpenCL::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_d
   }
   clReleaseMemObject(image_R_INT16);
 
-  cl_image_format imageFormat_R_INT32{CL_R,CL_UNSIGNED_INT16};
+  cl_image_format imageFormat_R_INT32{CL_R, CL_UNSIGNED_INT16};
   cl_image_desc imageDescriptor_R_INT32{CL_MEM_OBJECT_IMAGE3D, 128, 128, 128, 0, 0, 0, 0, 0, nullptr};
   cl_mem image_R_INT32 = clCreateImage(trial_clContext, CL_MEM_READ_WRITE, &imageFormat_R_INT32, &imageDescriptor_R_INT32, nullptr, &err);
   if (err != CL_SUCCESS)
@@ -200,7 +203,7 @@ bool SKOpenCL::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_d
   }
   clReleaseMemObject(image_R_INT32);
 
-  cl_image_format imageFormat_R_FLOAT{CL_R,CL_FLOAT};
+  cl_image_format imageFormat_R_FLOAT{CL_R, CL_FLOAT};
   cl_image_desc imageDescriptor_R_FLOAT{CL_MEM_OBJECT_IMAGE3D, 128, 128, 128, 0, 0, 0, 0, 0, nullptr};
   cl_mem image_R_FLOAT = clCreateImage(trial_clContext, CL_MEM_READ_WRITE, &imageFormat_R_FLOAT, &imageDescriptor_R_FLOAT, nullptr, &err);
   if (err != CL_SUCCESS)
@@ -210,4 +213,80 @@ bool SKOpenCL::supportsImageFormatCapabilities(cl_context &trial_clContext, cl_d
   clReleaseMemObject(image_R_FLOAT);
 
   return true;
+}
+
+void printImageFormat(cl_image_format format)
+{
+  QDebug deb = qDebug();
+
+#define CASE(order) case order: deb << #order << order; break;
+  switch (format.image_channel_order)
+  {
+    CASE(CL_R);
+    CASE(CL_A);
+    CASE(CL_RG);
+    CASE(CL_RA);
+    CASE(CL_RGB);
+    CASE(CL_RGBA);
+    CASE(CL_BGRA);
+    CASE(CL_ARGB);
+    CASE(CL_INTENSITY);
+    CASE(CL_LUMINANCE);
+    CASE(CL_Rx);
+    CASE(CL_RGx);
+    CASE(CL_RGBx);
+    CASE(CL_DEPTH);
+    CASE(CL_DEPTH_STENCIL);
+  }
+#undef CASE
+
+  deb << " - ";
+
+#define CASE(type) case type: deb << #type << type; break;
+  switch (format.image_channel_data_type)
+  {
+    CASE(CL_SNORM_INT8);
+    CASE(CL_SNORM_INT16);
+    CASE(CL_UNORM_INT8);
+    CASE(CL_UNORM_INT16);
+    CASE(CL_UNORM_SHORT_565);
+    CASE(CL_UNORM_SHORT_555);
+    CASE(CL_UNORM_INT_101010);
+    CASE(CL_SIGNED_INT8);
+    CASE(CL_SIGNED_INT16);
+    CASE(CL_SIGNED_INT32);
+    CASE(CL_UNSIGNED_INT8);
+    CASE(CL_UNSIGNED_INT16);
+    CASE(CL_UNSIGNED_INT32);
+    CASE(CL_HALF_FLOAT);
+    CASE(CL_FLOAT);
+    CASE(CL_UNORM_INT24);
+  }
+#undef CASE
+}
+
+void SKOpenCL::printSupportedImageFormatCapabilities(cl_context &trial_clContext)
+{
+  cl_uint uiNumSupportedFormats = 0;
+
+  // 2D
+  clGetSupportedImageFormats(trial_clContext,
+                             CL_MEM_WRITE_ONLY,
+                             CL_MEM_OBJECT_IMAGE2D,
+                             0, NULL, &uiNumSupportedFormats);
+
+  cl_image_format* ImageFormats = new cl_image_format[uiNumSupportedFormats];
+  clGetSupportedImageFormats(trial_clContext,
+                             CL_MEM_WRITE_ONLY,
+                             CL_MEM_OBJECT_IMAGE2D,
+                             uiNumSupportedFormats, ImageFormats, NULL);
+
+  qDebug() << "formats: " << uiNumSupportedFormats;
+  for(unsigned int i = 0; i < uiNumSupportedFormats; i++)
+  {
+    printImageFormat(ImageFormats[i]);
+  }
+  qDebug();
+
+  delete [] ImageFormats;
 }

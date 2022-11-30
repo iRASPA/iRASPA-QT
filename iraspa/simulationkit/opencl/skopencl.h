@@ -49,4 +49,5 @@ protected:
 
   std::optional<cl_device_id> bestOpenCLDevice(cl_device_type device_type);
   bool supportsImageFormatCapabilities(cl_context &trial_clContext, cl_device_id &trial_clDeviceId);
+  void printSupportedImageFormatCapabilities(cl_context &trial_clContext);
 };

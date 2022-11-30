@@ -41,12 +41,15 @@ int MovieWriter::initialize(const std::string& filename)
   }
   qDebug() << "ffmpeg start initialization";
 
-  // register is needed on Ubuntu 18 for snaps
-  av_register_all();
-  avcodec_register_all();
-  qDebug() << "ffmpeg registration";
+  #if LIBAVCODEC_VERSION_MAJOR < 56
+    // register is needed on Ubuntu 18 for snaps
+    av_register_all();
+    avcodec_register_all();
+    qDebug() << "ffmpeg registration";
+  #endif
 
-  _oformat = av_guess_format(nullptr, filename.c_str(), nullptr);
+  const AVOutputFormat* oformat = av_guess_format(nullptr, filename.c_str(), nullptr);
+  *_oformat = *oformat;
   if (!_oformat)
   {
     if(_logReporter)
@@ -86,7 +89,8 @@ int MovieWriter::initialize(const std::string& filename)
   }
   qDebug() << "ffmpeg avformat_alloc_output_context2 done";
 
-  _codec = avcodec_find_encoder(_oformat->video_codec);
+  const AVCodec *codec = avcodec_find_encoder(_oformat->video_codec);
+  *_codec = *codec;
   if (!_codec)
   {
     avformat_free_context(_ofctx);

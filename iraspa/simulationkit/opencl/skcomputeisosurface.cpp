@@ -133,7 +133,7 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceGPUImplementation(int3
     switch(i)
     {
     case 1:
-      imageFormat = cl_image_format{CL_RGBA,CL_UNSIGNED_INT8};
+      imageFormat = cl_image_format{CL_RGBA, CL_UNSIGNED_INT8};
       break;
     case 2:
       imageFormat = cl_image_format{CL_R, CL_UNSIGNED_INT8};
@@ -231,6 +231,7 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceGPUImplementation(int3
   int numberOfTriangles = int(sum2);
 
 
+  qDebug() << "NUmber of triangles: " << numberOfTriangles;
 
   // get the results and convert them to an OpenGL Vertex buffer object
   //===================================================================================================================================
