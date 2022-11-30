@@ -24,6 +24,7 @@
 #include <QLineEdit>
 #include <cmath>
 #include <iostream>
+#include <QDebug>
 
 CustomDoubleSpinBox::CustomDoubleSpinBox(QWidget* parent) : QDoubleSpinBox(parent)
 {
@@ -35,6 +36,15 @@ void CustomDoubleSpinBox::privateEditingFinished()
 {
   if(!isReadOnly())
   {
+    if(_textValue.isEmpty())
+    {
+      setPrefix("");
+      lineEdit()->deselect();
+      clearFocus();
+      emit textOnEditingFinished(text());
+      return;
+    }
+
     bool success = false;
     double value = _textValue.toDouble(&success);
     _state=Text;
@@ -106,10 +116,19 @@ QValidator::State CustomDoubleSpinBox::validate(QString& input, int& pos) const
   {
     return QValidator::Acceptable;
   }
+  else if(input.isEmpty())
+  {
+    return QValidator::Acceptable;
+  }
+  else if(input == "-")
+  {
+    return QValidator::Acceptable;
+  }
   else
   {
     bool ok = false;
     locale().toDouble(input, &ok);
+
     return ok ? QValidator::Acceptable : QValidator::Invalid;
   }
 }
@@ -129,6 +148,10 @@ QString CustomDoubleSpinBox::textFromValue(double value) const
 double CustomDoubleSpinBox::valueFromText(const QString &text) const
 {
   _textValue = text;
+  if(text.isEmpty())
+  {
+    return _doubleValue;
+  }
   return QDoubleSpinBox::valueFromText(text);
 }
 
