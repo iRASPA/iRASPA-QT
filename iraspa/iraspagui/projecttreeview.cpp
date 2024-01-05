@@ -108,6 +108,16 @@ void ProjectTreeView::insertDatabaseCoReMOFDDECData(std::shared_ptr<DocumentData
   _model->insertDatabaseCoReMOFDDECData(database);
 }
 
+void ProjectTreeView::insertDatabaseCoReMOFASR2019Data(std::shared_ptr<DocumentData> database)
+{
+  _model->insertDatabaseCoReMOFASR2019Data(database);
+}
+
+void ProjectTreeView::insertDatabaseCoReMOFFSR2019Data(std::shared_ptr<DocumentData> database)
+{
+  _model->insertDatabaseCoReMOFFSR2019Data(database);
+}
+
 void ProjectTreeView::insertDatabaseIZAFData(std::shared_ptr<DocumentData> database)
 {
   _model->insertDatabaseIZAFData(database);

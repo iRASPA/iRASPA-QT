@@ -102,6 +102,10 @@ private:
   void insertDatabaseCoREMOF();
   QFuture<std::shared_ptr<DocumentData>> readDatabaseCoREMOFDDECWorker;
   void insertDatabaseCoREMOFDDEC();
+  QFuture<std::shared_ptr<DocumentData>> readDatabaseCoREMOFASR2019Worker;
+  void insertDatabaseCoREMOFASR2019();
+  QFuture<std::shared_ptr<DocumentData>> readDatabaseCoREMOFFSR2019Worker;
+  void insertDatabaseCoREMOFFSR2019();
   QFuture<std::shared_ptr<DocumentData>> readDatabaseIZAWorker;
   void insertDatabaseIZA();
 

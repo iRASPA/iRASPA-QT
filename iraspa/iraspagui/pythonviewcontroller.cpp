@@ -64,7 +64,7 @@ PythonViewController::PythonViewController(QWidget *parent): LineNumberPlainText
 #if defined(Q_OS_WIN)
   Py_IgnoreEnvironmentFlag = 1;
   QDir dir(QCoreApplication::applicationDirPath());
-  QUrl fileURL(dir.absoluteFilePath("python310.zip"));
+  QUrl fileURL(dir.absoluteFilePath("python311.zip"));
   const std::wstring path = fileURL.path().toStdWString();
   Py_SetPath(path.c_str());
 #endif

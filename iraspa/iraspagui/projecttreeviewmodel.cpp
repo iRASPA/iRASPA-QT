@@ -93,6 +93,30 @@ void ProjectTreeViewModel::insertDatabaseCoReMOFDDECData(std::shared_ptr<Documen
   endInsertRows();
 }
 
+void ProjectTreeViewModel::insertDatabaseCoReMOFASR2019Data(std::shared_ptr<DocumentData> database)
+{
+  QModelIndex index = indexForNode(_projectTreeController->icloudProjects().get());
+  int numberOfChildren = int(database->projectTreeController()->localProjects()->childNodes().size());
+  beginInsertRows(index,0,numberOfChildren-1);
+  for (std::shared_ptr<ProjectTreeNode> localNode : database->projectTreeController()->localProjects()->childNodes())
+  {
+    localNode->appendToParent(_projectTreeController->icloudProjects());
+  }
+  endInsertRows();
+}
+
+void ProjectTreeViewModel::insertDatabaseCoReMOFFSR2019Data(std::shared_ptr<DocumentData> database)
+{
+  QModelIndex index = indexForNode(_projectTreeController->icloudProjects().get());
+  int numberOfChildren = int(database->projectTreeController()->localProjects()->childNodes().size());
+  beginInsertRows(index,0,numberOfChildren-1);
+  for (std::shared_ptr<ProjectTreeNode> localNode : database->projectTreeController()->localProjects()->childNodes())
+  {
+    localNode->appendToParent(_projectTreeController->icloudProjects());
+  }
+  endInsertRows();
+}
+
 void ProjectTreeViewModel::insertDatabaseIZAFData(std::shared_ptr<DocumentData> database)
 {
   QModelIndex index = indexForNode(_projectTreeController->icloudProjects().get());

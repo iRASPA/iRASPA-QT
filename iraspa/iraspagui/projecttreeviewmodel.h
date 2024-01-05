@@ -41,6 +41,8 @@ public:
   void insertGalleryData(std::shared_ptr<DocumentData> database);
   void insertDatabaseCoReMOFData(std::shared_ptr<DocumentData> database);
   void insertDatabaseCoReMOFDDECData(std::shared_ptr<DocumentData> database);
+  void insertDatabaseCoReMOFASR2019Data(std::shared_ptr<DocumentData> database);
+  void insertDatabaseCoReMOFFSR2019Data(std::shared_ptr<DocumentData> database);
   void insertDatabaseIZAFData(std::shared_ptr<DocumentData> database);
   std::shared_ptr<ProjectTreeController> projectTreeController() {return _projectTreeController;}
 

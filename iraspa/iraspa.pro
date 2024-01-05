@@ -134,41 +134,41 @@ win32{
   QMAKE_LFLAGS_RELEASE   += /STACK:4194304  /DEBUG /INCREMENTAL
 
   INCLUDEPATH += "C:/vcpkg/installed/x64-windows-static/include"
-  INCLUDEPATH += "C:/vcpkg/installed/x64-windows/include/python3.10/"
+  INCLUDEPATH += "C:/vcpkg/installed/x64-windows/include/python3.11/"
 
 
   CONFIG(debug, debug|release){
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/avutil.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/avfilter.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/avformat.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/avresample.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/avdevice.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/avcodec.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/swresample.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/swscale.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/libx264.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows/debug/lib/x265-static.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows/debug/lib/libx265.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/vpx.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows/lib/python310.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/lzmad.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows/lib/python311.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/lzma.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/zlibd.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/bz2d.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/debug/lib/OpenCL.lib"
     LIBS += strmiids.lib mfplat.lib mfuuid.lib secur32.lib ws2_32.lib bcrypt.lib kernel32.lib cfgmgr32.lib user32.lib ole32.lib advapi32.lib msvcrtd.lib
 } else {
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avutil.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avfilter.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avformat.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avresample.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avdevice.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/avcodec.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/swresample.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/swscale.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/libx264.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows/lib/x265-static.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows/lib/libx265.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/vpx.lib"
-    LIBS += "C:/vcpkg/installed/x64-windows/lib/python310.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows/lib/python311.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/lzma.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/zlib.lib"
+    LIBS += "C:/vcpkg/installed/x64-windows-static/lib/bz2.lib"
     LIBS += "C:/vcpkg/installed/x64-windows-static/lib/OpenCL.lib"
 
     LIBS += strmiids.lib mfplat.lib mfuuid.lib secur32.lib ws2_32.lib bcrypt.lib kernel32.lib cfgmgr32.lib user32.lib ole32.lib advapi32.lib

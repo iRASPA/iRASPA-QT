@@ -195,8 +195,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
   readDatabaseCoREMOFDDECWorker = QtConcurrent::run([this]() -> std::shared_ptr<DocumentData> { return readDatabase("databasecoremofddec.irspdoc");});
   QFutureWatcher<std::shared_ptr<DocumentData>> *watcherDatabaseCoREMOFDDECReadDone = new QFutureWatcher<std::shared_ptr<DocumentData>>(this);
-  connect(watcherDatabaseCoREMOFReadDone, &QFutureWatcher<std::shared_ptr<DocumentData>>::finished, this, &MainWindow::insertDatabaseCoREMOFDDEC);
+  connect(watcherDatabaseCoREMOFDDECReadDone, &QFutureWatcher<std::shared_ptr<DocumentData>>::finished, this, &MainWindow::insertDatabaseCoREMOFDDEC);
   watcherDatabaseCoREMOFDDECReadDone->setFuture(readDatabaseCoREMOFDDECWorker);
+
+  readDatabaseCoREMOFASR2019Worker = QtConcurrent::run([this]() -> std::shared_ptr<DocumentData> { return readDatabase("databasecoremof_asr_2019.irspdoc");});
+  QFutureWatcher<std::shared_ptr<DocumentData>> *watcherDatabaseCoREMOFASR2019ReadDone = new QFutureWatcher<std::shared_ptr<DocumentData>>(this);
+  connect(watcherDatabaseCoREMOFASR2019ReadDone, &QFutureWatcher<std::shared_ptr<DocumentData>>::finished, this, &MainWindow::insertDatabaseCoREMOFASR2019);
+  watcherDatabaseCoREMOFASR2019ReadDone->setFuture(readDatabaseCoREMOFASR2019Worker);
+
+  readDatabaseCoREMOFFSR2019Worker = QtConcurrent::run([this]() -> std::shared_ptr<DocumentData> { return readDatabase("databasecoremof_fsr_2019.irspdoc");});
+  QFutureWatcher<std::shared_ptr<DocumentData>> *watcherDatabaseCoREMOFFSR2019ReadDone = new QFutureWatcher<std::shared_ptr<DocumentData>>(this);
+  connect(watcherDatabaseCoREMOFFSR2019ReadDone, &QFutureWatcher<std::shared_ptr<DocumentData>>::finished, this, &MainWindow::insertDatabaseCoREMOFFSR2019);
+  watcherDatabaseCoREMOFFSR2019ReadDone->setFuture(readDatabaseCoREMOFFSR2019Worker);
 
   readDatabaseIZAWorker = QtConcurrent::run([this]() -> std::shared_ptr<DocumentData> { return readDatabase("databaseiza.irspdoc");});
   QFutureWatcher<std::shared_ptr<DocumentData>> *watcherDatabaseIZAReadDone = new QFutureWatcher<std::shared_ptr<DocumentData>>(this);
@@ -316,6 +326,34 @@ void MainWindow::insertDatabaseCoREMOFDDEC()
   else
   {
     ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error,"CoREMOF-DDEC database not found");
+  }
+}
+
+void MainWindow::insertDatabaseCoREMOFASR2019()
+{
+  std::shared_ptr<DocumentData> database = readDatabaseCoREMOFASR2019Worker.result();
+
+  if(database)
+  {
+    ui->projectTreeView->insertDatabaseCoReMOFASR2019Data(database);
+  }
+  else
+  {
+    ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error,"CoREMOF-ASR-2019 database not found");
+  }
+}
+
+void MainWindow::insertDatabaseCoREMOFFSR2019()
+{
+  std::shared_ptr<DocumentData> database = readDatabaseCoREMOFFSR2019Worker.result();
+
+  if(database)
+  {
+    ui->projectTreeView->insertDatabaseCoReMOFFSR2019Data(database);
+  }
+  else
+  {
+    ui->logPlainTextEdit->logMessage(LogReporting::ErrorLevel::error,"CoREMOF-FSR-2019 database not found");
   }
 }
 
