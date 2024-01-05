@@ -1,5 +1,5 @@
 name: iraspa
-version: 2.2.5
+version: 2.3.0
 summary: A molecular visualizer/editor
 icon: datafiles/iraspa.png
 description: |
@@ -11,11 +11,13 @@ description: |
   occlusion, with high frame rates.
 grade : stable
 confinement: strict
-base: core18
+base: core20
 
 apps:
   iraspa:
     command: usr/bin/iraspa
+    environment:
+       DISABLE_WAYLAND: 1
     command-chain:
       - bin/desktop-launch
     desktop: usr/share/applications/iraspa.desktop
@@ -29,14 +31,13 @@ parts:
   iraspa:
     source: .
     plugin: qmake
-    qt-version: qt5
-    project-files: [ iraspa.pro]
+    qmake-project-file: iraspa.pro
     override-build: |
       snapcraftctl build
       install -D iraspa $SNAPCRAFT_PART_INSTALL/usr/bin
-    options: ["CONFIG+=release", "DEFINES += USE_SNAP"]
-    build-packages: [build-essential, dbus, qtdeclarative5-dev-tools, qt5-default, qtbase5-dev, liblzma-dev, libqt5webkit5-dev, ocl-icd-opencl-dev, python3-dev, zlib1g-dev, qtwebengine5-dev, libqt5opengl5-dev, libswscale-dev, libavformat-dev  ]
-    stage-packages: [libqt5gui5, libqt5core5a, libqt5printsupport5, libqt5qml5, libqt5quick5, libqt5webkit5, libqt5opengl5, ocl-icd-libopencl1, libasound2,libavcodec57,libavformat57,libavutil55,libbluray2,libchromaprint1,libcrystalhd3,libevent-2.1-6,libgme0,libgomp1,libgsm1,liblcms2-2,libminizip1,libmp3lame0,libmpg123-0,libnspr4,libnss3,libnuma1,libogg0,libopenjp2-7,libopenmpt0,libopus0,libpython3.6,libqt5quickwidgets5,libqt5webenginecore5,libqt5webenginewidgets5,libre2-4,libshine3,libsnappy1v5,libsoxr0,libspeex1,libssh-gcrypt-4,libswresample2,libswscale4,libtheora0,libtwolame0,libva-drm2,libva-x11-2,libva2,libvdpau1,libvorbis0a,libvorbisenc2,libvorbisfile3,libvpx5,libwavpack1,libwebpdemux2,libwebpmux3,libx264-152,libx265-146,libxss1,libxtst6,libxvidcore4,libzvbi0]
+    qmake-parameters: ["CONFIG+=release", "DEFINES+=USE_SNAP"]
+    build-packages: [qtwayland5, build-essential, dbus, qtdeclarative5-dev-tools, qt5-default, qtbase5-dev, liblzma-dev, libqt5webkit5-dev, ocl-icd-opencl-dev, python3-dev, zlib1g-dev, qtwebengine5-dev, libqt5opengl5-dev, libswscale-dev, libavformat-dev, qttools5-dev-tools  ]
+    stage-packages: [qtwayland5, libqt5gui5, libqt5core5a, libqt5printsupport5, libqt5qml5, libqt5quick5, libqt5webkit5, libqt5opengl5, ocl-icd-libopencl1, libasound2,libavcodec58,libavformat58,libavutil56,libbluray2,libchromaprint1,libcrystalhd3,libevent-2.1-7,libgme0,libgomp1,libgsm1,liblcms2-2,libminizip1,libmp3lame0,libmpg123-0,libnspr4,libnss3,libnuma1,libogg0,libopenjp2-7,libopenmpt0,libopus0,libpython3.8,libqt5quickwidgets5,libqt5webenginecore5,libqt5webenginewidgets5,libre2-5,libshine3,libsnappy1v5,libsoxr0,libspeex1,libssh-gcrypt-4,libswresample3,libswscale5,libtheora0,libtwolame0,libva-drm2,libva-x11-2,libva2,libvdpau1,libvorbis0a,libvorbisenc2,libvorbisfile3,libvpx6,libwavpack1,libwebpdemux2,libwebpmux3,libx264-155,libx265-179,libxss1,libxtst6,libxvidcore4,libzvbi0, libxcb-cursor0]
     after: [desktop-qt5]
   iraspa-copy-files:
     plugin: dump
@@ -56,6 +57,8 @@ parts:
       - usr/share/iraspa/libraryofstructures.irspdoc
       - usr/share/iraspa/databasecoremof.irspdoc
       - usr/share/iraspa/databasecoremofddec.irspdoc
+      - usr/share/iraspa/databasecoremof_asr_2019.irspdoc
+      - usr/share/iraspa/databasecoremof_fsr_2019.irspdoc
       - usr/share/iraspa/databaseiza.irspdoc
     organize:
       iraspa.png: usr/share/pixmaps/iraspa.png
@@ -72,6 +75,8 @@ parts:
       libraryofstructures.irspdoc: usr/share/iraspa/libraryofstructures.irspdoc
       databasecoremof.irspdoc: usr/share/iraspa/databasecoremof.irspdoc
       databasecoremofddec.irspdoc: usr/share/iraspa/databasecoremofddec.irspdoc
+      databasecoremof_asr_2019.irspdoc: usr/share/iraspa/databasecoremof_asr_2019.irspdoc
+      databasecoremof_fsr_2019.irspdoc: usr/share/iraspa/databasecoremof_fsr_2019.irspdoc
       databaseiza.irspdoc: usr/share/iraspa/databaseiza.irspdoc
 
   desktop-qt5:
@@ -94,5 +99,4 @@ parts:
       - libgdk-pixbuf2.0-0
       - libgtk2.0-0
       - libqt5svg5 # for loading icon themes which are svg
-      - try: [appmenu-qt5] # not available on core18
       - locales-all
