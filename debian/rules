@@ -35,6 +35,8 @@ install: build
 	install -D -m 755 debian/changelog.Debian.gz $(CURDIR)/debian/iraspa/usr/share/doc/iraspa
 	install -D -m 644 builddir/databasecoremof.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
 	install -D -m 644 builddir/databasecoremofddec.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
+	install -D -m 644 builddir/databasecoremof_asr_2019.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
+	install -D -m 644 builddir/databasecoremof_fsr_2019.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
 	install -D -m 644 builddir/databaseiza.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
 	install -D -m 644 builddir/libraryofstructures.irspdoc $(CURDIR)/debian/iraspa/usr/share/iraspa
 	install -D -m 644 builddir/acknowledgedlicenses.pdf $(CURDIR)/debian/iraspa/usr/share/iraspa
