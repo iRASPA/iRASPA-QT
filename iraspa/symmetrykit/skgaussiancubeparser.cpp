@@ -198,11 +198,11 @@ qDebug() << "CHECK2" << scannedLine;
 
     double3 position;
     succes = false;
-    position.x = termsScannedLined[2].toDouble(&succes);
-    position.y = termsScannedLined[3].toDouble(&succes);
-    position.z = termsScannedLined[4].toDouble(&succes);
+    position.x = conversionFactor.x * termsScannedLined[2].toDouble(&succes);
+    position.y = conversionFactor.y * termsScannedLined[3].toDouble(&succes);
+    position.z = conversionFactor.z * termsScannedLined[4].toDouble(&succes);
 
-    atom->setPosition(inverseUnitCell * conversionFactor * (position - origin));
+    atom->setPosition((inverseUnitCell * (position - origin)).fract());
 
     _frame->atoms.push_back(atom);
   }
