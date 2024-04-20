@@ -52,7 +52,7 @@ public :
 
   MovieWriter(const unsigned int width, const unsigned int height, int fps, LogReporting *logReporting, Format type);
   ~MovieWriter();
-  int initialize(const std::string& filename);
+  int initialize(const std::string filename);
   int finalize();
   void addFrame(const uint8_t* pixels, size_t iframe);
 
@@ -66,8 +66,7 @@ private:
   const unsigned int _width, _height;
   int _fps;
   SwsContext* _swsCtx;
-  AVCodec *_codec;
-  AVOutputFormat* _oformat;
+  const AVOutputFormat* _oformat;
   AVStream* _videoStream;
   AVFormatContext* _ofctx;
   AVCodecContext* _cctx;

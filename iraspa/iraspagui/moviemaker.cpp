@@ -33,13 +33,14 @@ MovieWriter::~MovieWriter()
 
 }
 
-int MovieWriter::initialize(const std::string& filename)
+int MovieWriter::initialize(const std::string filename)
 {
   if(_logReporter)
   {
     _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "ffmpeg start initialization");
   }
   qDebug() << "ffmpeg start initialization";
+  qDebug() << filename;
 
   #if LIBAVCODEC_VERSION_MAJOR < 56
     // register is needed on Ubuntu 18 for snaps
@@ -48,8 +49,91 @@ int MovieWriter::initialize(const std::string& filename)
     qDebug() << "ffmpeg registration";
   #endif
 
-  const AVOutputFormat* oformat = av_guess_format(nullptr, filename.c_str(), nullptr);
-  *_oformat = *oformat;
+  // create encoder
+  const AVCodec* encoder = nullptr;
+  switch(_type)
+  {
+  case Format::h265:
+    encoder = avcodec_find_encoder(AV_CODEC_ID_HEVC);
+    break;
+  case Format::h264:
+    encoder = avcodec_find_encoder(AV_CODEC_ID_H264);
+    break;
+  case Format::vp9:
+    encoder = avcodec_find_encoder(AV_CODEC_ID_VP9);
+    break;
+  case Format::av1:
+    encoder = avcodec_find_encoder(AV_CODEC_ID_AV1);
+    break;
+  default:
+    encoder = avcodec_find_encoder(AV_CODEC_ID_H264);
+    break;
+  }
+
+  if (!encoder)
+  {
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg codec");
+    }
+    return -1;
+  }
+
+
+  // create context
+  _cctx = avcodec_alloc_context3(encoder);
+  if (!_cctx)
+  {
+    if(_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::error, "avcodec_alloc_context3 error");
+    }
+    return -1;
+  }
+
+  _cctx->codec_type = AVMEDIA_TYPE_VIDEO;
+  _cctx->width = _width;
+  _cctx->height = _height;
+  _cctx->pix_fmt = AVPixelFormat::AV_PIX_FMT_YUV420P;
+  _cctx->time_base = {1, 25};
+  _cctx->framerate = {25, 1};
+  _cctx->max_b_frames = 3;
+  _cctx->gop_size = _fps * 2;
+  _cctx->refs = 3;
+
+  _cctx->codec_tag = 0;
+  switch(_type)
+  {
+  case Format::h265:
+      _cctx->codec_id = AV_CODEC_ID_HEVC;
+      _cctx->codec_tag = MKTAG('h', 'v', 'c', '1'); // for h265
+      _cctx->bit_rate = 5000000;
+      _cctx->profile = FF_PROFILE_HEVC_MAIN;
+      av_opt_set(_cctx, "preset", "slow", 0);
+      break;
+  case Format::h264:
+      _cctx->codec_id = AV_CODEC_ID_H264;
+      _cctx->bit_rate = 5000000;
+      av_opt_set(_cctx, "preset", "slow", 0);
+      break;
+  case Format::vp9:
+      _cctx->codec_id = AV_CODEC_ID_VP9;
+      _cctx->bit_rate = 5000000;
+      break;
+  case Format::av1:
+      _cctx->codec_id = AV_CODEC_ID_AV1;
+      _cctx->bit_rate = 5000000;
+      break;
+  default:
+      _cctx->bit_rate = 5000000;
+      break;
+  }
+
+  // open encoder
+  avcodec_open2(_cctx, encoder, nullptr);
+
+  _oformat = av_guess_format("mp4", nullptr, nullptr);
+
   if (!_oformat)
   {
     if(_logReporter)
@@ -58,27 +142,8 @@ int MovieWriter::initialize(const std::string& filename)
     }
     return -1;
   }
-  switch(_type)
-  {
-  case Format::h265:
-    _oformat->video_codec = AV_CODEC_ID_HEVC;
-    break;
-  case Format::h264:
-    _oformat->video_codec = AV_CODEC_ID_H264;
-    break;
-  case Format::vp9:
-    _oformat->video_codec = AV_CODEC_ID_VP9;
-    break;
-  case Format::av1:
-    _oformat->video_codec = AV_CODEC_ID_AV1;
-    break;
-  default:
-    _oformat->video_codec = AV_CODEC_ID_H264;
-    break;
-  }
-  qDebug() << "ffmpeg form at guessed done";
 
-  int err = avformat_alloc_output_context2(&_ofctx, _oformat, NULL, filename.c_str());
+  int err = avformat_alloc_output_context2(&_ofctx, _oformat, nullptr, nullptr);
   if (err<0)
   {
     if(_logReporter)
@@ -87,23 +152,9 @@ int MovieWriter::initialize(const std::string& filename)
     }
     return -1;
   }
-  qDebug() << "ffmpeg avformat_alloc_output_context2 done";
-
-  const AVCodec *codec = avcodec_find_encoder(_oformat->video_codec);
-  *_codec = *codec;
-  if (!_codec)
-  {
-    avformat_free_context(_ofctx);
-    if(_logReporter)
-    {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg codec");
-    }
-    return -1;
-  }
-  qDebug() << "ffmpeg avcodec_find_encoder done";
 
   // Add a new stream to a media file
-  _videoStream = avformat_new_stream(_ofctx, _codec);
+  _videoStream = avformat_new_stream(_ofctx, encoder);
   if (!_videoStream)
   {
     avformat_free_context(_ofctx);
@@ -113,19 +164,6 @@ int MovieWriter::initialize(const std::string& filename)
     }
     return -1;
   }
-  qDebug() << "ffmpeg avformat_new_stream done";
-
-  _cctx = avcodec_alloc_context3(_codec);
-  if (!_cctx)
-  {
-    avformat_free_context(_ofctx);
-    if(_logReporter)
-    {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to create ffmpeg codec context");
-    }
-    return -1;
-  }
-  qDebug() << "ffmpeg avcodec_alloc_context3 done";
 
   _pkt = av_packet_alloc();
   if (!_pkt)
@@ -138,83 +176,11 @@ int MovieWriter::initialize(const std::string& filename)
     }
     return -1;
   }
-  qDebug() << "ffmpeg av_packet_alloc done";
-
-  AVCodecParameters *codecpar = _videoStream->codecpar;
-  if (!codecpar)
-  {
-      avformat_free_context(_ofctx);
-      avcodec_free_context(&_cctx);
-    if(_logReporter)
-    {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to access codecpar of the videostream");
-    }
-    return -1;
-  }
-  qDebug() << "ffmpeg codecpar accessed";
-
-  codecpar->codec_id = _oformat->video_codec;
-  codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
-  codecpar->width = _width;
-  codecpar->height = _height;
-  codecpar->format = AV_PIX_FMT_YUV420P;
-
-  codecpar->codec_tag = 0;
-  switch(_type)
-  {
-  case Format::h265:
-    codecpar->codec_tag = MKTAG('h', 'v', 'c', '1'); // for h265
-    codecpar->bit_rate = 5000000;
-    break;
-  case Format::h264:
-    codecpar->bit_rate = 5000000;
-    break;
-  case Format::vp9:
-    codecpar->bit_rate = 5000000;
-    break;
-  case Format::av1:
-    codecpar->bit_rate = 5000000;
-    break;
-  default:
-    codecpar->bit_rate = 5000000;
-    break;
-  }
-
-  avcodec_parameters_to_context(_cctx, codecpar);
-
-  _cctx->time_base = { 1, _fps };
-  _cctx->framerate = {_fps, 1};
-  _cctx->max_b_frames = 1;
-  _cctx->gop_size = 10;
-
-  if (_videoStream->codecpar->codec_id == AV_CODEC_ID_H264)
-  {
-    av_opt_set(_cctx, "preset", "slow", 0);
-  }
-  else if (_videoStream->codecpar->codec_id == AV_CODEC_ID_H265)
-  {
-    av_opt_set(_cctx, "preset", "slow", 0);
-  }
 
 
-  av_dump_format(_ofctx, 0, filename.c_str(), 1);
-
-  err = avcodec_open2(_cctx, _codec, NULL);
-  if (err < 0)
-  {
-    avformat_free_context(_ofctx);
-    avcodec_free_context(&_cctx);
-    av_packet_free(&_pkt);
-    if(_logReporter)
-    {
-      _logReporter->logMessage(LogReporting::ErrorLevel::error, "failed to open codec");
-    }
-    return -1;
-  }
-  qDebug() << "ffmpeg codec opened";
   if (_ofctx->oformat->flags & AVFMT_GLOBALHEADER) 
   {
-      _cctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+    _cctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
   }
   avcodec_parameters_from_context(_videoStream->codecpar, _cctx);
 
@@ -409,6 +375,7 @@ int MovieWriter::finalize()
       {
         _logReporter->logMessage(LogReporting::ErrorLevel::error, "ffmpeg failed to close file");
       }
+      return -1;
     }
   }
 
