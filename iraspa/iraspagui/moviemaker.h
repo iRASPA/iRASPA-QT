@@ -66,7 +66,11 @@ private:
   const unsigned int _width, _height;
   int _fps;
   SwsContext* _swsCtx;
+#if LIBAVCODEC_VERSION_MAJOR >= 60
   const AVOutputFormat* _oformat;
+#else
+  AVOutputFormat* _oformat;
+#endif
   AVStream* _videoStream;
   AVFormatContext* _ofctx;
   AVCodecContext* _cctx;

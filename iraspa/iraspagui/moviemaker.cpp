@@ -40,7 +40,6 @@ int MovieWriter::initialize(const std::string filename)
     _logReporter->logMessage(LogReporting::ErrorLevel::verbose, "ffmpeg start initialization");
   }
   qDebug() << "ffmpeg start initialization";
-  qDebug() << filename;
 
   #if LIBAVCODEC_VERSION_MAJOR < 56
     // register is needed on Ubuntu 18 for snaps
