@@ -55,11 +55,14 @@
 #include "openglcylinderobjectpickingshader.h"
 #include "openglellipseobjectpickingshader.h"
 #include "openglpolygonalprismobjectpickingshader.h"
+#include "openglribbonpickingshader.h"
+
+class OpenGLRibbonShader;
 
 class OpenGLPickingShader: public OpenGLShader
 {
 public:
-  OpenGLPickingShader(OpenGLAtomShader &atomShader, OpenGLBondShader &bondShader, OpenGLObjectShader &objectShader);
+  OpenGLPickingShader(OpenGLAtomShader &atomShader, OpenGLBondShader &bondShader, OpenGLObjectShader &objectShader, OpenGLRibbonShader &ribbonShader);
 
   void initializeEmbeddedOpenGLFunctions();
   void loadShader();
@@ -88,6 +91,7 @@ private:
   OpenGLCylinderObjectPickingShader _cylinderPickingShader;
   OpenGLEllipseObjectPickingShader _ellipsePickingShader;
   OpenGLPolygonalPrismObjectPickingShader _polygonalPrismPickingShader;
+  OpenGLRibbonPickingShader _ribbonPickingShader;
 
   GLuint _frameBufferObject;
   GLuint _texture;

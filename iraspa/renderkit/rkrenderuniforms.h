@@ -141,6 +141,7 @@ struct RKVertex
   float4 normal;
   float2 st;
   float2 pad = float2();
+  float2 stripeST = float2();
 };
 
 struct RKPrimitiveVertex
@@ -252,7 +253,7 @@ struct RKStructureUniforms
   float atomHue = 1.0f;
   float atomSaturation = 1.0f;
   float atomValue = 1.0f;
-  float pad111 = 1.0f;
+  int32_t structureIdentifier = 0;
 
   int32_t atomHDR = true;
   float atomHDRExposure = 1.5f;
@@ -357,18 +358,34 @@ struct RKStructureUniforms
 
   float primitiveSelectionScaling = 1.01f;
   float primitiveSelectionIntensity = 0.8f;
+  int32_t isUnity = 0;
   float pad7 = 0.0f;
-  float pad8 = 0.0f;
 
   float primitiveHue = 1.0f;
   float primitiveSaturation = 1.0f;
   float primitiveValue = 1.0f;
-  float pad9 = 0.0f;
+  float pad8 = 0.0f;
 
   float4 localAxisPosition = float4(0.0f,0.0f,0.0f,0.0f);
   float4 numberOfReplicas = float4(0.0f,0.0f,0.0f,0.0f);
-  float4 pad11 = float4(0.0f,0.0f,0.0f,0.0f);
-  float4 pad12 = float4(0.0f,0.0f,0.0f,0.0f);
+  float4 ribbonCoilColor = float4(0.0f, 1.0f, 0.0f, 1.0f);
+  float4 ribbonHelixColor = float4(1.0f, 0.0f, 1.0f, 1.0f);
+  float4 ribbonSheetColor = float4(1.0f, 1.0f, 0.0f, 1.0f);
+  int32_t ribbonHDR = 0;
+  float ribbonHDRExposure = 1.5f;
+  float ribbonHue = 1.0f;
+  float ribbonSaturation = 0.5f;
+  float ribbonValue = 1.0f;
+  int32_t ribbonAmbientOcclusion = 1;
+  float padRibbon1 = 0.0f;
+  float ribbonShininess = 4.0f;
+  float padRibbon2 = 0.0f;
+  float padRibbon3 = 0.0f;
+  float padRibbon4 = 0.0f;
+  float padRibbon5 = 0.0f;
+  float4 ribbonAmbientColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+  float4 ribbonDiffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+  float4 ribbonSpecularColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 
   RKStructureUniforms() {}

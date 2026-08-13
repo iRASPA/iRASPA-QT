@@ -56,6 +56,8 @@ FrameListView::FrameListView(QWidget* parent): QListView(parent ), _model(std::m
   this->setStyleSheet("background-color:rgb(240, 240, 240);");
   this->setStyle(new FrameListViewProxyStyle());
 
+  this->setIconSize(QSize(18, 18));
+
   this->setItemDelegateForColumn(0,new FrameListViewStyledItemDelegate(this));
 
   this->setDragEnabled(true);

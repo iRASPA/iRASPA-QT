@@ -32,15 +32,20 @@
 #include "crystalpolygonalprismprimitive.h"
 #include "primitive.h"
 #include "gridvolume.h"
+#include "proteinatomtreebuilder.h"
 
 ProteinCrystal::ProteinCrystal()
 {
+  setDrawRibbon(true);
+  setDrawAtoms(false);
+  setDrawBonds(false);
+  reComputeBoundingBox();
 }
 
-ProteinCrystal::ProteinCrystal(const ProteinCrystal &proteinCrystal): Structure(proteinCrystal)
+ProteinCrystal::ProteinCrystal(const ProteinCrystal &proteinCrystal): Structure(proteinCrystal), ProteinRibbonMixin(proteinCrystal)
 {
+  _spaceGroup = proteinCrystal._spaceGroup;
 }
-
 
 ProteinCrystal::ProteinCrystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
@@ -51,6 +56,8 @@ ProteinCrystal::ProteinCrystal(std::shared_ptr<SKStructure> frame): Structure(fr
 
   expandSymmetry();
   _atomsTreeController->setTags();
+  ProteinAtomTreeBuilder::applyHierarchyIfNeeded(*_atomsTreeController, ribbonSecondaryStructureMethod());
+  rebuildBackboneStructure();
 }
 
 ProteinCrystal::ProteinCrystal(const std::shared_ptr<Object> object): Structure(object)
@@ -66,11 +73,16 @@ ProteinCrystal::ProteinCrystal(const std::shared_ptr<Object> object): Structure(
     {
       ProteinCrystal::convertAsymmetricAtomsToCartesian();
     }
-    expandSymmetry();
-    _atomsTreeController->setTags();
-    reComputeBoundingBox();
-    computeBonds();
   }
+
+  ProteinAtomTreeBuilder::applyHierarchyIfNeeded(*_atomsTreeController, ribbonSecondaryStructureMethod());
+
+  setDrawUnitCell(true);
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  reComputeBoundingBox();
+  computeBonds();
+  rebuildBackbone();
 }
 
 std::shared_ptr<Object> ProteinCrystal::shallowClone()
@@ -1802,12 +1814,11 @@ void ProteinCrystal::setStructureGravimetricNitrogenSurfaceArea(double value)
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<ProteinCrystal> &proteinCrystal)
 {
   stream << proteinCrystal->_versionNumber;
-
-  // handle super class
-  stream << std::static_pointer_cast<Structure>(proteinCrystal);
-
   stream << proteinCrystal->_spaceGroup;
   stream << qint64(0x6f6b6185);
+  proteinCrystal->writeCocoaRibbonAppearance(stream);
+
+  stream << std::static_pointer_cast<Structure>(proteinCrystal);
 
   return stream;
 }
@@ -1833,6 +1844,8 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<ProteinCrystal> &pr
     }
   }
 
+  proteinCrystal->readCocoaRibbonAppearance(stream, versionNumber);
+
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(proteinCrystal);
   stream >> structure;
 
@@ -1840,6 +1853,13 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<ProteinCrystal> &pr
   {
     proteinCrystal->_spaceGroup = structure->legacySpaceGroup();
   }
+
+  if (versionNumber < 6)
+  {
+    proteinCrystal->recheckRibbonRepresentationStyle();
+  }
+  ProteinAtomTreeBuilder::applyHierarchyIfNeeded(*proteinCrystal->atomsTreeController(), proteinCrystal->ribbonSecondaryStructureMethod());
+  proteinCrystal->rebuildBackbone();
 
   return stream;
 }

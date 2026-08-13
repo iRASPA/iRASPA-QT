@@ -36,9 +36,13 @@
 #include "atomstructureviewer.h"
 #include "volumetricdataviewer.h"
 #include "annotationviewer.h"
+#include "appearanceribbonhelpers.h"
+#include "proteinnucleicacidcartoon.h"
 
 AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent): QTreeWidget(parent),
     _appearancePrimitiveForm(new AppearancePrimitiveForm),
+    _appearanceRibbonsForm(new AppearanceRibbonsForm),
+    _appearanceRibbonsDNAForm(new AppearanceRibbonsDNAForm),
     _appearanceAtomsForm(new AppearanceAtomsForm),
     _appearanceBondsForm(new AppearanceBondsForm),
     _appearanceUnitCellForm(new AppearanceUnitCellForm),
@@ -57,15 +61,15 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
 
   // Primitives
   //=========================================================================
-  QTreeWidgetItem* PrimitiveItem = new QTreeWidgetItem(this);
-  this->addTopLevelItem(PrimitiveItem);
+  _primitiveItem = new QTreeWidgetItem(this);
+  this->addTopLevelItem(_primitiveItem);
 
-  pushButtonPrimitive = new QPushButton(tr("Primitive Properties"),this);
+  pushButtonPrimitive = new QPushButton(tr("Primitive"),this);
   pushButtonPrimitive->setIcon(QIcon(":/iraspa/collapsed.png"));
   pushButtonPrimitive->setStyleSheet("text-align:left;");
-  setItemWidget(PrimitiveItem,0,pushButtonPrimitive);
+  setItemWidget(_primitiveItem,0,pushButtonPrimitive);
 
-  QTreeWidgetItem *childPrimitiveItem = new QTreeWidgetItem(PrimitiveItem);
+  QTreeWidgetItem *childPrimitiveItem = new QTreeWidgetItem(_primitiveItem);
   this->setItemWidget(childPrimitiveItem,0, _appearancePrimitiveForm);
 
   _appearancePrimitiveForm->rotationAngleDoubleSpinBox->setMinimum(-180.0);
@@ -358,6 +362,211 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QObject::connect(_appearancePrimitiveForm->backAmbientColorPushButton,&QPushButton::clicked,this,&AppearanceTreeWidgetController::setBackPrimitiveAmbientLightColor);
   QObject::connect(_appearancePrimitiveForm->backDiffuseColorPushButton,&QPushButton::clicked,this,&AppearanceTreeWidgetController::setBackPrimitiveDiffuseLightColor);
   QObject::connect(_appearancePrimitiveForm->backSpecularColorPushButton,&QPushButton::clicked,this,&AppearanceTreeWidgetController::setBackPrimitiveSpecularLightColor);
+
+
+  // Ribbons (Protein)
+  //=========================================================================
+  _ribbonsProteinItem = new QTreeWidgetItem(this);
+  this->addTopLevelItem(_ribbonsProteinItem);
+
+  pushButtonRibbons = new QPushButton(tr("Ribbons (Protein)"),this);
+  pushButtonRibbons->setIcon(QIcon(":/iraspa/collapsed.png"));
+  pushButtonRibbons->setStyleSheet("text-align:left;");
+  setItemWidget(_ribbonsProteinItem,0,pushButtonRibbons);
+
+  QTreeWidgetItem *childRibbonsItem = new QTreeWidgetItem(_ribbonsProteinItem);
+  this->setItemWidget(childRibbonsItem,0, _appearanceRibbonsForm);
+
+  _appearanceRibbonsForm->ribbonScaleFactorDoubleSpinBox->setMinimum(0.1);
+  _appearanceRibbonsForm->ribbonScaleFactorDoubleSpinBox->setMaximum(2.0);
+  _appearanceRibbonsForm->ribbonScaleFactorDoubleSlider->setDoubleMinimum(0.1);
+  _appearanceRibbonsForm->ribbonScaleFactorDoubleSlider->setDoubleMaximum(2.0);
+
+  _appearanceRibbonsForm->ribbonSecondaryStructureMethodComboBox->insertItem(0, proteinRibbonSecondaryStructureMethodDisplayName(ProteinRibbonSecondaryStructureMethod::stride));
+  _appearanceRibbonsForm->ribbonSecondaryStructureMethodComboBox->insertItem(1, proteinRibbonSecondaryStructureMethodDisplayName(ProteinRibbonSecondaryStructureMethod::dss));
+  _appearanceRibbonsForm->ribbonSecondaryStructureMethodComboBox->insertItem(2, proteinRibbonSecondaryStructureMethodDisplayName(ProteinRibbonSecondaryStructureMethod::dssp));
+  _appearanceRibbonsForm->ribbonSecondaryStructureMethodComboBox->insertItem(3, proteinRibbonSecondaryStructureMethodDisplayName(ProteinRibbonSecondaryStructureMethod::psea));
+  _appearanceRibbonsForm->ribbonSecondaryStructureMethodComboBox->insertItem(4, proteinRibbonSecondaryStructureMethodDisplayName(ProteinRibbonSecondaryStructureMethod::sequoia));
+  _appearanceRibbonsForm->ribbonSecondaryStructureMethodComboBox->insertItem(5, proteinRibbonSecondaryStructureMethodDisplayName(ProteinRibbonSecondaryStructureMethod::segno));
+
+  _appearanceRibbonsForm->ribbonSplineTypeComboBox->insertItem(0, proteinRibbonSplineTypeDisplayName(ProteinRibbonSplineType::bSpline));
+  _appearanceRibbonsForm->ribbonSplineTypeComboBox->insertItem(1, proteinRibbonSplineTypeDisplayName(ProteinRibbonSplineType::catmullRom));
+
+  for (const ProteinRibbonRepresentationStyle style : proteinRibbonRepresentationSelectableCases())
+  {
+    _appearanceRibbonsForm->ribbonRepresentationStyleComboBox->addItem(proteinRibbonRepresentationStyleDisplayName(style));
+  }
+
+  _appearanceRibbonsForm->ribbonColorSetComboBox->insertItem(0, proteinRibbonColorSetDisplayName(ProteinRibbonColorSet::standardAcademic));
+  _appearanceRibbonsForm->ribbonColorSetComboBox->insertItem(1, proteinRibbonColorSetDisplayName(ProteinRibbonColorSet::modernUI));
+  _appearanceRibbonsForm->ribbonColorSetComboBox->insertItem(2, proteinRibbonColorSetDisplayName(ProteinRibbonColorSet::biophysicalProperties));
+  _appearanceRibbonsForm->ribbonColorSetComboBox->insertItem(3, proteinRibbonColorSetDisplayName(ProteinRibbonColorSet::infographic));
+
+  _appearanceRibbonsForm->ribbonSelectionStyleComboBox->insertItem(0, tr("None"));
+  _appearanceRibbonsForm->ribbonSelectionStyleComboBox->insertItem(1, tr("Worley Noise 3D"));
+  _appearanceRibbonsForm->ribbonSelectionStyleComboBox->insertItem(2, tr("Striped"));
+  _appearanceRibbonsForm->ribbonSelectionStyleComboBox->insertItem(3, tr("Glow"));
+
+  _appearanceRibbonsForm->ribbonSelectionIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsForm->ribbonSelectionIntensityDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceRibbonsForm->ribbonSelectionScalingDoubleSlider->setDoubleMinimum(1.0);
+  _appearanceRibbonsForm->ribbonSelectionScalingDoubleSlider->setDoubleMaximum(3.0);
+  _appearanceRibbonsForm->ribbonHDRExposureDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsForm->ribbonHDRExposureDoubleSlider->setDoubleMaximum(3.0);
+  _appearanceRibbonsForm->ribbonHueDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsForm->ribbonHueDoubleSlider->setDoubleMaximum(2.0);
+  _appearanceRibbonsForm->ribbonSaturationDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsForm->ribbonSaturationDoubleSlider->setDoubleMaximum(2.0);
+  _appearanceRibbonsForm->ribbonValueDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsForm->ribbonValueDoubleSlider->setDoubleMaximum(2.0);
+  _appearanceRibbonsForm->ribbonAmbientIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsForm->ribbonAmbientIntensityDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceRibbonsForm->ribbonDiffuseIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsForm->ribbonDiffuseIntensityDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceRibbonsForm->ribbonSpecularIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsForm->ribbonSpecularIntensityDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceRibbonsForm->ribbonShininessDoubleSlider->setDoubleMinimum(0.1);
+  _appearanceRibbonsForm->ribbonShininessDoubleSlider->setDoubleMaximum(128.0);
+
+  QObject::connect(_appearanceRibbonsForm->drawRibbonsCheckBox, static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged), this, &AppearanceTreeWidgetController::setDrawRibbons);
+  QObject::connect(_appearanceRibbonsForm->ribbonScaleFactorDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonScaleFactorSlider);
+  QObject::connect(_appearanceRibbonsForm->ribbonScaleFactorDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonScaleFactorSpinBox);
+  QObject::connect(_appearanceRibbonsForm->ribbonSecondaryStructureMethodComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonSecondaryStructureMethod);
+  QObject::connect(_appearanceRibbonsForm->ribbonSplineTypeComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonSplineType);
+  QObject::connect(_appearanceRibbonsForm->ribbonRepresentationStyleComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonRepresentationStyle);
+  QObject::connect(_appearanceRibbonsForm->ribbonColorSetComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonColorSet);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionStyleComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionStyle);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionStyleNuDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionStyleNu);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionStyleRhoDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionStyleRho);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionFrequencyDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionFrequency);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionDensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionDensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionIntensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionIntensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionIntensityDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonSelectionIntensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionScalingDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionScaling);
+  QObject::connect(_appearanceRibbonsForm->ribbonSelectionScalingDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonSelectionScaling);
+  QObject::connect(_appearanceRibbonsForm->ribbonHighDynamicRangeCheckBox, static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged), this, &AppearanceTreeWidgetController::setRibbonHighDynamicRange);
+  QObject::connect(_appearanceRibbonsForm->ribbonHDRExposureDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonHDRExposure);
+  QObject::connect(_appearanceRibbonsForm->ribbonHDRExposureDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonHDRExposure);
+  QObject::connect(_appearanceRibbonsForm->ribbonHueDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonHue);
+  QObject::connect(_appearanceRibbonsForm->ribbonHueDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonHue);
+  QObject::connect(_appearanceRibbonsForm->ribbonSaturationDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSaturation);
+  QObject::connect(_appearanceRibbonsForm->ribbonSaturationDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonSaturation);
+  QObject::connect(_appearanceRibbonsForm->ribbonValueDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonValue);
+  QObject::connect(_appearanceRibbonsForm->ribbonValueDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonValue);
+  QObject::connect(_appearanceRibbonsForm->ribbonAmbientOcclusionCheckBox, static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged), this, &AppearanceTreeWidgetController::setRibbonAmbientOcclusion);
+  QObject::connect(_appearanceRibbonsForm->ribbonAmbientIntensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonAmbientLightIntensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonAmbientIntensityDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonAmbientLightIntensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonDiffuseIntensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonDiffuseLightIntensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonDiffuseIntensityDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonDiffuseLightIntensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonSpecularIntensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSpecularLightIntensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonSpecularIntensityDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonSpecularLightIntensity);
+  QObject::connect(_appearanceRibbonsForm->ribbonShininessDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonShininess);
+  QObject::connect(_appearanceRibbonsForm->ribbonShininessDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setRibbonShininess);
+  QObject::connect(_appearanceRibbonsForm->ribbonAmbientColorPushButton, &QPushButton::clicked, this, &AppearanceTreeWidgetController::setRibbonAmbientLightColor);
+  QObject::connect(_appearanceRibbonsForm->ribbonDiffuseColorPushButton, &QPushButton::clicked, this, &AppearanceTreeWidgetController::setRibbonDiffuseLightColor);
+  QObject::connect(_appearanceRibbonsForm->ribbonSpecularColorPushButton, &QPushButton::clicked, this, &AppearanceTreeWidgetController::setRibbonSpecularLightColor);
+
+
+  // Ribbons (DNA)
+  //=========================================================================
+  _ribbonsDNAItem = new QTreeWidgetItem(this);
+  this->addTopLevelItem(_ribbonsDNAItem);
+
+  pushButtonRibbonsDNA = new QPushButton(tr("Ribbons (DNA)"), this);
+  pushButtonRibbonsDNA->setIcon(QIcon(":/iraspa/collapsed.png"));
+  pushButtonRibbonsDNA->setStyleSheet("text-align:left;");
+  setItemWidget(_ribbonsDNAItem, 0, pushButtonRibbonsDNA);
+
+  QTreeWidgetItem *childRibbonsDNAItem = new QTreeWidgetItem(_ribbonsDNAItem);
+  this->setItemWidget(childRibbonsDNAItem, 0, _appearanceRibbonsDNAForm);
+
+  _appearanceRibbonsDNAForm->ribbonScaleFactorDoubleSpinBox->setMinimum(0.1);
+  _appearanceRibbonsDNAForm->ribbonScaleFactorDoubleSpinBox->setMaximum(2.0);
+  _appearanceRibbonsDNAForm->ribbonScaleFactorDoubleSlider->setDoubleMinimum(0.1);
+  _appearanceRibbonsDNAForm->ribbonScaleFactorDoubleSlider->setDoubleMaximum(2.0);
+
+  _appearanceRibbonsDNAForm->dnaBackboneStyleComboBox->insertItem(0, nucleicAcidBackboneStyleDisplayName(NucleicAcidBackboneStyle::oval));
+  _appearanceRibbonsDNAForm->dnaBackboneStyleComboBox->insertItem(1, nucleicAcidBackboneStyleDisplayName(NucleicAcidBackboneStyle::tube));
+  _appearanceRibbonsDNAForm->dnaBackboneStyleComboBox->insertItem(2, nucleicAcidBackboneStyleDisplayName(NucleicAcidBackboneStyle::dumbbell));
+  _appearanceRibbonsDNAForm->dnaBackboneStyleComboBox->insertItem(3, nucleicAcidBackboneStyleDisplayName(NucleicAcidBackboneStyle::rect));
+  _appearanceRibbonsDNAForm->dnaTraceModeComboBox->insertItem(0, nucleicAcidTraceModeDisplayName(NucleicAcidTraceMode::phosphateMode4));
+  _appearanceRibbonsDNAForm->dnaTraceModeComboBox->insertItem(1, nucleicAcidTraceModeDisplayName(NucleicAcidTraceMode::c3PrimeMode1));
+
+  _appearanceRibbonsDNAForm->dnaOvalLengthDoubleSpinBox->setMinimum(0.2);
+  _appearanceRibbonsDNAForm->dnaOvalLengthDoubleSpinBox->setMaximum(3.0);
+  _appearanceRibbonsDNAForm->dnaOvalWidthDoubleSpinBox->setMinimum(0.05);
+  _appearanceRibbonsDNAForm->dnaOvalWidthDoubleSpinBox->setMaximum(1.0);
+  _appearanceRibbonsDNAForm->dnaRingWidthDoubleSpinBox->setMinimum(0.02);
+  _appearanceRibbonsDNAForm->dnaRingWidthDoubleSpinBox->setMaximum(1.0);
+  _appearanceRibbonsDNAForm->dnaLadderRadiusDoubleSpinBox->setMinimum(0.02);
+  _appearanceRibbonsDNAForm->dnaLadderRadiusDoubleSpinBox->setMaximum(1.0);
+
+  _appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox->insertItem(0, tr("None"));
+  _appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox->insertItem(1, tr("Worley Noise 3D"));
+  _appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox->insertItem(2, tr("Striped"));
+  _appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox->insertItem(3, tr("Glow"));
+  _appearanceRibbonsDNAForm->ribbonSelectionIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsDNAForm->ribbonSelectionIntensityDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceRibbonsDNAForm->ribbonSelectionScalingDoubleSlider->setDoubleMinimum(1.0);
+  _appearanceRibbonsDNAForm->ribbonSelectionScalingDoubleSlider->setDoubleMaximum(3.0);
+  _appearanceRibbonsDNAForm->ribbonHDRExposureDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsDNAForm->ribbonHDRExposureDoubleSlider->setDoubleMaximum(3.0);
+  _appearanceRibbonsDNAForm->ribbonHueDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsDNAForm->ribbonHueDoubleSlider->setDoubleMaximum(2.0);
+  _appearanceRibbonsDNAForm->ribbonSaturationDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsDNAForm->ribbonSaturationDoubleSlider->setDoubleMaximum(2.0);
+  _appearanceRibbonsDNAForm->ribbonValueDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsDNAForm->ribbonValueDoubleSlider->setDoubleMaximum(2.0);
+  _appearanceRibbonsDNAForm->ribbonAmbientIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsDNAForm->ribbonAmbientIntensityDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceRibbonsDNAForm->ribbonDiffuseIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsDNAForm->ribbonDiffuseIntensityDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceRibbonsDNAForm->ribbonSpecularIntensityDoubleSlider->setDoubleMinimum(0.0);
+  _appearanceRibbonsDNAForm->ribbonSpecularIntensityDoubleSlider->setDoubleMaximum(1.0);
+  _appearanceRibbonsDNAForm->ribbonShininessDoubleSlider->setDoubleMinimum(0.1);
+  _appearanceRibbonsDNAForm->ribbonShininessDoubleSlider->setDoubleMaximum(128.0);
+
+  QObject::connect(_appearanceRibbonsDNAForm->drawRibbonsCheckBox, static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged), this, &AppearanceTreeWidgetController::setDrawDNARibbons);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonScaleFactorDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonScaleFactorSlider);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonScaleFactorDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonScaleFactorSpinBox);
+  QObject::connect(_appearanceRibbonsDNAForm->dnaBackboneStyleComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setDNABackboneStyle);
+  QObject::connect(_appearanceRibbonsDNAForm->dnaTraceModeComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setDNATraceMode);
+  QObject::connect(_appearanceRibbonsDNAForm->dnaShowRingsCheckBox, static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged), this, &AppearanceTreeWidgetController::setDNAShowRings);
+  QObject::connect(_appearanceRibbonsDNAForm->dnaShowLadderCheckBox, static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged), this, &AppearanceTreeWidgetController::setDNAShowLadder);
+  QObject::connect(_appearanceRibbonsDNAForm->dnaOvalLengthDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNAOvalLength);
+  QObject::connect(_appearanceRibbonsDNAForm->dnaOvalWidthDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNAOvalWidth);
+  QObject::connect(_appearanceRibbonsDNAForm->dnaRingWidthDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARingWidth);
+  QObject::connect(_appearanceRibbonsDNAForm->dnaLadderRadiusDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNALadderRadius);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionStyle);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionStyleNuDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionStyleNu);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionStyleRhoDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionStyleRho);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionFrequencyDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionFrequency);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionDensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionDensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionIntensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionIntensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionIntensityDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonSelectionIntensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionScalingDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionScaling);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionScalingDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonSelectionScaling);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonHighDynamicRangeCheckBox, static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged), this, &AppearanceTreeWidgetController::setDNARibbonHighDynamicRange);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonHDRExposureDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonHDRExposure);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonHDRExposureDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonHDRExposure);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonHueDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonHue);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonHueDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonHue);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSaturationDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSaturation);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSaturationDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonSaturation);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonValueDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonValue);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonValueDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonValue);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonAmbientOcclusionCheckBox, static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged), this, &AppearanceTreeWidgetController::setDNARibbonAmbientOcclusion);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonAmbientIntensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonAmbientLightIntensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonAmbientIntensityDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonAmbientLightIntensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonDiffuseIntensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonDiffuseLightIntensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonDiffuseIntensityDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonDiffuseLightIntensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSpecularIntensityDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSpecularLightIntensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSpecularIntensityDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonSpecularLightIntensity);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonShininessDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonShininess);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonShininessDoubleSlider, static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved), this, &AppearanceTreeWidgetController::setDNARibbonShininess);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonAmbientColorPushButton, &QPushButton::clicked, this, &AppearanceTreeWidgetController::setDNARibbonAmbientLightColor);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonDiffuseColorPushButton, &QPushButton::clicked, this, &AppearanceTreeWidgetController::setDNARibbonDiffuseLightColor);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonSpecularColorPushButton, &QPushButton::clicked, this, &AppearanceTreeWidgetController::setDNARibbonSpecularLightColor);
 
 
   // Atoms
@@ -1025,6 +1234,8 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   // Expanding
   //=========================================================================
   pushButtonPrimitive->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  pushButtonRibbons->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  pushButtonRibbonsDNA->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonAtoms->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonBonds->setFocusPolicy(Qt::FocusPolicy::NoFocus);
   pushButtonUnitCell->setFocusPolicy(Qt::FocusPolicy::NoFocus);
@@ -1033,6 +1244,8 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   pushButtonAnnotation->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
   QObject::connect(pushButtonPrimitive, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandPrimitiveItem);
+  QObject::connect(pushButtonRibbons, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandRibbonsItem);
+  QObject::connect(pushButtonRibbonsDNA, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandRibbonsDNAItem);
   QObject::connect(pushButtonAtoms, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandAtomsItem);
   QObject::connect(pushButtonBonds, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandBondsItem);
   QObject::connect(pushButtonUnitCell, &QPushButton::clicked, this, &AppearanceTreeWidgetController::expandUnitCellItem);
@@ -1102,6 +1315,9 @@ void AppearanceTreeWidgetController::reloadData()
   }
 
   reloadPrimitiveProperties();
+  reloadRibbonProperties();
+  reloadDNARibbonProperties();
+  reloadAppearanceSectionVisibility();
   reloadAtomProperties();
   reloadBondProperties();
   reloadUnitCellProperties();
@@ -1113,6 +1329,22 @@ void AppearanceTreeWidgetController::reloadData()
 void AppearanceTreeWidgetController::reloadSelection()
 {
 
+}
+
+void AppearanceTreeWidgetController::reloadAppearanceSectionVisibility()
+{
+  if (_primitiveItem)
+  {
+    _primitiveItem->setHidden(!hasPrimitiveStructure(_iraspa_structures));
+  }
+  if (_ribbonsProteinItem)
+  {
+    _ribbonsProteinItem->setHidden(!hasProteinRibbonStructure(_iraspa_structures));
+  }
+  if (_ribbonsDNAItem)
+  {
+    _ribbonsDNAItem->setHidden(!hasDNARibbonStructure(_iraspa_structures));
+  }
 }
 
 void AppearanceTreeWidgetController::reloadPrimitiveProperties()
@@ -11339,7 +11571,7 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::annota
 
 void AppearanceTreeWidgetController::expandPrimitiveItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(0),0);
+  QModelIndex index = indexFromItem(_primitiveItem, 0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -11353,9 +11585,39 @@ void AppearanceTreeWidgetController::expandPrimitiveItem()
   }
 }
 
+void AppearanceTreeWidgetController::expandRibbonsItem()
+{
+  QModelIndex index = indexFromItem(_ribbonsProteinItem, 0);
+  if(this->isExpanded(index))
+  {
+    this->collapse(index);
+    pushButtonRibbons->setIcon(QIcon(":/iraspa/collapsed.png"));
+  }
+  else
+  {
+    this->expand(index);
+    pushButtonRibbons->setIcon(QIcon(":/iraspa/expanded.png"));
+  }
+}
+
+void AppearanceTreeWidgetController::expandRibbonsDNAItem()
+{
+  QModelIndex index = indexFromItem(_ribbonsDNAItem, 0);
+  if (this->isExpanded(index))
+  {
+    this->collapse(index);
+    pushButtonRibbonsDNA->setIcon(QIcon(":/iraspa/collapsed.png"));
+  }
+  else
+  {
+    this->expand(index);
+    pushButtonRibbonsDNA->setIcon(QIcon(":/iraspa/expanded.png"));
+  }
+}
+
 void AppearanceTreeWidgetController::expandAtomsItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(1),0);
+  QModelIndex index = indexFromItem(topLevelItem(3), 0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -11371,7 +11633,7 @@ void AppearanceTreeWidgetController::expandAtomsItem()
 
 void AppearanceTreeWidgetController::expandBondsItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(2),0);
+  QModelIndex index = indexFromItem(topLevelItem(4), 0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -11386,7 +11648,7 @@ void AppearanceTreeWidgetController::expandBondsItem()
 
 void AppearanceTreeWidgetController::expandUnitCellItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(3),0);
+  QModelIndex index = indexFromItem(topLevelItem(5), 0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -11401,7 +11663,7 @@ void AppearanceTreeWidgetController::expandUnitCellItem()
 
 void AppearanceTreeWidgetController::expandLocalAxesItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(4),0);
+  QModelIndex index = indexFromItem(topLevelItem(6), 0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -11416,7 +11678,7 @@ void AppearanceTreeWidgetController::expandLocalAxesItem()
 
 void AppearanceTreeWidgetController::expandAdsorptionSurfaceItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(5),0);
+  QModelIndex index = indexFromItem(topLevelItem(7), 0);
   if(this->isExpanded(index))
   {
     this->collapse(index);
@@ -11431,7 +11693,7 @@ void AppearanceTreeWidgetController::expandAdsorptionSurfaceItem()
 
 void AppearanceTreeWidgetController::expandAnnotationItem()
 {
-  QModelIndex index = indexFromItem(topLevelItem(6),0);
+  QModelIndex index = indexFromItem(topLevelItem(8), 0);
   if(this->isExpanded(index))
   {
     this->collapse(index);

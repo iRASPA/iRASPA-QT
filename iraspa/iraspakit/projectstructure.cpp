@@ -35,12 +35,12 @@ ProjectStructure::ProjectStructure(): _camera(std::make_shared<RKCamera>())
 }
 
 ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
-                                   bool proteinOnlyAsymmetricUnit, bool asMolecule) noexcept(false): _camera(std::make_shared<RKCamera>())
+                                   bool proteinOnlyAsymmetricUnit, bool asMolecule, bool separatePolymerChains) noexcept(false): _camera(std::make_shared<RKCamera>())
 {
   QUrl url = QUrl::fromLocalFile(filename);
   if (url.isValid())
   {
-    std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, proteinOnlyAsymmetricUnit, asMolecule);
+    std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, proteinOnlyAsymmetricUnit, asMolecule, separatePolymerChains);
     for(std::shared_ptr<Movie> movie : scene->movies())
     {
       movie->setParent(scene);
@@ -52,16 +52,17 @@ ProjectStructure::ProjectStructure(QString filename, SKColorSets& colorSets, For
   _backgroundImage = QImage(QSize(1024,1024), QImage::Format_ARGB32);
   _backgroundImage.fill(QColor(255,255,255,255));
 
+  setInitialSelectionIfNeeded();
 }
 
 ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets, ForceFieldSets& forcefieldSets,
-                                   SKParser::ImportType importType, bool onlyAsymmetricUnit, bool asMolecule) noexcept(false): _camera(std::make_shared<RKCamera>())
+                                   SKParser::ImportType importType, bool onlyAsymmetricUnit, bool asMolecule, bool separatePolymerChains) noexcept(false): _camera(std::make_shared<RKCamera>())
 {
   foreach (const QUrl &url, fileURLs)
   {
     if (url.isValid())
     {
-      std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, onlyAsymmetricUnit, asMolecule);
+      std::shared_ptr<Scene> scene = std::make_shared<Scene>(url, colorSets, forcefieldSets, onlyAsymmetricUnit, asMolecule, separatePolymerChains);
       for(std::shared_ptr<Movie> movie : scene->movies())
       {
         movie->setParent(scene);
@@ -80,6 +81,8 @@ ProjectStructure::ProjectStructure(QList<QUrl>  fileURLs, SKColorSets& colorSets
 
   _backgroundImage = QImage(QSize(1024,1024), QImage::Format_ARGB32);
   _backgroundImage.fill(QColor(255,255,255,255));
+
+  setInitialSelectionIfNeeded();
 }
 
 ProjectStructure::~ProjectStructure()

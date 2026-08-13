@@ -38,8 +38,14 @@ find_package(OpenCL REQUIRED)
 
 include_directories(${PYTHON_INCLUDE_DIRS})
 
-INCLUDE_DIRECTORIES(/usr/local/include)
-LINK_DIRECTORIES(/usr/local/lib)
+if(EXISTS "/opt/homebrew/include")
+  set(HOMEBREW_PREFIX "/opt/homebrew")
+else()
+  set(HOMEBREW_PREFIX "/usr/local")
+endif()
+
+INCLUDE_DIRECTORIES(${HOMEBREW_PREFIX}/include)
+LINK_DIRECTORIES(${HOMEBREW_PREFIX}/lib)
 
 include_directories(iraspagui)
 include_directories(iraspakit)

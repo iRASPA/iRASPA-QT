@@ -19,6 +19,25 @@ SOURCES += \
     $$PWD/proteincrystal.cpp \
     $$PWD/molecule.cpp \
     $$PWD/protein.cpp \
+    $$PWD/dna.cpp \
+    $$PWD/dnacrystal.cpp \
+    $$PWD/dnabackbone.cpp \
+    $$PWD/dnanucleotidegeometry.cpp \
+    $$PWD/dnaatomtreebuilder.cpp \
+    $$PWD/dnaribbonmixin.cpp \
+    $$PWD/dnaribbonstructureeditor.cpp \
+    $$PWD/proteinbackbone.cpp \
+    $$PWD/proteinbspline.cpp \
+    $$PWD/proteincatmullromspline.cpp \
+    $$PWD/proteinribbonmesh.cpp \
+    $$PWD/proteinnucleicacidmesh.cpp \
+    $$PWD/proteinribbonmeshparameters.cpp \
+    $$PWD/proteinribbonsecondarystructure.cpp \
+    $$PWD/proteinribbonsegmentsupport.cpp \
+    $$PWD/proteinatomtreebuilder.cpp \
+    $$PWD/proteinaminoacidresiduereplacer.cpp \
+    $$PWD/proteinribbonmixin.cpp \
+    $$PWD/ribbonstructureeditor.cpp \
     $$PWD/vaspdensityvolume.cpp \
     $$PWD/vtkdensityvolume.cpp
 
@@ -41,5 +60,30 @@ HEADERS += \
     $$PWD/proteincrystal.h \
     $$PWD/molecule.h \
     $$PWD/protein.h \
+    $$PWD/dna.h \
+    $$PWD/dnacrystal.h \
+    $$PWD/dnabackbone.h \
+    $$PWD/dnanucleotidegeometry.h \
+    $$PWD/dnaatomtreebuilder.h \
+    $$PWD/dnaribbonmixin.h \
+    $$PWD/dnaribbonstructureeditor.h \
+    $$PWD/proteinbackbone.h \
+    $$PWD/proteinbspline.h \
+    $$PWD/proteincatmullromspline.h \
+    $$PWD/proteinribboncenterlinepath.h \
+    $$PWD/proteinribboncolorset.h \
+    $$PWD/proteinribbonmesh.h \
+    $$PWD/proteinnucleicacidmesh.h \
+    $$PWD/proteinribbonmeshparameters.h \
+    $$PWD/proteinnucleicacidcartoon.h \
+    $$PWD/proteinribbonrepresentationstyle.h \
+    $$PWD/proteinribbonsecondarystructure.h \
+    $$PWD/proteinribbonsecondarystructuremethod.h \
+    $$PWD/proteinribbonsegmentsupport.h \
+    $$PWD/proteinribbonsplinetype.h \
+    $$PWD/proteinatomtreebuilder.h \
+    $$PWD/proteinaminoacidresiduereplacer.h \
+    $$PWD/proteinribbonmixin.h \
+    $$PWD/ribbonstructureeditor.h \
     $$PWD/vaspdensityvolume.h \
     $$PWD/vtkdensityvolume.h

@@ -26,6 +26,15 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <optional>
+
+enum class SKBackboneAtomRole
+{
+  nitrogen,
+  alphaCarbon,
+  carbonylCarbon,
+  carbonylOxygen
+};
 
 struct SKElement
 {
@@ -56,7 +65,14 @@ struct PredefinedElements
   static std::map<QString, int> atomicNumberData;
 
   static std::set<QString> residueDefinitions;
+  static std::set<QString> knownAminoAcidResidueCodes;
   static std::map<QString, QString> residueDefinitionsElement;
   static std::map<QString, QString> residueDefinitionsType;
   static std::map<QString, std::vector<QString>> residueDefinitionsBondedAtoms;
+
+  static std::optional<SKBackboneAtomRole> backboneAtomRole(const QString &residueName, const QString &atomName);
+  static std::optional<SKBackboneAtomRole> backboneAtomRoleForType(const QString &type);
+  static bool isBackboneAtomType(const QString &type);
+  static bool isWaterResidueName(const QString &residueName);
+  static bool isSolventAgentResidueName(const QString &residueName);
 };

@@ -39,6 +39,7 @@ class OpenGLAtomPerspectiveImposterShader;
 class OpenGLAmbientOcclusionShadowMapShader;
 class OpenGLAtomPickingShader;
 class OpenGLTextRenderingShader;
+class OpenGLRibbonAmbientOcclusionShader;
 
 class OpenGLAtomSphereShader: public OpenGLShader
 {
@@ -88,4 +89,5 @@ private:
   friend OpenGLAmbientOcclusionShadowMapShader;
   friend OpenGLAtomPickingShader;
   friend OpenGLTextRenderingShader;
+  friend OpenGLRibbonAmbientOcclusionShader;
 };

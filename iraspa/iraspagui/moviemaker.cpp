@@ -23,6 +23,10 @@
 #include <QDebug>
 #include <iostream>
 
+#if !defined(FF_PROFILE_HEVC_MAIN) && defined(AV_PROFILE_HEVC_MAIN)
+#define FF_PROFILE_HEVC_MAIN AV_PROFILE_HEVC_MAIN
+#endif
+
 MovieWriter::MovieWriter(const unsigned int width, const unsigned int height, int fps, LogReporting* logReporter, Format type) :
     _logReporter(logReporter), _type(type), _width(width), _height(height), _fps(fps)
 {

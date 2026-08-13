@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AppearanceRibbonsDNAForm</class>
+ <widget class="QWidget" name="AppearanceRibbonsDNAForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayoutScaling">
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="drawRibbonsCheckBox">
+       <property name="text">
+        <string>Show Ribbons</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelRibbonScale">
+       <property name="text">
+        <string>Ribbon Size Scaling</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="CustomDoubleSpinBox" name="ribbonScaleFactorDoubleSpinBox">
+       <property name="keyboardTracking">
+        <bool>false</bool>
+       </property>
+       <property name="decimals">
+        <number>5</number>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QDoubleSlider" name="ribbonScaleFactorDoubleSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayoutRepresentation">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelBackboneStyle">
+       <property name="text">
+        <string>Backbone Style</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="dnaBackboneStyleComboBox"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelTraceMode">
+       <property name="text">
+        <string>Trace Mode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="dnaTraceModeComboBox"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="dnaShowRingsCheckBox">
+       <property name="text">
+        <string>Show Base Rings</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="dnaShowLadderCheckBox">
+       <property name="text">
+        <string>Show Ladder Rungs</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="labelOvalLength">
+       <property name="text">
+        <string>Oval Length</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="CustomDoubleSpinBox" name="dnaOvalLengthDoubleSpinBox">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="labelOvalWidth">
+       <property name="text">
+        <string>Oval Width</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="CustomDoubleSpinBox" name="dnaOvalWidthDoubleSpinBox">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelRingWidth">
+       <property name="text">
+        <string>Ring Width</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="CustomDoubleSpinBox" name="dnaRingWidthDoubleSpinBox">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="labelLadderRadius">
+       <property name="text">
+        <string>Ladder Radius</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="CustomDoubleSpinBox" name="dnaLadderRadiusDoubleSpinBox">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayoutSelection">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelSelectionStyle">
+       <property name="text">
+        <string>Selection Style</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="ribbonSelectionStyleComboBox"/>
+     </item>
+     <item row="0" column="2">
+      <layout class="QHBoxLayout" name="horizontalLayoutNu">
+       <item>
+        <widget class="QLabel" name="labelNu">
+         <property name="text">
+          <string>ν</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="CustomDoubleSpinBox" name="ribbonSelectionStyleNuDoubleSpinBox">
+         <property name="decimals">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="3">
+      <layout class="QHBoxLayout" name="horizontalLayoutRho">
+       <item>
+        <widget class="QLabel" name="labelRho">
+         <property name="text">
+          <string>ρ</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="CustomDoubleSpinBox" name="ribbonSelectionStyleRhoDoubleSpinBox">
+         <property name="decimals">
+          <number>3</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelSelectionFrequency">
+       <property name="text">
+        <string>Selection Frequency</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="CustomDoubleSpinBox" name="ribbonSelectionFrequencyDoubleSpinBox">
+       <property name="decimals">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelSelectionDensity">
+       <property name="text">
+        <string>Selection Density</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="CustomDoubleSpinBox" name="ribbonSelectionDensityDoubleSpinBox">
+       <property name="decimals">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="labelSelectionIntensity">
+       <property name="text">
+        <string>Selection Intensity</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="CustomDoubleSpinBox" name="ribbonSelectionIntensityDoubleSpinBox">
+       <property name="decimals">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QDoubleSlider" name="ribbonSelectionIntensityDoubleSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="labelSelectionScaling">
+       <property name="text">
+        <string>Selection Scaling</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="CustomDoubleSpinBox" name="ribbonSelectionScalingDoubleSpinBox">
+       <property name="decimals">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QDoubleSlider" name="ribbonSelectionScalingDoubleSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayoutHDR">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutHDR">
+       <item>
+        <widget class="QCheckBox" name="ribbonHighDynamicRangeCheckBox">
+         <property name="text">
+          <string>High Dynamic Range</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelExposure">
+         <property name="text">
+          <string>Exposure</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="CustomDoubleSpinBox" name="ribbonHDRExposureDoubleSpinBox">
+         <property name="keyboardTracking">
+          <bool>false</bool>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSlider" name="ribbonHDRExposureDoubleSlider">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayoutHSV">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelHue">
+         <property name="text">
+          <string>Hue</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="CustomDoubleSpinBox" name="ribbonHueDoubleSpinBox">
+         <property name="keyboardTracking">
+          <bool>false</bool>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QDoubleSlider" name="ribbonHueDoubleSlider">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelSaturation">
+         <property name="text">
+          <string>Saturation</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="CustomDoubleSpinBox" name="ribbonSaturationDoubleSpinBox">
+         <property name="keyboardTracking">
+          <bool>false</bool>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QDoubleSlider" name="ribbonSaturationDoubleSlider">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelValue">
+         <property name="text">
+          <string>Value</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="CustomDoubleSpinBox" name="ribbonValueDoubleSpinBox">
+         <property name="keyboardTracking">
+          <bool>false</bool>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QDoubleSlider" name="ribbonValueDoubleSlider">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="ribbonLightingGroupBox">
+     <property name="title">
+      <string>Ribbon Lighting</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutLighting">
+      <item>
+       <widget class="QCheckBox" name="ribbonAmbientOcclusionCheckBox">
+        <property name="text">
+         <string>Ambient Occlusion</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="ribbonLightingFrame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayoutLighting">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelAmbient">
+           <property name="text">
+            <string>Ambient Light Intensity</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="CustomDoubleSpinBox" name="ribbonAmbientIntensityDoubleSpinBox">
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QDoubleSlider" name="ribbonAmbientIntensityDoubleSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="SelectColorButton" name="ribbonAmbientColorPushButton">
+           <property name="text">
+            <string>Color</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelDiffuse">
+           <property name="text">
+            <string>Diffuse Light Intensity</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="CustomDoubleSpinBox" name="ribbonDiffuseIntensityDoubleSpinBox">
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QDoubleSlider" name="ribbonDiffuseIntensityDoubleSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="SelectColorButton" name="ribbonDiffuseColorPushButton">
+           <property name="text">
+            <string>Color</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelSpecular">
+           <property name="text">
+            <string>Specular Light Intensity</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="CustomDoubleSpinBox" name="ribbonSpecularIntensityDoubleSpinBox">
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QDoubleSlider" name="ribbonSpecularIntensityDoubleSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="SelectColorButton" name="ribbonSpecularColorPushButton">
+           <property name="text">
+            <string>Color</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="labelShininess">
+           <property name="text">
+            <string>Shininess</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="CustomDoubleSpinBox" name="ribbonShininessDoubleSpinBox">
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QDoubleSlider" name="ribbonShininessDoubleSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>customdoublespinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QDoubleSlider</class>
+   <extends>QSlider</extends>
+   <header>qdoubleslider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SelectColorButton</class>
+   <extends>QPushButton</extends>
+   <header>selectcolorbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

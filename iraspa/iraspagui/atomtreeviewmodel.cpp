@@ -29,6 +29,7 @@
 #include "atomtreeviewchangepositionzcommand.h"
 #include "atomtreeviewchangechargecommand.h"
 #include "atomtreeviewchangeuniqueforcefieldnamecommand.h"
+#include "proteinribbonsegmentsupport.h"
 #include <vector>
 #include <tuple>
 #include <QMimeData>
@@ -174,17 +175,37 @@ QVariant AtomTreeViewModel::data(const QModelIndex &index, int role) const
   {
     int elementIdentifier = atom->elementIdentifier();
 
-    if(item->isGroup() && index.column() == 0)
+    if (index.column() == 0 && (role == IsRibbonHierarchyGroupRole || role == GroupAtomsVisibilityRole ||
+                                role == GroupRibbonVisibilityRole || role == Qt::CheckStateRole))
     {
-      if (role == Qt::CheckStateRole)
+      const std::shared_ptr<SKAtomTreeNode> node = item->shared_from_this();
+      const bool isRibbonGroup = ProteinRibbonSegmentSupport::isRibbonHierarchyGroupNode(node);
+
+      if (role == IsRibbonHierarchyGroupRole)
       {
+        return isRibbonGroup;
+      }
+
+      if (role == GroupAtomsVisibilityRole)
+      {
+        if (!isRibbonGroup) return QVariant();
+        const std::optional<bool> atomsVisible = ProteinRibbonSegmentSupport::groupAtomsVisibilityState(node);
+        if (!atomsVisible) return Qt::PartiallyChecked;
+        return *atomsVisible ? Qt::Checked : Qt::Unchecked;
+      }
+
+      if (role == GroupRibbonVisibilityRole)
+      {
+        if (!isRibbonGroup) return QVariant();
         return atom->isVisible() ? Qt::Checked : Qt::Unchecked;
       }
-    }
 
-    if (role == Qt::CheckStateRole && index.column() == 0)
-    {
-      return atom->isVisible() ? Qt::Checked : Qt::Unchecked;
+      // A group of the ribbon hierarchy shows separate atoms and ribbon toggles instead of a single check.
+      if (role == Qt::CheckStateRole)
+      {
+        if (isRibbonGroup) return QVariant();
+        return atom->isVisible() ? Qt::Checked : Qt::Unchecked;
+      }
     }
 
     if ( index.isValid() && role == Qt::ForegroundRole )
@@ -316,22 +337,41 @@ bool AtomTreeViewModel::setData(const QModelIndex &index, const QVariant &value,
   if (!index.isValid() /*|| role != Qt::EditRole*/)
     return false;
 
-  if (role == Qt::CheckStateRole)
+  if (role == GroupAtomsVisibilityRole || role == GroupRibbonVisibilityRole)
   {
-    qDebug() << "role == Qt::CheckStateRole";
     SKAtomTreeNode *item = static_cast<SKAtomTreeNode*>(index.internalPointer());
-    if ((Qt::CheckState)value.toInt() == Qt::Checked)
+    if (!item) return false;
+    const std::shared_ptr<SKAtomTreeNode> node = item->shared_from_this();
+    if (role == GroupAtomsVisibilityRole)
     {
-      item->representedObject()->setVisibility(true);
-      emit rendererReloadData();
-      return true;
+      ProteinRibbonSegmentSupport::setGroupAtomsVisibility(node, value.toBool());
     }
     else
     {
-      item->representedObject()->setVisibility(false);
-      emit rendererReloadData();
-      return true;
+      ProteinRibbonSegmentSupport::setGroupRibbonVisibility(node, value.toBool());
     }
+    emitSubtreeDataChanged(index);
+    emit rendererReloadData();
+    return true;
+  }
+
+  if (role == Qt::CheckStateRole)
+  {
+    SKAtomTreeNode *item = static_cast<SKAtomTreeNode*>(index.internalPointer());
+    if (!item) return false;
+    const bool isVisible = (Qt::CheckState)value.toInt() == Qt::Checked;
+    const std::shared_ptr<SKAtomTreeNode> node = item->shared_from_this();
+    if (item->isGroup())
+    {
+      ProteinRibbonSegmentSupport::setGroupVisibility(node, isVisible);
+    }
+    else
+    {
+      item->representedObject()->setVisibility(isVisible);
+    }
+    emitSubtreeDataChanged(index);
+    emit rendererReloadData();
+    return true;
   }
 
   if (role != Qt::EditRole)
@@ -810,6 +850,18 @@ void AtomTreeViewModel::insertSelection(std::shared_ptr<Structure> structure, st
 }
 */
 
+
+// A group toggle changes the state of everything under it, and the tree shows that state per row.
+void AtomTreeViewModel::emitSubtreeDataChanged(const QModelIndex &parentIndex)
+{
+  emit dataChanged(parentIndex, parentIndex);
+
+  const int numberOfChildren = rowCount(parentIndex);
+  for(int row = 0; row < numberOfChildren; row++)
+  {
+    emitSubtreeDataChanged(index(row, 0, parentIndex));
+  }
+}
 
 // Helper functions
 QModelIndex AtomTreeViewModel::indexForNode(SKAtomTreeNode *node, int column) const

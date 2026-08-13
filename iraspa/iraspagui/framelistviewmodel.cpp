@@ -24,6 +24,7 @@
 #include "framelistviewdropcopycommand.h"
 #include "framelistviewpastecommand.h"
 #include "framelistviewchangedisplaynamecommand.h"
+#include "structureicons.h"
 #include <iostream>
 #include <QMimeData>
 #include <QCoreApplication>
@@ -112,14 +113,18 @@ QVariant FrameListViewModel::data(const QModelIndex &index, int role) const
   if (!index.isValid())
    return QVariant();
 
-  if (role != Qt::DisplayRole)
-   return QVariant();
-
   if(iRASPAObject* iraspaStructure = static_cast<iRASPAObject*>(index.internalPointer()))
   {
-    return QString(iraspaStructure->object()->displayName());
+    if (role == Qt::DecorationRole)
+    {
+      return structureInfoPanelIcon(iraspaStructure->type());
+    }
+    if (role == Qt::DisplayRole)
+    {
+      return QString(iraspaStructure->object()->displayName());
+    }
   }
-  return QString("Unknown");
+  return QVariant();
 }
 
 bool FrameListViewModel::setData(const QModelIndex &index, const QVariant &value, int role)

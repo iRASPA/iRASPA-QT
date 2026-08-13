@@ -18,6 +18,9 @@ SOURCES += \
     $$PWD/rklight.cpp \
     $$PWD/rklocalaxes.cpp \
     $$PWD/rkrenderkitprotocols.cpp \
+    $$PWD/rkribbonmesh.cpp \
+    $$PWD/ribbonaolayout.cpp \
+    $$PWD/ribbonaotexturepostprocess.cpp \
     $$PWD/trackball.cpp \
     $$PWD/rkrenderuniforms.cpp
 
@@ -29,5 +32,8 @@ HEADERS += \
     $$PWD/rklight.h \
     $$PWD/rklocalaxes.h \
     $$PWD/rkrenderkitprotocols.h \
+    $$PWD/rkribbonmesh.h \
+    $$PWD/ribbonaolayout.h \
+    $$PWD/ribbonaotexturepostprocess.h \
     $$PWD/trackball.h \
     $$PWD/rkrenderuniforms.h

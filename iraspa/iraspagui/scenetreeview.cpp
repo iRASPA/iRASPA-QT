@@ -502,6 +502,38 @@ void SceneTreeView::newProtein()
   insertMovie(iraspaStructure);
 }
 
+void SceneTreeView::newDNA()
+{
+  std::shared_ptr<DNA> dna = std::make_shared<DNA>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
+  dna->atomsTreeController()->appendToRootnodes(atomtreeNode);
+  dna->expandSymmetry();
+
+  dna->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
+  dna->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
+
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(dna);
+
+  insertMovie(iraspaStructure);
+}
+
+void SceneTreeView::newDNACrystal()
+{
+  std::shared_ptr<DNACrystal> dnaCrystal = std::make_shared<DNACrystal>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
+  dnaCrystal->atomsTreeController()->appendToRootnodes(atomtreeNode);
+  dnaCrystal->expandSymmetry();
+
+  dnaCrystal->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, _mainWindow->colorSets());
+  dnaCrystal->setAtomForceFieldIdentifier("Default", _mainWindow->forceFieldSets());
+
+  std::shared_ptr<iRASPAObject> iraspaStructure = std::make_shared<iRASPAObject>(dnaCrystal);
+
+  insertMovie(iraspaStructure);
+}
+
 void SceneTreeView::newCrystalEllipsoid()
 {
   std::shared_ptr<CrystalEllipsoidPrimitive> crystalEllipsoid = std::make_shared<CrystalEllipsoidPrimitive>();

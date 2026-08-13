@@ -20,6 +20,7 @@
  ********************************************************************************************************************/
 
 #include "mainwindow.h"
+#include "structureicons.h"
 #include "ui_mainwindow.h"
 #include "aboutdialog.h"
 
@@ -41,8 +42,12 @@
 #include "saveiraspaformatdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-  ui(new Ui::MainWindow)
+  ui(new Ui::MainWindow),
+  _timer(new QTimer(this))
 {
+  _timer->setSingleShot(true);
+  connect(_timer, SIGNAL(timeout()), SLOT(resizeStopped()));
+
   ui->setupUi(this);
 
   qApp->installEventFilter(this);
@@ -133,6 +138,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   // copnnect the appearance tab
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::rendererReloadData,ui->stackedRenderers, &RenderStackedWidget::reloadRenderData);
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::rendererReloadStructureUniforms,ui->stackedRenderers, &RenderStackedWidget::reloadStructureUniforms);
+  QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::rendererReloadAmbientOcclusionData,ui->stackedRenderers, &RenderStackedWidget::reloadAmbientOcclusionData);
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::redrawRenderer,ui->stackedRenderers, &RenderStackedWidget::redraw);
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::redrawWithQuality,ui->stackedRenderers, &RenderStackedWidget::redrawWithQuality);
   QObject::connect(ui->appearanceTreeWidget, &AppearanceTreeWidgetController::invalidateCachedAmbientOcclusionTextures,ui->stackedRenderers, &RenderStackedWidget::invalidateCachedAmbientOcclusionTextures);
@@ -214,10 +220,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
   watcherDatabaseIZAReadDone->setFuture(readDatabaseIZAWorker);
 
   setCurrentFile(QString());
-
-  _timer = new QTimer(this);
-  _timer->setSingleShot(true);
-  connect(_timer, SIGNAL(timeout()), SLOT(resizeStopped()));
 }
 
 MainWindow::~MainWindow()
@@ -419,6 +421,8 @@ void MainWindow::updateMenuToProjectTab()
   _newProteinCrystalAction->setDisabled(true);
   _newMoleculeAction->setDisabled(true);
   _newProteinAction->setDisabled(true);
+  _newDNAAction->setDisabled(true);
+  _newDNACrystalAction->setDisabled(true);
   _newCrystalEllipsoidAction->setDisabled(true);
   _newCrystalCylinderAction->setDisabled(true);
   _newCrystalPolygonalPrismAction->setDisabled(true);
@@ -437,6 +441,8 @@ void MainWindow::updateMenuToSceneTab()
   _newProteinCrystalAction->setEnabled(true);
   _newMoleculeAction->setEnabled(true);
   _newProteinAction->setEnabled(true);
+  _newDNAAction->setEnabled(true);
+  _newDNACrystalAction->setEnabled(true);
   _newCrystalEllipsoidAction->setEnabled(true);
   _newCrystalCylinderAction->setEnabled(true);
   _newCrystalPolygonalPrismAction->setEnabled(true);
@@ -455,6 +461,8 @@ void MainWindow::updateMenuToFrameTab()
   _newProteinCrystalAction->setDisabled(true);
   _newMoleculeAction->setDisabled(true);
   _newProteinAction->setDisabled(true);
+  _newDNAAction->setDisabled(true);
+  _newDNACrystalAction->setDisabled(true);
   _newCrystalEllipsoidAction->setDisabled(true);
   _newCrystalCylinderAction->setDisabled(true);
   _newCrystalPolygonalPrismAction->setDisabled(true);
@@ -523,8 +531,17 @@ void MainWindow::createMenus()
   QObject::connect(_newMoleculeAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newMolecule);
   _newMenu->addAction(_newMoleculeAction);
   _newProteinAction = new QAction(tr("&Protein"), this);
+  _newProteinAction->setIcon(structureInfoPanelIcon(ObjectType::protein));
   QObject::connect(_newProteinAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newProtein);
   _newMenu->addAction(_newProteinAction);
+  _newDNAAction = new QAction(tr("&DNA"), this);
+  _newDNAAction->setIcon(structureInfoPanelIcon(ObjectType::dna));
+  QObject::connect(_newDNAAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newDNA);
+  _newMenu->addAction(_newDNAAction);
+  _newDNACrystalAction = new QAction(tr("DNA &Crystal"), this);
+  _newDNACrystalAction->setIcon(structureInfoPanelIcon(ObjectType::dnaCrystal));
+  QObject::connect(_newDNACrystalAction, &QAction::triggered, ui->sceneTreeView, &SceneTreeView::newDNACrystal);
+  _newMenu->addAction(_newDNACrystalAction);
 
   _newObjectsMenu = _newMenu->addMenu(tr("&Objects"));
   _newCrystalEllipsoidAction = new QAction(tr("&Crystal Ellipsoid"), this);
@@ -638,6 +655,8 @@ void MainWindow::ShowContextAddStructureMenu(const QPoint &pos)
   contextMenu.addAction(_newProteinCrystalAction);
   contextMenu.addAction(_newMoleculeAction);
   contextMenu.addAction(_newProteinAction);
+  contextMenu.addAction(_newDNAAction);
+  contextMenu.addAction(_newDNACrystalAction);
   QMenu *menu = new QMenu("Objects", this);
   contextMenu.addMenu(menu);
   menu->addAction(_newCrystalEllipsoidAction);
@@ -868,6 +887,7 @@ void MainWindow::importFile()
 
       bool proteinOnlyAsymmetricUnit=dialog.checkboxProteinsOnlyAsymmetricUnitCell->checkState() == Qt::CheckState::Checked;
       bool asMolecule=dialog.checkboxImportAsMolecule->checkState() == Qt::CheckState::Checked;
+      bool separatePolymerChains=dialog.checkboxSeparatePolymerChains->checkState() == Qt::CheckState::Checked;
 
       ProjectTreeViewModel* pModel = qobject_cast<ProjectTreeViewModel*>(ui->projectTreeView->model());
       std::shared_ptr<ProjectTreeNode> localProjects = _documentData->projectTreeController()->localProjects();
@@ -905,11 +925,15 @@ void MainWindow::importFile()
 
           try
           {
-            std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), importType, proteinOnlyAsymmetricUnit, asMolecule);
+            std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(QList{url}, _documentData->colorSets(), _documentData->forceFieldSets(), importType, proteinOnlyAsymmetricUnit, asMolecule, separatePolymerChains);
             std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
             std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 
             ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
+            if (QModelIndex newProjectIndex = pModel->indexForNode(newProject.get()); newProjectIndex.isValid())
+            {
+              ui->projectTreeView->selectionModel()->setCurrentIndex(newProjectIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+            }
             insertRow++;
           }
           catch(std::exception const &e)
@@ -933,11 +957,15 @@ void MainWindow::importFile()
 
         try
         {
-          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), importType, proteinOnlyAsymmetricUnit, asMolecule);
+          std::shared_ptr<ProjectStructure> project = std::make_shared<ProjectStructure>(fileURLs, _documentData->colorSets(), _documentData->forceFieldSets(), importType, proteinOnlyAsymmetricUnit, asMolecule, separatePolymerChains);
           std::shared_ptr<iRASPAProject>  iraspaproject = std::make_shared<iRASPAProject>(project);
           std::shared_ptr<ProjectTreeNode> newProject = std::make_shared<ProjectTreeNode>(fileInfo.baseName(), iraspaproject, true, true);
 
           ui->projectTreeView->insertRows(insertRow, 1, insertionParentIndex, newProject);
+          if (QModelIndex newProjectIndex = pModel->indexForNode(newProject.get()); newProjectIndex.isValid())
+          {
+            ui->projectTreeView->selectionModel()->setCurrentIndex(newProjectIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+          }
         }
         catch(std::exception const &e)
         {

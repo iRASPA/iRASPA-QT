@@ -21,6 +21,15 @@
 
 #include "scene.h"
 #include "iraspaobject.h"
+#include "protein.h"
+#include "proteincrystal.h"
+#include "dna.h"
+#include "dnacrystal.h"
+#include "proteinribbonmixin.h"
+#include "dnaribbonmixin.h"
+#include "ribbonstructureeditor.h"
+#include "dnaribbonstructureeditor.h"
+#include "proteinribbonmeshparameters.h"
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
@@ -30,6 +39,109 @@
 #include "skcifparser.h"
 #include "skxyzparser.h"
 #include "skvtkparser.h"
+
+namespace
+{
+  void applyImportedStructureRibbonSelectionDefaults(Structure *structure)
+  {
+    if (!structure) { return; }
+    structure->setAtomSelectionStyle(RKSelectionStyle::WorleyNoise3D);
+    structure->setBondSelectionStyle(RKSelectionStyle::WorleyNoise3D);
+    structure->setBondDiffuseColor(QColor(51, 115, 217));
+    structure->setBondAmbientColor(QColor(89, 89, 89));
+    structure->setBondSpecularColor(QColor(255, 255, 255));
+    structure->setBondAmbientIntensity(0.35);
+    structure->setBondDiffuseIntensity(0.85);
+    structure->setBondSpecularIntensity(0.25);
+  }
+
+  void applyImportedProteinRibbonDefaults(const std::shared_ptr<Object> &object)
+  {
+    ProteinRibbonStructureEditor *ribbonEditor = dynamic_cast<ProteinRibbonStructureEditor*>(object.get());
+    if (!ribbonEditor) { return; }
+
+    object->setDrawUnitCell(false);
+    ribbonEditor->setDrawRibbon(true);
+    if (Structure *structure = dynamic_cast<Structure*>(object.get()))
+    {
+      structure->setDrawAtoms(false);
+      structure->setDrawBonds(false);
+    }
+
+    int atomCount = 0;
+    int residueCount = 0;
+    if (AtomViewer *atomViewer = dynamic_cast<AtomViewer*>(object.get()))
+    {
+      atomCount = static_cast<int>(atomViewer->atomsTreeController()->flattenedLeafNodes().size());
+    }
+    if (ProteinRibbonMixin *ribbonMixin = dynamic_cast<ProteinRibbonMixin*>(object.get()))
+    {
+      residueCount = ribbonMixin->backbone().alphaCarbonResidueCount();
+    }
+    if (residueCount <= 0) { residueCount = atomCount; }
+
+    setRibbonMeshParameters(*ribbonEditor, ProteinRibbonMeshParameters::forImportedStructure(atomCount, residueCount));
+    // Cocoa: imported proteins use Default ribbon lighting (not Fancy).
+    applyRibbonRepresentationStyle(*ribbonEditor, ProteinRibbonRepresentationStyle::defaultStyle);
+    applyImportedStructureRibbonSelectionDefaults(dynamic_cast<Structure*>(object.get()));
+    ribbonEditor->rebuildBackbone();
+  }
+
+  void applyImportedDNARibbonDefaults(const std::shared_ptr<Object> &object)
+  {
+    DNARibbonStructureEditor *ribbonEditor = dynamic_cast<DNARibbonStructureEditor*>(object.get());
+    if (!ribbonEditor) { return; }
+
+    object->setDrawUnitCell(false);
+    ribbonEditor->setDrawRibbon(true);
+    if (Structure *structure = dynamic_cast<Structure*>(object.get()))
+    {
+      structure->setDrawAtoms(false);
+      structure->setDrawBonds(false);
+    }
+
+    int atomCount = 0;
+    int residueCount = 0;
+    if (AtomViewer *atomViewer = dynamic_cast<AtomViewer*>(object.get()))
+    {
+      atomCount = static_cast<int>(atomViewer->atomsTreeController()->flattenedLeafNodes().size());
+    }
+    if (DNARibbonMixin *dnaMixin = dynamic_cast<DNARibbonMixin*>(object.get()))
+    {
+      residueCount = dnaMixin->nucleotideResidueCount();
+    }
+    if (residueCount <= 0) { residueCount = atomCount; }
+
+    setDnaRibbonMeshParameters(*ribbonEditor, ProteinRibbonMeshParameters::forImportedStructure(atomCount, residueCount));
+    applyFancyDnaRibbonAppearanceDefault(*ribbonEditor);
+    ribbonEditor->setRibbonScaleFactor(1.0);
+    ribbonEditor->setNucleicAcidBackboneStyle(NucleicAcidBackboneStyle::oval);
+    ribbonEditor->setNucleicAcidTraceMode(NucleicAcidTraceMode::phosphateMode4);
+    ribbonEditor->setNucleicAcidRingMode(NucleicAcidRingMode::filledPlanes);
+    ribbonEditor->setNucleicAcidLadderMode(NucleicAcidLadderMode::rungs);
+    ribbonEditor->setNucleicAcidOvalLength(1.35);
+    ribbonEditor->setNucleicAcidOvalWidth(0.25);
+    ribbonEditor->setNucleicAcidRingWidth(0.1);
+    ribbonEditor->setNucleicAcidLadderRadius(0.15);
+    ribbonEditor->setNucleicAcidDumbbellLength(1.0);
+    ribbonEditor->setNucleicAcidDumbbellWidth(0.15);
+    ribbonEditor->setNucleicAcidDumbbellRadius(0.3);
+    applyImportedStructureRibbonSelectionDefaults(dynamic_cast<Structure*>(object.get()));
+    ribbonEditor->rebuildBackbone();
+  }
+
+  void applyImportedRibbonDefaults(const std::shared_ptr<Object> &object)
+  {
+    if (dynamic_cast<DNARibbonMixin*>(object.get()))
+    {
+      applyImportedDNARibbonDefaults(object);
+    }
+    else if (dynamic_cast<ProteinRibbonMixin*>(object.get()))
+    {
+      applyImportedProteinRibbonDefaults(object);
+    }
+  }
+}
 
 Scene::Scene()
 {
@@ -83,7 +195,7 @@ void Scene::setSelectedMovies(std::set<std::shared_ptr<Movie>> movies)
   _selectedMovies = movies;
 }
 
-Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool proteinOnlyAsymmetricUnit, bool asMolecule) noexcept(false)
+Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldSets, bool proteinOnlyAsymmetricUnit, bool asMolecule, bool separatePolymerChains) noexcept(false)
 {
   QFile file(url.toLocalFile());
   QFileInfo info(file);
@@ -110,11 +222,11 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
   }
   else if (info.suffix().toLower() == "cif")
   {
-    parser = std::make_shared<SKCIFParser>(url, proteinOnlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
+    parser = std::make_shared<SKCIFParser>(url, proteinOnlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), separatePolymerChains);
   }
   else if (info.suffix().toLower() == "pdb")
   {
-    parser = std::make_shared<SKPDBParser>(url, proteinOnlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet());
+    parser = std::make_shared<SKPDBParser>(url, proteinOnlyAsymmetricUnit, asMolecule, CharacterSet::whitespaceAndNewlineCharacterSet(), separatePolymerChains);
   }
   else if (info.suffix().toLower() == "xyz")
   {
@@ -158,7 +270,15 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
         iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<Protein>(frame));
         break;
       case SKStructure::Kind::proteinCrystal:
+      // a solvent-only part of a protein crystal has no dedicated object-type, it is drawn as a protein crystal
+      case SKStructure::Kind::proteinCrystalSolvent:
         iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<ProteinCrystal>(frame));
+        break;
+      case SKStructure::Kind::dna:
+        iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<DNA>(frame));
+        break;
+      case SKStructure::Kind::dnaCrystal:
+        iraspastructure = std::make_shared<iRASPAObject>(std::make_shared<DNACrystal>(frame));
         break;
       case SKStructure::Kind::RASPADensityVolume:
           qDebug() << "Start reading RASPADensityVolume";
@@ -188,6 +308,8 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
         structure->reComputeBoundingBox();
         structure->recomputeDensityProperties();
       }
+
+      applyImportedRibbonDefaults(iraspastructure->object());
 
       iraspastructure->object()->reComputeBoundingBox();
       iraspastructures.push_back(iraspastructure);

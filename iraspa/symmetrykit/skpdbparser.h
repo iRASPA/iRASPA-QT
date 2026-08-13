@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <tuple>
 #include <cwctype>
 #include <optional>
@@ -41,22 +42,67 @@
 class SKPDBParser: public SKParser
 {
 public:
-  SKPDBParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped);
+  // PDB TER records end a polymer chain. When 'separatePolymerChains' is false (default), TER is
+  // ignored so that all chains stay in one structure; when true, each TER starts a new movie.
+  SKPDBParser(QUrl url, bool onlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, bool separatePolymerChains = false);
   void startParsing() noexcept(false) override final;
 private:
+  struct ResidueKey
+  {
+    QChar chain;
+    qint64 sequence;
+
+    bool operator<(const ResidueKey &other) const
+    {
+      if(chain != other.chain) return chain < other.chain;
+      return sequence < other.sequence;
+    }
+  };
+
+  struct ResidueRecord
+  {
+    QString name{};
+    bool hasNitrogen = false;
+    bool hasAlphaCarbon = false;
+    bool hasCarbonyl = false;
+    bool water = false;
+    bool nucleotide = false;
+    double3 nitrogen = double3(0.0, 0.0, 0.0);
+    double3 carbonyl = double3(0.0, 0.0, 0.0);
+  };
+
   Scanner _scanner;
   bool _proteinOnlyAsymmetricUnitCell;
   bool _asMolecule;
+  bool _separatePolymerChains;
   QString::const_iterator _previousScanLocation;
 
   int _numberOfAtoms = 0;
   int _numberOfAminoAcidAtoms = 0;
+  int _numberOfNucleotideAtoms = 0;
   int _numberOfSolventAtoms = 0;
   bool _proteinDetected = false;
+  bool _dnaDetected = false;
   bool _periodic = false;
+  // An entry solved in solution or in the microscope carries a placeholder cell.
+  bool _experimentIsNonPeriodic = false;
   std::shared_ptr<SKStructure> _frame;
   std::optional<SKCell> _cell;
   int _spaceGroupHallNumber;
+
+  std::set<QChar> _polymerChains;
+  std::set<QString> _modifiedResidues;
+  std::map<ResidueKey, ResidueRecord> _residues;
+
+  static QString pdbField(const QString &line, int location, int length);
+  static bool isWaterResidue(const QString &residueName);
+  static bool isSolventAgentResidue(const QString &residueName);
+  static bool isPlaceholderCell(double a, double b, double c, double alpha, double beta, double gamma);
+
+  void noteResidueAtom(const std::shared_ptr<SKAsymmetricAtom> &atom);
+  void parseSeqres(const QString &line);
+  void parseModres(const QString &line);
+  SKStructure::Kind kindOfCurrentPart();
 
   void addFrameToStructure(size_t currentMovie, size_t currentFrame);
 };

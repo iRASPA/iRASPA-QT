@@ -37,7 +37,14 @@
 #include <simulationkit.h>
 #include <optional>
 #include "appearanceprimitiveform.h"
+#include "appearanceribbonsform.h"
+#include "appearanceribbonsdnaform.h"
 #include "appearanceatomsform.h"
+#include "proteinribbonrepresentationstyle.h"
+#include "proteinribboncolorset.h"
+#include "proteinribbonsecondarystructuremethod.h"
+#include "proteinribbonsplinetype.h"
+#include "proteinnucleicacidcartoon.h"
 #include "appearancebondsform.h"
 #include "appearanceunitcellform.h"
 #include "appearancelocalaxesform.h"
@@ -60,6 +67,8 @@ public:
   LogReporting* logReporter() const override final {return _logReporter;};
 private:
   AppearancePrimitiveForm* _appearancePrimitiveForm;
+  AppearanceRibbonsForm* _appearanceRibbonsForm;
+  AppearanceRibbonsDNAForm* _appearanceRibbonsDNAForm;
   AppearanceAtomsForm* _appearanceAtomsForm;
   AppearanceBondsForm* _appearanceBondsForm;
   AppearanceUnitCellForm* _appearanceUnitCellForm;
@@ -68,12 +77,18 @@ private:
   AppearanceAnnotationForm* _appearanceAnnotationForm;
 
   QPushButton* pushButtonPrimitive;
+  QPushButton* pushButtonRibbons;
+  QPushButton* pushButtonRibbonsDNA;
   QPushButton* pushButtonAtoms;
   QPushButton* pushButtonBonds;
   QPushButton* pushButtonUnitCell;
   QPushButton* pushButtonLocalAxes;
   QPushButton* pushButtonAdsorptionSurface;
   QPushButton* pushButtonAnnotation;
+
+  QTreeWidgetItem* _primitiveItem = nullptr;
+  QTreeWidgetItem* _ribbonsProteinItem = nullptr;
+  QTreeWidgetItem* _ribbonsDNAItem = nullptr;
 
   LogReporting* _logReporter = nullptr;
   MainWindow *_mainWindow;
@@ -82,8 +97,11 @@ private:
   std::vector<std::shared_ptr<iRASPAObject>> _iraspa_structures{};
   void reloadData() override final;
   void reloadSelection() override final;
+  void reloadAppearanceSectionVisibility();
 
   void reloadPrimitiveProperties();
+  void reloadRibbonProperties();
+  void reloadDNARibbonProperties();
   void reloadAtomProperties();
   void reloadBondProperties();
   void reloadUnitCellProperties();
@@ -217,6 +235,172 @@ private:
   std::optional<std::unordered_set<QColor>> backPrimitiveSpecularLightColor();
   void setBackPrimitiveShininess(double value);
   std::optional<std::unordered_set<double>> backPrimitiveShininess();
+
+  // ribbon properties
+  void reloadDrawRibbonsCheckBox();
+  void reloadRibbonScaleFactor();
+  void reloadRibbonSecondaryStructureMethod();
+  void reloadRibbonSplineType();
+  void reloadRibbonRepresentationStyle();
+  void reloadRibbonColorSet();
+  void reloadRibbonSelectionStyle();
+  void reloadRibbonSelectionFrequency();
+  void reloadRibbonSelectionDensity();
+  void reloadRibbonSelectionIntensity();
+  void reloadRibbonSelectionScaling();
+  void reloadRibbonHighDynamicRange();
+  void reloadRibbonHDRExposure();
+  void reloadRibbonHue();
+  void reloadRibbonSaturation();
+  void reloadRibbonValue();
+  void reloadRibbonAmbientOcclusion();
+  void reloadRibbonAmbientLight();
+  void reloadRibbonDiffuseLight();
+  void reloadRibbonSpecularLight();
+  void reloadRibbonShininess();
+
+  void setDrawRibbons(int state);
+  std::optional<std::unordered_set<bool>> ribbonDrawRibbons();
+  void setRibbonScaleFactorSlider(double value);
+  void setRibbonScaleFactorSpinBox(double value);
+  std::optional<std::unordered_set<double>> ribbonScaleFactor();
+  void setRibbonSecondaryStructureMethod(int value);
+  std::optional<std::unordered_set<ProteinRibbonSecondaryStructureMethod, enum_hash>> ribbonSecondaryStructureMethod();
+  void setRibbonSplineType(int value);
+  std::optional<std::unordered_set<ProteinRibbonSplineType, enum_hash>> ribbonSplineType();
+  void setRibbonRepresentationStyle(int value);
+  std::optional<std::unordered_set<ProteinRibbonRepresentationStyle, enum_hash>> ribbonRepresentationStyle();
+  void setRibbonColorSet(int value);
+  std::optional<std::unordered_set<ProteinRibbonColorSet, enum_hash>> ribbonColorSet();
+  void setRibbonSelectionStyle(int value);
+  std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> ribbonSelectionStyle();
+  void setRibbonSelectionStyleNu(double value);
+  std::optional<std::unordered_set<double>> ribbonSelectionStyleNu();
+  void setRibbonSelectionStyleRho(double value);
+  std::optional<std::unordered_set<double>> ribbonSelectionStyleRho();
+  void setRibbonSelectionFrequency(double value);
+  std::optional<std::unordered_set<double>> ribbonSelectionFrequency();
+  void setRibbonSelectionDensity(double value);
+  std::optional<std::unordered_set<double>> ribbonSelectionDensity();
+  void setRibbonSelectionIntensity(double value);
+  std::optional<std::unordered_set<double>> ribbonSelectionIntensity();
+  void setRibbonSelectionScaling(double value);
+  std::optional<std::unordered_set<double>> ribbonSelectionScaling();
+  void setRibbonHighDynamicRange(int value);
+  std::optional<std::unordered_set<bool>> ribbonHighDynamicRange();
+  void setRibbonHDRExposure(double value);
+  std::optional<std::unordered_set<double>> ribbonHDRExposure();
+  void setRibbonHue(double value);
+  std::optional<std::unordered_set<double>> ribbonHue();
+  void setRibbonSaturation(double value);
+  std::optional<std::unordered_set<double>> ribbonSaturation();
+  void setRibbonValue(double value);
+  std::optional<std::unordered_set<double>> ribbonValue();
+  void setRibbonAmbientOcclusion(int value);
+  std::optional<std::unordered_set<bool>> ribbonAmbientOcclusion();
+  void setRibbonAmbientLightIntensity(double value);
+  std::optional<std::unordered_set<double>> ribbonAmbientLightIntensity();
+  void setRibbonAmbientLightColor();
+  std::optional<QColor> ribbonAmbientLightColor();
+  void setRibbonDiffuseLightIntensity(double value);
+  std::optional<std::unordered_set<double>> ribbonDiffuseLightIntensity();
+  void setRibbonDiffuseLightColor();
+  std::optional<QColor> ribbonDiffuseLightColor();
+  void setRibbonSpecularLightIntensity(double value);
+  std::optional<std::unordered_set<double>> ribbonSpecularLightIntensity();
+  void setRibbonSpecularLightColor();
+  std::optional<QColor> ribbonSpecularLightColor();
+  void setRibbonShininess(double value);
+  std::optional<std::unordered_set<double>> ribbonShininess();
+
+  // DNA ribbon properties
+  void reloadDNADrawRibbonsCheckBox();
+  void reloadDNARibbonScaleFactor();
+  void reloadDNABackboneStyle();
+  void reloadDNATraceMode();
+  void reloadDNAShowRings();
+  void reloadDNAShowLadder();
+  void reloadDNAOvalLength();
+  void reloadDNAOvalWidth();
+  void reloadDNARingWidth();
+  void reloadDNALadderRadius();
+  void reloadDNARibbonSelectionStyle();
+  void reloadDNARibbonSelectionFrequency();
+  void reloadDNARibbonSelectionDensity();
+  void reloadDNARibbonSelectionIntensity();
+  void reloadDNARibbonSelectionScaling();
+  void reloadDNARibbonHighDynamicRange();
+  void reloadDNARibbonHDRExposure();
+  void reloadDNARibbonHue();
+  void reloadDNARibbonSaturation();
+  void reloadDNARibbonValue();
+  void reloadDNARibbonAmbientOcclusion();
+  void reloadDNARibbonAmbientLight();
+  void reloadDNARibbonDiffuseLight();
+  void reloadDNARibbonSpecularLight();
+  void reloadDNARibbonShininess();
+
+  void setDrawDNARibbons(int state);
+  std::optional<std::unordered_set<bool>> dnaRibbonDrawRibbons();
+  void setDNARibbonScaleFactorSlider(double value);
+  void setDNARibbonScaleFactorSpinBox(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonScaleFactor();
+  void setDNABackboneStyle(int value);
+  std::optional<std::unordered_set<NucleicAcidBackboneStyle, enum_hash>> dnaBackboneStyle();
+  void setDNATraceMode(int value);
+  std::optional<std::unordered_set<NucleicAcidTraceMode, enum_hash>> dnaTraceMode();
+  void setDNAShowRings(int state);
+  std::optional<std::unordered_set<bool>> dnaShowRings();
+  void setDNAShowLadder(int state);
+  std::optional<std::unordered_set<bool>> dnaShowLadder();
+  void setDNAOvalLength(double value);
+  std::optional<std::unordered_set<double>> dnaOvalLength();
+  void setDNAOvalWidth(double value);
+  std::optional<std::unordered_set<double>> dnaOvalWidth();
+  void setDNARingWidth(double value);
+  std::optional<std::unordered_set<double>> dnaRingWidth();
+  void setDNALadderRadius(double value);
+  std::optional<std::unordered_set<double>> dnaLadderRadius();
+  void setDNARibbonSelectionStyle(int value);
+  std::optional<std::unordered_set<RKSelectionStyle, enum_hash>> dnaRibbonSelectionStyle();
+  void setDNARibbonSelectionStyleNu(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonSelectionStyleNu();
+  void setDNARibbonSelectionStyleRho(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonSelectionStyleRho();
+  void setDNARibbonSelectionFrequency(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonSelectionFrequency();
+  void setDNARibbonSelectionDensity(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonSelectionDensity();
+  void setDNARibbonSelectionIntensity(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonSelectionIntensity();
+  void setDNARibbonSelectionScaling(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonSelectionScaling();
+  void setDNARibbonHighDynamicRange(int value);
+  std::optional<std::unordered_set<bool>> dnaRibbonHighDynamicRange();
+  void setDNARibbonHDRExposure(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonHDRExposure();
+  void setDNARibbonHue(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonHue();
+  void setDNARibbonSaturation(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonSaturation();
+  void setDNARibbonValue(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonValue();
+  void setDNARibbonAmbientOcclusion(int value);
+  std::optional<std::unordered_set<bool>> dnaRibbonAmbientOcclusion();
+  void setDNARibbonAmbientLightIntensity(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonAmbientLightIntensity();
+  void setDNARibbonAmbientLightColor();
+  std::optional<QColor> dnaRibbonAmbientLightColor();
+  void setDNARibbonDiffuseLightIntensity(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonDiffuseLightIntensity();
+  void setDNARibbonDiffuseLightColor();
+  std::optional<QColor> dnaRibbonDiffuseLightColor();
+  void setDNARibbonSpecularLightIntensity(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonSpecularLightIntensity();
+  void setDNARibbonSpecularLightColor();
+  std::optional<QColor> dnaRibbonSpecularLightColor();
+  void setDNARibbonShininess(double value);
+  std::optional<std::unordered_set<double>> dnaRibbonShininess();
 
   // atom properties
 
@@ -530,6 +714,8 @@ private:
 
 private slots:
   void expandPrimitiveItem();
+  void expandRibbonsItem();
+  void expandRibbonsDNAItem();
   void expandAtomsItem();
   void expandBondsItem();
   void expandUnitCellItem();
@@ -539,6 +725,7 @@ private slots:
 signals:
   void rendererReloadData();
   void rendererReloadStructureUniforms();
+  void rendererReloadAmbientOcclusionData();
   void redrawRenderer();
   void redrawWithQuality(RKRenderQuality quality);
 

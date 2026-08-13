@@ -460,26 +460,20 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
                 bottom = -largestRadius;
               }
 
-              double near1 = 0.0;
-              double far1 = 2.0 * largestRadius;
+              double near1 = 1.0;
+              double far1 = 1000.0;
 
               std::vector<RKShadowUniforms> shadowMapFrameUniforms = std::vector<RKShadowUniforms>();
 
               int maxk=360;
-              const simd_quatd *directions;
-              const double *weights;
               if(quality == RKRenderQuality::picture)
               {
                 maxk = 1992;
-                directions = simd_quatd::data1992;
-                weights = simd_quatd::weights1992;
                 shadowMapFrameUniforms.reserve(maxk);
               }
               else
               {
                 maxk=360;
-                directions = simd_quatd::data360;
-                weights = simd_quatd::weights360;
                 shadowMapFrameUniforms.reserve(maxk);
               }
 
@@ -487,7 +481,7 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
               for(int k=0;k<maxk;k++)
               {
                 simd_quatd smallChangeQ = simd_quatd::smallRandomQuaternion(0.5*10.0*M_PI/180.0);
-                simd_quatd q = smallChangeQ * directions[k];
+                simd_quatd q = smallChangeQ * simd_quatd::ambientOcclusionDirection(k, maxk);
 
                 double4x4 currentModelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(double4x4(q), centerOfScene);
 
@@ -584,7 +578,7 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
                   glActiveTexture(GL_TEXTURE0);
                   glBindTexture(GL_TEXTURE_2D, shadowMapDepthTexture);
                   glUniform1i(_atomAmbientOcclusionMapUniformLocation, 0);
-                  glUniform1f(_atomAmbientOcclusionMapWeightUniformLocation, float(4.0*weights[k]/double(maxk)));
+                  glUniform1f(_atomAmbientOcclusionMapWeightUniformLocation, simd_quatd::ambientOcclusionBlendWeight(k, maxk));
 
                   glDrawElementsInstanced(GL_TRIANGLE_STRIP, 4,GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(_atomShader._numberOfDrawnAtoms[i][j]));
 

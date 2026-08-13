@@ -46,6 +46,11 @@ RKRenderBondSource::~RKRenderBondSource()
   // Compulsory virtual destructor definition
 }
 
+RKRenderRibbonSource::~RKRenderRibbonSource()
+{
+  // Compulsory virtual destructor definition
+}
+
 RKRenderVolumetricDataSource::~RKRenderVolumetricDataSource()
 {
   // Compulsory virtual destructor definition

@@ -22,9 +22,11 @@
 #pragma once
 
 #include "structure.h"
+#include "proteinribbonmixin.h"
 
 class Protein: public Structure,
-               public AtomEditor, public BondEditor
+               public AtomEditor, public BondEditor,
+               public ProteinRibbonMixin
 {
 public:
   Protein();
@@ -106,8 +108,13 @@ public:
   double3 bondVector(std::shared_ptr<SKBond> bond) const override final;
   std::pair<double3, double3> computeChangedBondLength(std::shared_ptr<SKBond> bond, double bondlength) const override final;
 
+protected:
+  SKAtomTreeController &ribbonAtomTreeController() override { return *_atomsTreeController; }
+  const SKAtomTreeController &ribbonAtomTreeController() const override { return *_atomsTreeController; }
+  double3 ribbonContentShift() const override { return _cell->contentShift(); }
+
 private:
-  qint64 _versionNumber{2};
+  qint64 _versionNumber{7};
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Protein> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Protein> &);
 };

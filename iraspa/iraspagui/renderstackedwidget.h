@@ -148,6 +148,7 @@ private slots:
   void setCameraToPerspective();
   void showBoundingBox(bool checked);
   void computeAOHighQuality();
+  void updateRibbonDebugOverlay();
 signals:
   void updateCameraMovement();
   void updateCameraModelViewMatrix();

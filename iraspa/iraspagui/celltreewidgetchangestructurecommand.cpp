@@ -78,6 +78,18 @@ void CellTreeWidgetChangeStructureCommand::redo()
         iraspa_structure->setObject(newObject, ObjectType::proteinCrystal);
         break;
       }
+      case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::dna):
+      {
+        std::shared_ptr<Object> newObject = std::make_shared<DNA>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::dna);
+        break;
+      }
+      case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::dnaCrystal):
+      {
+        std::shared_ptr<Object> newObject = std::make_shared<DNACrystal>(iraspa_structure->object());
+        iraspa_structure->setObject(newObject, ObjectType::dnaCrystal);
+        break;
+      }
       case static_cast<typename std::underlying_type<Structure::CreationMethod>::type>(SKStructure::Kind::crystalEllipsoidPrimitive):
       {
         std::shared_ptr<Object> newObject = std::make_shared<CrystalEllipsoidPrimitive>(iraspa_structure->object());

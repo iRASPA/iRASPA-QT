@@ -7,6 +7,7 @@ SOURCES += \
     $$PWD/appearancelocalaxesform.cpp \
     $$PWD/appearanceprimitiveform.cpp \
     $$PWD/atomtreeviewpushbuttonstyleditemdelegate.cpp \
+    $$PWD/atomtreeviewribbonvisibilitystyleditemdelegate.cpp \
     $$PWD/bondlistpushbuttonstyleditemdelegate.cpp \
     $$PWD/bondlistviewcomboboxstyleditemdelegate.cpp \
     $$PWD/cameraaxesform.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
     $$PWD/saveposcarformatdialog.cpp \
     $$PWD/savexyzformatdialog.cpp \
     $$PWD/scenetreeview.cpp \
+    $$PWD/structureicons.cpp \
     $$PWD/framelistview.cpp \
     $$PWD/detailtabviewcontroller.cpp \
     $$PWD/cameracameraform.cpp \
@@ -59,6 +61,11 @@ SOURCES += \
     $$PWD/customintspinbox.cpp \
     $$PWD/customdoublespinbox.cpp \
     $$PWD/appearanceatomsform.cpp \
+    $$PWD/appearanceribbonsform.cpp \
+    $$PWD/appearanceribbonsdnaform.cpp \
+    $$PWD/appearanceribbonproperties.cpp \
+    $$PWD/appearanceribbondsdnaproperties.cpp \
+    $$PWD/appearanceribbondsdnacartoonproperties.cpp \
     $$PWD/appearancetreewidgetcontroller.cpp \
     $$PWD/appearancebondsform.cpp \
     $$PWD/appearanceunitcellform.cpp \
@@ -97,6 +104,7 @@ HEADERS += \
     $$PWD/appearancelocalaxesform.h \
     $$PWD/appearanceprimitiveform.h \
     $$PWD/atomtreeviewpushbuttonstyleditemdelegate.h \
+    $$PWD/atomtreeviewribbonvisibilitystyleditemdelegate.h \
     $$PWD/bondlistpushbuttonstyleditemdelegate.h \
     $$PWD/bondlistviewcomboboxstyleditemdelegate.h \
     $$PWD/cameraaxesform.h \
@@ -130,6 +138,7 @@ HEADERS += \
     $$PWD/saveposcarformatdialog.h \
     $$PWD/savexyzformatdialog.h \
     $$PWD/scenetreeview.h \
+    $$PWD/structureicons.h \
     $$PWD/framelistview.h \
     $$PWD/detailtabviewcontroller.h \
     $$PWD/cameracameraform.h \
@@ -148,6 +157,9 @@ HEADERS += \
     $$PWD/customintspinbox.h \
     $$PWD/customdoublespinbox.h \
     $$PWD/appearanceatomsform.h \
+    $$PWD/appearanceribbonsform.h \
+    $$PWD/appearanceribbonsdnaform.h \
+    $$PWD/appearanceribbonhelpers.h \
     $$PWD/appearancetreewidgetcontroller.h \
     $$PWD/appearancebondsform.h \
     $$PWD/appearanceunitcellform.h \
@@ -193,6 +205,8 @@ FORMS += \
     $$PWD/cameracameraform.ui \
     $$PWD/cellcellform.ui \
     $$PWD/appearanceatomsform.ui \
+    $$PWD/appearanceribbonsform.ui \
+    $$PWD/appearanceribbonsdnaform.ui \
     $$PWD/appearancebondsform.ui \
     $$PWD/appearanceunitcellform.ui \
     $$PWD/appearanceadsorptionsurfaceform.ui \

@@ -79,7 +79,7 @@ public:
     float atomHue;
     float atomSaturation;
     float atomValue;
-    float pad111;
+    int structureIdentifier;
 
     bool atomHDR;
     float atomHDRExposure;
@@ -181,21 +181,37 @@ public:
 
     float primitiveSelectionScaling;
     float primitiveSelectionIntensity;
+    bool isUnity;
     float pad7;
-    float pad8;
 
     float primitiveHue;
     float primitiveSaturation;
     float primitiveValue;
-    float pad9;
+    float pad8;
 
     vec4 localAxisPosition;
     vec4 numberOfReplicas;
-    vec4 pad11;
-    vec4 pad12;
+    vec4 ribbonCoilColor;
+    vec4 ribbonHelixColor;
+    vec4 ribbonSheetColor;
+    bool ribbonHDR;
+    float ribbonHDRExposure;
+    float ribbonHue;
+    float ribbonSaturation;
+    float ribbonValue;
+    bool ribbonAmbientOcclusion;
+    float padRibbon1;
+    float ribbonShininess;
+    float padRibbon2;
+    float padRibbon3;
+    float padRibbon4;
+    float padRibbon5;
+    vec4 ribbonAmbientColor;
+    vec4 ribbonDiffuseColor;
+    vec4 ribbonSpecularColor;
 
 
-    //----------------------------------------  1024 bytes boundary
+    //----------------------------------------  1152 bytes boundary
 
   } structureUniforms;
   )foo";

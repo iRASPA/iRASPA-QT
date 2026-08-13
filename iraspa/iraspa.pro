@@ -45,6 +45,11 @@ TRANSLATIONS = i18n/iraspa_en.ts \
 
 CONFIG += lrelease embed_translations
 
+macx|unix:!macx {
+  !exists($$shell_path($$[QT_HOST_BINS]/lrelease)): \
+    error("lrelease not found in $$[QT_HOST_BINS]. Install Qt linguist tools (e.g. brew install qttools).")
+}
+
 OTHER_FILES = $$TRANSLATIONS
 
 macx{
@@ -69,6 +74,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 macx{
   QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 
+  # Homebrew on Apple Silicon uses /opt/homebrew; Intel Macs use /usr/local.
+  HOMEBREW_PREFIX = /usr/local
+  exists(/opt/homebrew/include) {
+    HOMEBREW_PREFIX = /opt/homebrew
+  }
+
+  # Qt 6 qyieldcpu.h uses __yield(); arm_acle.h must be visible on Apple Silicon.
+  equals(QMAKE_HOST.arch, arm64) {
+    QMAKE_CXXFLAGS += -include arm_acle.h
+  }
+  # Qt mkspecs treat implicit declarations as errors on recent Xcode toolchains.
+  QMAKE_CXXFLAGS += -Wno-error=implicit-function-declaration
+
   contains(DEFINES,USE_VULKAN){
     DEFINES += VK_USE_PLATFORM_MACOS_MVK
     # CHANGE HERE TO YOUR SDK PATH:
@@ -82,30 +100,44 @@ macx{
     QMAKE_BUNDLE_DATA += VULKAN_DATA
 
     INCLUDEPATH += $${VULKAN_SDK_PATH}/macOS/include
+    INCLUDEPATH += $$HOMEBREW_PREFIX/include
     # Fix @rpath
     QMAKE_RPATHDIR += @executable_path/../Frameworks
 
     #QMAKE_CXXFLAGS += -Wl,--stack,4194304
     QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
-    INCLUDEPATH += $$system(/usr/local/bin/python3-config --include | sed -e 's:-I::g')
-    QMAKE_LFLAGS +=  -framework OpenCL -framework Accelerate /usr/local/Cellar/python@3.12/3.12.4/Frameworks/Python.framework/Versions/3.12/lib/libpython3.12.dylib
-    LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+    exists($$HOMEBREW_PREFIX/bin/python3-config) {
+      INCLUDEPATH += $$system($$HOMEBREW_PREFIX/bin/python3-config --include | sed -e 's:-I::g')
+    }
+    QMAKE_LFLAGS += -framework OpenCL -framework Accelerate
+    LIBS += -L$$HOMEBREW_PREFIX/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+    exists($$HOMEBREW_PREFIX/bin/python3-config) {
+      LIBS += $$system($$HOMEBREW_PREFIX/bin/python3-config --embed --ldflags --libs 2>/dev/null)
+    }
   }
 
   contains(DEFINES,USE_OPENGL) {
     #QMAKE_CXXFLAGS += -Wl,--stack,4194304
-    INCLUDEPATH += /usr/local/include
-    INCLUDEPATH += $$system(/usr/local/bin/python3-config --include | sed -e 's:-I::g')
-    QMAKE_LFLAGS +=  -framework OpenCL -framework Accelerate /usr/local/Cellar/python@3.12/3.12.4/Frameworks/Python.framework/Versions/3.12/lib/libpython3.12.dylib
+    INCLUDEPATH += $$HOMEBREW_PREFIX/include
+    exists($$HOMEBREW_PREFIX/bin/python3-config) {
+      INCLUDEPATH += $$system($$HOMEBREW_PREFIX/bin/python3-config --include | sed -e 's:-I::g')
+    }
+    QMAKE_LFLAGS += -framework OpenCL -framework Accelerate
 
     CONFIG(debug, debug|release){
       QMAKE_CXXFLAGS += -g -O0 -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct  -fsanitize=address
-      LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz -fsanitize=address
+      LIBS += -L$$HOMEBREW_PREFIX/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz -fsanitize=address
+      exists($$HOMEBREW_PREFIX/bin/python3-config) {
+        LIBS += $$system($$HOMEBREW_PREFIX/bin/python3-config --embed --ldflags --libs 2>/dev/null)
+      }
       }
       else
       {
         QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
-        LIBS += -L/usr/local/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+        LIBS += -L$$HOMEBREW_PREFIX/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+        exists($$HOMEBREW_PREFIX/bin/python3-config) {
+          LIBS += $$system($$HOMEBREW_PREFIX/bin/python3-config --embed --ldflags --libs 2>/dev/null)
+        }
     }
   }
 }
@@ -184,4 +216,5 @@ unix:!macx{
 
 
 RESOURCES += \
-    iraspagui/iraspa-resources.qrc
+    iraspagui/iraspa-resources.qrc \
+    renderkit/opengl/ribbonshaders.qrc

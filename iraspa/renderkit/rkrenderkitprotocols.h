@@ -25,6 +25,7 @@
 #include <QColor>
 #include <QDate>
 #include <QImage>
+#include <cstdint>
 #include <vector>
 #include <mathkit.h>
 #include <foundationkit.h>
@@ -34,6 +35,8 @@
 #include "rkcamera.h"
 #include "rkglobalaxes.h"
 #include "rklocalaxes.h"
+#include "rkribbonmesh.h"
+#include <set>
 
 // forward declaration
 struct RKInPerInstanceAttributesAtoms;
@@ -130,6 +133,61 @@ public:
   virtual double atomSelectionWorleyNoise3DJitter() const = 0;
   virtual double atomSelectionIntensity() const = 0;
   virtual double atomSelectionScaling() const = 0;
+};
+
+class RKRenderRibbonSource
+{
+public:
+  virtual ~RKRenderRibbonSource() = 0;
+
+  virtual bool drawRibbon() const = 0;
+  virtual double ribbonScaleFactor() const = 0;
+  virtual std::vector<RKVertex> renderRibbonVertices() const = 0;
+  virtual std::vector<uint32_t> renderRibbonIndices() const = 0;
+  virtual int ribbonNumberOfVertices() const = 0;
+  virtual int ribbonNumberOfIndices() const = 0;
+  virtual std::vector<RKRibbonChainDrawRange> ribbonChainDrawRanges() const = 0;
+  virtual std::vector<RKRibbonChainDrawRange> ribbonSegmentDrawRanges() const = 0;
+  virtual std::vector<RKRibbonChainDrawRange> ribbonResidueDrawRanges() const = 0;
+  virtual bool ribbonUsesSegmentVisibility() const = 0;
+  virtual bool ribbonUsesResidueVisibility() const = 0;
+  virtual bool isRibbonSegmentDrawRangeVisible(int index) const = 0;
+  virtual bool isRibbonResidueDrawRangeVisible(int index) const = 0;
+  virtual std::set<int> renderSelectedRibbonSegmentDrawRangeIndices() const = 0;
+  virtual std::set<int> renderSelectedRibbonResidueDrawRangeIndices() const = 0;
+  virtual int ribbonNumberOfChains() const = 0;
+  virtual int ribbonNumberOfRings() const = 0;
+  virtual int ribbonMaxSplineSampleCount() const = 0;
+  virtual int ribbonAmbientOcclusionPatchNumber() const = 0;
+  virtual int ribbonAmbientOcclusionPatchSize() const = 0;
+  virtual int ribbonAmbientOcclusionTextureSize() const = 0;
+  virtual int ribbonAmbientOcclusionTextureWidth() const = 0;
+  virtual int ribbonAmbientOcclusionTextureHeight() const = 0;
+  virtual int ribbonAmbientOcclusionStripHeight() const = 0;
+  virtual void setRibbonAmbientOcclusionPatchNumber(int) = 0;
+  virtual void setRibbonAmbientOcclusionPatchSize(int) = 0;
+  virtual void setRibbonAmbientOcclusionTextureSize(int) = 0;
+  virtual void setRibbonAmbientOcclusionTextureWidth(int) = 0;
+  virtual void setRibbonAmbientOcclusionTextureHeight(int) = 0;
+  virtual void setRibbonAmbientOcclusionStripHeight(int) = 0;
+  virtual float3 ribbonCoilColor() const = 0;
+  virtual float3 ribbonHelixColor() const = 0;
+  virtual float3 ribbonSheetColor() const = 0;
+  virtual bool ribbonHDR() const = 0;
+  virtual double ribbonHDRExposure() const = 0;
+  virtual double ribbonHue() const = 0;
+  virtual double ribbonSaturation() const = 0;
+  virtual double ribbonValue() const = 0;
+  virtual bool ribbonAmbientOcclusion() const = 0;
+  virtual QColor ribbonAmbientColor() const = 0;
+  virtual QColor ribbonDiffuseColor() const = 0;
+  virtual QColor ribbonSpecularColor() const = 0;
+  virtual double ribbonAmbientIntensity() const = 0;
+  virtual double ribbonDiffuseIntensity() const = 0;
+  virtual double ribbonSpecularIntensity() const = 0;
+  virtual double ribbonShininess() const = 0;
+  virtual void rebuildBackbone() = 0;
+  virtual void rebuildRibbonMesh() = 0;
 };
 
 class RKRenderBondSource

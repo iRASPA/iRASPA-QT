@@ -40,6 +40,7 @@
 
 class OpenGLAtomPickingShader;
 class OpenGLTextRenderingShader;
+class OpenGLRibbonAmbientOcclusionShader;
 
 class OpenGLAtomShader: public QOpenGLFunctions_3_3_Core
 {
@@ -70,4 +71,5 @@ private:
 
   friend OpenGLAtomPickingShader;
   friend OpenGLTextRenderingShader;
+  friend OpenGLRibbonAmbientOcclusionShader;
 };

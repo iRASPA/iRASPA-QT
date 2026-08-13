@@ -34,6 +34,21 @@
 
 class SKAtomTreeController; // FIX
 
+/// What a group node stands for. A group is a folder over atoms; chain / segment / residue
+/// groups have a ribbon to speak for, the rest have only their atoms.
+enum class SKAtomTreeGroupKind: qint64
+{
+  none = 0,                      // a leaf: an atom, not a folder
+  custom = 1,                    // a folder of no particular kind, symmetry copies among them
+  chain = 2,
+  secondaryStructureSegment = 3, // alpha-helix, beta-sheet or coil
+  residue = 4,                   // one residue, of the polymer or of the HETATM listed beside it
+  hetatm = 5,                    // the HETATM of a chain: waters, ions, ligands
+  other = 6,                     // atoms without a residue identity
+  dnaHelix = 7,                  // the nucleotides of one strand
+  otherNucleotides = 8           // nucleotides the backbone trace left out
+};
+
 class SKAtomTreeNode: public std::enable_shared_from_this<SKAtomTreeNode>
 {
 public:
@@ -53,7 +68,9 @@ public:
     size_t childCount() {return _childNodes.size();}
     inline bool isLeaf() {return !_isGroup;}
     inline bool isGroup() {return _isGroup;}
-    void setIsGroup(bool value) {_isGroup = value;}
+    inline SKAtomTreeGroupKind groupKind() const {return _groupKind;}
+    void setGroupKind(SKAtomTreeGroupKind value);
+    void setIsGroup(bool value);
     bool insertChild(size_t row, std::shared_ptr<SKAtomTreeNode> child);
     void insertInParent(std::shared_ptr<SKAtomTreeNode> parent, size_t index);
     void appendToParent(std::shared_ptr<SKAtomTreeNode> parent);
@@ -78,9 +95,9 @@ public:
     std::optional<size_t> findChildIndex(std::shared_ptr<SKAtomTreeNode> child);
     int row() const;
     void setParent(std::shared_ptr<SKAtomTreeNode> parent) {_parent = parent;}
-    void setGroupItem(bool state) {_isGroup = state;}
+    void setGroupItem(bool state) {setIsGroup(state);}
 private:
-    qint64 _versionNumber{1};
+    qint64 _versionNumber{2};
     QString _displayName;
     std::weak_ptr<SKAtomTreeNode> _parent;
     std::shared_ptr<SKAsymmetricAtom> _representedObject;
@@ -92,6 +109,7 @@ private:
     bool _selected = true;
     bool _isGroup = false;
     bool _isEditable = false;
+    SKAtomTreeGroupKind _groupKind = SKAtomTreeGroupKind::none;
 
     friend SKAtomTreeController;
 

@@ -32,7 +32,9 @@
 class SKmmCIFWriter
 {
 public:
-  SKmmCIFWriter(QString displayName, SKSpaceGroup &spacegroup, std::shared_ptr<SKCell> cell, double3 origin, std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms);
+  // 'withProteinInfo' adds the label_/auth_ residue columns that biomolecular readers expect
+  SKmmCIFWriter(QString displayName, SKSpaceGroup &spacegroup, std::shared_ptr<SKCell> cell, double3 origin,
+                std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms, bool withProteinInfo = false);
   QString string();
 private:
   QString _displayName;
@@ -40,4 +42,9 @@ private:
   std::shared_ptr<SKCell> _cell;
   double3 _origin;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> _atoms;
+  bool _withProteinInfo;
+
+  static QString cifDataBlockName(const QString &displayName);
+  static QString atomName(const std::shared_ptr<SKAsymmetricAtom> &atom, const QString &chemicalElement);
+  static QString characterValue(QChar character, const QString &valueWhenEmpty);
 };

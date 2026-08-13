@@ -36,8 +36,10 @@
 #include <QApplication>
 #include <optional>
 #include <QPainter>
+#include <QFont>
 #include <QStylePainter>
 #include "opengluniformstringliterals.h"
+#include "ribbonaolayout.h"
 
 #if defined(Q_OS_WIN)
   #include "wingdi.h"
@@ -59,7 +61,10 @@ OpenGLWindow::OpenGLWindow(QWidget* parent): QOpenGLWindow(),
     _unitCellShader(),
     _localAxesShader(),
     _selectionShader(_atomShader, _bondShader, _objectShader),
-    _pickingShader(_atomShader, _bondShader, _objectShader),
+    _ribbonShader(),
+    _ribbonSelectionShader(_ribbonShader),
+    _ribbonAmbientOcclusionShader(_ribbonShader, _atomShader),
+    _pickingShader(_atomShader, _bondShader, _objectShader, _ribbonShader),
     _textShader(),
     _timer(new QTimer(parent))
 {
@@ -82,7 +87,85 @@ OpenGLWindow::OpenGLWindow(QWidget* parent): QOpenGLWindow(),
 OpenGLWindow::~OpenGLWindow()
 {
   makeCurrent();
+  deleteRibbonTextures();
+  if (_ribbonFallbackAmbientOcclusionTexture != 0)
+  {
+    glDeleteTextures(1, &_ribbonFallbackAmbientOcclusionTexture);
+    _ribbonFallbackAmbientOcclusionTexture = 0;
+  }
   _bondShader.deletePermanentBuffers();
+}
+
+void OpenGLWindow::ensureRibbonFallbackAmbientOcclusionTexture()
+{
+  if (_ribbonFallbackAmbientOcclusionTexture != 0)
+  {
+    return;
+  }
+
+  const float white = 1.0f;
+  glGenTextures(1, &_ribbonFallbackAmbientOcclusionTexture);
+  glBindTexture(GL_TEXTURE_2D, _ribbonFallbackAmbientOcclusionTexture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, 1, 1, 0, GL_RED, GL_FLOAT, &white);
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void OpenGLWindow::deleteRibbonTextures()
+{
+  for (size_t i = 0; i < _ribbonTextures.size(); ++i)
+  {
+    for (size_t j = 0; j < _ribbonTextures[i].size(); ++j)
+    {
+      if (_ribbonTextures[i][j] != 0)
+      {
+        glDeleteTextures(1, &_ribbonTextures[i][j]);
+        _ribbonTextures[i][j] = 0;
+      }
+    }
+  }
+  _ribbonTextures.clear();
+
+  for (size_t i = 0; i < _ribbonRawTextures.size(); ++i)
+  {
+    for (size_t j = 0; j < _ribbonRawTextures[i].size(); ++j)
+    {
+      if (_ribbonRawTextures[i][j] != 0)
+      {
+        glDeleteTextures(1, &_ribbonRawTextures[i][j]);
+        _ribbonRawTextures[i][j] = 0;
+      }
+    }
+  }
+  _ribbonRawTextures.clear();
+}
+
+void OpenGLWindow::ensureRibbonTextureStorage()
+{
+  _ribbonTextures.resize(_renderStructures.size());
+  _ribbonRawTextures.resize(_renderStructures.size());
+  for (size_t i = 0; i < _renderStructures.size(); ++i)
+  {
+    _ribbonTextures[i].resize(_renderStructures[i].size(), 0);
+    _ribbonRawTextures[i].resize(_renderStructures[i].size(), 0);
+  }
+}
+
+void OpenGLWindow::reloadRibbonAmbientOcclusionTextures(RKRenderQuality quality)
+{
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
+
+  makeCurrent();
+  _ribbonAmbientOcclusionShader.syncRenderStructures(_renderStructures);
+  ensureRibbonFallbackAmbientOcclusionTexture();
+  ensureRibbonTextureStorage();
+  _ribbonAmbientOcclusionShader.reloadData(_dataSource, quality, _ribbonTextures, _ribbonRawTextures);
 }
 
 void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
@@ -123,8 +206,13 @@ void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> sourc
 
 void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
-  makeCurrent();
   _renderStructures = structures;
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
+
+  makeCurrent();
 
   _energySurfaceShader.setRenderStructures(structures);
   _energyVolumeRenderedSurface.setRenderStructures(structures);
@@ -136,9 +224,16 @@ void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<R
   _localAxesShader.setRenderStructures(structures);
 
   _selectionShader.setRenderStructures(structures);
+  _ribbonShader.setRenderStructures(structures);
+  _ribbonSelectionShader.setRenderStructures(structures);
+  _ribbonAmbientOcclusionShader.setRenderStructures(structures);
   _pickingShader.setRenderStructures(structures);
 
   _textShader.setRenderStructures(structures);
+
+  _ribbonShader.reloadData();
+  _ribbonSelectionShader.reloadData();
+  _pickingShader.reloadData();
 }
 
 
@@ -157,6 +252,7 @@ void OpenGLWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::sha
 {
   makeCurrent();
   _atomShader.invalidateCachedAmbientOcclusionTexture(structures);
+  _ribbonAmbientOcclusionShader.invalidateCachedAmbientOcclusionTexture(structures);
 }
 
 void OpenGLWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures)
@@ -244,6 +340,9 @@ void OpenGLWindow::initializeGL()
   _localAxesShader.initializeOpenGLFunctions();
 
   _selectionShader.initializeOpenGLFunctions();
+  _ribbonShader.initializeOpenGLFunctions();
+  _ribbonSelectionShader.initializeOpenGLFunctions();
+  _ribbonAmbientOcclusionShader.initializeOpenGLFunctions();
   _pickingShader.initializeEmbeddedOpenGLFunctions();
 
   _textShader.initializeOpenGLFunctions();
@@ -425,6 +524,9 @@ void OpenGLWindow::initializeGL()
   _unitCellShader.loadShader();
   _localAxesShader.loadShader();
   _selectionShader.loadShader();
+  _ribbonShader.loadShader();
+  _ribbonSelectionShader.loadShader();
+  _ribbonAmbientOcclusionShader.loadShader();
   _pickingShader.loadShader();
   _textShader.loadShader();
 
@@ -489,6 +591,12 @@ void OpenGLWindow::initializeGL()
   check_gl_error();
 
   _isOpenGLInitialized = true;
+  setRenderStructures(_renderStructures);
+
+  if (_dataSource)
+  {
+    reloadData();
+  }
 
   // It is undefined when initializeGL() is called. Most likely it is after the UI is up.
   // In that case _parent (the RenderStackedWidget that created this OpenGL window) has a valid (non-nil) log-reporter.
@@ -710,6 +818,26 @@ void OpenGLWindow::paintGL()
 
 void OpenGLWindow::paintOverGL()
 {
+  if (_ribbonShader.aoDebugMode() == RibbonAODebugMode::uniformColors)
+  {
+    const QString text = ribbonDebugOverlayText();
+    if (!text.isEmpty())
+    {
+      QPainter painter(this);
+      QFont font = painter.font();
+      font.setFamily(QStringLiteral("monospace"));
+      font.setPointSize(10);
+      painter.setFont(font);
+      const QFontMetrics metrics(font);
+      const int textWidth = metrics.horizontalAdvance(text);
+      const int textHeight = metrics.height();
+      const QRect backgroundRect(2, 2, textWidth + 8, textHeight + 6);
+      painter.fillRect(backgroundRect, QColor(255, 255, 255, 220));
+      painter.setPen(Qt::black);
+      painter.drawText(backgroundRect, Qt::AlignCenter, text);
+    }
+  }
+
   if(_dataSource)
   {
     QColor color(Qt::lightGray);
@@ -999,6 +1127,10 @@ void OpenGLWindow::drawSceneOpaqueToFramebuffer(GLuint framebuffer)
     _unitCellShader.paintGL(_structureUniformBuffer);
     _localAxesShader.paintGL(_structureUniformBuffer);
 
+    _ribbonShader.paintGL(_ribbonTextures, _ribbonRawTextures, _structureUniformBuffer, _ribbonFallbackAmbientOcclusionTexture,
+                          int(_width * _devicePixelRatio), int(_height * _devicePixelRatio));
+    check_gl_error();
+
     _boundingBoxShader.paintGL();
     _energySurfaceShader.paintGLOpaque(_structureUniformBuffer,_isosurfaceUniformBuffer);
 
@@ -1031,6 +1163,8 @@ void OpenGLWindow::drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint 
 
     _energySurfaceShader.paintGLTransparent(_structureUniformBuffer,_isosurfaceUniformBuffer);
 
+    _ribbonSelectionShader.paintOverlayGL(_structureUniformBuffer);
+
     _selectionShader.paintGL(camera, _quality, _structureUniformBuffer);
 
     _textShader.paintGL(_structureUniformBuffer);
@@ -1045,14 +1179,44 @@ void OpenGLWindow::drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint 
   check_gl_error();
 
   _selectionShader.paintGLGlow(_structureUniformBuffer);
+  _ribbonSelectionShader.paintGlowGL(_structureUniformBuffer);
   glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 
 void OpenGLWindow::keyPressEvent( QKeyEvent* e )
 {
-  Q_UNUSED(e);
+  if (e->modifiers().testFlag(Qt::AltModifier) && e->key() == Qt::Key_D)
+  {
+    cycleRibbonAODebugMode();
+    e->accept();
+    return;
+  }
 
   makeCurrent();
+}
+
+void OpenGLWindow::cycleRibbonAODebugMode()
+{
+  RibbonAODebugMode mode = _ribbonShader.aoDebugMode();
+  ::cycleRibbonAODebugMode(mode);
+  _ribbonShader.setAoDebugMode(mode);
+  qDebug().noquote() << QStringLiteral("Ribbon AO debug:") << ribbonAODebugModeLabel(mode);
+  if (mode == RibbonAODebugMode::uniformColors)
+  {
+    qDebug().noquote() << ribbonColorUniformDebugOverlayText(_renderStructures);
+  }
+  emit ribbonAODebugModeChanged(mode);
+  update();
+}
+
+QString OpenGLWindow::ribbonDebugOverlayText() const
+{
+  return ribbonColorUniformDebugOverlayText(_renderStructures);
+}
+
+RibbonAODebugMode OpenGLWindow::ribbonAODebugMode() const
+{
+  return _ribbonShader.aoDebugMode();
 }
 
 void OpenGLWindow::mousePressEvent(QMouseEvent *event)
@@ -1342,12 +1506,15 @@ void OpenGLWindow::updateStructureUniforms()
 
   std::vector<RKStructureUniforms> structureUniforms = std::vector<RKStructureUniforms>();
 
+  size_t flatIndex = 0;
   for(uint i=0;i<_renderStructures.size();i++)
   {
     for(uint j=0;j<_renderStructures[i].size();j++)
     {
       RKStructureUniforms structureUniform = RKStructureUniforms(i, j, _renderStructures[i][j]);
+      structureUniform.structureIdentifier = int32_t(flatIndex);
       structureUniforms.push_back(structureUniform);
+      flatIndex++;
     }
   }
 
@@ -1494,7 +1661,10 @@ void OpenGLWindow::reloadData()
   _unitCellShader.reloadData();
   _localAxesShader.reloadData();
   _selectionShader.reloadData();
+  _ribbonShader.reloadData();
+  _ribbonSelectionShader.reloadData();
   _pickingShader.reloadData();
+  reloadRibbonAmbientOcclusionTextures(RKRenderQuality::low);
   _textShader.reloadData();
 
   updateStructureUniforms();
@@ -1521,7 +1691,10 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
   _unitCellShader.reloadData();
   _localAxesShader.reloadData();
   _selectionShader.reloadData();
+  _ribbonShader.reloadData();
+  _ribbonSelectionShader.reloadData();
   _pickingShader.reloadData();
+  reloadRibbonAmbientOcclusionTextures(quality);
   _textShader.reloadData();
 
   update();
@@ -1531,7 +1704,16 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
 
 void OpenGLWindow::reloadAmbientOcclusionData()
 {
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
+
   makeCurrent();
+  updateStructureUniforms();
+  updateLightUniforms();
+  _ribbonShader.reloadData();
+  reloadRibbonAmbientOcclusionTextures(RKRenderQuality::low);
   _atomShader.reloadAmbientOcclusionData(_dataSource, RKRenderQuality::low);
 }
 
@@ -1549,9 +1731,13 @@ void OpenGLWindow::reloadRenderData()
   _unitCellShader.reloadData();
   _localAxesShader.reloadData();
   _selectionShader.reloadData();
+  _ribbonShader.reloadData();
+  _ribbonSelectionShader.reloadData();
   _pickingShader.reloadData();
+  reloadRibbonAmbientOcclusionTextures(RKRenderQuality::low);
   _textShader.reloadData();
 
+  updateStructureUniforms();
   update();
 }
 

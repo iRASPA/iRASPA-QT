@@ -32,6 +32,8 @@
 #include "proteincrystal.h"
 #include "molecule.h"
 #include "protein.h"
+#include "dnacrystal.h"
+#include "dna.h"
 #include "ellipsoidprimitive.h"
 #include "cylinderprimitive.h"
 #include "polygonalprismprimitive.h"
@@ -58,6 +60,8 @@ public:
   iRASPAObject(std::shared_ptr<ProteinCrystal> proteinCrystal):_rawValue(ObjectType::proteinCrystal), _object(proteinCrystal) {}
   iRASPAObject(std::shared_ptr<Molecule> molecule):_rawValue(ObjectType::molecule), _object(molecule) {}
   iRASPAObject(std::shared_ptr<Protein> protein):_rawValue(ObjectType::protein), _object(protein) {}
+  iRASPAObject(std::shared_ptr<DNA> dna):_rawValue(ObjectType::dna), _object(dna) {}
+  iRASPAObject(std::shared_ptr<DNACrystal> dnaCrystal):_rawValue(ObjectType::dnaCrystal), _object(dnaCrystal) {}
   iRASPAObject(std::shared_ptr<EllipsoidPrimitive> ellipsoidPrimitive):_rawValue(ObjectType::ellipsoidPrimitive), _object(ellipsoidPrimitive) {}
   iRASPAObject(std::shared_ptr<CylinderPrimitive> cylinderPrimitive):_rawValue(ObjectType::cylinderPrimitive), _object(cylinderPrimitive) {}
   iRASPAObject(std::shared_ptr<PolygonalPrismPrimitive> polygonalPrismPrimitive):_rawValue(ObjectType::polygonalPrismPrimitive), _object(polygonalPrismPrimitive) {}

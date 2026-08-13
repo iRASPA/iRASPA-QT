@@ -33,6 +33,7 @@
 #include "scenetreeviewmodel.h"
 #include "iraspamainwindowconsumerprotocol.h"
 #include "atomtreeviewpushbuttonstyleditemdelegate.h"
+#include "atomtreeviewribbonvisibilitystyleditemdelegate.h"
 
 class QAbstractItemViewPrivate;
 class AtomTreeView: public QTreeView, public MainWindowConsumer, public ProjectConsumer, public Reloadable
@@ -92,6 +93,7 @@ private:
   void findSymmetry();
   void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override final;
   AtomTreeViewPushButtonStyledItemDelegate *pushButtonDelegate;
+  AtomTreeViewRibbonVisibilityStyledItemDelegate *ribbonVisibilityDelegate;
   SKAtomTreeNode* getItem(const QModelIndex &index) const;
   void exportToPDB() const;
   void exportToMMCIF() const;
@@ -103,6 +105,10 @@ private:
   void scrollToLastSelected();
   void visibilityMatchSelection();
   void visibilityInvert();
+  void visibilityShowAtoms();
+  void visibilityHideAtoms();
+  void visibilityShowRibbon();
+  void visibilityHideRibbon();
 protected:
   void keyPressEvent(QKeyEvent *event) override final;
   void mousePressEvent(QMouseEvent *e) override final;

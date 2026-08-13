@@ -78,6 +78,10 @@ std::shared_ptr<iRASPAObject> iRASPAObject::create(ObjectType type)
     return std::make_shared<iRASPAObject>(std::make_shared<Molecule>());
   case ObjectType::protein:
     return std::make_shared<iRASPAObject>(std::make_shared<Protein>());
+  case ObjectType::dnaCrystal:
+    return std::make_shared<iRASPAObject>(std::make_shared<DNACrystal>());
+  case ObjectType::dna:
+    return std::make_shared<iRASPAObject>(std::make_shared<DNA>());
   case ObjectType::proteinCrystalSolvent:
     return nullptr;
   case ObjectType::crystalSolvent:
@@ -136,6 +140,12 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<iRASPAObject>
     break;
   case ObjectType::protein:
     stream << std::static_pointer_cast<Protein>(iraspa_structure->_object);
+    break;
+  case ObjectType::dnaCrystal:
+    stream << std::static_pointer_cast<DNACrystal>(iraspa_structure->_object);
+    break;
+  case ObjectType::dna:
+    stream << std::static_pointer_cast<DNA>(iraspa_structure->_object);
     break;
   case ObjectType::proteinCrystalSolvent:
     break;
@@ -233,6 +243,20 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<iRASPAObject> &iras
       std::shared_ptr<Protein> protein = std::make_shared<Protein>();
       stream >> protein;
       iraspa_structure->_object = protein;
+      break;
+    }
+    case ObjectType::dnaCrystal:
+    {
+      std::shared_ptr<DNACrystal> dnaCrystal = std::make_shared<DNACrystal>();
+      stream >> dnaCrystal;
+      iraspa_structure->_object = dnaCrystal;
+      break;
+    }
+    case ObjectType::dna:
+    {
+      std::shared_ptr<DNA> dna = std::make_shared<DNA>();
+      stream >> dna;
+      iraspa_structure->_object = dna;
       break;
     }
     case ObjectType::proteinCrystalSolvent:

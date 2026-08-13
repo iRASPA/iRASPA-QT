@@ -44,7 +44,8 @@ public:
     proteinCrystalSolvent = 7, crystalSolvent = 8, molecularCrystalSolvent = 9,
     crystalEllipsoidPrimitive = 10, crystalCylinderPrimitive = 11, crystalPolygonalPrismPrimitive = 12,
     ellipsoidPrimitive = 13, cylinderPrimitive = 14, polygonalPrismPrimitive = 15,
-    gridVolume = 16, RASPADensityVolume = 17, VTKDensityVolume = 18, VASPDensityVolume = 19, GaussianCubeVolume = 20
+    gridVolume = 16, RASPADensityVolume = 17, VTKDensityVolume = 18, VASPDensityVolume = 19, GaussianCubeVolume = 20,
+    dna = 21, dnaCrystal = 22
   };
 
   Kind kind = Kind::crystal;

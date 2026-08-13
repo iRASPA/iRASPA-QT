@@ -16,6 +16,19 @@
         <file>doublebond.png</file>
         <file>partialdoublebond.png</file>
         <file>genericfoldericon.png</file>
+        <file>crystalicon.png</file>
+        <file>molecularicon.png</file>
+        <file>molecularcrystalicon.png</file>
+        <file>proteinicon.png</file>
+        <file>proteincrystalicon.png</file>
+        <file>dnaicon.png</file>
+        <file>dnacrystalicon.png</file>
+        <file>ellipsoidicon.png</file>
+        <file>ellipsoidcrystalicon.png</file>
+        <file>cylindericon.png</file>
+        <file>cylindercrystalicon.png</file>
+        <file>prismicon.png</file>
+        <file>prismcrystalicon.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

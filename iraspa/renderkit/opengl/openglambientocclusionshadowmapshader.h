@@ -34,6 +34,8 @@
 #include "rkrenderkitprotocols.h"
 #include "openglatomorthographicimpostershader.h"
 
+class OpenGLRibbonAmbientOcclusionShader;
+
 class OpenGLAmbientOcclusionShadowMapShader: public OpenGLShader
 {
 public:
@@ -86,5 +88,7 @@ private:
 
   static const std::string _vertexShadowMapShaderSource;
   static const std::string _fragmentShadowMapShaderSource;
+
+  friend OpenGLRibbonAmbientOcclusionShader;
 };
 

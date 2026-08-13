@@ -73,6 +73,8 @@ public slots:
   void newProteinCrystal();
   void newMolecule();
   void newProtein();
+  void newDNA();
+  void newDNACrystal();
   void newCrystalEllipsoid();
   void newCrystalCylinder();
   void newCrystalPolygonalPrism();

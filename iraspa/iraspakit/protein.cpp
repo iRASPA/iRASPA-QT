@@ -32,13 +32,19 @@
 #include "crystalpolygonalprismprimitive.h"
 #include "primitive.h"
 #include "gridvolume.h"
+#include "proteinatomtreebuilder.h"
 
 Protein::Protein()
 {
-
+  setDrawUnitCell(false);
+  setDrawRibbon(true);
+  setDrawAtoms(false);
+  setDrawBonds(false);
+  reComputeBoundingBox();
+  rebuildBackbone();
 }
 
-Protein::Protein(const Protein &protein): Structure(protein)
+Protein::Protein(const Protein &protein): Structure(protein), ProteinRibbonMixin(protein)
 {
 }
 
@@ -46,6 +52,8 @@ Protein::Protein(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
   expandSymmetry();
   _atomsTreeController->setTags();
+  ProteinAtomTreeBuilder::applyHierarchyIfNeeded(*_atomsTreeController, ribbonSecondaryStructureMethod());
+  rebuildBackboneStructure();
 }
 
 Protein::Protein(const std::shared_ptr<Object> object): Structure(object)
@@ -56,11 +64,15 @@ Protein::Protein(const std::shared_ptr<Object> object): Structure(object)
     {
       Protein::convertAsymmetricAtomsToCartesian();
     }
-    expandSymmetry();
-    _atomsTreeController->setTags();
-    Protein::reComputeBoundingBox();
-    computeBonds();
   }
+
+  ProteinAtomTreeBuilder::applyHierarchyIfNeeded(*_atomsTreeController, ribbonSecondaryStructureMethod());
+
+  expandSymmetry();
+  _atomsTreeController->setTags();
+  Protein::reComputeBoundingBox();
+  computeBonds();
+  rebuildBackbone();
 }
 
 std::shared_ptr<Object> Protein::shallowClone()
@@ -976,11 +988,10 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> Protein::rota
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Protein> &protein)
 {
   stream << protein->_versionNumber;
-
-  // handle super class
-  stream << std::static_pointer_cast<Structure>(protein);
-
   stream << qint64(0x6f6b6187);
+  protein->writeCocoaRibbonAppearance(stream);
+
+  stream << std::static_pointer_cast<Structure>(protein);
 
   return stream;
 }
@@ -1004,8 +1015,17 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Protein> &protein)
     }
   }
 
+  protein->readCocoaRibbonAppearance(stream, versionNumber);
+
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(protein);
   stream >> structure;
+
+  if (versionNumber < 6)
+  {
+    protein->recheckRibbonRepresentationStyle();
+  }
+  ProteinAtomTreeBuilder::applyHierarchyIfNeeded(*protein->atomsTreeController(), protein->ribbonSecondaryStructureMethod());
+  protein->rebuildBackbone();
 
   return stream;
 }

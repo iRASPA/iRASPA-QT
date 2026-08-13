@@ -93,6 +93,8 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   _cellCellForm->cellStructureTypeComboBox->insertItem(18, tr("VTK Density Volume"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(19, tr("VASP Density Volume"));
   _cellCellForm->cellStructureTypeComboBox->insertItem(20, tr("Gaussian Density Volume"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(21, tr("DNA"));
+  _cellCellForm->cellStructureTypeComboBox->insertItem(22, tr("DNA Crystal"));
 
   QStandardItemModel *model = qobject_cast<QStandardItemModel *>( _cellCellForm->cellStructureTypeComboBox->model());
   QStandardItem *itemEmpty = model->item(0);

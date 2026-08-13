@@ -91,6 +91,11 @@ SOURCES += \
     $$PWD/openglbackgroundshader.cpp \
     $$PWD/openglatomselectionglowshader.cpp \
     $$PWD/openglblurshader.cpp \
+    $$PWD/openglribbonshader.cpp \
+    $$PWD/openglribbonshaderpaths.cpp \
+    $$PWD/openglribbonambientocclusionshader.cpp \
+    $$PWD/openglribbonselectionshader.cpp \
+    $$PWD/openglribbonpickingshader.cpp \
     $$PWD/rkfontatlas.cpp
 
 
@@ -183,4 +188,12 @@ HEADERS += \
     $$PWD/openglbackgroundshader.h \
     $$PWD/openglatomselectionglowshader.h \
     $$PWD/openglblurshader.h \
+    $$PWD/openglribbonshader.h \
+    $$PWD/openglribbonambientocclusionshader.h \
+    $$PWD/openglribbonshaderpaths.h \
+    $$PWD/openglribbonselectionshader.h \
+    $$PWD/openglribbonpickingshader.h \
     $$PWD/rkfontatlas.h
+
+RESOURCES += \
+    $$PWD/ribbonshaders.qrc

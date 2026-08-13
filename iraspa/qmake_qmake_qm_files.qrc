@@ -1,0 +1,16 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="i18n">
+<file alias="iraspa_en.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_en.qm</file>
+<file alias="iraspa_nl.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_nl.qm</file>
+<file alias="iraspa_de.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_de.qm</file>
+<file alias="iraspa_ar.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_ar.qm</file>
+<file alias="iraspa_fa.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_fa.qm</file>
+<file alias="iraspa_ja.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_ja.qm</file>
+<file alias="iraspa_hi.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_hi.qm</file>
+<file alias="iraspa_zh_Hans.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_zh_Hans.qm</file>
+<file alias="iraspa_es.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_es.qm</file>
+<file alias="iraspa_pt.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_pt.qm</file>
+<file alias="iraspa_ko.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_ko.qm</file>
+<file alias="iraspa_ru.qm">/Users/dubbelda/Research/iRASPA-QT/iraspa/.qm/iraspa_ru.qm</file>
+</qresource>
+</RCC>

@@ -22,6 +22,14 @@
 #include "rkrenderuniforms.h"
 #include "rkrenderkitprotocols.h"
 #include "mathkit.h"
+#include <cstddef>
+
+static_assert(offsetof(RKStructureUniforms, ribbonCoilColor) == 992, "ribbonCoilColor std140 offset mismatch");
+static_assert(offsetof(RKStructureUniforms, ribbonHDR) == 1040, "ribbonHDR std140 offset mismatch");
+static_assert(offsetof(RKStructureUniforms, ribbonSaturation) == 1052, "ribbonSaturation std140 offset mismatch");
+static_assert(offsetof(RKStructureUniforms, ribbonAmbientColor) == 1088, "ribbonAmbientColor std140 offset mismatch");
+static_assert(offsetof(RKStructureUniforms, ribbonDiffuseColor) == 1104, "ribbonDiffuseColor std140 offset mismatch");
+static_assert(offsetof(RKStructureUniforms, ribbonSpecularColor) == 1120, "ribbonSpecularColor std140 offset mismatch");
 
 RKTransformationUniforms::RKTransformationUniforms(double4x4 projectionMatrix, double4x4 modelViewMatrix, double4x4 modelMatrix, double4x4 viewMatrix, double4x4 axesProjectionMatrix, double4x4 axesModelViewMatrix, bool isOrthographic, double bloomLevel, double bloomPulse, int multiSampling)
 {
@@ -178,6 +186,7 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       this->bondSpecularColor = float(source->bondSpecularIntensity()) * float4(source->bondSpecularColor().redF(),source->bondSpecularColor().greenF(),
                                                                                 source->bondSpecularColor().blueF(),source->bondSpecularColor().alphaF());
       this->bondShininess = float(source->bondShininess());
+      this->isUnity = source->isUnity() ? 1 : 0;
 
       this->bondSelectionStripesDensity = float(source->bondSelectionStripesDensity());
       this->bondSelectionStripesFrequency = float(source->bondSelectionStripesFrequency());
@@ -244,6 +253,35 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       this->primitiveDiffuseBackSide = float(source->primitiveBackSideDiffuseIntensity()) * float4(source->primitiveBackSideDiffuseColor(), source->primitiveOpacity());
       this->primitiveSpecularBackSide = float(source->primitiveBackSideSpecularIntensity()) * float4(source->primitiveBackSideSpecularColor(), source->primitiveOpacity());
       this->primitiveShininessBackSide = float(source->primitiveBackSideShininess());
+    }
+
+    if (RKRenderRibbonSource* ribbonSource = dynamic_cast<RKRenderRibbonSource*>(structure.get()))
+    {
+      const float3 coilColor = ribbonSource->ribbonCoilColor();
+      const float3 helixColor = ribbonSource->ribbonHelixColor();
+      const float3 sheetColor = ribbonSource->ribbonSheetColor();
+      this->ribbonCoilColor = float4(coilColor.x, coilColor.y, coilColor.z, 1.0f);
+      this->ribbonHelixColor = float4(helixColor.x, helixColor.y, helixColor.z, 1.0f);
+      this->ribbonSheetColor = float4(sheetColor.x, sheetColor.y, sheetColor.z, 1.0f);
+      this->ribbonHDR = ribbonSource->ribbonHDR() ? 1 : 0;
+      this->ribbonHDRExposure = float(ribbonSource->ribbonHDRExposure());
+      this->ribbonHue = float(ribbonSource->ribbonHue());
+      this->ribbonSaturation = float(ribbonSource->ribbonSaturation());
+      this->ribbonValue = float(ribbonSource->ribbonValue());
+      this->ribbonAmbientOcclusion = ribbonSource->ribbonAmbientOcclusion() ? 1 : 0;
+      this->ribbonAmbientColor = float(ribbonSource->ribbonAmbientIntensity()) * float4(ribbonSource->ribbonAmbientColor().redF(),
+                                                                                        ribbonSource->ribbonAmbientColor().greenF(),
+                                                                                        ribbonSource->ribbonAmbientColor().blueF(),
+                                                                                        ribbonSource->ribbonAmbientColor().alphaF());
+      this->ribbonDiffuseColor = float(ribbonSource->ribbonDiffuseIntensity()) * float4(ribbonSource->ribbonDiffuseColor().redF(),
+                                                                                        ribbonSource->ribbonDiffuseColor().greenF(),
+                                                                                        ribbonSource->ribbonDiffuseColor().blueF(),
+                                                                                        ribbonSource->ribbonDiffuseColor().alphaF());
+      this->ribbonSpecularColor = float(ribbonSource->ribbonSpecularIntensity()) * float4(ribbonSource->ribbonSpecularColor().redF(),
+                                                                                          ribbonSource->ribbonSpecularColor().greenF(),
+                                                                                          ribbonSource->ribbonSpecularColor().blueF(),
+                                                                                          ribbonSource->ribbonSpecularColor().alphaF());
+      this->ribbonShininess = float(ribbonSource->ribbonShininess());
     }
   }
 }
@@ -360,6 +398,7 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       this->bondSpecularColor = float(source->bondSpecularIntensity()) * float4(source->bondSpecularColor().redF(),source->bondSpecularColor().greenF(),
                                                                                 source->bondSpecularColor().blueF(),source->bondSpecularColor().alphaF());
       this->bondShininess = float(source->bondShininess());
+      this->isUnity = source->isUnity() ? 1 : 0;
 
       this->bondSelectionStripesDensity = float(source->bondSelectionStripesDensity());
       this->bondSelectionStripesFrequency = float(source->bondSelectionStripesFrequency());
@@ -367,6 +406,35 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       this->bondSelectionWorleyNoise3DJitter = float(source->bondSelectionWorleyNoise3DJitter());
       this->bondSelectionScaling = float(std::max(1.001,source->bondSelectionScaling())); // avoid artifacts
       this->bondSelectionIntensity = float(source->bondSelectionIntensity());
+    }
+
+    if (RKRenderRibbonSource* ribbonSource = dynamic_cast<RKRenderRibbonSource*>(structure.get()))
+    {
+      const float3 coilColor = ribbonSource->ribbonCoilColor();
+      const float3 helixColor = ribbonSource->ribbonHelixColor();
+      const float3 sheetColor = ribbonSource->ribbonSheetColor();
+      this->ribbonCoilColor = float4(coilColor.x, coilColor.y, coilColor.z, 1.0f);
+      this->ribbonHelixColor = float4(helixColor.x, helixColor.y, helixColor.z, 1.0f);
+      this->ribbonSheetColor = float4(sheetColor.x, sheetColor.y, sheetColor.z, 1.0f);
+      this->ribbonHDR = ribbonSource->ribbonHDR() ? 1 : 0;
+      this->ribbonHDRExposure = float(ribbonSource->ribbonHDRExposure());
+      this->ribbonHue = float(ribbonSource->ribbonHue());
+      this->ribbonSaturation = float(ribbonSource->ribbonSaturation());
+      this->ribbonValue = float(ribbonSource->ribbonValue());
+      this->ribbonAmbientOcclusion = ribbonSource->ribbonAmbientOcclusion() ? 1 : 0;
+      this->ribbonAmbientColor = float(ribbonSource->ribbonAmbientIntensity()) * float4(ribbonSource->ribbonAmbientColor().redF(),
+                                                                                        ribbonSource->ribbonAmbientColor().greenF(),
+                                                                                        ribbonSource->ribbonAmbientColor().blueF(),
+                                                                                        ribbonSource->ribbonAmbientColor().alphaF());
+      this->ribbonDiffuseColor = float(ribbonSource->ribbonDiffuseIntensity()) * float4(ribbonSource->ribbonDiffuseColor().redF(),
+                                                                                        ribbonSource->ribbonDiffuseColor().greenF(),
+                                                                                        ribbonSource->ribbonDiffuseColor().blueF(),
+                                                                                        ribbonSource->ribbonDiffuseColor().alphaF());
+      this->ribbonSpecularColor = float(ribbonSource->ribbonSpecularIntensity()) * float4(ribbonSource->ribbonSpecularColor().redF(),
+                                                                                          ribbonSource->ribbonSpecularColor().greenF(),
+                                                                                          ribbonSource->ribbonSpecularColor().blueF(),
+                                                                                          ribbonSource->ribbonSpecularColor().alphaF());
+      this->ribbonShininess = float(ribbonSource->ribbonShininess());
     }
   }
 }

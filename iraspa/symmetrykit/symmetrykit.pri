@@ -47,6 +47,18 @@ SOURCES += \
     $$PWD/skvtkparser.cpp \
     $$PWD/skxyzparser.cpp \
     $$PWD/skxyzwriter.cpp \
+    $$PWD/sksecondarystructure.cpp \
+    $$PWD/sksecondarystructuregeometry.cpp \
+    $$PWD/skstrideramachandranmaps.cpp \
+    $$PWD/skstridesecondarystructureassigner.cpp \
+    $$PWD/skdsssecondarystructureassigner.cpp \
+    $$PWD/skdsspsecondarystructureassigner.cpp \
+    $$PWD/skpseasecondarystructureassigner.cpp \
+    $$PWD/sksequoiasecondarystructureassigner.cpp \
+    $$PWD/sksegnosecondarystructureassigner.cpp \
+    $$PWD/skaminoacididealgeometry.cpp \
+    $$PWD/sknucleotide.cpp \
+    $$PWD/sknucleotidebase.cpp \
     $$PWD/symmetrykitprotocols.cpp
 
 HEADERS += \
@@ -99,4 +111,16 @@ HEADERS += \
     $$PWD/skpointgroup.h \
     $$PWD/skonethirdseitzmatrix.h \
     $$PWD/skdefinitions.h \
-    $$PWD/skrotationaloccurancetable.h
+    $$PWD/skrotationaloccurancetable.h \
+    $$PWD/sksecondarystructure.h \
+    $$PWD/sksecondarystructuregeometry.h \
+    $$PWD/skstrideramachandranmaps.h \
+    $$PWD/skstridesecondarystructureassigner.h \
+    $$PWD/skdsssecondarystructureassigner.h \
+    $$PWD/skdsspsecondarystructureassigner.h \
+    $$PWD/skpseasecondarystructureassigner.h \
+    $$PWD/sksequoiasecondarystructureassigner.h \
+    $$PWD/sksegnosecondarystructureassigner.h \
+    $$PWD/skaminoacididealgeometry.h \
+    $$PWD/sknucleotide.h \
+    $$PWD/sknucleotidebase.h

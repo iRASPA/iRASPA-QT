@@ -50,6 +50,11 @@ union simd_quatd
   static const simd_quatd data360[360];
   static const double weights360[360];
 
+  /// Medium-quality AO uses Data300 + Data60; picture quality uses Data1992.
+  static simd_quatd ambientOcclusionDirection(int index, int directionCount);
+  static double ambientOcclusionDirectionWeight(int index, int directionCount);
+  static float ambientOcclusionBlendWeight(int index, int directionCount);
+
   friend QDataStream &operator<<(QDataStream &, const simd_quatd &);
   friend QDataStream &operator>>(QDataStream &, simd_quatd &);
 };

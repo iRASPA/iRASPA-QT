@@ -39,6 +39,14 @@ class AtomTreeViewModel: public QAbstractItemModel
 public:
   AtomTreeViewModel();
 
+  /// Roles of the dual visibility of a ribbon-hierarchy group: its atoms and its ribbon are shown apart.
+  enum AtomTreeViewRole
+  {
+    IsRibbonHierarchyGroupRole = Qt::UserRole + 1,
+    GroupAtomsVisibilityRole = Qt::UserRole + 2,
+    GroupRibbonVisibilityRole = Qt::UserRole + 3
+  };
+
   static char mimeType[];
 
   void setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode);
@@ -84,6 +92,8 @@ public:
 
   void setMainWindow(MainWindow* mainWindow);
 private:
+  void emitSubtreeDataChanged(const QModelIndex &parentIndex);
+
   MainWindow* _mainWindow;
   std::shared_ptr<ProjectTreeNode> _projectTreeNode;
   std::shared_ptr<iRASPAObject> _iraspaStructure;

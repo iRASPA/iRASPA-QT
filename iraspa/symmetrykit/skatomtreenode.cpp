@@ -24,8 +24,50 @@
 #include <vector>
 #include <QtDebug>
 
+namespace
+{
+  /// Archives written before the kind was stored name their groups by convention.
+  SKAtomTreeGroupKind groupKindFromLegacyName(const QString &displayName)
+  {
+    if(displayName.startsWith(QStringLiteral("Chain"))) return SKAtomTreeGroupKind::chain;
+    if(displayName.startsWith(QStringLiteral("Alpha-helix")) ||
+       displayName.startsWith(QStringLiteral("Beta-sheet")) ||
+       displayName.startsWith(QStringLiteral("Coil"))) return SKAtomTreeGroupKind::secondaryStructureSegment;
+    if(displayName.startsWith(QStringLiteral("DNA helix"))) return SKAtomTreeGroupKind::dnaHelix;
+    if(displayName == QStringLiteral("HETATM")) return SKAtomTreeGroupKind::hetatm;
+    if(displayName == QStringLiteral("Other nucleotides")) return SKAtomTreeGroupKind::otherNucleotides;
+    if(displayName == QStringLiteral("Other")) return SKAtomTreeGroupKind::other;
+    return SKAtomTreeGroupKind::custom;
+  }
+
+  bool isKnownGroupKind(qint64 rawKind)
+  {
+    return rawKind >= static_cast<qint64>(SKAtomTreeGroupKind::none) &&
+           rawKind <= static_cast<qint64>(SKAtomTreeGroupKind::otherNucleotides);
+  }
+}
+
 SKAtomTreeNode::~SKAtomTreeNode()
 {
+}
+
+void SKAtomTreeNode::setGroupKind(SKAtomTreeGroupKind value)
+{
+  _groupKind = value;
+  _isGroup = value != SKAtomTreeGroupKind::none;
+}
+
+void SKAtomTreeNode::setIsGroup(bool value)
+{
+  if(value)
+  {
+    if(_groupKind == SKAtomTreeGroupKind::none) _groupKind = SKAtomTreeGroupKind::custom;
+  }
+  else
+  {
+    _groupKind = SKAtomTreeGroupKind::none;
+  }
+  _isGroup = value;
 }
 
 const IndexPath SKAtomTreeNode::indexPath()
@@ -429,6 +471,7 @@ QDataStream &operator<<(QDataStream& stream, const std::shared_ptr<SKAtomTreeNod
   stream << node->_displayName;
   stream << node-> _isGroup;
   stream << node-> _isEditable;
+  stream << static_cast<qint64>(node->_groupKind);
 
   stream << node->_representedObject;
   stream << node->_childNodes;
@@ -449,12 +492,38 @@ QDataStream &operator>>(QDataStream& stream, std::shared_ptr<SKAtomTreeNode>& no
   stream >> node-> _isGroup;
   stream >> node-> _isEditable;
 
+  if(versionNumber >= 2)
+  {
+    qint64 rawKind;
+    stream >> rawKind;
+    node->setGroupKind(isKnownGroupKind(rawKind) ? static_cast<SKAtomTreeGroupKind>(rawKind)
+                                                 : (node->_isGroup ? SKAtomTreeGroupKind::custom : SKAtomTreeGroupKind::none));
+  }
+  else
+  {
+    node->setGroupKind(node->_isGroup ? groupKindFromLegacyName(node->_displayName) : SKAtomTreeGroupKind::none);
+  }
+
   stream >> node->_representedObject;
   stream >> node->_childNodes;
 
   for(const std::shared_ptr<SKAtomTreeNode> &child : node->_childNodes)
   {
     child->_parent = node;
+  }
+
+  // A residue was named after itself rather than after what it is, so it is known only from
+  // what holds it. The children are read before their parent, which is where that becomes answerable.
+  if(versionNumber < 2 &&
+     (node->_groupKind == SKAtomTreeGroupKind::secondaryStructureSegment ||
+      node->_groupKind == SKAtomTreeGroupKind::hetatm ||
+      node->_groupKind == SKAtomTreeGroupKind::dnaHelix ||
+      node->_groupKind == SKAtomTreeGroupKind::otherNucleotides))
+  {
+    for(const std::shared_ptr<SKAtomTreeNode> &child : node->_childNodes)
+    {
+      if(child->_groupKind == SKAtomTreeGroupKind::custom) child->setGroupKind(SKAtomTreeGroupKind::residue);
+    }
   }
 
   return stream;

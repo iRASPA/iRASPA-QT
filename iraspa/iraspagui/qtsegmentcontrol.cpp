@@ -133,7 +133,7 @@ static void drawSegmentControlSegmentSegment(const QStyleOption *option, QPainte
             QPixmap pm;
 
             QSize buttonSize = widget->rect().size();
-            const QString key = QString("qt_segment %0 %1 %2").arg(option->state).arg(buttonSize.width()).arg(buttonSize.height());
+            const QString key = QString("qt_segment %1 %2 %3").arg(static_cast<int>(option->state)).arg(buttonSize.width()).arg(buttonSize.height());
 
             if (!QPixmapCache::find(key, &pm)) {
                 pm = QPixmap(buttonSize);

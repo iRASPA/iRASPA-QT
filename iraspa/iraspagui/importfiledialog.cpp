@@ -74,6 +74,11 @@ ImportFileDialog::ImportFileDialog(QWidget *parent) : QFileDialog(parent)
   checkboxImportAsMolecule->setText("As Molecule");
   verticalLayout2->addWidget(checkboxImportAsMolecule);
 
+  checkboxSeparatePolymerChains = new QCheckBox(frame);
+  checkboxSeparatePolymerChains->setCheckState(Qt::CheckState::Unchecked);
+  checkboxSeparatePolymerChains->setText("Separate Polymer Chains");
+  verticalLayout2->addWidget(checkboxSeparatePolymerChains);
+
   horizontalLayout->addWidget(verticalframe2);
 
   layout()->addWidget(frame);

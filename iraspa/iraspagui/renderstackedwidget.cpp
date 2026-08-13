@@ -50,6 +50,7 @@
 
 #if defined (USE_OPENGL)
   #include "openglwindow.h"
+  #include "ribbonaolayout.h"
 #endif
 #if defined (USE_DIRECTX)
   #include "directxwindow.h"
@@ -57,6 +58,60 @@
 #if defined (USE_VULKAN)
   #include "vulkanwindow.h"
 #endif
+
+#include "proteinribbonmixin.h"
+#include "proteinribbonsegmentsupport.h"
+
+namespace
+{
+
+bool sceneMovieForFlatStructureIndex(const std::vector<std::vector<std::shared_ptr<iRASPAObject>>> &structures,
+                                     int flatIndex, int &sceneId, int &movieId)
+{
+  int counter = 0;
+  for (size_t i = 0; i < structures.size(); ++i)
+  {
+    for (size_t j = 0; j < structures[i].size(); ++j)
+    {
+      if (counter == flatIndex)
+      {
+        sceneId = static_cast<int>(i);
+        movieId = static_cast<int>(j);
+        return true;
+      }
+      ++counter;
+    }
+  }
+  return false;
+}
+
+void finalizeRibbonSelection(const std::shared_ptr<Object> &object)
+{
+  if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(object))
+  {
+    structure->bondSetController()->correctBondSelectionDueToAtomSelection();
+    structure->recomputeSelectionBodyFixedBasis();
+  }
+}
+
+bool applyRibbonPickToObject(const std::shared_ptr<Object> &object,
+                             int segmentIndex,
+                             int residueIndex,
+                             ProteinRibbonMixin::RibbonPickAction action,
+                             bool selectSegment)
+{
+  if (ProteinRibbonMixin *ribbon = dynamic_cast<ProteinRibbonMixin*>(object.get()))
+  {
+    if (ribbon->applyRibbonPick(segmentIndex, residueIndex, action, selectSegment))
+    {
+      finalizeRibbonSelection(object);
+      return true;
+    }
+  }
+  return false;
+}
+
+} // namespace
 
 RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QWidget(parent )
 {
@@ -78,8 +133,10 @@ RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QWidget(parent )
    renderWidget = QWidget::createWindowContainer(w);
    renderWidget->setMouseTracking(true);
    renderWidget->setAttribute( Qt::WA_OpaquePaintEvent );
-   renderWidget->setFocusPolicy(Qt::TabFocus);
+   renderWidget->setFocusPolicy(Qt::StrongFocus);
+   renderWidget->installEventFilter(this);
    layout->addWidget(renderWidget);
+   connect(w, &OpenGLWindow::ribbonAODebugModeChanged, this, &RenderStackedWidget::updateRibbonDebugOverlay);
 #endif
 #if defined (USE_VULKAN)
   VulkanWindow* w = new VulkanWindow(nullptr);
@@ -158,6 +215,11 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     renderViewController->setRenderStructures(render_structures);
+    if (projectTreeNode)
+    {
+      widget->reloadData();
+      widget->redraw();
+    }
   }
 
   if (projectTreeNode)
@@ -254,12 +316,23 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
   }
 
 
-  if(object == renderWindow || object == this)
+  if(object == renderWindow || object == renderWidget || object == this)
   {
     if(QKeyEvent * keyEvent = dynamic_cast<QKeyEvent*>(event))
     {
       if (event->type() == QEvent::KeyPress)
       {
+#if defined(USE_OPENGL)
+        if (keyEvent->modifiers().testFlag(Qt::AltModifier) && keyEvent->key() == Qt::Key_D)
+        {
+          if (OpenGLWindow *openGLWindow = dynamic_cast<OpenGLWindow*>(renderViewController))
+          {
+            openGLWindow->cycleRibbonAODebugMode();
+            event->accept();
+            return true;
+          }
+        }
+#endif
         if (keyEvent->modifiers().testFlag(Qt::AltModifier))
         {
           setControlPanel(true);
@@ -436,6 +509,23 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
               emit updateBondSelection();
             }
             break;
+          case ProteinRibbonSegmentSupport::ribbonPickObjectType:
+          {
+            int ribbonSceneId = 0;
+            int ribbonMovieId = 0;
+            if (sceneMovieForFlatStructureIndex(_iraspa_structures, pixel[1], ribbonSceneId, ribbonMovieId))
+            {
+              if (applyRibbonPickToObject(_iraspa_structures[ribbonSceneId][ribbonMovieId]->object(),
+                                          pixel[2], pixel[3],
+                                          ProteinRibbonMixin::RibbonPickAction::replaceResidue, false))
+              {
+                reloadData();
+                emit updateAtomSelection();
+                emit updateBondSelection();
+              }
+            }
+            break;
+          }
           default:
             break;
           }
@@ -474,6 +564,23 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
               emit updateBondSelection();
             }
             break;
+          case ProteinRibbonSegmentSupport::ribbonPickObjectType:
+          {
+            int ribbonSceneId = 0;
+            int ribbonMovieId = 0;
+            if (sceneMovieForFlatStructureIndex(_iraspa_structures, pixel[1], ribbonSceneId, ribbonMovieId))
+            {
+              if (applyRibbonPickToObject(_iraspa_structures[ribbonSceneId][ribbonMovieId]->object(),
+                                          pixel[2], pixel[3],
+                                          ProteinRibbonMixin::RibbonPickAction::toggleResidue, false))
+              {
+                reloadData();
+                emit updateAtomSelection();
+                emit updateBondSelection();
+              }
+            }
+            break;
+          }
           default:
             break;
           }
@@ -495,6 +602,31 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
         this->updateControlPanel();
         break;
       case Tracking::translateSelection:
+        if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+        {
+          #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
+          #else
+            pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
+          #endif
+          if (pixel[0] == ProteinRibbonSegmentSupport::ribbonPickObjectType)
+          {
+            int ribbonSceneId = 0;
+            int ribbonMovieId = 0;
+            if (sceneMovieForFlatStructureIndex(_iraspa_structures, pixel[1], ribbonSceneId, ribbonMovieId))
+            {
+              if (applyRibbonPickToObject(_iraspa_structures[ribbonSceneId][ribbonMovieId]->object(),
+                                          pixel[2], pixel[3],
+                                          ProteinRibbonMixin::RibbonPickAction::toggleSecondaryStructureSegment, true))
+              {
+                reloadData();
+                emit updateAtomSelection();
+                emit updateBondSelection();
+              }
+            }
+          }
+        }
+        this->updateControlPanel();
         break;
       case Tracking::measurement:
         break;
@@ -546,6 +678,23 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
               emit updateBondSelection();
             }
             break;
+          case ProteinRibbonSegmentSupport::ribbonPickObjectType:
+          {
+            int ribbonSceneId = 0;
+            int ribbonMovieId = 0;
+            if (sceneMovieForFlatStructureIndex(_iraspa_structures, pixel[1], ribbonSceneId, ribbonMovieId))
+            {
+              if (applyRibbonPickToObject(_iraspa_structures[ribbonSceneId][ribbonMovieId]->object(),
+                                          pixel[2], pixel[3],
+                                          ProteinRibbonMixin::RibbonPickAction::replaceResidue, false))
+              {
+                reloadData();
+                emit updateAtomSelection();
+                emit updateBondSelection();
+              }
+            }
+            break;
+          }
           default:
             break;
           }
@@ -866,7 +1015,18 @@ void RenderStackedWidget::reloadStructureUniforms()
       }
     }
   }
+  updateRibbonDebugOverlay();
   redraw();
+}
+
+void RenderStackedWidget::updateRibbonDebugOverlay()
+{
+#if defined(USE_OPENGL)
+  if (OpenGLWindow *openGLWindow = dynamic_cast<OpenGLWindow*>(renderViewController))
+  {
+    openGLWindow->update();
+  }
+#endif
 }
 
 void RenderStackedWidget::reloadBoundingBoxData()

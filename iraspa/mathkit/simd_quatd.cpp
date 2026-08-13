@@ -3623,6 +3623,29 @@ const double simd_quatd::weights360[360] =
   1.32870,1.32870,1.32870
 };
 
+simd_quatd simd_quatd::ambientOcclusionDirection(int index, int directionCount)
+{
+  if (directionCount == 1992)
+  {
+    return data1992[index];
+  }
+  return (index < 300) ? data300[index] : data60[index - 300];
+}
+
+double simd_quatd::ambientOcclusionDirectionWeight(int index, int directionCount)
+{
+  if (directionCount == 1992)
+  {
+    return weights1992[index];
+  }
+  return (index < 300) ? 0.93426 : 1.32870;
+}
+
+float simd_quatd::ambientOcclusionBlendWeight(int index, int directionCount)
+{
+  return static_cast<float>(4.0 * ambientOcclusionDirectionWeight(index, directionCount) / static_cast<double>(directionCount));
+}
+
 QDataStream &operator<<(QDataStream &stream, const simd_quatd &v)
 {
   stream << v.ix;

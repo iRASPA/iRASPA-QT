@@ -68,6 +68,9 @@
 #include "opengltextrenderingshader.h"
 #include "openglglobalaxesshader.h"
 #include "opengllocalaxesshader.h"
+#include "openglribbonshader.h"
+#include "openglribbonselectionshader.h"
+#include "openglribbonambientocclusionshader.h"
 
 #define CL_TARGET_OPENCL_VERSION 120
 #ifdef Q_OS_MACOS
@@ -134,7 +137,13 @@ public:
 
   void setControlPanel(bool iskeyAltOn);
   void updateControlPanel();
+  void cycleRibbonAODebugMode();
+  RibbonAODebugMode ribbonAODebugMode() const;
+  QString ribbonDebugOverlayText() const;
   const QStringList& logData() const override final {return _logData;};
+
+signals:
+  void ribbonAODebugModeChanged(RibbonAODebugMode mode);
 private:
   bool _isOpenGLInitialized;
   GLuint _program;
@@ -192,9 +201,22 @@ private:
 
   OpenGLSelectionShader _selectionShader;
 
+  OpenGLRibbonShader _ribbonShader;
+  OpenGLRibbonSelectionShader _ribbonSelectionShader;
+  OpenGLRibbonAmbientOcclusionShader _ribbonAmbientOcclusionShader;
+
+  std::vector<std::vector<GLuint>> _ribbonTextures;
+  std::vector<std::vector<GLuint>> _ribbonRawTextures;
+  GLuint _ribbonFallbackAmbientOcclusionTexture = 0;
+
   OpenGLPickingShader _pickingShader;
 
   OpenGLTextRenderingShader _textShader;
+
+  void deleteRibbonTextures();
+  void ensureRibbonFallbackAmbientOcclusionTexture();
+  void ensureRibbonTextureStorage();
+  void reloadRibbonAmbientOcclusionTextures(RKRenderQuality quality = RKRenderQuality::low);
 
   void drawSceneOpaqueToFramebuffer(GLuint framebuffer);
   void drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuffer, GLuint sceneResolvedDepthTexture);

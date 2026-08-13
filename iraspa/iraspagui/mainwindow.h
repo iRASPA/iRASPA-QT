@@ -88,7 +88,7 @@ private:
   void setCurrentFile(const QString &fileName);
 
   void resizeEvent(QResizeEvent* pEvent) override final;
-  QTimer *_timer;
+  QTimer *_timer = nullptr;
 
   QAction *_helpAction;
   void acknowledgements();
@@ -121,6 +121,8 @@ private:
   QAction *_newProteinCrystalAction{nullptr};
   QAction *_newMoleculeAction{nullptr};
   QAction *_newProteinAction{nullptr};
+  QAction *_newDNAAction{nullptr};
+  QAction *_newDNACrystalAction{nullptr};
   QMenu *_newObjectsMenu{nullptr};
   QAction *_newCrystalEllipsoidAction{nullptr};
   QAction *_newCrystalCylinderAction{nullptr};

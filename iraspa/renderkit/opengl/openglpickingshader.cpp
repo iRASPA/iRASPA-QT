@@ -22,8 +22,9 @@
 #include "openglpickingshader.h"
 #include "openglatomshader.h"
 #include "openglatomorthographicimpostershader.h"
+#include "openglribbonshader.h"
 
-OpenGLPickingShader::OpenGLPickingShader(OpenGLAtomShader &atomShader, OpenGLBondShader &bondShader, OpenGLObjectShader &objectShader):
+OpenGLPickingShader::OpenGLPickingShader(OpenGLAtomShader &atomShader, OpenGLBondShader &bondShader, OpenGLObjectShader &objectShader, OpenGLRibbonShader &ribbonShader):
                                          _atomPickingShader(atomShader),
                                          _internalBondPickingShader(bondShader),
                                          _externalBondPickingShader(bondShader),
@@ -32,7 +33,8 @@ OpenGLPickingShader::OpenGLPickingShader(OpenGLAtomShader &atomShader, OpenGLBon
                                          _crystalPolyogonalPrismPickingShader(objectShader),
                                          _cylinderPickingShader(objectShader),
                                          _ellipsePickingShader(objectShader),
-                                         _polygonalPrismPickingShader(objectShader)
+                                         _polygonalPrismPickingShader(objectShader),
+                                         _ribbonPickingShader(ribbonShader)
 {
 }
 
@@ -48,6 +50,7 @@ void OpenGLPickingShader::initializeEmbeddedOpenGLFunctions()
   _cylinderPickingShader.initializeOpenGLFunctions();
   _ellipsePickingShader.initializeOpenGLFunctions();
   _polygonalPrismPickingShader.initializeOpenGLFunctions();
+  _ribbonPickingShader.initializeOpenGLFunctions();
 }
 
 void OpenGLPickingShader::loadShader()
@@ -61,6 +64,7 @@ void OpenGLPickingShader::loadShader()
   _cylinderPickingShader.loadShader();
   _ellipsePickingShader.loadShader();
   _polygonalPrismPickingShader.loadShader();
+  _ribbonPickingShader.loadShader();
 }
 
 void OpenGLPickingShader::initializeVertexArrayObject()
@@ -74,6 +78,7 @@ void OpenGLPickingShader::initializeVertexArrayObject()
   _cylinderPickingShader.initializeVertexArrayObject();
   _ellipsePickingShader.initializeVertexArrayObject();
   _polygonalPrismPickingShader.initializeVertexArrayObject();
+  _ribbonPickingShader.initializeVertexArrayObject();
 }
 
 void OpenGLPickingShader::initializeTransformUniforms()
@@ -87,6 +92,7 @@ void OpenGLPickingShader::initializeTransformUniforms()
   glUniformBlockBinding(_cylinderPickingShader.program(), glGetUniformBlockIndex(_cylinderPickingShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_ellipsePickingShader.program(), glGetUniformBlockIndex(_ellipsePickingShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_polygonalPrismPickingShader.program(), glGetUniformBlockIndex(_polygonalPrismPickingShader.program(), "FrameUniformBlock"), 0);
+  glUniformBlockBinding(_ribbonPickingShader.program(), glGetUniformBlockIndex(_ribbonPickingShader.program(), "FrameUniformBlock"), 0);
 }
 
 void OpenGLPickingShader::initializeStructureUniforms()
@@ -100,6 +106,7 @@ void OpenGLPickingShader::initializeStructureUniforms()
   glUniformBlockBinding(_cylinderPickingShader.program(), glGetUniformBlockIndex(_cylinderPickingShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_ellipsePickingShader.program(), glGetUniformBlockIndex(_ellipsePickingShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_polygonalPrismPickingShader.program(), glGetUniformBlockIndex(_polygonalPrismPickingShader.program(), "StructureUniformBlock"), 1);
+  glUniformBlockBinding(_ribbonPickingShader.program(), glGetUniformBlockIndex(_ribbonPickingShader.program(), "StructureUniformBlock"), 1);
 }
 
 void OpenGLPickingShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
@@ -113,6 +120,7 @@ void OpenGLPickingShader::setRenderStructures(std::vector<std::vector<std::share
   _cylinderPickingShader.setRenderStructures(structures);
   _ellipsePickingShader.setRenderStructures(structures);
   _polygonalPrismPickingShader.setRenderStructures(structures);
+  _ribbonPickingShader.setRenderStructures(structures);
 }
 
 void OpenGLPickingShader::reloadData()
@@ -126,6 +134,7 @@ void OpenGLPickingShader::reloadData()
   _cylinderPickingShader.reloadData();
   _ellipsePickingShader.reloadData();
   _polygonalPrismPickingShader.reloadData();
+  _ribbonPickingShader.reloadData();
 }
 
 void OpenGLPickingShader::paintGL(GLuint structureUniformBuffer)
@@ -149,6 +158,7 @@ void OpenGLPickingShader::paintGL(GLuint structureUniformBuffer)
   _cylinderPickingShader.paintGL(structureUniformBuffer);
   _ellipsePickingShader.paintGL(structureUniformBuffer);
   _polygonalPrismPickingShader.paintGL(structureUniformBuffer);
+  _ribbonPickingShader.paintGL(structureUniformBuffer);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

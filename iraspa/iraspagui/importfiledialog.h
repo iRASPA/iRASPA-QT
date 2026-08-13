@@ -41,4 +41,5 @@ public:
   QRadioButton* radioButtonAsFrames;
   QCheckBox* checkboxProteinsOnlyAsymmetricUnitCell;
   QCheckBox* checkboxImportAsMolecule;
+  QCheckBox* checkboxSeparatePolymerChains;
 };

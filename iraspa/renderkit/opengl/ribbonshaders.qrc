@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/opengl/shaders">
+        <file alias="ribbon.vert">shaders/ribbon.vert</file>
+        <file alias="ribbon.frag">shaders/ribbon.frag</file>
+        <file alias="ribbon_picking.vert">shaders/ribbon_picking.vert</file>
+        <file alias="ribbon_picking.frag">shaders/ribbon_picking.frag</file>
+        <file alias="ribbon_selection_common.glsl">shaders/ribbon_selection_common.glsl</file>
+        <file alias="ribbon_selection_glow.vert">shaders/ribbon_selection_glow.vert</file>
+        <file alias="ribbon_selection_glow.frag">shaders/ribbon_selection_glow.frag</file>
+        <file alias="ribbon_selection_striped.vert">shaders/ribbon_selection_striped.vert</file>
+        <file alias="ribbon_selection_striped.frag">shaders/ribbon_selection_striped.frag</file>
+        <file alias="ribbon_selection_worley.vert">shaders/ribbon_selection_worley.vert</file>
+        <file alias="ribbon_selection_worley.frag">shaders/ribbon_selection_worley.frag</file>
+    </qresource>
+</RCC>

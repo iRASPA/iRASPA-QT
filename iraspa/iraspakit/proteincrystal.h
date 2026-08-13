@@ -26,12 +26,14 @@
 #include "spacegroupviewer.h"
 #include "structuralpropertyviewer.h"
 #include "unitcellviewer.h"
+#include "proteinribbonmixin.h"
 
 class ProteinCrystal: public Structure, public SpaceGroupViewer,
                       public AtomEditor, public BondEditor,
                       public UnitCellEditor,
                       public VolumetricDataEditor, public StructuralPropertyEditor,
-                      public RKRenderUnitCellSource, public RKRenderVolumetricDataSource
+                      public RKRenderUnitCellSource, public RKRenderVolumetricDataSource,
+                      public ProteinRibbonMixin
 {
 public:
   ProteinCrystal();
@@ -279,8 +281,14 @@ public:
   void setStructureLargestCavityDiameter(double value) override final {_structureLargestCavityDiameter = value;}
   void setStructureRestrictingPoreLimitingDiameter(double value) override final {_structureRestrictingPoreLimitingDiameter = value;}
   void setStructureLargestCavityDiameterAlongAViablePath(double value) override final {_structureLargestCavityDiameterAlongAViablePath = value;}
+
+protected:
+  SKAtomTreeController &ribbonAtomTreeController() override { return *_atomsTreeController; }
+  const SKAtomTreeController &ribbonAtomTreeController() const override { return *_atomsTreeController; }
+  double3 ribbonContentShift() const override { return _cell->contentShift(); }
+
 private:
-  qint64 _versionNumber{2};
+  qint64 _versionNumber{7};
 
   SKSpaceGroup _spaceGroup = SKSpaceGroup(1);
 

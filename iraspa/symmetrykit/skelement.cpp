@@ -204,6 +204,17 @@ std::set<QString> PredefinedElements::residueDefinitions =
   QString("VAL")
 };
 
+// Three-letter codes accepted as amino acids in SEQRES/entity records, including the
+// ambiguous (ASX, GLX), the non-standard (PYL, SEC), and the unknown (UNK) residues.
+std::set<QString> PredefinedElements::knownAminoAcidResidueCodes =
+{
+  QString("ALA"), QString("ASX"), QString("CYS"), QString("ASP"), QString("GLU"), QString("PHE"),
+  QString("GLY"), QString("HIS"), QString("ILE"), QString("LYS"), QString("LEU"), QString("MET"),
+  QString("ASN"), QString("PYL"), QString("PRO"), QString("GLN"), QString("ARG"), QString("SER"),
+  QString("THR"), QString("SEC"), QString("VAL"), QString("TRP"), QString("TYR"), QString("GLX"),
+  QString("UNK")
+};
+
 std::map<QString, QString> PredefinedElements::residueDefinitionsElement =
 {
   {QString("ALA+C")    ,"C"},
@@ -1289,3 +1300,60 @@ std::map<QString, std::vector<QString>> PredefinedElements::residueDefinitionsBo
   {QString("VAL+HG22") ,{}},
   {QString("VAL+HG23") ,{}}
 };
+
+std::optional<SKBackboneAtomRole> PredefinedElements::backboneAtomRole(const QString &residueName, const QString &atomName)
+{
+  const QString key = residueName.trimmed().toUpper() + QStringLiteral("+") + atomName.trimmed().toUpper();
+  const auto typeIterator = residueDefinitionsType.find(key);
+  if (typeIterator == residueDefinitionsType.end())
+  {
+    return std::nullopt;
+  }
+  return backboneAtomRoleForType(typeIterator->second);
+}
+
+std::optional<SKBackboneAtomRole> PredefinedElements::backboneAtomRoleForType(const QString &type)
+{
+  const QString trimmedType = type.trimmed();
+  if (trimmedType == QStringLiteral("NH1"))
+  {
+    return SKBackboneAtomRole::nitrogen;
+  }
+  if (trimmedType == QStringLiteral("CH1E") || trimmedType == QStringLiteral("CH2G"))
+  {
+    return SKBackboneAtomRole::alphaCarbon;
+  }
+  if (trimmedType == QStringLiteral("C"))
+  {
+    return SKBackboneAtomRole::carbonylCarbon;
+  }
+  if (trimmedType == QStringLiteral("O"))
+  {
+    return SKBackboneAtomRole::carbonylOxygen;
+  }
+  return std::nullopt;
+}
+
+bool PredefinedElements::isBackboneAtomType(const QString &type)
+{
+  return backboneAtomRoleForType(type).has_value();
+}
+
+bool PredefinedElements::isWaterResidueName(const QString &residueName)
+{
+  static const std::set<QString> waterResidueNames{QStringLiteral("HOH"), QStringLiteral("DOD"),
+                                                   QStringLiteral("WAT"), QStringLiteral("H2O")};
+  return waterResidueNames.count(residueName.trimmed().toUpper()) > 0;
+}
+
+bool PredefinedElements::isSolventAgentResidueName(const QString &residueName)
+{
+  static const std::set<QString> solventAgentResidueNames{
+    QStringLiteral("SO4"), QStringLiteral("PO4"), QStringLiteral("GOL"), QStringLiteral("EDO"), QStringLiteral("MPD"),
+    QStringLiteral("PEG"), QStringLiteral("PG4"), QStringLiteral("ACT"), QStringLiteral("ACY"), QStringLiteral("DMS"),
+    QStringLiteral("TRS"), QStringLiteral("MES"), QStringLiteral("EPE"), QStringLiteral("IMD"), QStringLiteral("FMT"),
+    QStringLiteral("NA"), QStringLiteral("K"), QStringLiteral("MG"), QStringLiteral("CA"), QStringLiteral("ZN"),
+    QStringLiteral("MN"), QStringLiteral("FE"), QStringLiteral("NI"), QStringLiteral("CU"), QStringLiteral("CD"),
+    QStringLiteral("CL"), QStringLiteral("BR"), QStringLiteral("IOD"), QStringLiteral("F"), QStringLiteral("CO")};
+  return solventAgentResidueNames.count(residueName.trimmed().toUpper()) > 0;
+}

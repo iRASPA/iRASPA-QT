@@ -54,6 +54,11 @@
 #include "atomtreeviewwrapatomstocellcommand.h"
 #include "atomtreeviewremovesymmetrycommand.h"
 #include "atomviewer.h"
+#include "protein.h"
+#include "proteincrystal.h"
+#include "dna.h"
+#include "dnacrystal.h"
+#include "proteinribbonsegmentsupport.h"
 
 AtomTreeView::AtomTreeView(QWidget* parent): QTreeView(parent ), _atomModel(std::make_shared<AtomTreeViewModel>())
 {
@@ -87,8 +92,11 @@ AtomTreeView::AtomTreeView(QWidget* parent): QTreeView(parent ), _atomModel(std:
   pushButtonDelegate = new AtomTreeViewPushButtonStyledItemDelegate(this);
   this->setItemDelegateForColumn(1, pushButtonDelegate);
 
+  ribbonVisibilityDelegate = new AtomTreeViewRibbonVisibilityStyledItemDelegate(this);
+  this->setItemDelegateForColumn(0, ribbonVisibilityDelegate);
+
   this->header()->setStretchLastSection(true);
-  this->setColumnWidth(0,110);
+  this->setColumnWidth(0,130);
   this->setColumnWidth(1,50);
   this->setColumnWidth(2,20);
   this->setColumnWidth(3,40);
@@ -837,6 +845,48 @@ void AtomTreeView::visibilityInvert()
   }
 }
 
+namespace
+{
+  void applyRibbonHierarchyVisibility(AtomTreeView *view,
+                                      const std::shared_ptr<iRASPAObject> &iraspaStructure,
+                                      const std::shared_ptr<ProjectTreeNode> &projectTreeNode,
+                                      bool atoms,
+                                      bool visible)
+  {
+    if (!projectTreeNode || !projectTreeNode->isEditable() || !iraspaStructure) return;
+    std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspaStructure->object());
+    if (!structure) return;
+
+    for (const std::shared_ptr<SKAtomTreeNode> &node : structure->atomsTreeController()->selectedTreeNodes())
+    {
+      if (!node || !ProteinRibbonSegmentSupport::isRibbonHierarchyGroupNode(node)) continue;
+      if (atoms) ProteinRibbonSegmentSupport::setGroupAtomsVisibility(node, visible);
+      else ProteinRibbonSegmentSupport::setGroupRibbonVisibility(node, visible);
+    }
+    emit view->rendererReloadData();
+  }
+}
+
+void AtomTreeView::visibilityShowAtoms()
+{
+  applyRibbonHierarchyVisibility(this, _iraspaStructure, _projectTreeNode, true, true);
+}
+
+void AtomTreeView::visibilityHideAtoms()
+{
+  applyRibbonHierarchyVisibility(this, _iraspaStructure, _projectTreeNode, true, false);
+}
+
+void AtomTreeView::visibilityShowRibbon()
+{
+  applyRibbonHierarchyVisibility(this, _iraspaStructure, _projectTreeNode, false, true);
+}
+
+void AtomTreeView::visibilityHideRibbon()
+{
+  applyRibbonHierarchyVisibility(this, _iraspaStructure, _projectTreeNode, false, false);
+}
+
 void AtomTreeView::ShowContextMenu(const QPoint &pos)
 {
   QModelIndex index = indexAt(pos);
@@ -937,6 +987,23 @@ void AtomTreeView::ShowContextMenu(const QPoint &pos)
   visibilityGroup->addAction(&actionVisibilityInvert);
   subMenuVisibility->addAction(&actionVisibilityInvert);
   connect(&actionVisibilityInvert, &QAction::triggered, this, &AtomTreeView::visibilityInvert);
+  subMenuVisibility->addSeparator();
+  QAction actionVisibilityShowAtoms(tr("Show Atoms"), this);
+  actionVisibilityShowAtoms.setEnabled(isEnabled);
+  subMenuVisibility->addAction(&actionVisibilityShowAtoms);
+  connect(&actionVisibilityShowAtoms, &QAction::triggered, this, &AtomTreeView::visibilityShowAtoms);
+  QAction actionVisibilityHideAtoms(tr("Hide Atoms"), this);
+  actionVisibilityHideAtoms.setEnabled(isEnabled);
+  subMenuVisibility->addAction(&actionVisibilityHideAtoms);
+  connect(&actionVisibilityHideAtoms, &QAction::triggered, this, &AtomTreeView::visibilityHideAtoms);
+  QAction actionVisibilityShowRibbon(tr("Show Ribbon"), this);
+  actionVisibilityShowRibbon.setEnabled(isEnabled);
+  subMenuVisibility->addAction(&actionVisibilityShowRibbon);
+  connect(&actionVisibilityShowRibbon, &QAction::triggered, this, &AtomTreeView::visibilityShowRibbon);
+  QAction actionVisibilityHideRibbon(tr("Hide Ribbon"), this);
+  actionVisibilityHideRibbon.setEnabled(isEnabled);
+  subMenuVisibility->addAction(&actionVisibilityHideRibbon);
+  connect(&actionVisibilityHideRibbon, &QAction::triggered, this, &AtomTreeView::visibilityHideRibbon);
 
   QMenu* subMenuScrollTo = contextMenu.addMenu(tr("Scroll To"));
   QActionGroup* scrollToGroup = new QActionGroup(this);
@@ -1158,7 +1225,7 @@ void AtomTreeView::exportToPDB() const
         }
         else
         {
-          QFile qFile = fileURLs.first().toLocalFile();
+          QFile qFile(fileURLs.first().toLocalFile());
           if (qFile.open(QIODevice::WriteOnly))
           {
             QTextStream out(&qFile);
@@ -1189,7 +1256,12 @@ void AtomTreeView::exportToMMCIF() const
       std::shared_ptr<SKCell> cell = cellData.has_value() ? cellData->first : nullptr;
       double3 origin = cellData.has_value() ? cellData->second : double3(0.0,0.0,0.0);
 
-      SKmmCIFWriter writer = SKmmCIFWriter(displayName, spaceGroup, cell, origin, atoms);
+      const bool withProteinInfo =
+        std::dynamic_pointer_cast<Protein>(_iraspaStructure->object()) != nullptr
+        || std::dynamic_pointer_cast<ProteinCrystal>(_iraspaStructure->object()) != nullptr
+        || std::dynamic_pointer_cast<DNA>(_iraspaStructure->object()) != nullptr
+        || std::dynamic_pointer_cast<DNACrystal>(_iraspaStructure->object()) != nullptr;
+      SKmmCIFWriter writer = SKmmCIFWriter(displayName, spaceGroup, cell, origin, atoms, withProteinInfo);
 
       SaveMMCIFFormatDialog dialog(nullptr);
 
@@ -1202,7 +1274,7 @@ void AtomTreeView::exportToMMCIF() const
         }
         else
         {
-          QFile qFile = fileURLs.first().toLocalFile();
+          QFile qFile(fileURLs.first().toLocalFile());
           if (qFile.open(QIODevice::WriteOnly))
           {
             QTextStream out(&qFile);
@@ -1243,7 +1315,7 @@ void AtomTreeView::exportToCIF() const
         }
         else
         {
-          QFile qFile = fileURLs.first().toLocalFile();
+          QFile qFile(fileURLs.first().toLocalFile());
           if (qFile.open(QIODevice::WriteOnly))
           {
             QTextStream out(&qFile);
@@ -1286,7 +1358,7 @@ void AtomTreeView::exportToXYZ() const
         }
         else
         {
-          QFile qFile = fileURLs.first().toLocalFile();
+          QFile qFile(fileURLs.first().toLocalFile());
           if (qFile.open(QIODevice::WriteOnly))
           {
             QTextStream out(&qFile);
@@ -1328,7 +1400,7 @@ void AtomTreeView::exportToPOSCAR() const
        }
        else
        {
-         QFile qFile = fileURLs.first().toLocalFile();
+         QFile qFile(fileURLs.first().toLocalFile());
          if (qFile.open(QIODevice::WriteOnly))
          {
            QTextStream out(&qFile);
