@@ -78,6 +78,12 @@ file(GLOB_RECURSE SOURCES
     "${CMAKE_SOURCE_DIR}/renderkit/*.cpp"
 )
 
+list(FILTER SOURCES EXCLUDE REGEX ".*/renderkit/vulkan/.*")
+
+include_directories(renderkit/opengl)
+include_directories(renderkit/geometry)
+include_directories(simulationkit/opencl)
+
 #=================== SETUP EXECTUABLE ====================#
 # Enable debug logging on RELWITHDEBINFO configuration
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
@@ -94,8 +100,7 @@ elseif(UNIX)
     add_executable(iRASPA ${SOURCES})
 endif()
 
-# Add the target includes for iRASPA 
-target_include_directories(iRASPA PRIVATE ${CMAKE_SOURCE_DIR}/iraspagui)
+target_compile_definitions(iRASPA PRIVATE USE_OPENGL)
 
 #===================== LINKING LIBRARIES =======================#
 target_link_libraries(iRASPA Qt6::Widgets)

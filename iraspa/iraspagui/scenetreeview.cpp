@@ -26,6 +26,7 @@
 #include "scenetreeviewinsertinitialscenecommand.h"
 #include "scenetreeviewdeleteselectioncommand.h"
 #include "scenetreeviewchangeselectioncommand.h"
+#include "structureicons.h"
 #include <QModelIndexList>
 #include <QApplication>
 #include <QDrag>
@@ -170,6 +171,10 @@ void SceneTreeView::reloadSelection()
 
           emit setSelectedMovie(movie);
           emit setSelectedFrame(movie->frameAtIndex(_sceneList->selectedFrameIndex()));
+          if (_mainWindow)
+          {
+            _mainWindow->showInfoPanel(movie);
+          }
         }
       }
     }
@@ -259,6 +264,11 @@ void SceneTreeView::selectionChanged(const QItemSelection &selected, const QItem
 
         // propagates the selected frame to the atom and bond-views
         emit setSelectedFrame(movie->frameAtIndex(_sceneList->selectedFrameIndex()));
+
+        if (_mainWindow)
+        {
+          _mainWindow->showInfoPanel(movie->shared_from_this());
+        }
       }
     }
 

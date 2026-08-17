@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDebug>
 #include <iostream>
 #include "glgeterror.h"
+#include "rkimposters.h"
 #include "spheregeometry.h"
 
 OpenGLObjectShader::OpenGLObjectShader():
@@ -68,14 +69,14 @@ void OpenGLObjectShader::paintGL(GLuint structureUniformBuffer)
   _polygonalPrismObjectShader.paintGLOpaque(structureUniformBuffer);
 }
 
-void OpenGLObjectShader::paintGLTransparent(GLuint structureUniformBuffer)
+void OpenGLObjectShader::paintGLTransparent(GLuint structureUniformBuffer, int sceneIndex, int movieIndex)
 {
-  _crystalEllipseObjectShader.paintGLTransparent(structureUniformBuffer);
-  _crystalCylinderObjectShader.paintGLTransparent(structureUniformBuffer);
-  _crystalPolygonalPrismObjectShader.paintGLTransparent(structureUniformBuffer);
-  _ellipseObjectShader.paintGLTransparent(structureUniformBuffer);
-  _cylinderObjectShader.paintGLTransparent(structureUniformBuffer);
-  _polygonalPrismObjectShader.paintGLTransparent(structureUniformBuffer);
+  _crystalEllipseObjectShader.paintGLTransparent(structureUniformBuffer, sceneIndex, movieIndex);
+  _crystalCylinderObjectShader.paintGLTransparent(structureUniformBuffer, sceneIndex, movieIndex);
+  _crystalPolygonalPrismObjectShader.paintGLTransparent(structureUniformBuffer, sceneIndex, movieIndex);
+  _ellipseObjectShader.paintGLTransparent(structureUniformBuffer, sceneIndex, movieIndex);
+  _cylinderObjectShader.paintGLTransparent(structureUniformBuffer, sceneIndex, movieIndex);
+  _polygonalPrismObjectShader.paintGLTransparent(structureUniformBuffer, sceneIndex, movieIndex);
 }
 
 

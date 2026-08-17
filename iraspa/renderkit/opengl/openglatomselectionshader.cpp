@@ -20,21 +20,16 @@
  ********************************************************************************************************************/
 
 #include "openglatomselectionshader.h"
-#include <QDebug>
-#include <iostream>
 #include "glgeterror.h"
-#include "spheregeometry.h"
 
 OpenGLAtomSelectionShader::OpenGLAtomSelectionShader():
   _atomSelectionWorleyNoise3DShader(),
   _atomSelectionWorleyNoise3DOrthographicImposterShader(_atomSelectionWorleyNoise3DShader),
   _atomSelectionWorleyNoise3DPerspectiveImposterShader(_atomSelectionWorleyNoise3DShader),
-  _atomSelectionStripesShader(),
   _atomSelectionStripesOrthographicImposterShader(_atomSelectionWorleyNoise3DShader),
   _atomSelectionStripesPerspectiveImposterShader(_atomSelectionWorleyNoise3DShader),
   _atomSelectionGlowShader(_atomSelectionWorleyNoise3DShader)
 {
-
 }
 
 bool OpenGLAtomSelectionShader::initializeOpenGLFunctions()
@@ -42,7 +37,6 @@ bool OpenGLAtomSelectionShader::initializeOpenGLFunctions()
   _atomSelectionWorleyNoise3DShader.initializeOpenGLFunctions();
   _atomSelectionWorleyNoise3DOrthographicImposterShader.initializeOpenGLFunctions();
   _atomSelectionWorleyNoise3DPerspectiveImposterShader.initializeOpenGLFunctions();
-  _atomSelectionStripesShader.initializeOpenGLFunctions();
   _atomSelectionStripesOrthographicImposterShader.initializeOpenGLFunctions();
   _atomSelectionStripesPerspectiveImposterShader.initializeOpenGLFunctions();
   _atomSelectionGlowShader.initializeOpenGLFunctions();
@@ -55,35 +49,26 @@ void OpenGLAtomSelectionShader::setRenderStructures(std::vector<std::vector<std:
   _atomSelectionWorleyNoise3DShader.setRenderStructures(structures);
   _atomSelectionWorleyNoise3DOrthographicImposterShader.setRenderStructures(structures);
   _atomSelectionWorleyNoise3DPerspectiveImposterShader.setRenderStructures(structures);
-  _atomSelectionStripesShader.setRenderStructures(structures);
   _atomSelectionStripesOrthographicImposterShader.setRenderStructures(structures);
   _atomSelectionStripesPerspectiveImposterShader.setRenderStructures(structures);
   _atomSelectionGlowShader.setRenderStructures(structures);
 }
 
-
 void OpenGLAtomSelectionShader::paintGL(std::shared_ptr<RKCamera> camera, RKRenderQuality quality, GLuint structureUniformBuffer)
 {
-  if(quality == RKRenderQuality:: high || quality == RKRenderQuality:: picture)
+  Q_UNUSED(quality);
+  if(camera->isOrthographic())
   {
-    _atomSelectionWorleyNoise3DShader.paintGL(structureUniformBuffer);
-    _atomSelectionStripesShader.paintGL(structureUniformBuffer);
+    _atomSelectionStripesOrthographicImposterShader.paintGL(structureUniformBuffer);
+    _atomSelectionWorleyNoise3DOrthographicImposterShader.paintGL(structureUniformBuffer);
   }
   else
   {
-    if(camera->isOrthographic())
-    {
-      _atomSelectionStripesOrthographicImposterShader.paintGL(structureUniformBuffer);
-      _atomSelectionWorleyNoise3DOrthographicImposterShader.paintGL(structureUniformBuffer);
-    }
-    else
-    {
-      _atomSelectionStripesPerspectiveImposterShader.paintGL(structureUniformBuffer);
-      _atomSelectionWorleyNoise3DPerspectiveImposterShader.paintGL(structureUniformBuffer);
-    }
+    _atomSelectionStripesPerspectiveImposterShader.paintGL(structureUniformBuffer);
+    _atomSelectionWorleyNoise3DPerspectiveImposterShader.paintGL(structureUniformBuffer);
   }
-
 }
+
 void OpenGLAtomSelectionShader::paintGLGlow(GLuint structureUniformBuffer)
 {
   _atomSelectionGlowShader.paintGL(structureUniformBuffer);
@@ -94,7 +79,6 @@ void OpenGLAtomSelectionShader::initializeVertexArrayObject()
   _atomSelectionWorleyNoise3DShader.initializeVertexArrayObject();
   _atomSelectionWorleyNoise3DOrthographicImposterShader.initializeVertexArrayObject();
   _atomSelectionWorleyNoise3DPerspectiveImposterShader.initializeVertexArrayObject();
-  _atomSelectionStripesShader.initializeVertexArrayObject();
   _atomSelectionStripesOrthographicImposterShader.initializeVertexArrayObject();
   _atomSelectionStripesPerspectiveImposterShader.initializeVertexArrayObject();
   _atomSelectionGlowShader.initializeVertexArrayObject();
@@ -105,7 +89,6 @@ void OpenGLAtomSelectionShader::reloadData()
   _atomSelectionWorleyNoise3DShader.reloadData();
   _atomSelectionWorleyNoise3DOrthographicImposterShader.reloadData();
   _atomSelectionWorleyNoise3DPerspectiveImposterShader.reloadData();
-  _atomSelectionStripesShader.reloadData();
   _atomSelectionStripesOrthographicImposterShader.reloadData();
   _atomSelectionStripesPerspectiveImposterShader.reloadData();
   _atomSelectionGlowShader.reloadData();
@@ -113,10 +96,8 @@ void OpenGLAtomSelectionShader::reloadData()
 
 void OpenGLAtomSelectionShader::loadShader(void)
 {
-  _atomSelectionWorleyNoise3DShader.loadShader();
   _atomSelectionWorleyNoise3DOrthographicImposterShader.loadShader();
   _atomSelectionWorleyNoise3DPerspectiveImposterShader.loadShader();
-  _atomSelectionStripesShader.loadShader();
   _atomSelectionStripesOrthographicImposterShader.loadShader();
   _atomSelectionStripesPerspectiveImposterShader.loadShader();
   _atomSelectionGlowShader.loadShader();
@@ -124,10 +105,8 @@ void OpenGLAtomSelectionShader::loadShader(void)
 
 void OpenGLAtomSelectionShader::initializeTransformUniforms()
 {
-  glUniformBlockBinding(_atomSelectionWorleyNoise3DShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_atomSelectionWorleyNoise3DOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DOrthographicImposterShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_atomSelectionWorleyNoise3DPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DPerspectiveImposterShader.program(), "FrameUniformBlock"), 0);
-  glUniformBlockBinding(_atomSelectionStripesShader.program(), glGetUniformBlockIndex(_atomSelectionStripesShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_atomSelectionStripesOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomSelectionStripesOrthographicImposterShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_atomSelectionStripesPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomSelectionStripesPerspectiveImposterShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_atomSelectionGlowShader.program(), glGetUniformBlockIndex(_atomSelectionGlowShader.program(), "FrameUniformBlock"), 0);
@@ -135,10 +114,8 @@ void OpenGLAtomSelectionShader::initializeTransformUniforms()
 
 void OpenGLAtomSelectionShader::initializeStructureUniforms()
 {
-  glUniformBlockBinding(_atomSelectionWorleyNoise3DShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_atomSelectionWorleyNoise3DOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DOrthographicImposterShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_atomSelectionWorleyNoise3DPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DPerspectiveImposterShader.program(), "StructureUniformBlock"), 1);
-  glUniformBlockBinding(_atomSelectionStripesShader.program(), glGetUniformBlockIndex(_atomSelectionStripesShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_atomSelectionStripesOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomSelectionStripesOrthographicImposterShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_atomSelectionStripesPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomSelectionStripesPerspectiveImposterShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_atomSelectionGlowShader.program(), glGetUniformBlockIndex(_atomSelectionGlowShader.program(), "StructureUniformBlock"), 1);
@@ -146,10 +123,8 @@ void OpenGLAtomSelectionShader::initializeStructureUniforms()
 
 void OpenGLAtomSelectionShader::initializeLightUniforms()
 {
-  glUniformBlockBinding(_atomSelectionWorleyNoise3DShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DShader.program(), "LightsUniformBlock"), 3);
   glUniformBlockBinding(_atomSelectionWorleyNoise3DOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DOrthographicImposterShader.program(), "LightsUniformBlock"), 3);
   glUniformBlockBinding(_atomSelectionWorleyNoise3DPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomSelectionWorleyNoise3DPerspectiveImposterShader.program(), "LightsUniformBlock"), 3);
-  glUniformBlockBinding(_atomSelectionStripesShader.program(), glGetUniformBlockIndex(_atomSelectionStripesShader.program(), "LightsUniformBlock"), 3);
   glUniformBlockBinding(_atomSelectionStripesOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomSelectionStripesOrthographicImposterShader.program(), "LightsUniformBlock"), 3);
   glUniformBlockBinding(_atomSelectionStripesPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomSelectionStripesPerspectiveImposterShader.program(), "LightsUniformBlock"), 3);
   glUniformBlockBinding(_atomSelectionGlowShader.program(), glGetUniformBlockIndex(_atomSelectionGlowShader.program(), "LightsUniformBlock"), 3);

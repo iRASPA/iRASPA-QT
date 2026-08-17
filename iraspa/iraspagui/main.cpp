@@ -25,6 +25,7 @@
 #include <QTranslator>
 #include <QLibraryInfo>
 #include <QSurfaceFormat>
+#include "rkrendererbackend.h"
 
 #ifdef Q_OS_WIN
  #include <windows.h>
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
 #endif
 
   QApplication a(argc, argv);
+  RKRendererAvailability::probe();
 
   QTranslator qtTranslator, appTranslator;
 
@@ -88,6 +90,8 @@ int main(int argc, char *argv[])
 
   MainWindow w;
   w.show();
+  w.raise();
+  w.activateWindow();
 
   return a.exec();
 }

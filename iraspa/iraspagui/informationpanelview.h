@@ -21,16 +21,36 @@
 
 #pragma once
 
-#include <QObject>
+#include <QGraphicsOpacityEffect>
+#include <QIcon>
 #include <QLabel>
+#include <QPropertyAnimation>
+#include <QString>
+#include <QTimer>
 #include <QWidget>
 
-class InformationPanelView : public QLabel
+class InformationPanelView : public QWidget
 {
- Q_OBJECT
+  Q_OBJECT
 
 public:
-  InformationPanelView(QWidget * parent);
-private:
+  InformationPanelView(QWidget *parent);
+  void showInfoItem(const QIcon &icon, const QString &message);
+
+protected:
   void paintEvent(QPaintEvent *) override final;
+  void resizeEvent(QResizeEvent *event) override final;
+
+private:
+  void updateElidedText();
+  void startFadeOut();
+  void hideContent();
+
+  QWidget *_content;
+  QLabel *_iconLabel;
+  QLabel *_textLabel;
+  QGraphicsOpacityEffect *_opacityEffect;
+  QTimer *_hideTimer;
+  QPropertyAnimation *_fade;
+  QString _fullMessage;
 };

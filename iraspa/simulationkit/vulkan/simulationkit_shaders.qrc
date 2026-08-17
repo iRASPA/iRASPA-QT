@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/simulationkit">
+        <file>shaders/energy_grid.comp.spv</file>
+        <file>shaders/void_fraction.comp.spv</file>
+        <file>shaders/mc_classify.comp.spv</file>
+        <file>shaders/mc_construct.comp.spv</file>
+        <file>shaders/mc_traverse.comp.spv</file>
+    </qresource>
+</RCC>

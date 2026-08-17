@@ -49,7 +49,7 @@ public:
   void generateBuffers();
 
   void paintGLOpaque(GLuint structureUniformBuffer);
-  void paintGLTransparent(GLuint structureUniformBuffer);
+  void paintGLTransparent(GLuint structureUniformBuffer, int sceneIndex = -1, int movieIndex = -1);
 
   void reloadData();
   void initializeVertexArrayObject();

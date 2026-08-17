@@ -99,7 +99,7 @@ std::vector<RKInPerInstanceAttributesAtoms> MolecularCrystal::renderAtoms() cons
 
   std::vector<RKInPerInstanceAttributesAtoms> atomData = std::vector<RKInPerInstanceAttributesAtoms>();
 
-  uint32_t asymmetricAtomIndex = 0;
+  uint32_t instanceIndex = 0;
   for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
@@ -129,10 +129,10 @@ std::vector<RKInPerInstanceAttributesAtoms> MolecularCrystal::renderAtoms() cons
             {
               for (int k3 = minimumReplicaZ;k3 <= maximumReplicaZ;k3++)
               {
-                double3 CartesianPosition = _cell->unitCell() * (double3::fract(adjustedFractionalPosition) + double3(k1, k2, k3));
+                double3 CartesianPosition = _cell->unitCell() * (double3::fract(adjustedFractionalPosition) + double3(k1, k2, k3)) + atom->displacement();
                 float4 position = float4(CartesianPosition, w);
 
-                RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+                RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, instanceIndex++);
                 atomData.push_back(atom1);
               }
             }
@@ -140,7 +140,6 @@ std::vector<RKInPerInstanceAttributesAtoms> MolecularCrystal::renderAtoms() cons
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;
@@ -187,8 +186,8 @@ std::vector<RKInPerInstanceAttributesBonds> MolecularCrystal::renderInternalBond
             {
               for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
               {
-                double3 pos1 = _cell->unitCell() * (copyPosition1 + double3(k1,k2,k3));
-                double3 pos2 = _cell->unitCell() * (copyPosition2 + double3(k1,k2,k3));
+                double3 pos1 = _cell->unitCell() * (copyPosition1 + double3(k1,k2,k3)) + bond->atom1()->parent()->displacement();
+                double3 pos2 = _cell->unitCell() * (copyPosition2 + double3(k1,k2,k3)) + bond->atom2()->parent()->displacement();
                 double bondLength = (pos2-pos1).length();
                 double drawRadius1 = bond->atom1()->parent()->drawRadius()/bondLength;
                 double drawRadius2 = bond->atom2()->parent()->drawRadius()/bondLength;
@@ -369,7 +368,7 @@ std::vector<RKInPerInstanceAttributesAtoms> MolecularCrystal::renderSelectedAtom
               {
                 for (int k3 = minimumReplicaZ;k3 <= maximumReplicaZ;k3++)
                 {
-                  double3 CartesianPosition = _cell->unitCell() * (double3::fract(adjustedFractionalPosition) + double3(k1, k2, k3));
+                  double3 CartesianPosition = _cell->unitCell() * (double3::fract(adjustedFractionalPosition) + double3(k1, k2, k3)) + atom->displacement();
                   float4 position = float4(CartesianPosition, 1.0);
 
                   RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
@@ -428,8 +427,8 @@ std::vector<RKInPerInstanceAttributesBonds> MolecularCrystal::renderSelectedInte
             {
               for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
               {
-                double3 pos1 = _cell->unitCell() * (double3::fract(adjustedFractionalPosition1) + double3(k1, k2, k3));
-                double3 pos2 = _cell->unitCell() * (double3::fract(adjustedFractionalPosition2) + double3(k1, k2, k3));
+                double3 pos1 = _cell->unitCell() * (double3::fract(adjustedFractionalPosition1) + double3(k1, k2, k3)) + bond->atom1()->parent()->displacement();
+                double3 pos2 = _cell->unitCell() * (double3::fract(adjustedFractionalPosition2) + double3(k1, k2, k3)) + bond->atom2()->parent()->displacement();
 
                 double bondLength = (pos2-pos1).length();
                 double drawRadius1 = bond->atom1()->parent()->drawRadius()/bondLength;
@@ -500,7 +499,7 @@ std::set<int> MolecularCrystal::filterCartesianAtomPositions(std::function<bool(
                 {
                   for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
                   {
-                    double3 CartesianPosition = _cell->unitCell() * (double3::fract(adjustedFractionalPosition) + double3(k1, k2, k3));
+                    double3 CartesianPosition = _cell->unitCell() * (double3::fract(adjustedFractionalPosition) + double3(k1, k2, k3)) + atom->displacement();
 
                     double4 position = rotationMatrix * double4(CartesianPosition.x, CartesianPosition.y, CartesianPosition.z, 1.0);
 
@@ -566,8 +565,8 @@ BondSelectionIndexSet MolecularCrystal::filterCartesianBondPositions(std::functi
             {
               for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
               {
-                double3 pos1 = _cell->unitCell() * (double3::fract(adjustedFractionalPosition1) + double3(k1, k2, k3));
-                double3 pos2 = _cell->unitCell() * (double3::fract(adjustedFractionalPosition2) + double3(k1, k2, k3));
+                double3 pos1 = _cell->unitCell() * (double3::fract(adjustedFractionalPosition1) + double3(k1, k2, k3)) + bond->atom1()->parent()->displacement();
+                double3 pos2 = _cell->unitCell() * (double3::fract(adjustedFractionalPosition2) + double3(k1, k2, k3)) + bond->atom2()->parent()->displacement();
 
                 double3 dr = (pos2 -pos1);
 
@@ -1333,7 +1332,7 @@ std::vector<RKInPerInstanceAttributesText> MolecularCrystal::atomTextData(RKFont
               {
                 for (int k3 = minimumReplicaZ;k3 <= maximumReplicaZ;k3++)
                 {
-                  double3 CartesianPosition = _cell->unitCell() * (double3::fract(adjustedFractionalPosition) + double3(k1, k2, k3));
+                  double3 CartesianPosition = _cell->unitCell() * (double3::fract(adjustedFractionalPosition) + double3(k1, k2, k3)) + atom->displacement();
                   float4 position = float4(CartesianPosition, 1.0);
 
                   QString text;

@@ -29,7 +29,7 @@
 #else
   #include <QOpenGLFunctions>
 #endif
-#include "openglshader.h"
+#include <QOpenGLFunctions_3_3_Core>
 #include "rkrenderkitprotocols.h"
 #include "rkrenderuniforms.h"
 
@@ -39,47 +39,21 @@ class OpenGLAtomSelectionStripesOrthographicImposterShader;
 class OpenGLAtomSelectionStripesPerspectiveImposterShader;
 class OpenGLAtomSelectionGlowShader;
 
-class OpenGLAtomSelectionWorleyNoise3DShader: public OpenGLShader
+class OpenGLAtomSelectionWorleyNoise3DShader: public QOpenGLFunctions_3_3_Core
 {
 public:
   OpenGLAtomSelectionWorleyNoise3DShader();
-  void loadShader(void) override final;
   void deleteBuffers();
   void generateBuffers();
-
-  void paintGL(GLuint structureUniformBuffer);
 
   void reloadData();
   void initializeVertexArrayObject();
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
-  GLuint program() {return _program;}
 private:
-  GLuint _program;
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
-  std::vector<std::vector<size_t>> _numberOfIndices;
   std::vector<std::vector<size_t>> _numberOfDrawnAtoms;
-
-  std::vector<std::vector<GLuint>> _vertexBuffer;
-  std::vector<std::vector<GLuint>> _indexBuffer;
   std::vector<std::vector<GLuint>> _instancePositionBuffer;
-  std::vector<std::vector<GLuint>> _scaleBuffer;
-
-  std::vector<std::vector<GLuint>> _vertexArrayObject;
-  std::vector<std::vector<GLuint>> _ambientColorBuffer;
-  std::vector<std::vector<GLuint>> _diffuseColorBuffer;
-  std::vector<std::vector<GLuint>> _specularColorBuffer;
-
-  GLint _vertexPositionAttributeLocation;
-  GLint _vertexNormalAttributeLocation;
-  GLint _instancePositionAttributeLocation;
-  GLint _ambientColorAttributeLocation;
-  GLint _diffuseColorAttributeLocation;
-  GLint _specularColorAttributeLocation;
-  GLint _scaleAttributeLocation;
-
-  static const std::string _vertexShaderSource;
-  static const std::string _fragmentShaderSource;
 
   friend OpenGLAtomSelectionWorleyNoise3DOrthographicImposterShader;
   friend OpenGLAtomSelectionWorleyNoise3DPerspectiveImposterShader;

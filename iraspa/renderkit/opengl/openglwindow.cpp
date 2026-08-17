@@ -25,6 +25,7 @@
 #include <QPaintDevice>
 #include <foundationkit.h>
 #include "quadgeometry.h"
+#include "rkimposters.h"
 #include <QtOpenGL/QtOpenGL>
 #include <iostream>
 #include <array>
@@ -66,7 +67,7 @@ OpenGLWindow::OpenGLWindow(QWidget* parent): QOpenGLWindow(),
     _ribbonAmbientOcclusionShader(_ribbonShader, _atomShader),
     _pickingShader(_atomShader, _bondShader, _objectShader, _ribbonShader),
     _textShader(),
-    _timer(new QTimer(parent))
+    _timer(new QTimer(this))
 {
   connect(_timer, &QTimer::timeout, this, &OpenGLWindow::timeoutEventHandler);
 
@@ -86,6 +87,15 @@ OpenGLWindow::OpenGLWindow(QWidget* parent): QOpenGLWindow(),
 
 OpenGLWindow::~OpenGLWindow()
 {
+  if (_timer)
+  {
+    _timer->stop();
+    _timer->disconnect(this);
+  }
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
   makeCurrent();
   deleteRibbonTextures();
   if (_ribbonFallbackAmbientOcclusionTexture != 0)
@@ -170,8 +180,6 @@ void OpenGLWindow::reloadRibbonAmbientOcclusionTextures(RKRenderQuality quality)
 
 void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
 {
-  makeCurrent();
-
   _dataSource = source;
   _boundingBoxShader.setRenderDataSource(source);
   _globalAxesShader.setRenderDataSource(source);
@@ -184,12 +192,15 @@ void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> sourc
       camera->resetForNewBoundingBox(dataSource->renderBoundingBox());
     }
 
-    if (_isOpenGLInitialized)
+    if (!_isOpenGLInitialized)
     {
-      _backgroundShader.reload(dataSource);
-
-      _blurShader.resizeGL(_width, _height);
+      return;
     }
+
+    makeCurrent();
+    _backgroundShader.reload(dataSource);
+
+    _blurShader.resizeGL(_width, _height);
   }
 
   if (_isOpenGLInitialized)
@@ -250,6 +261,10 @@ void OpenGLWindow::redrawWithQuality(RKRenderQuality quality)
 
 void OpenGLWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
   makeCurrent();
   _atomShader.invalidateCachedAmbientOcclusionTexture(structures);
   _ribbonAmbientOcclusionShader.invalidateCachedAmbientOcclusionTexture(structures);
@@ -257,6 +272,10 @@ void OpenGLWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::sha
 
 void OpenGLWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
   makeCurrent();
   _energySurfaceShader.invalidateIsosurface(structures);
   _energyVolumeRenderedSurface.invalidateIsosurface(structures);
@@ -264,6 +283,10 @@ void OpenGLWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRen
 
 std::array<int,4> OpenGLWindow::pickTexture(int x, int y, int width, int height)
 {
+  if (!_isOpenGLInitialized)
+  {
+    return {0, 0, 0, 0};
+  }
   makeCurrent();
   return _pickingShader.pickTexture(x,y,width,height);
 }
@@ -1146,7 +1169,11 @@ void OpenGLWindow::drawSceneVolumeRenderedSurfacesToFramebuffer(GLuint framebuff
   glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
   if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    _energyVolumeRenderedSurface.paintGLOpaque(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture);
+    for (const RKBackToFrontItem &item : backToFrontRenderOrder(_renderStructures, camera.get()))
+    {
+      _energyVolumeRenderedSurface.paintGLOpaque(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture,
+                                                 static_cast<int>(item.sceneIndex), static_cast<int>(item.movieIndex));
+    }
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER,0);
@@ -1157,11 +1184,14 @@ void OpenGLWindow::drawSceneTransparentToFramebuffer(GLuint framebuffer, GLuint 
   glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
   if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    _energyVolumeRenderedSurface.paintGLTransparent(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture);
-
-    _objectShader.paintGLTransparent(_structureUniformBuffer);
-
-    _energySurfaceShader.paintGLTransparent(_structureUniformBuffer,_isosurfaceUniformBuffer);
+    for (const RKBackToFrontItem &item : backToFrontRenderOrder(_renderStructures, camera.get()))
+    {
+      _energyVolumeRenderedSurface.paintGLTransparent(_structureUniformBuffer,_isosurfaceUniformBuffer, sceneResolvedDepthTexture,
+                                                     static_cast<int>(item.sceneIndex), static_cast<int>(item.movieIndex));
+      _objectShader.paintGLTransparent(_structureUniformBuffer, static_cast<int>(item.sceneIndex), static_cast<int>(item.movieIndex));
+      _energySurfaceShader.paintGLTransparent(_structureUniformBuffer,_isosurfaceUniformBuffer,
+                                              static_cast<int>(item.sceneIndex), static_cast<int>(item.movieIndex));
+    }
 
     _ribbonSelectionShader.paintOverlayGL(_structureUniformBuffer);
 
@@ -1249,7 +1279,7 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
     _tracking = Tracking::addToSelection;
 
   }
-  else if(event->modifiers()  & Qt::AltModifier & Qt::ControlModifier)  // option and command
+  else if((event->modifiers() & Qt::AltModifier) && (event->modifiers() & Qt::ControlModifier))  // option and command
   {
     _tracking = Tracking::translateSelection;
   }
@@ -1645,6 +1675,10 @@ void OpenGLWindow::updateGlobalAxesUniforms()
 
 void OpenGLWindow::reloadData()
 {
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
   makeCurrent();
 
   qDebug() << "OpenGLWindow::reloadData";
@@ -1677,6 +1711,10 @@ void OpenGLWindow::reloadData()
 
 void OpenGLWindow::reloadData(RKRenderQuality quality)
 {
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
   makeCurrent();
 
   _energySurfaceShader.reloadData();
@@ -1719,6 +1757,10 @@ void OpenGLWindow::reloadAmbientOcclusionData()
 
 void OpenGLWindow::reloadRenderData()
 {
+  if (!_isOpenGLInitialized)
+  {
+    return;
+  }
   makeCurrent();
 
    _energySurfaceShader.reloadData();

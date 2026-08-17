@@ -27,6 +27,8 @@
 #include <QMenu>
 #include <QDir>
 #include <QAction>
+#include <QActionGroup>
+#include <QIcon>
 #include <QItemSelection>
 #include <QFuture>
 #include <QCloseEvent>
@@ -55,6 +57,10 @@ public:
   void setDocumentData(std::shared_ptr<DocumentData> documentData) {_documentData = documentData;}
   bool eventFilter(QObject*object, QEvent *event ) override final;
   void propagateProject(std::shared_ptr<ProjectTreeNode> project, QObject *widget);
+  void showInfoPanel(const QIcon &icon, const QString &message);
+  void showInfoPanel(const std::shared_ptr<ProjectTreeNode> &node);
+  void showInfoPanel(const std::shared_ptr<Movie> &movie);
+  void showInfoPanel(const std::shared_ptr<iRASPAObject> &object);
   void propagateMainWindow(MainWindow* mainWindow, QObject *widget);
   void propagateLogReporter(LogReporting* logReporting, QObject *widget);
   std::shared_ptr<ProjectTreeController> projectTreeController() {return _documentData->projectTreeController();}
@@ -134,6 +140,9 @@ private:
   QMenu *_editMenu{nullptr};
   QAction *_undoAction{nullptr};
   QAction *_redoAction{nullptr};
+
+  QAction *_openGLRendererAction{nullptr};
+  QAction *_vulkanRendererAction{nullptr};
 
   QAction *_cutAction{nullptr};
   QAction *_copyAction{nullptr};

@@ -29,6 +29,7 @@ SOURCES += \
     $$PWD/qdoubledial.cpp \
     $$PWD/qintegerslider.cpp \
     $$PWD/renderstackedwidget.cpp \
+    $$PWD/iraspaexport.cpp \
     $$PWD/aboutdialog.cpp \
     $$PWD/iraspatoolbar.cpp \
     $$PWD/mastertoolbar.cpp \
@@ -125,6 +126,7 @@ HEADERS += \
     $$PWD/qdoubledial.h \
     $$PWD/qintegerslider.h \
     $$PWD/renderstackedwidget.h \
+    $$PWD/iraspaexport.h \
     $$PWD/aboutdialog.h \
     $$PWD/iraspatoolbar.h \
     $$PWD/mastertoolbar.h \

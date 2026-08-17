@@ -1,0 +1,82 @@
+#version 450
+
+layout(local_size_x = 64) in;
+
+layout(std430, binding = 0) readonly buffer PositionBuffer
+{
+  vec4 positions[];
+};
+
+layout(std430, binding = 1) readonly buffer GridPositionBuffer
+{
+  vec4 gridPositions[];
+};
+
+layout(std430, binding = 2) readonly buffer EpsilonBuffer
+{
+  float epsilon[];
+};
+
+layout(std430, binding = 3) readonly buffer SigmaBuffer
+{
+  float sigma[];
+};
+
+layout(std430, binding = 4) readonly buffer ReplicaBuffer
+{
+  vec4 replicaCell[];
+};
+
+layout(std430, binding = 5) buffer OutputBuffer
+{
+  float outputEnergy[];
+};
+
+layout(push_constant) uniform PushConstants
+{
+  vec4 cella;
+  vec4 cellb;
+  vec4 cellc;
+  int numberOfReplicas;
+  int startIndexAtoms;
+  int endIndexAtoms;
+  int numberOfGridPoints;
+} pc;
+
+void main()
+{
+  uint igrid = gl_GlobalInvocationID.x;
+  if (igrid >= uint(pc.numberOfGridPoints))
+  {
+    return;
+  }
+
+  vec4 gridpos = gridPositions[igrid];
+  float value = 0.0;
+
+  for (int j = 0; j < pc.numberOfReplicas; ++j)
+  {
+    for (int iatom = pc.startIndexAtoms; iatom < pc.endIndexAtoms; ++iatom)
+    {
+      vec4 pos = positions[iatom];
+      vec4 dr = gridpos - pos - replicaCell[j];
+      vec4 t = dr - roundEven(dr);
+
+      dr.x = dot(pc.cella, t);
+      dr.y = dot(pc.cellb, t);
+      dr.z = dot(pc.cellc, t);
+      dr.w = 0.0;
+
+      float rr = dot(dr, dr);
+      if (rr < 12.0 * 12.0)
+      {
+        float size = sigma[iatom];
+        float temp = size * size / rr;
+        float rri3 = temp * temp * temp;
+        value += epsilon[iatom] * (rri3 * (rri3 - 1.0));
+      }
+    }
+  }
+
+  outputEnergy[igrid] += min(value, 10000000.0);
+}

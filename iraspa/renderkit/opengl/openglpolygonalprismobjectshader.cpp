@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <iostream>
 #include "glgeterror.h"
+#include "rkimposters.h"
 #include "nsidedprismgeometry.h"
 #include "cappednsidedprismgeometry.h"
 #include "opengluniformstringliterals.h"
@@ -72,7 +73,7 @@ void OpenGLPolygonalPrismObjectShader::paintGLOpaque(GLuint structureUniformBuff
 }
 
 
-void OpenGLPolygonalPrismObjectShader::paintGLTransparent(GLuint structureUniformBuffer)
+void OpenGLPolygonalPrismObjectShader::paintGLTransparent(GLuint structureUniformBuffer, int sceneIndex, int movieIndex)
 {
   glEnable(GL_CULL_FACE);
 
@@ -88,6 +89,11 @@ void OpenGLPolygonalPrismObjectShader::paintGLTransparent(GLuint structureUnifor
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
+      if (!matchesRenderStructure(sceneIndex, movieIndex, i, j))
+      {
+        index++;
+        continue;
+      }
       if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
         if(source->primitiveOpacity()<=0.99999 && source->drawAtoms() && _renderStructures[i][j]->isVisible() && _numberOfIndices[i][j]>0 && _numberOfDrawnAtoms[i][j]>0)

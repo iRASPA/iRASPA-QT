@@ -22,9 +22,12 @@
 #include "openglenergyvolumerenderedsurface.h"
 #include "glgeterror.h"
 #include "cubegeometry.h"
+#include "rkimposters.h"
 #include "rkrenderuniforms.h"
 #include "opengluniformstringliterals.h"
 #include <QDebug>
+#include <algorithm>
+#include <cmath>
 
 OpenGLEnergyVolumeRenderedSurface::OpenGLEnergyVolumeRenderedSurface()
 {
@@ -100,7 +103,7 @@ void OpenGLEnergyVolumeRenderedSurface::setRenderStructures(std::vector<std::vec
 
 
 
-void OpenGLEnergyVolumeRenderedSurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture)
+void OpenGLEnergyVolumeRenderedSurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture, int sceneIndex, int movieIndex)
 {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -119,12 +122,18 @@ void OpenGLEnergyVolumeRenderedSurface::paintGLOpaque(GLuint structureUniformBuf
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
+      if (!matchesRenderStructure(sceneIndex, movieIndex, i, j))
+      {
+        index++;
+        continue;
+      }
       if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(_renderStructures[i][j].get()))
       if (RKRenderVolumetricDataSource* source = dynamic_cast<RKRenderVolumetricDataSource*>(_renderStructures[i][j].get()))
       {
         if (_renderStructures[i][j]->isVisible() && source->drawAdsorptionSurface() &&
             source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::volumeRendering &&
-            source->adsorptionVolumeTransferFunction() == RKPredefinedVolumeRenderingTransferFunction::RASPA_PES )
+            source->adsorptionVolumeTransferFunction() == RKPredefinedVolumeRenderingTransferFunction::RASPA_PES &&
+            _numberOfIndices[i][j] > 0)
         {
           glActiveTexture(GL_TEXTURE0);
           glBindTexture(GL_TEXTURE_3D, _volumeTextures[i][j]);
@@ -167,7 +176,7 @@ void OpenGLEnergyVolumeRenderedSurface::paintGLOpaque(GLuint structureUniformBuf
   glDisable(GL_DEPTH_CLAMP);
 }
 
-void OpenGLEnergyVolumeRenderedSurface::paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture)
+void OpenGLEnergyVolumeRenderedSurface::paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture, int sceneIndex, int movieIndex)
 {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -186,12 +195,18 @@ void OpenGLEnergyVolumeRenderedSurface::paintGLTransparent(GLuint structureUnifo
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
+      if (!matchesRenderStructure(sceneIndex, movieIndex, i, j))
+      {
+        index++;
+        continue;
+      }
       if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(_renderStructures[i][j].get()))
       if (RKRenderVolumetricDataSource* source = dynamic_cast<RKRenderVolumetricDataSource*>(_renderStructures[i][j].get()))
       {
         if (_renderStructures[i][j]->isVisible() && source->drawAdsorptionSurface() &&
             source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::volumeRendering &&
-            source->adsorptionVolumeTransferFunction() != RKPredefinedVolumeRenderingTransferFunction::RASPA_PES )
+            source->adsorptionVolumeTransferFunction() != RKPredefinedVolumeRenderingTransferFunction::RASPA_PES &&
+            _numberOfIndices[i][j] > 0)
         {
           glActiveTexture(GL_TEXTURE0);
           glBindTexture(GL_TEXTURE_3D, _volumeTextures[i][j]);
@@ -317,28 +332,53 @@ void OpenGLEnergyVolumeRenderedSurface::initializeVertexArrayObject()
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // The array on the host has 1 byte alignment
 
             std::vector<float4> *textureData{};
+            bool ownsTextureData = false;
             if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
             {
                textureData = _caches[powerOfTwo].object(_renderStructures[i][j].get());
-
-               glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, size, size, size, 0, GL_RGBA, GL_FLOAT, textureData->data());
-               check_gl_error();
-               glBindTexture(GL_TEXTURE_3D, 0);
-               check_gl_error();
             }
             else
             {
               std::vector<float4> gridData = source->gridValueAndGradientData();
-              if (gridData.empty()) return;
+              if (gridData.empty())
+              {
+                glBindTexture(GL_TEXTURE_3D, 0);
+                _numberOfIndices[i][j] = 0;
+                continue;
+              }
 
               textureData = new std::vector<float4>();
               *textureData = std::move(gridData);
+              ownsTextureData = true;
+            }
 
-              glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, size, size, size, 0, GL_RGBA, GL_FLOAT, textureData->data());
-              check_gl_error();
-              glBindTexture(GL_TEXTURE_3D, 0);
-              check_gl_error();
+            const size_t expected = static_cast<size_t>(size) * static_cast<size_t>(size) * static_cast<size_t>(size);
+            if (!textureData || textureData->size() != expected)
+            {
+              if (textureData && !textureData->empty())
+              {
+                size = static_cast<int>(std::lround(std::cbrt(static_cast<double>(textureData->size()))));
+              }
+              if (!textureData || size <= 0 ||
+                  static_cast<size_t>(size) * static_cast<size_t>(size) * static_cast<size_t>(size) != textureData->size())
+              {
+                if (ownsTextureData)
+                {
+                  delete textureData;
+                }
+                glBindTexture(GL_TEXTURE_3D, 0);
+                _numberOfIndices[i][j] = 0;
+                continue;
+              }
+            }
 
+            glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, size, size, size, 0, GL_RGBA, GL_FLOAT, textureData->data());
+            check_gl_error();
+            glBindTexture(GL_TEXTURE_3D, 0);
+            check_gl_error();
+
+            if (ownsTextureData)
+            {
               // insert as last to avoid use of memory after free in case the insertion fails.
               _caches[powerOfTwo].insert(_renderStructures[i][j].get(),textureData);
             }

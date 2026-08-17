@@ -21,14 +21,23 @@
 
 #include "openglenergysurface.h"
 #include "glgeterror.h"
+#include "rkimposters.h"
 #include "rkrenderuniforms.h"
 #include <iostream>
 #include <ctime>
+#include <cstddef>
 #include "skcomputeenergygrid.h"
 #include "skcomputeisosurface.h"
 #include <exception>
 #include <stdexcept>
 #include "opengluniformstringliterals.h"
+
+namespace
+{
+// Marching-cubes vertices are packed as position, normal, pad (3 × float4).
+// RKVertex is 64 bytes after ribbon stripeST — using that stride skips 1/4 of the mesh.
+constexpr GLsizei kIsosurfaceVertexStride = static_cast<GLsizei>(3 * sizeof(float4));
+}
 
 OpenGLEnergySurface::OpenGLEnergySurface()
 {
@@ -128,7 +137,9 @@ void OpenGLEnergySurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint is
         if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(_renderStructures[i][j].get()))
       if (RKRenderVolumetricDataSource* source = dynamic_cast<RKRenderVolumetricDataSource*>(_renderStructures[i][j].get()))
       {
-        if (renderStructure->isVisible() && source->drawAdsorptionSurface() && source->adsorptionSurfaceOpacity()>0.99999 && _surfaceNumberOfIndices[i][j] > 0 && _surfaceNumberOfInstances[i][j]>0)
+        if (renderStructure->isVisible() && source->drawAdsorptionSurface() &&
+            source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::isoSurface &&
+            source->adsorptionSurfaceOpacity()>0.99999 && _surfaceNumberOfIndices[i][j] > 0 && _surfaceNumberOfInstances[i][j]>0)
         {
           glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, static_cast<GLintptr>(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
           glBindBufferRange(GL_UNIFORM_BUFFER, 2, isosurfaceUniformBuffer, static_cast<GLintptr>(index * sizeof(RKIsosurfaceUniforms)), sizeof(RKIsosurfaceUniforms));
@@ -147,7 +158,7 @@ void OpenGLEnergySurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint is
   glEnable(GL_CULL_FACE);
 }
 
-void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer)
+void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, int sceneIndex, int movieIndex)
 {
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
@@ -160,6 +171,11 @@ void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLui
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
+      if (!matchesRenderStructure(sceneIndex, movieIndex, i, j))
+      {
+        index++;
+        continue;
+      }
       if (RKRenderVolumetricDataSource* source = dynamic_cast<RKRenderVolumetricDataSource*>(_renderStructures[i][j].get()))
       {
         if (_renderStructures[i][j]->isVisible() && source->drawAdsorptionSurface() && source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::isoSurface &&
@@ -206,8 +222,8 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
             glBindBuffer(GL_ARRAY_BUFFER, _surfaceVertexBuffer[i][j]);
             check_gl_error();
 
-            glVertexAttribPointer(_atomSurfaceVertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid *>(offsetof(RKVertex,position)));
-            glVertexAttribPointer(_atomSurfaceVertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, sizeof(RKVertex), reinterpret_cast<GLvoid *>(offsetof(RKVertex,normal)));
+            glVertexAttribPointer(_atomSurfaceVertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, kIsosurfaceVertexStride, reinterpret_cast<GLvoid *>(0));
+            glVertexAttribPointer(_atomSurfaceVertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, kIsosurfaceVertexStride, reinterpret_cast<GLvoid *>(sizeof(float4)));
 
             double isoValue = source->adsorptionSurfaceIsoValue();
             int3 dimensions = source->dimensions();
@@ -251,7 +267,11 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
             else
             {
               std::vector<cl_float> gridData = source->gridData();
-              if (gridData.empty()) return;
+              if (gridData.empty())
+              {
+                _surfaceNumberOfIndices[i][j] = 0;
+                continue;
+              }
 
               // move from stack to heap since the cache requires a pointer to the std::vector
               energyGridPointer = new std::vector<cl_float>();
@@ -305,6 +325,11 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
             check_gl_error();
+          }
+          else
+          {
+            _surfaceNumberOfIndices[i][j] = 0;
+            _surfaceNumberOfInstances[i][j] = 0;
           }
         }
       }

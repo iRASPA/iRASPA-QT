@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <iostream>
 #include "glgeterror.h"
+#include "rkimposters.h"
 #include "spheregeometry.h"
 #include "opengluniformstringliterals.h"
 
@@ -75,7 +76,7 @@ void OpenGLEllipseObjectShader::paintGLOpaque(GLuint structureUniformBuffer)
 }
 
 
-void OpenGLEllipseObjectShader::paintGLTransparent(GLuint structureUniformBuffer)
+void OpenGLEllipseObjectShader::paintGLTransparent(GLuint structureUniformBuffer, int sceneIndex, int movieIndex)
 {
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
@@ -90,6 +91,11 @@ void OpenGLEllipseObjectShader::paintGLTransparent(GLuint structureUniformBuffer
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
+      if (!matchesRenderStructure(sceneIndex, movieIndex, i, j))
+      {
+        index++;
+        continue;
+      }
       if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
         if (RKRenderPrimitiveEllipsoidObjectsSource* object = dynamic_cast<RKRenderPrimitiveEllipsoidObjectsSource*>(_renderStructures[i][j].get()))

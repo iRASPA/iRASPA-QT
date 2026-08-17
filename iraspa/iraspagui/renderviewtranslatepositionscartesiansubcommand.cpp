@@ -53,6 +53,7 @@ void RenderViewTranslatePositionsCartesianSubCommand::redo()
     for(const auto &[atom, translatedPosition] : translatedPositions)
     {
       atom->setPosition(translatedPosition);
+      atom->setDisplacement(double3());
     }
     atomViewer->expandSymmetry();
   }
@@ -69,6 +70,7 @@ void RenderViewTranslatePositionsCartesianSubCommand::undo()
     for(const auto &[atom, translatedPosition] : _oldPositions)
     {
       atom->setPosition(translatedPosition);
+      atom->setDisplacement(double3());
     }
     atomViewer->expandSymmetry();
   }

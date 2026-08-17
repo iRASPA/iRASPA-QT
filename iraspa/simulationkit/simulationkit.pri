@@ -1,16 +1,10 @@
 INCLUDEPATH += $$PWD
 
-contains(DEFINES,USE_OPENGL){
-   include(opencl/opencl.pri)
-  }
-
-contains(DEFINES,USE_DIRECTX){
-   include(directx12/directx12.pri)
-  }
-
 contains(DEFINES,USE_VULKAN){
    include(vulkan/vulkan.pri)
-  }
+} else:contains(DEFINES,USE_OPENGL){
+   include(opencl/opencl.pri)
+}
 
 SOURCES += \
     $$PWD/forcefieldsets.cpp \

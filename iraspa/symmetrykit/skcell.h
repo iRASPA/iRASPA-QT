@@ -42,7 +42,7 @@ public:
   void setMaximumReplicas(const int3& maximumReplicas);
   SKBoundingBox enclosingBoundingBox();
   std::array<double3,8> corners();
-  int3 replicaFromIndex(int index);
+  int3 replicaFromIndex(int index) const;
   double3x3 box() const;
   void setBox(const double3x3& fullCell);
   int totalNumberOfReplicas() const;

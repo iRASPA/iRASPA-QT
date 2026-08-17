@@ -62,6 +62,7 @@ public:
   double3 distance() {return _distance;}
   void increaseDistance(double deltaDistance);
   void updateFieldOfView();
+  void updateViewMatrix();
   void updateCameraForWindowResize(double width, double height);
 
   double4x4 axesViewMatrix();

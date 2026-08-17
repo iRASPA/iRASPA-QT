@@ -33,19 +33,15 @@ iRASPAToolBar::iRASPAToolBar(QWidget * parent):QToolBar(parent)
   setMovable(false);
   setFloatable(false);
 
-  InformationPanelView *frame = new InformationPanelView(this);
-  //frame->setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3783a5, stop: 1 #1e698c);");
-
-
-
+  _informationPanel = new InformationPanelView(this);
 
   QHBoxLayout *layout = new QHBoxLayout;
   QWidget *separator = new QWidget();
   separator->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
   addWidget(separator);
 
-  addWidget(frame);
-  layout->setAlignment(frame, Qt::AlignHCenter);
+  addWidget(_informationPanel);
+  layout->setAlignment(_informationPanel, Qt::AlignHCenter);
 
   QWidget *separator2 = new QWidget();
   separator2->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -126,6 +122,14 @@ void iRASPAToolBar::reactToToggleHideRight(bool checked)
   else
   {
     right->setDown(false);
+  }
+}
+
+void iRASPAToolBar::showInfoItem(const QIcon &icon, const QString &message)
+{
+  if (_informationPanel)
+  {
+    _informationPanel->showInfoItem(icon, message);
   }
 }
 

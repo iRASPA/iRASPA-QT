@@ -134,7 +134,7 @@ std::vector<RKInPerInstanceAttributesAtoms> Crystal::renderAtoms() const
 
   std::vector<RKInPerInstanceAttributesAtoms> atomData = std::vector<RKInPerInstanceAttributesAtoms>();
 
-  uint32_t asymmetricAtomIndex = 0;
+  uint32_t instanceIndex = 0;
   for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
@@ -163,9 +163,9 @@ std::vector<RKInPerInstanceAttributesAtoms> Crystal::renderAtoms() const
             {
               for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
               {
-                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), w);
+                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)) + atom->displacement(), w);
 
-                RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+                RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, instanceIndex++);
                 atomData.push_back(atom1);
               }
             }
@@ -173,7 +173,6 @@ std::vector<RKInPerInstanceAttributesAtoms> Crystal::renderAtoms() const
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;
@@ -220,8 +219,8 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderInternalBonds() const
             {
               for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
               {
-                double3 pos1 = _cell->unitCell() * (copyPosition1 + double3(k1,k2,k3));
-                double3 pos2 = _cell->unitCell() * (copyPosition2 + double3(k1,k2,k3));
+                double3 pos1 = _cell->unitCell() * (copyPosition1 + double3(k1,k2,k3)) + bond->atom1()->parent()->displacement();
+                double3 pos2 = _cell->unitCell() * (copyPosition2 + double3(k1,k2,k3)) + bond->atom2()->parent()->displacement();
                 double bondLength = (pos2-pos1).length();
                 double drawRadius1 = bond->atom1()->parent()->drawRadius()/bondLength;
                 double drawRadius2 = bond->atom2()->parent()->drawRadius()/bondLength;
@@ -297,8 +296,8 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderExternalBonds() const
                 dr.y -= rint(dr.y);
                 dr.z -= rint(dr.z);
 
-                double3 pos1 = _cell->unitCell() * frac_pos1;  //+ bond.atom1.asymmetricParentAtom.displacement
-                double3 pos2 = _cell->unitCell() * frac_pos2;  // + bond.atom2.asymmetricParentAtom.displacement
+                double3 pos1 = _cell->unitCell() * frac_pos1 + bond->atom1()->parent()->displacement();
+                double3 pos2 = _cell->unitCell() * frac_pos2 + bond->atom2()->parent()->displacement();
 
                 dr = _cell->unitCell() * dr;
                 double bondLength = dr.length();
@@ -485,7 +484,7 @@ std::vector<RKInPerInstanceAttributesAtoms> Crystal::renderSelectedAtoms() const
             {
               for (int k3 = minimumReplicaZ;k3 <= maximumReplicaZ;k3++)
               {
-                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1, k2, k3)), w);
+                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1, k2, k3)) + atom->displacement(), w);
 
                 float4 ambient = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
                 float4 diffuse = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
@@ -548,8 +547,8 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderSelectedInternalBonds
             {
               for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
               {
-                double3 pos1 = _cell->unitCell() * (copyPosition1 + double3(k1,k2,k3));
-                double3 pos2 = _cell->unitCell() * (copyPosition2 + double3(k1,k2,k3));
+                double3 pos1 = _cell->unitCell() * (copyPosition1 + double3(k1,k2,k3)) + bond->atom1()->parent()->displacement();
+                double3 pos2 = _cell->unitCell() * (copyPosition2 + double3(k1,k2,k3)) + bond->atom2()->parent()->displacement();
                 double bondLength = (pos2-pos1).length();
                 double drawRadius1 = bond->atom1()->parent()->drawRadius()/bondLength;
                 double drawRadius2 = bond->atom2()->parent()->drawRadius()/bondLength;
@@ -622,8 +621,8 @@ std::vector<RKInPerInstanceAttributesBonds> Crystal::renderSelectedExternalBonds
               dr.y -= rint(dr.y);
               dr.z -= rint(dr.z);
 
-              double3 pos1 = _cell->unitCell() * frac_pos1;  //+ bond.atom1.asymmetricParentAtom.displacement
-              double3 pos2 = _cell->unitCell() * frac_pos2;  // + bond.atom2.asymmetricParentAtom.displacement
+              double3 pos1 = _cell->unitCell() * frac_pos1 + bond->atom1()->parent()->displacement();
+              double3 pos2 = _cell->unitCell() * frac_pos2 + bond->atom2()->parent()->displacement();
 
               dr = _cell->unitCell() * dr;
               double bondLength = dr.length();
@@ -834,8 +833,8 @@ BondSelectionIndexSet Crystal::filterCartesianBondPositions(std::function<bool(d
                 dr.y -= rint(dr.y);
                 dr.z -= rint(dr.z);
 
-                double3 pos1 = _cell->unitCell() * frac_pos1;
-                double3 pos2 = _cell->unitCell() * frac_pos2;
+                double3 pos1 = _cell->unitCell() * frac_pos1 + bond->atom1()->parent()->displacement();
+                double3 pos2 = _cell->unitCell() * frac_pos2 + bond->atom2()->parent()->displacement();
 
                 dr = _cell->unitCell() * dr;
 
@@ -1526,7 +1525,7 @@ std::vector<RKInPerInstanceAttributesText> Crystal::atomTextData(RKFontAtlas *fo
                {
                  for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
                  {
-                   float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), 1.0);
+                   float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)) + atom->displacement(), 1.0);
                    int elementIdentifier = atom->elementIdentifier();
 
                    QString text;

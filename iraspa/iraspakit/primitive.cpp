@@ -292,6 +292,10 @@ void Primitive::setAtomSelection(int asymmetricAtomId)
 void Primitive::addAtomToSelection(int atomId)
 {
   std::vector<std::shared_ptr<SKAtomTreeNode>> atomNodes = _atomsTreeController->flattenedLeafNodes();
+  if (atomId < 0 || static_cast<size_t>(atomId) >= atomNodes.size())
+  {
+    return;
+  }
 
   std::shared_ptr<SKAtomTreeNode> selectedAtom = atomNodes[atomId];
 
@@ -304,6 +308,10 @@ void Primitive::addAtomToSelection(int atomId)
 void Primitive::toggleAtomSelection(int asymmetricAtomId)
 {
   std::vector<std::shared_ptr<SKAtomTreeNode>> atomNodes = _atomsTreeController->flattenedLeafNodes();
+  if (asymmetricAtomId < 0 || static_cast<size_t>(asymmetricAtomId) >= atomNodes.size())
+  {
+    return;
+  }
 
   std::shared_ptr<SKAtomTreeNode> selectedAtom = atomNodes[asymmetricAtomId];
   IndexPath indexPathSelectedAtom = selectedAtom->indexPath();

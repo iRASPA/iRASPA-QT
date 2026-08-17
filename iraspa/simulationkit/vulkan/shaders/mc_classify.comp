@@ -1,0 +1,50 @@
+#version 450
+#extension GL_GOOGLE_include_directive : require
+
+layout(local_size_x = 4, local_size_y = 4, local_size_z = 4) in;
+
+layout(r32ui, binding = 0) uniform writeonly uimage3D histoCount;
+layout(r32ui, binding = 1) uniform writeonly uimage3D cubeIndexImage;
+layout(binding = 2) uniform sampler3D rawData;
+
+layout(push_constant) uniform PushConstants
+{
+  ivec4 dimensions;
+  float isolevel;
+} pc;
+
+#include "mc_common.glsl"
+#include "mc_tables.glsl"
+
+void main()
+{
+  ivec3 pos = ivec3(gl_GlobalInvocationID.xyz);
+  ivec3 dims = pc.dimensions.xyz;
+  ivec3 imageSize = imageSize(histoCount);
+
+  if (any(greaterThanEqual(pos, imageSize)))
+  {
+    return;
+  }
+
+  if (any(greaterThanEqual(pos, dims)))
+  {
+    imageStore(histoCount, pos, uvec4(0));
+    imageStore(cubeIndexImage, pos, uvec4(0));
+    return;
+  }
+
+  float first = texelFetch(rawData, wrapCoord(pos, dims), 0).x;
+  uint cubeindex =
+      uint(first > pc.isolevel) |
+      (uint(texelFetch(rawData, wrapCoord(pos + cubeOffsets[1], dims), 0).x > pc.isolevel) << 1) |
+      (uint(texelFetch(rawData, wrapCoord(pos + cubeOffsets[3], dims), 0).x > pc.isolevel) << 2) |
+      (uint(texelFetch(rawData, wrapCoord(pos + cubeOffsets[2], dims), 0).x > pc.isolevel) << 3) |
+      (uint(texelFetch(rawData, wrapCoord(pos + cubeOffsets[4], dims), 0).x > pc.isolevel) << 4) |
+      (uint(texelFetch(rawData, wrapCoord(pos + cubeOffsets[5], dims), 0).x > pc.isolevel) << 5) |
+      (uint(texelFetch(rawData, wrapCoord(pos + cubeOffsets[7], dims), 0).x > pc.isolevel) << 6) |
+      (uint(texelFetch(rawData, wrapCoord(pos + cubeOffsets[6], dims), 0).x > pc.isolevel) << 7);
+
+  imageStore(histoCount, pos, uvec4(numberOfTriangles[cubeindex]));
+  imageStore(cubeIndexImage, pos, uvec4(cubeindex));
+}

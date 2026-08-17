@@ -48,8 +48,8 @@ class OpenGLEnergyVolumeRenderedSurface final: public OpenGLShader
 public:
   OpenGLEnergyVolumeRenderedSurface();
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
-  void paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
-  void paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture);
+  void paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture, int sceneIndex = -1, int movieIndex = -1);
+  void paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, GLuint depthTexture, int sceneIndex = -1, int movieIndex = -1);
   void reloadData();
   void initializeTransferFunctionTexture();
   void initializeVertexArrayObject();

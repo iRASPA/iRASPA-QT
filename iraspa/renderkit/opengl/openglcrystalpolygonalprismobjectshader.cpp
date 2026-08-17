@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <iostream>
 #include "glgeterror.h"
+#include "rkimposters.h"
 #include "nsidedprismgeometry.h"
 #include "cappednsidedprismgeometry.h"
 #include "opengluniformstringliterals.h"
@@ -75,7 +76,7 @@ void OpenGLCrystalPolygonalPrismObjectShader::paintGLOpaque(GLuint structureUnif
 }
 
 
-void OpenGLCrystalPolygonalPrismObjectShader::paintGLTransparent(GLuint structureUniformBuffer)
+void OpenGLCrystalPolygonalPrismObjectShader::paintGLTransparent(GLuint structureUniformBuffer, int sceneIndex, int movieIndex)
 {
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
@@ -90,6 +91,11 @@ void OpenGLCrystalPolygonalPrismObjectShader::paintGLTransparent(GLuint structur
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
+      if (!matchesRenderStructure(sceneIndex, movieIndex, i, j))
+      {
+        index++;
+        continue;
+      }
       if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
         if (RKRenderCrystalPrimitivePolygonalPrimsObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitivePolygonalPrimsObjectsSource*>(_renderStructures[i][j].get()))

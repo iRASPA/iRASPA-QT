@@ -51,6 +51,20 @@ public:
 
   std::vector<std::shared_ptr<RKLight>>& renderLights() override final {return _renderLights;}
 
+  struct MeasurementAtom
+  {
+    std::shared_ptr<RKRenderObject> structure;
+    int instanceTag = -1;
+    int asymmetricAtomId = -1;
+    std::shared_ptr<SKAtomCopy> copy;
+    int3 replicaPosition = int3(0, 0, 0);
+  };
+
+  bool addAtomToMeasurement(std::shared_ptr<RKRenderObject> structure, int instanceTag);
+  void clearMeasurement();
+  const std::vector<MeasurementAtom> &measurementAtoms() const { return _measurementAtoms; }
+  QString measurementLogMessage() const;
+
   std::vector<RKInPerInstanceAttributesAtoms> renderMeasurementPoints() const override final;
   std::vector<RKRenderObject> renderMeasurementStructure() const override final;
 
@@ -145,6 +159,7 @@ private:
   std::shared_ptr<RKGlobalAxes> _renderAxes = std::make_shared<RKGlobalAxes>();
 
   std::shared_ptr<SceneList> _sceneList = std::make_shared<SceneList>();
+  std::vector<MeasurementAtom> _measurementAtoms;
 
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<ProjectStructure> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<ProjectStructure> &);

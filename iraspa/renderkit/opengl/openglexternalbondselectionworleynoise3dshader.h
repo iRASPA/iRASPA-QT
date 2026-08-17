@@ -32,10 +32,6 @@
 #include "openglshader.h"
 #include "openglbondshader.h"
 #include "rkrenderkitprotocols.h"
-#include "cappedcylindersinglebondgeometry.h"
-#include "cappedcylinderdoublebondgeometry.h"
-#include "cappedcylinderpartialdoublebondgeometry.h"
-#include "cappedcylindertriplebondgeometry.h"
 #include "openglexternalbondselectioninstanceshader.h"
 
 class OpenGLExternalBondSelectionWorleyNoise3DShader: public OpenGLShader
@@ -64,14 +60,12 @@ private:
   std::vector<std::vector<GLuint>> _vertexPartialDoubleBondsArrayObject;
   std::vector<std::vector<GLuint>> _vertexTripleBondsArrayObject;
 
-  GLint _vertexNormalAttributeLocation;
-  GLint _vertexPositionAttributeLocation;
   GLint _instancePositionFirstAtomAttributeLocation;
   GLint _instancePositionSecondAtomAttributeLocation;
   GLint _instanceColorFirstAtomAttributeLocation;
   GLint _instanceColorSecondAtomAttributeLocation;
   GLint _instanceScaleAttributeLocation;
-  GLint _instanceTypeAttributeLocation;
+  GLint _imposterBondTypeUniformLocation;
 
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;

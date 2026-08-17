@@ -21,6 +21,8 @@
 
 #include <QPainterPath>
 #include <QPainter>
+#include <QRectF>
+#include <QtGlobal>
 #include "rkfontatlas.h"
 #include "foundationkit.h"
 const int scaler = 16;
@@ -278,48 +280,13 @@ int RKFontAtlas::save_png_SDFont(
     const std::vector< unsigned char > &img_data,
     const std::vector< FontCharacter > &packed_glyphs )
 {
-  //	save my image
-  size_t fn_size = strlen( orig_filename ) + 100;
-  char *fn = new char[ fn_size ];
-  sprintf( fn, "%s_sdf.png", orig_filename );
-  printf( "'%s'\n", fn );
-  LodePNG::Encoder encoder;
-  encoder.addText("Comment", "Signed Distance Font: lonesock tools");
-  encoder.getSettings().zlibsettings.windowSize = 512; //	faster, not much worse compression
-  std::vector<unsigned char> buffer;
-  int tin = clock();
-  encoder.encode( buffer, img_data.empty() ? 0 : &img_data[0], img_width, img_height );
-  LodePNG::saveFile( buffer, fn );
-  tin = clock() - tin;
-
-  //	now save the acompanying info
-  sprintf( fn, "%s_sdf.txt", orig_filename );
-  FILE *fp = fopen( fn, "w" );
-  if( fp )
-  {
-    fprintf( fp, "info face=\"%s\"\n",
-        font_name  );
-    fprintf( fp, "chars count=%i\n", int(packed_glyphs.size()) );
-    for( unsigned int i = 0; i < packed_glyphs.size(); ++i )
-    {
-      fprintf( fp, "char id=%-6ix=%-6iy=%-6iwidth=%-6iheight=%-6i",
-        packed_glyphs[i].ID,
-        packed_glyphs[i].x,
-        packed_glyphs[i].y,
-        packed_glyphs[i].width,
-        packed_glyphs[i].height
-        );
-      fprintf( fp, "xoffset=%-10.3fyoffset=%-10.3fxadvance=%-10.3f",
-        packed_glyphs[i].xoff,
-        packed_glyphs[i].yoff,
-        packed_glyphs[i].xadv
-        );
-      fprintf( fp, "  page=0  chnl=0\n" );
-    }
-    fclose( fp );
-  }
-  delete [] fn;
-  return tin;
+  Q_UNUSED(orig_filename);
+  Q_UNUSED(font_name);
+  Q_UNUSED(img_width);
+  Q_UNUSED(img_height);
+  Q_UNUSED(img_data);
+  Q_UNUSED(packed_glyphs);
+  return 0;
 }
 
 unsigned char RKFontAtlas::get_SDF_radial(
@@ -449,4 +416,85 @@ unsigned char RKFontAtlas::get_SDF_radial(
   if( d2 < 0.0 ) d2 = 0.0;
   if( d2 > 255.0 ) d2 = 255.0;
   return (unsigned char)(d2 + 0.5);
+}
+
+std::vector<RKInPerInstanceAttributesText> RKFontAtlas::buildMeshWithString(float4 position, float4 scale, QString text, RKTextAlignment alignment)
+{
+    float x = 0.0;
+    float y = 0.0;
+    float sx = 1.0;
+    float sy = 1.0;
+
+    std::vector<RKInPerInstanceAttributesText> subdata{};
+    QRectF rect = QRectF();
+    for (int i = 0 ; i < text.size(); i++)
+    {
+      int id = characterIndex[text[i].unicode()];
+      if(id >= 0 && id<=255)
+      {
+        float x2 = x + characters[id].xoff * sx;
+        float y2 = -y - characters[id].yoff * sy;
+        float w = characters[id].width * sx;
+        float h = characters[id].height * sy;
+
+        x += characters[id].xadv * sx;
+        y += characters[id].yadv * sy;
+
+        float4 vertex = float4(x2,y2,w,h);
+        rect=rect.united(QRectF(x2,y2,w,h));
+        float4 uv = float4(characters[id].x/width,characters[id].y/height,
+                           characters[id].width/width, characters[id].height/height);
+
+        RKInPerInstanceAttributesText atomText = RKInPerInstanceAttributesText(position, scale, vertex, uv);
+        subdata.push_back(atomText);
+      }
+    }
+
+    float2 shift(0.0,0.0);
+    switch(alignment)
+    {
+    case RKTextAlignment::center:
+    case RKTextAlignment::multiple_values:
+      shift = float2(0.0,0.0);
+      break;
+    case RKTextAlignment::left:
+      shift = float2(-rect.center().x(),0.0);
+      break;
+    case RKTextAlignment::right:
+      shift = float2(rect.center().x(),0.0);
+      break;
+    case RKTextAlignment::top:
+      shift = float2(0.0,rect.center().y());
+      break;
+    case RKTextAlignment::bottom:
+      shift = float2(0.0,-rect.center().y());
+      break;
+    case RKTextAlignment::topLeft:
+      shift = float2(-rect.center().x(),rect.center().y());
+      break;
+    case RKTextAlignment::topRight:
+      shift = float2(rect.center().x(),rect.center().y());
+      break;
+    case RKTextAlignment::bottomLeft:
+      shift = float2(-rect.center().x(), -rect.center().y());
+      break;
+    case RKTextAlignment::bottomRight:
+      shift = float2(rect.center().x(), -rect.center().y());
+      break;
+    }
+
+    for(RKInPerInstanceAttributesText &subdataText: subdata)
+    {
+      subdataText.vertexCoordinatesData.x -= rect.center().x();
+      subdataText.vertexCoordinatesData.y -= rect.center().y();
+      subdataText.vertexCoordinatesData.x += shift.x;
+      subdataText.vertexCoordinatesData.y += shift.y;
+
+      subdataText.vertexCoordinatesData.x /= 50.0;
+      subdataText.vertexCoordinatesData.y /= 50.0;
+      subdataText.vertexCoordinatesData.z /= 50.0;
+      subdataText.vertexCoordinatesData.w /= 50.0;
+    }
+
+    return subdata;
 }

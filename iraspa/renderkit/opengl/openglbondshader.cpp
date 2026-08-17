@@ -84,24 +84,18 @@ void OpenGLBondShader::loadShader(void)
 
 void OpenGLBondShader::initializeTransformUniforms()
 {
-  glUniformBlockBinding(_internalBondShader.program(), glGetUniformBlockIndex(_internalBondShader.program(), "FrameUniformBlock"), 0);
-  glUniformBlockBinding(_externalBondShader.program(), glGetUniformBlockIndex(_externalBondShader.program(), "FrameUniformBlock"), 0);
-  glUniformBlockBinding(_externalBondShader.stencilProgram(), glGetUniformBlockIndex(_externalBondShader.stencilProgram(), "FrameUniformBlock"), 0);
-  glUniformBlockBinding(_externalBondShader.boxProgram(), glGetUniformBlockIndex(_externalBondShader.boxProgram(), "FrameUniformBlock"), 0);
+  glUniformBlockBinding(_internalBondShader.imposterProgram(), glGetUniformBlockIndex(_internalBondShader.imposterProgram(), "FrameUniformBlock"), 0);
+  glUniformBlockBinding(_externalBondShader.imposterProgram(), glGetUniformBlockIndex(_externalBondShader.imposterProgram(), "FrameUniformBlock"), 0);
 }
 
 void OpenGLBondShader::initializeStructureUniforms()
 {
-  glUniformBlockBinding(_internalBondShader.program(), glGetUniformBlockIndex(_internalBondShader.program(), "StructureUniformBlock"), 1);
-  glUniformBlockBinding(_externalBondShader.program(), glGetUniformBlockIndex(_externalBondShader.program(), "StructureUniformBlock"), 1);
-  glUniformBlockBinding(_externalBondShader.stencilProgram(), glGetUniformBlockIndex(_externalBondShader.stencilProgram(), "StructureUniformBlock"), 1);
-  glUniformBlockBinding(_externalBondShader.boxProgram(), glGetUniformBlockIndex(_externalBondShader.boxProgram(), "StructureUniformBlock"), 1);
+  glUniformBlockBinding(_internalBondShader.imposterProgram(), glGetUniformBlockIndex(_internalBondShader.imposterProgram(), "StructureUniformBlock"), 1);
+  glUniformBlockBinding(_externalBondShader.imposterProgram(), glGetUniformBlockIndex(_externalBondShader.imposterProgram(), "StructureUniformBlock"), 1);
 }
 
 void OpenGLBondShader::initializeLightUniforms()
 {
-  glUniformBlockBinding(_internalBondShader.program(), glGetUniformBlockIndex(_internalBondShader.program(), "LightsUniformBlock"), 3);
-  glUniformBlockBinding(_externalBondShader.program(), glGetUniformBlockIndex(_externalBondShader.program(), "LightsUniformBlock"), 3);
-  glUniformBlockBinding(_externalBondShader.stencilProgram(), glGetUniformBlockIndex(_externalBondShader.stencilProgram(), "LightsUniformBlock"), 3);
-  glUniformBlockBinding(_externalBondShader.boxProgram(), glGetUniformBlockIndex(_externalBondShader.boxProgram(), "LightsUniformBlock"), 3);
+  glUniformBlockBinding(_internalBondShader.imposterProgram(), glGetUniformBlockIndex(_internalBondShader.imposterProgram(), "LightsUniformBlock"), 3);
+  glUniformBlockBinding(_externalBondShader.imposterProgram(), glGetUniformBlockIndex(_externalBondShader.imposterProgram(), "LightsUniformBlock"), 3);
 }

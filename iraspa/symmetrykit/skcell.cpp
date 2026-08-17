@@ -258,7 +258,7 @@ std::array<double3,8> SKCell::corners()
   return temp;
 }
 
-int3 SKCell::replicaFromIndex(int index)
+int3 SKCell::replicaFromIndex(int index) const
 {
   int dx = _maximumReplica.x - _minimumReplica.x + 1;
   int dy = _maximumReplica.y - _minimumReplica.y + 1;

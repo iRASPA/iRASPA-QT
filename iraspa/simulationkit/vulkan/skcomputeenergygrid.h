@@ -22,33 +22,54 @@
 #pragma once
 
 #include <QtGlobal>
-#include <QStringList>
-#include <array>
 #include <vector>
-#include <optional>
 #include <mathkit.h>
-
+#include "skvulkan.h"
 
 class SKComputeEnergyGrid
 {
-  public:
-    enum class GridSizeType: qint64
-    {
-      custom = 0,
-      size2x2x2 = 1,
-      size4x4x4 = 2,
-      size8x8x8 = 3,
-      size16x16x16 = 4,
-      size32x32x32 = 5,
-      size64x64x64 = 6,
-      size128x128x128 = 7,
-      size256x256x256 = 8,
-      size512x512x512 = 9,
-      multiple_values = 10
-    };
+public:
+  enum class GridSizeType: qint64
+  {
+    custom = 0,
+    size2x2x2 = 1,
+    size4x4x4 = 2,
+    size8x8x8 = 3,
+    size16x16x16 = 4,
+    size32x32x32 = 5,
+    size64x64x64 = 6,
+    size128x128x128 = 7,
+    size256x256x256 = 8,
+    size512x512x512 = 9,
+    multiple_values = 10
+  };
 
-    SKComputeEnergyGrid();
-    static std::vector<float> ComputeEnergyGrid(int3 size, double2 probeParameter,
+  SKComputeEnergyGrid(const SKComputeEnergyGrid &) = delete;
+  void operator=(const SKComputeEnergyGrid &) = delete;
+
+  static std::vector<float> computeEnergyGrid(int3 size, double2 probeParameter,
                                               std::vector<double3> positions, std::vector<double2> potentialParameters,
-                                              double3x3 unitCell, int3 numberOfReplicas);
+                                              double3x3 unitCell, int3 numberOfReplicas) noexcept(false);
+  static std::vector<float> computeEnergyGridCPUImplementation(int3 size, double2 probeParameter,
+                                                               std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                                               double3x3 unitCell, int3 numberOfReplicas) noexcept;
+
+private:
+  SKComputeEnergyGrid();
+  ~SKComputeEnergyGrid();
+
+  static SKComputeEnergyGrid &getInstance()
+  {
+    static SKComputeEnergyGrid instance;
+    return instance;
+  }
+
+  std::vector<float> computeEnergyGridGPUImplementation(int3 size, double2 probeParameter,
+                                                        std::vector<double3> positions, std::vector<double2> potentialParameters,
+                                                        double3x3 unitCell, int3 numberOfReplicas);
+
+  bool _ready = false;
+  VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
+  VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
+  VkPipeline _pipeline = VK_NULL_HANDLE;
 };

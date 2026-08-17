@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <iostream>
 #include "glgeterror.h"
+#include "rkimposters.h"
 #include "cylindergeometry.h"
 #include "cappedcylindergeometry.h"
 #include "uncappedcylindergeometry.h"
@@ -76,7 +77,7 @@ void OpenGLCrystalCylinderObjectShader::paintGLOpaque(GLuint structureUniformBuf
 }
 
 
-void OpenGLCrystalCylinderObjectShader::paintGLTransparent(GLuint structureUniformBuffer)
+void OpenGLCrystalCylinderObjectShader::paintGLTransparent(GLuint structureUniformBuffer, int sceneIndex, int movieIndex)
 {
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
@@ -91,6 +92,11 @@ void OpenGLCrystalCylinderObjectShader::paintGLTransparent(GLuint structureUnifo
   {
     for(size_t j=0;j<_renderStructures[i].size();j++)
     {
+      if (!matchesRenderStructure(sceneIndex, movieIndex, i, j))
+      {
+        index++;
+        continue;
+      }
       if (RKRenderPrimitiveObjectsSource* source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(_renderStructures[i][j].get()))
       {
         if (RKRenderCrystalPrimitiveCylinderObjectsSource* object = dynamic_cast<RKRenderCrystalPrimitiveCylinderObjectsSource*>(_renderStructures[i][j].get()))

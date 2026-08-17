@@ -21,10 +21,14 @@
 
 #pragma once
 
+#include <QIcon>
+#include <QPushButton>
+#include <QString>
 #include <QToolBar>
 #include <QToolButton>
-#include <QPushButton>
 #include <QWidget>
+
+class InformationPanelView;
 
 class iRASPAToolBar : public QToolBar
 {
@@ -37,7 +41,9 @@ public:
   QToolButton *leftPanel(void) {return left;}
   QToolButton *downPanel(void) {return down;}
   QToolButton *rightPanel(void) {return right;}
+  void showInfoItem(const QIcon &icon, const QString &message);
 private:
+  InformationPanelView *_informationPanel;
   QToolButton *left;
   QToolButton *down;
   QToolButton *right;

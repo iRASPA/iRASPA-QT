@@ -21,6 +21,7 @@
 
 #include "renderstackedwidget.h"
 #include <iostream>
+#include <optional>
 #include <QMenu>
 #include <QApplication>
 #include <QObject>
@@ -34,6 +35,7 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 #include <QSettings>
+#include <QUndoCommand>
 #include <iraspakit.h>
 #include "moviemaker.h"
 #include "toolbarwidget.h"
@@ -43,20 +45,25 @@
 #include "renderviewchangeselectioncommand.h"
 #include "renderviewchangeselectionsubcommand.h"
 #include "renderviewtranslatepositionscartesiancommand.h"
+#include "renderviewtranslatepositionscartesiansubcommand.h"
 #include "renderviewtranslatepositionsbodyframecommand.h"
 #include "renderviewrotatepositionscartesiancommand.h"
 #include "renderviewrotatepositionsbodyframecommand.h"
+#include <exception>
 #include <QHBoxLayout>
+#include <QPainter>
+#include <QPointer>
+#include <QtConcurrent>
+#include "iraspaexport.h"
+#include "rkrendererbackend.h"
 
 #if defined (USE_OPENGL)
   #include "openglwindow.h"
   #include "ribbonaolayout.h"
 #endif
-#if defined (USE_DIRECTX)
-  #include "directxwindow.h"
-#endif
 #if defined (USE_VULKAN)
   #include "vulkanwindow.h"
+  #include "ribbonaolayout.h"
 #endif
 
 #include "proteinribbonmixin.h"
@@ -111,55 +118,103 @@ bool applyRibbonPickToObject(const std::shared_ptr<Object> &object,
   return false;
 }
 
+bool applyAtomInstancePick(const std::shared_ptr<Object> &object, int instanceTag, bool toggle)
+{
+  if (!object)
+  {
+    return false;
+  }
+  const std::optional<AtomInstancePick> pick = decodeAtomInstancePick(object.get(), instanceTag);
+  if (!pick)
+  {
+    return false;
+  }
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    if (toggle)
+    {
+      atomViewer->toggleAtomSelection(pick->asymmetricAtomIndex);
+    }
+    else
+    {
+      atomViewer->setAtomSelection(pick->asymmetricAtomIndex);
+    }
+    return true;
+  }
+  return false;
+}
+
 } // namespace
+
+namespace
+{
+class SelectionRubberBandOverlay : public QWidget
+{
+public:
+  explicit SelectionRubberBandOverlay(QWidget *parent) : QWidget(parent)
+  {
+    setAttribute(Qt::WA_TransparentForMouseEvents);
+    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_NativeWindow);
+    hide();
+  }
+
+  void setSelectionRect(const QRect &rect, bool dashed)
+  {
+    _rect = rect;
+    _dashed = dashed;
+    if (_rect.isNull() || _rect.width() < 2 || _rect.height() < 2)
+    {
+      hide();
+      return;
+    }
+    show();
+    raise();
+    update();
+  }
+
+protected:
+  void paintEvent(QPaintEvent *) override
+  {
+    if (_rect.isNull())
+    {
+      return;
+    }
+    QPainter painter(this);
+    QColor color(Qt::lightGray);
+    color.setAlpha(100);
+    QPen pen;
+    pen.setColor(Qt::darkGray);
+    if (_dashed)
+    {
+      pen.setDashPattern(QVector<qreal>{6.0, 3.0});
+    }
+    else
+    {
+      pen.setStyle(Qt::SolidLine);
+    }
+    pen.setWidthF(2.0);
+    painter.setPen(pen);
+    painter.drawRect(_rect);
+    painter.fillRect(_rect, QBrush(color));
+  }
+
+private:
+  QRect _rect;
+  bool _dashed = false;
+};
+}  // namespace
 
 RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QWidget(parent )
 {
   this->setContextMenuPolicy(Qt::PreventContextMenu);
 
-  QHBoxLayout *layout = new QHBoxLayout(this);
-  layout->setSpacing(0);
-  layout->setContentsMargins(0,0,0,0);
+  _layout = new QHBoxLayout(this);
+  _layout->setSpacing(0);
+  _layout->setContentsMargins(0,0,0,0);
 
-#if defined (USE_OPENGL)
-   OpenGLWindow *w = new OpenGLWindow(this);
-   if(!w)
-   {
-     qFatal("OPENGL WINDOW IS NULL");
-   }
-   renderWindow = w;
-   w->installEventFilter(this);
-   renderViewController = w;
-   renderWidget = QWidget::createWindowContainer(w);
-   renderWidget->setMouseTracking(true);
-   renderWidget->setAttribute( Qt::WA_OpaquePaintEvent );
-   renderWidget->setFocusPolicy(Qt::StrongFocus);
-   renderWidget->installEventFilter(this);
-   layout->addWidget(renderWidget);
-   connect(w, &OpenGLWindow::ribbonAODebugModeChanged, this, &RenderStackedWidget::updateRibbonDebugOverlay);
-#endif
-#if defined (USE_VULKAN)
-  VulkanWindow* w = new VulkanWindow(nullptr);
-  renderWindow = w;
-  w->installEventFilter(this);
-  renderViewController = w;
-  renderWidget = QWidget::createWindowContainer(w);
-  renderWidget->setMouseTracking(true);
-  renderWidget->setAttribute( Qt::WA_OpaquePaintEvent );
-  renderWidget->setFocusPolicy(Qt::TabFocus);
-  layout->addWidget(renderWidget);
-#endif
-#if defined (USE_DIRECTX)
-  DirectXWindow* w = new DirectXWindow();
-  renderWindow = w;
-  w->installEventFilter(this);
-  renderViewController = w;
-  renderWidget = QWidget::createWindowContainer(w);
-  renderWidget->setMouseTracking(true);
-  renderWidget->setAttribute( Qt::WA_OpaquePaintEvent );
-  renderWidget->setFocusPolicy(Qt::TabFocus);
-  layout->addWidget(renderWidget);
-#endif
+  createRenderer(RKRendererAvailability::preferredBackend());
 
   setMouseTracking(true);
 
@@ -172,8 +227,165 @@ RenderStackedWidget::RenderStackedWidget(QWidget* parent ): QWidget(parent )
   toolBar->addAction(action);
   toolBar->setContentsMargins(0, 0, 0, 0);
 
-  renderWidget->setMinimumHeight(270);
-  renderWidget->setMinimumWidth(120);
+  if (renderWidget)
+  {
+    renderWidget->setMinimumHeight(270);
+    renderWidget->setMinimumWidth(120);
+  }
+}
+
+void RenderStackedWidget::createOpenGLRenderer()
+{
+#if defined (USE_OPENGL)
+  OpenGLWindow *w = new OpenGLWindow(this);
+  if(!w)
+  {
+    qFatal("OPENGL WINDOW IS NULL");
+  }
+  renderWindow = w;
+  w->installEventFilter(this);
+  renderViewController = w;
+  renderWidget = QWidget::createWindowContainer(w);
+  renderWidget->setMouseTracking(true);
+  renderWidget->setAttribute( Qt::WA_OpaquePaintEvent );
+  renderWidget->setFocusPolicy(Qt::StrongFocus);
+  renderWidget->installEventFilter(this);
+  _layout->addWidget(renderWidget);
+  connect(w, &OpenGLWindow::ribbonAODebugModeChanged, this, &RenderStackedWidget::updateRibbonDebugOverlay);
+  _backend = RKRendererBackend::OpenGL;
+#endif
+}
+
+void RenderStackedWidget::createVulkanRenderer()
+{
+#if defined (USE_VULKAN)
+  VulkanWindow* w = new VulkanWindow(nullptr);
+  renderWindow = w;
+  w->installEventFilter(this);
+  renderViewController = w;
+  renderWidget = QWidget::createWindowContainer(w, this);
+  renderWidget->setMouseTracking(true);
+  renderWidget->setAttribute(Qt::WA_OpaquePaintEvent);
+  renderWidget->setFocusPolicy(Qt::StrongFocus);
+  renderWidget->installEventFilter(this);
+  _layout->addWidget(renderWidget);
+
+  _selectionOverlay = new SelectionRubberBandOverlay(this);
+  _selectionOverlay->raise();
+  _backend = RKRendererBackend::Vulkan;
+#endif
+}
+
+void RenderStackedWidget::destroyRenderer()
+{
+  if (renderWindow)
+  {
+    renderWindow->removeEventFilter(this);
+#if defined(USE_VULKAN)
+    if (VulkanWindow *vulkanWindow = dynamic_cast<VulkanWindow *>(renderWindow))
+    {
+      vulkanWindow->prepareForDestruction();
+    }
+#endif
+  }
+
+  QPointer<QWindow> window = renderWindow;
+  if (renderWidget)
+  {
+    renderWidget->removeEventFilter(this);
+    if (_layout)
+    {
+      _layout->removeWidget(renderWidget);
+    }
+    renderWidget->hide();
+    delete renderWidget;
+    renderWidget = nullptr;
+  }
+  if (window)
+  {
+    delete window.data();
+  }
+  renderWindow = nullptr;
+  renderViewController = nullptr;
+
+  delete _selectionOverlay;
+  _selectionOverlay = nullptr;
+}
+
+void RenderStackedWidget::createRenderer(RKRendererBackend backend)
+{
+#if defined(USE_VULKAN)
+  if (backend == RKRendererBackend::Vulkan)
+  {
+    createVulkanRenderer();
+    return;
+  }
+#endif
+#if defined(USE_OPENGL)
+  if (backend == RKRendererBackend::OpenGL)
+  {
+    createOpenGLRenderer();
+    return;
+  }
+#endif
+#if defined(USE_VULKAN)
+  createVulkanRenderer();
+#elif defined(USE_OPENGL)
+  createOpenGLRenderer();
+#endif
+}
+
+void RenderStackedWidget::rebindCurrentProject()
+{
+  if (std::shared_ptr<ProjectTreeNode> projectTreeNode = _projectTreeNode.lock())
+  {
+    setProject(projectTreeNode);
+  }
+  else
+  {
+    setProject(nullptr);
+  }
+}
+
+void RenderStackedWidget::setRendererBackend(RKRendererBackend backend)
+{
+  if (backend == _backend && renderViewController)
+  {
+    return;
+  }
+  if (backend == RKRendererBackend::OpenGL && !RKRendererAvailability::isOpenGLAvailable())
+  {
+    if (_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::warning, "OpenGL renderer is not available");
+    }
+    return;
+  }
+  if (backend == RKRendererBackend::Vulkan && !RKRendererAvailability::isVulkanAvailable())
+  {
+    if (_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::warning, "Vulkan renderer is not available");
+    }
+    return;
+  }
+
+  destroyRenderer();
+  createRenderer(backend);
+  if (renderWidget)
+  {
+    renderWidget->setMinimumHeight(270);
+    renderWidget->setMinimumWidth(120);
+    renderWidget->show();
+  }
+  rebindCurrentProject();
+  redraw();
+
+  if (_logReporter)
+  {
+    const QString name = (_backend == RKRendererBackend::Vulkan) ? QString("Vulkan") : QString("OpenGL");
+    _logReporter->logMessage(LogReporting::ErrorLevel::info, QString("Switched renderer to %1").arg(name));
+  }
 }
 
 void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode)
@@ -215,29 +427,18 @@ void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTre
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     renderViewController->setRenderStructures(render_structures);
-    if (projectTreeNode)
+    // Bind the new camera before any present. Vulkan draws synchronously, so
+    // reload/redraw with the previous project's camera would flash one frame.
+    if (std::shared_ptr<ProjectStructure> projectStructure = this->_project.lock())
+    {
+      renderViewController->setRenderDataSource(projectStructure);
+    }
+    else if (projectTreeNode)
     {
       widget->reloadData();
       widget->redraw();
     }
   }
-
-  if (projectTreeNode)
-  {
-    if(std::shared_ptr<iRASPAProject> iraspaProject = projectTreeNode->representedObject())
-    {
-      if(std::shared_ptr<Project> project = iraspaProject->project())
-      {
-        if (std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(project))
-        {
-            if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
-            {
-              renderViewController->setRenderDataSource(projectStructure);
-            }
-          }
-        }
-      }
-    }
 }
 
 void RenderStackedWidget::setLogReportingWidget(LogReporting *logReporting)
@@ -292,7 +493,32 @@ void RenderStackedWidget::resizeEvent(QResizeEvent *event)
   {
     project->setImageAspectRatio(ratio);
   }
+  if (_selectionOverlay && renderWidget)
+  {
+    _selectionOverlay->setGeometry(renderWidget->geometry());
+  }
   emit rendererWidgetResized();
+}
+
+void RenderStackedWidget::updateSelectionOverlay(const QPoint &globalPos, bool dragging, bool dashed)
+{
+  auto *overlay = static_cast<SelectionRubberBandOverlay *>(_selectionOverlay);
+  if (!overlay)
+  {
+    return;
+  }
+  if (renderWidget)
+  {
+    overlay->setGeometry(renderWidget->geometry());
+  }
+  if (!dragging)
+  {
+    overlay->setSelectionRect(QRect(), dashed);
+    return;
+  }
+  const QPoint originLocal = overlay->mapFromGlobal(_originGlobal);
+  const QPoint currentLocal = overlay->mapFromGlobal(globalPos);
+  overlay->setSelectionRect(QRect(originLocal, currentLocal).normalized(), dashed);
 }
 
 
@@ -322,17 +548,25 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
     {
       if (event->type() == QEvent::KeyPress)
       {
-#if defined(USE_OPENGL)
         if (keyEvent->modifiers().testFlag(Qt::AltModifier) && keyEvent->key() == Qt::Key_D)
         {
+#if defined(USE_OPENGL)
           if (OpenGLWindow *openGLWindow = dynamic_cast<OpenGLWindow*>(renderViewController))
           {
             openGLWindow->cycleRibbonAODebugMode();
             event->accept();
             return true;
           }
-        }
 #endif
+#if defined(USE_VULKAN)
+          if (VulkanWindow *vulkanWindow = dynamic_cast<VulkanWindow*>(renderViewController))
+          {
+            vulkanWindow->cycleRibbonAODebugMode();
+            event->accept();
+            return true;
+          }
+#endif
+        }
         if (keyEvent->modifiers().testFlag(Qt::AltModifier))
         {
           setControlPanel(true);
@@ -368,20 +602,30 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
   {
     const QMouseEvent* const me = static_cast<const QMouseEvent*>( event );
     _origin = me->pos();
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+    _originGlobal = me->globalPos();
+#else
+    _originGlobal = me->globalPosition().toPoint();
+#endif
 
     if(isSHIFT)   // contains shift
     {
       // Using the shift key means a new selection is chosen. If later a drag occurs it is modified to 'draggedNewSelection'
       _tracking = Tracking::newSelection;
     }
+    else if(isALT && isCTRL)  // option and command
+    {
+      _tracking = Tracking::translateSelection;
+      _pickedDepth = std::nullopt;
+      if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+      {
+        _pickedDepth = widget->pickDepth(_origin.x(), _origin.y(), this->width(), this->height());
+      }
+    }
     else if(isCTRL)  // command, not option
     {
       // Using the command key means the selection is extended. If later a drag occurs it is modified to 'draggedAddToSelection'
       _tracking = Tracking::addToSelection;
-    }
-    else if(isALT && isCTRL)  // option and command
-    {
-      _tracking = Tracking::translateSelection;
     }
     else if(isALT) // option, not command
     {
@@ -421,16 +665,48 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
       case Tracking::newSelection:
         // convert to dragged version
         _tracking = Tracking::draggedNewSelection;
+        updateSelectionOverlay(
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            me->globalPos(),
+#else
+            me->globalPosition().toPoint(),
+#endif
+            true, false);
         break;
       case Tracking::addToSelection:
         // convert to dragged version
         _tracking = Tracking::draggedAddToSelection;
+        updateSelectionOverlay(
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            me->globalPos(),
+#else
+            me->globalPosition().toPoint(),
+#endif
+            true, true);
         break;
       case Tracking::draggedNewSelection:
+        updateSelectionOverlay(
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            me->globalPos(),
+#else
+            me->globalPosition().toPoint(),
+#endif
+            true, false);
         break;
       case Tracking::draggedAddToSelection:
+        updateSelectionOverlay(
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+            me->globalPos(),
+#else
+            me->globalPosition().toPoint(),
+#endif
+            true, true);
         break;
       case Tracking::translateSelection:
+        if (_pickedDepth)
+        {
+          shiftSelection(me->pos(), _origin, static_cast<double>(*_pickedDepth));
+        }
         break;
       case Tracking::measurement:
         break;
@@ -471,6 +747,7 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
 
   if(event->type() == QEvent::MouseButtonRelease)
   {
+    updateSelectionOverlay(QPoint(), false, false);
     const QMouseEvent* const me = static_cast<const QMouseEvent*>( event );
     std::array<int,4> pixel{0,0,0,0};
     QRect rect = QRect(_origin, me->pos()).normalized();
@@ -493,9 +770,8 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           switch(pixel[0])
           {
           case 1:
-            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
+            if (applyAtomInstancePick(_iraspa_structures[sceneIdentifier][movieIdentifier]->object(), pickedObject, false))
             {
-              atomViewer->setAtomSelection(pickedObject);
               reloadData();
               emit updateAtomSelection();
               emit updateBondSelection();
@@ -548,9 +824,8 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
           switch(pixel[0])
           {
           case 1:
-            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
+            if (applyAtomInstancePick(_iraspa_structures[sceneIdentifier][movieIdentifier]->object(), pickedObject, true))
             {
-              atomViewer->toggleAtomSelection(pickedObject);
               reloadData();
               emit updateAtomSelection();
               emit updateBondSelection();
@@ -604,12 +879,15 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
       case Tracking::translateSelection:
         if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
         {
+          const QPoint releasePos = me->pos();
+          const QPoint delta = releasePos - _origin;
+          const bool isClick = (delta.x() * delta.x() + delta.y() * delta.y()) <= 64;
           #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
             pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
           #else
             pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
           #endif
-          if (pixel[0] == ProteinRibbonSegmentSupport::ribbonPickObjectType)
+          if (isClick && pixel[0] == ProteinRibbonSegmentSupport::ribbonPickObjectType)
           {
             int ribbonSceneId = 0;
             int ribbonMovieId = 0;
@@ -625,10 +903,67 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
               }
             }
           }
+          else if (_pickedDepth)
+          {
+            finalizeShiftSelection(releasePos, _origin, static_cast<double>(*_pickedDepth));
+          }
         }
+        _pickedDepth = std::nullopt;
         this->updateControlPanel();
         break;
       case Tracking::measurement:
+        if (std::shared_ptr<ProjectStructure> project = _project.lock())
+        {
+          if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+          {
+            #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+              pixel = widget->pickTexture(me->pos().x(), me->pos().y(), this->width(), this->height());
+            #else
+              pixel = widget->pickTexture(me->position().x(), me->position().y(), this->width(), this->height());
+            #endif
+
+            const int sceneIdentifier = pixel[1];
+            const int movieIdentifier = pixel[2];
+            const int pickedObject = pixel[3];
+            const bool validAtomPick =
+                pixel[0] == 1 &&
+                sceneIdentifier >= 0 && static_cast<size_t>(sceneIdentifier) < _iraspa_structures.size() &&
+                movieIdentifier >= 0 && static_cast<size_t>(movieIdentifier) < _iraspa_structures[static_cast<size_t>(sceneIdentifier)].size() &&
+                _iraspa_structures[static_cast<size_t>(sceneIdentifier)][static_cast<size_t>(movieIdentifier)];
+
+            if (validAtomPick)
+            {
+              std::shared_ptr<RKRenderObject> renderObject =
+                  _iraspa_structures[static_cast<size_t>(sceneIdentifier)][static_cast<size_t>(movieIdentifier)]->object();
+              if (dynamic_cast<RKRenderAtomSource *>(renderObject.get()) && pickedObject >= 0)
+              {
+                if (project->addAtomToMeasurement(renderObject, pickedObject))
+                {
+                  const QString message = project->measurementLogMessage();
+                  if (_logReporter && !message.isEmpty())
+                  {
+                    _logReporter->logMessage(LogReporting::ErrorLevel::info, message);
+                  }
+                }
+                else
+                {
+                  project->clearMeasurement();
+                }
+              }
+              else
+              {
+                project->clearMeasurement();
+              }
+            }
+            else
+            {
+              project->clearMeasurement();
+            }
+
+            widget->reloadRenderMeasurePointsData();
+            widget->redraw();
+          }
+        }
         break;
       case Tracking::backgroundClick:
         for(size_t i=0; i< _iraspa_structures.size();i++)
@@ -662,9 +997,8 @@ bool RenderStackedWidget::eventFilter(QObject *object, QEvent *event)
             break;
           case 1:
 
-            if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(_iraspa_structures[sceneIdentifier][movieIdentifier]->object()))
+            if (applyAtomInstancePick(_iraspa_structures[sceneIdentifier][movieIdentifier]->object(), pickedObject, false))
             {
-              atomViewer->setAtomSelection(pickedObject);
               reloadData();
               emit updateAtomSelection();
               emit updateBondSelection();
@@ -1027,6 +1361,12 @@ void RenderStackedWidget::updateRibbonDebugOverlay()
     openGLWindow->update();
   }
 #endif
+#if defined(USE_VULKAN)
+  if (VulkanWindow *vulkanWindow = dynamic_cast<VulkanWindow*>(renderViewController))
+  {
+    vulkanWindow->redraw();
+  }
+#endif
 }
 
 void RenderStackedWidget::reloadBoundingBoxData()
@@ -1204,10 +1544,29 @@ void RenderStackedWidget::computeAOHighQuality()
 
 void RenderStackedWidget::createPicture(QUrl fileURL, int width, int height)
 {
-  if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
+  if (std::shared_ptr<ProjectTreeNode> projectTreeNode = _projectTreeNode.lock())
   {
-    // invalidate all lower quality caches
-    if(std::shared_ptr<ProjectStructure> project = _project.lock())
+    try
+    {
+      std::shared_ptr<ProjectTreeNode> nodeCopy = projectTreeNode->shallowClone();
+      const RKRendererBackend backend = _backend;
+      QtConcurrent::run([nodeCopy, fileURL, width, height, backend]() {
+        runOffscreenPictureExport(nodeCopy, fileURL, width, height, backend);
+      });
+    }
+    catch (const std::exception &e)
+    {
+      if (_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, QString("failed to copy project for picture export: %1").arg(e.what()));
+      }
+    }
+    return;
+  }
+
+  if (RKRenderViewController *widget = dynamic_cast<RKRenderViewController *>(renderViewController))
+  {
+    if (std::shared_ptr<ProjectStructure> project = _project.lock())
     {
       invalidateCachedAmbientOcclusionTextures(project->sceneList()->allIRASPAStructures());
     }
@@ -1223,6 +1582,26 @@ int nearestEvenInt(int to)
 
 void RenderStackedWidget::createMovie(QUrl fileURL, int width, int height, MovieWriter::Format format, ProjectStructure::MovieType movieType)
 {
+  if (std::shared_ptr<ProjectTreeNode> projectTreeNode = _projectTreeNode.lock())
+  {
+    try
+    {
+      std::shared_ptr<ProjectTreeNode> nodeCopy = projectTreeNode->shallowClone();
+      const RKRendererBackend backend = _backend;
+      QtConcurrent::run([nodeCopy, fileURL, width, height, format, movieType, backend]() {
+        runOffscreenMovieExport(nodeCopy, fileURL, width, height, format, movieType, backend);
+      });
+    }
+    catch (const std::exception &e)
+    {
+      if (_logReporter)
+      {
+        _logReporter->logMessage(LogReporting::ErrorLevel::error, QString("failed to copy project for movie export: %1").arg(e.what()));
+      }
+    }
+    return;
+  }
+
   if (RKRenderViewController* widget = dynamic_cast<RKRenderViewController*>(renderViewController))
   {
     if (std::shared_ptr<ProjectStructure> project = _project.lock())
@@ -1922,6 +2301,144 @@ void RenderStackedWidget::exportToMMCIF() const
   {
     //project->camera()->setCameraToPerspective();
     //emit updateCameraProjection();
+  }
+}
+
+void RenderStackedWidget::applySelectionDisplacement(const std::shared_ptr<RKRenderObject> &object, double3 shift)
+{
+  std::shared_ptr<SKAtomTreeController> controller;
+  if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
+  {
+    controller = atomViewer->atomsTreeController();
+  }
+  else if (std::shared_ptr<AtomEditor> atomEditor = std::dynamic_pointer_cast<AtomEditor>(object))
+  {
+    controller = atomEditor->atomsTreeController();
+  }
+  if (!controller)
+  {
+    return;
+  }
+  for (const std::shared_ptr<SKAsymmetricAtom> &atom : controller->selectedObjects())
+  {
+    atom->setDisplacement(shift);
+  }
+}
+
+double3 RenderStackedWidget::unprojectedSelectionShift(const QPoint &to, const QPoint &origin, double depth,
+                                                       const std::shared_ptr<RKRenderObject> &object) const
+{
+  std::shared_ptr<RKCamera> camera = _camera.lock();
+  if (!camera || !object || !object->cell())
+  {
+    return double3();
+  }
+
+  const QRect viewPort(0, 0, width(), height());
+  const double3 toPoint(static_cast<double>(to.x()), static_cast<double>(viewPort.height() - to.y()), depth);
+  const double3 originPoint(static_cast<double>(origin.x()), static_cast<double>(viewPort.height() - origin.y()), depth);
+  const double4x4 modelMatrix = double4x4::AffinityMatrixToTransformationAroundArbitraryPoint(
+      double4x4(object->orientation()), object->cell()->boundingBox().center());
+  return camera->myGluUnProject(toPoint, modelMatrix, viewPort) - camera->myGluUnProject(originPoint, modelMatrix, viewPort);
+}
+
+void RenderStackedWidget::shiftSelection(const QPoint &to, const QPoint &origin, double depth)
+{
+  std::shared_ptr<ProjectTreeNode> projectTreeNode = _projectTreeNode.lock();
+  if (!projectTreeNode || !projectTreeNode->isEditable())
+  {
+    return;
+  }
+
+  for (const std::vector<std::shared_ptr<iRASPAObject>> &movie : _iraspa_structures)
+  {
+    for (const std::shared_ptr<iRASPAObject> &iraspaObject : movie)
+    {
+      if (!iraspaObject)
+      {
+        continue;
+      }
+      applySelectionDisplacement(iraspaObject->object(), unprojectedSelectionShift(to, origin, depth, iraspaObject->object()));
+    }
+  }
+  reloadRenderData();
+}
+
+void RenderStackedWidget::finalizeShiftSelection(const QPoint &to, const QPoint &origin, double depth)
+{
+  std::shared_ptr<ProjectTreeNode> projectTreeNode = _projectTreeNode.lock();
+  if (!projectTreeNode || !projectTreeNode->isEditable())
+  {
+    return;
+  }
+  std::shared_ptr<iRASPAProject> iRASPAProject = projectTreeNode->representedObject();
+  if (!iRASPAProject)
+  {
+    return;
+  }
+  std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(iRASPAProject->project());
+  if (!projectStructure)
+  {
+    return;
+  }
+
+  QUndoCommand *parentCommand = new QUndoCommand(QString("Translate atom selection"));
+  bool any = false;
+  for (const std::vector<std::shared_ptr<iRASPAObject>> &movie : _iraspa_structures)
+  {
+    for (const std::shared_ptr<iRASPAObject> &iraspaObject : movie)
+    {
+      if (!iraspaObject)
+      {
+        continue;
+      }
+
+      std::shared_ptr<SKAtomTreeController> controller;
+      if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(iraspaObject->object()))
+      {
+        controller = atomViewer->atomsTreeController();
+      }
+      else if (std::shared_ptr<AtomEditor> atomEditor = std::dynamic_pointer_cast<AtomEditor>(iraspaObject->object()))
+      {
+        controller = atomEditor->atomsTreeController();
+      }
+      if (!controller || controller->selectedObjects().empty())
+      {
+        applySelectionDisplacement(iraspaObject->object(), double3());
+        continue;
+      }
+
+      const double3 shift = unprojectedSelectionShift(to, origin, depth, iraspaObject->object());
+      new RenderViewTranslatePositionsCartesianSubCommand(_mainWindow, iraspaObject, shift, parentCommand);
+      any = true;
+    }
+  }
+
+  if (any)
+  {
+    iRASPAProject->undoManager().push(parentCommand);
+    for (const std::vector<std::shared_ptr<iRASPAObject>> &movie : _iraspa_structures)
+    {
+      for (const std::shared_ptr<iRASPAObject> &iraspaObject : movie)
+      {
+        if (iraspaObject)
+        {
+          applySelectionDisplacement(iraspaObject->object(), double3());
+        }
+      }
+    }
+    if (_mainWindow)
+    {
+      emit _mainWindow->invalidateCachedAmbientOcclusionTextures(projectStructure->sceneList()->invalidatediRASPAStructures());
+      emit _mainWindow->invalidateCachedIsoSurfaces(projectStructure->sceneList()->invalidatediRASPAStructures());
+      emit _mainWindow->rendererReloadData();
+      _mainWindow->documentWasModified();
+    }
+  }
+  else
+  {
+    delete parentCommand;
+    reloadRenderData();
   }
 }
 

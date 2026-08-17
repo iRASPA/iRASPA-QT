@@ -33,7 +33,6 @@
 #include "openglshader.h"
 #include "rkrenderkitprotocols.h"
 #include "rkrenderuniforms.h"
-#include "openglatomselectionstripesshader.h"
 #include "openglatomselectionstripesorthographicimpostershader.h"
 #include "openglatomselectionstripesperspectiveimpostershader.h"
 #include "openglatomselectionworleynoise3dshader.h"
@@ -62,7 +61,6 @@ private:
   OpenGLAtomSelectionWorleyNoise3DShader _atomSelectionWorleyNoise3DShader;
   OpenGLAtomSelectionWorleyNoise3DOrthographicImposterShader _atomSelectionWorleyNoise3DOrthographicImposterShader;
   OpenGLAtomSelectionWorleyNoise3DPerspectiveImposterShader _atomSelectionWorleyNoise3DPerspectiveImposterShader;
-  OpenGLAtomSelectionStripesShader _atomSelectionStripesShader;
   OpenGLAtomSelectionStripesOrthographicImposterShader _atomSelectionStripesOrthographicImposterShader;
   OpenGLAtomSelectionStripesPerspectiveImposterShader _atomSelectionStripesPerspectiveImposterShader;
   OpenGLAtomSelectionGlowShader _atomSelectionGlowShader;

@@ -21,12 +21,16 @@
 
 #pragma once
 
+#include <optional>
+
 #include <QObject>
 #include <QEvent>
 #include <QPoint>
 #include <QUrl>
 #include <QStackedWidget>
 #include <QToolButton>
+#include <QHBoxLayout>
+#include <QWindow>
 #include <iraspaproject.h>
 #include <iraspamainwindowconsumerprotocol.h>
 #include "atomtreeviewmodel.h"
@@ -35,6 +39,7 @@
 #include "logreporting.h"
 #include "moviemaker.h"
 #include "projectstructure.h"
+#include "rkrendererbackend.h"
 
 class RenderStackedWidget : public QWidget, public ProjectConsumer, public MainWindowConsumer, public LogReportingConsumer
 {
@@ -49,6 +54,9 @@ public:
   void setLogReportingWidget(LogReporting *logReporting) override final;
   void updateControlPanel();
   void setControlPanel(bool iskeyAltOn);
+
+  RKRendererBackend rendererBackend() const { return _backend; }
+  void setRendererBackend(RKRendererBackend backend);
 
   void hideToolBarMenuMenu();
   void showToolBarMenuMenu();
@@ -69,12 +77,14 @@ private:
     translateSelection = 9,        // alt and command-key
     other = 10
   };
-  QWidget *renderWidget;
-  QWindow *renderWindow;
-  MainWindow *_mainWindow;
-  QMenu *toolBar;
+  QWidget *renderWidget = nullptr;
+  QWindow *renderWindow = nullptr;
+  QHBoxLayout *_layout = nullptr;
+  RKRendererBackend _backend = RKRendererBackend::Vulkan;
+  MainWindow *_mainWindow = nullptr;
+  QMenu *toolBar = nullptr;
 
-  RKRenderViewController *renderViewController;
+  RKRenderViewController *renderViewController = nullptr;
   LogReporting* _logReporter = nullptr;
   std::shared_ptr<AtomTreeViewModel> _atomModel;
   std::shared_ptr<BondListViewModel> _bondModel;
@@ -85,8 +95,17 @@ private:
   std::vector<std::vector<std::shared_ptr<iRASPAObject>>> _iraspa_structures;
   Tracking _tracking;
   QPoint _origin;
+  QPoint _originGlobal;
   QPoint _panStartPoint;
   QPoint _truckStartPoint;
+  std::optional<float> _pickedDepth;
+  QWidget *_selectionOverlay = nullptr;
+  void updateSelectionOverlay(const QPoint &globalPos, bool dragging, bool dashed);
+  void shiftSelection(const QPoint &to, const QPoint &origin, double depth);
+  void finalizeShiftSelection(const QPoint &to, const QPoint &origin, double depth);
+  double3 unprojectedSelectionShift(const QPoint &to, const QPoint &origin, double depth,
+                                    const std::shared_ptr<RKRenderObject> &object) const;
+  static void applySelectionDisplacement(const std::shared_ptr<RKRenderObject> &object, double3 shift);
   void selectAsymetricAtomsInRectangle(QRect rect, bool extend);
   void exportToPDB() const;
   void exportToMMCIF() const;
@@ -94,6 +113,11 @@ private:
   void exportToXYZ() const;
   void exportToPOSCAR() const;
   void deleteSelection();
+  void createOpenGLRenderer();
+  void createVulkanRenderer();
+  void destroyRenderer();
+  void createRenderer(RKRendererBackend backend);
+  void rebindCurrentProject();
   QStackedWidget *_controlPanel;
 protected:
   bool eventFilter(QObject *obj, QEvent *event) override final;

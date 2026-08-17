@@ -118,7 +118,7 @@ std::vector<RKInPerInstanceAttributesAtoms> GaussianCubeVolume::renderAtoms() co
 
   std::vector<RKInPerInstanceAttributesAtoms> atomData = std::vector<RKInPerInstanceAttributesAtoms>();
 
-  uint32_t asymmetricAtomIndex = 0;
+  uint32_t instanceIndex = 0;
   for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
@@ -147,9 +147,9 @@ std::vector<RKInPerInstanceAttributesAtoms> GaussianCubeVolume::renderAtoms() co
             {
               for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
               {
-                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), w);
+                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)) + atom->displacement(), w);
 
-                RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+                RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, instanceIndex++);
                 atomData.push_back(atom1);
               }
             }
@@ -157,7 +157,6 @@ std::vector<RKInPerInstanceAttributesAtoms> GaussianCubeVolume::renderAtoms() co
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;
@@ -500,7 +499,7 @@ std::vector<RKInPerInstanceAttributesAtoms> GaussianCubeVolume::renderSelectedAt
             {
               for (int k3 = minimumReplicaZ;k3 <= maximumReplicaZ;k3++)
               {
-                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1, k2, k3)), w);
+                float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1, k2, k3)) + atom->displacement(), w);
 
                 float4 ambient = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
                 float4 diffuse = float4(color.redF(), color.greenF(), color.blueF(), color.alphaF());
@@ -574,7 +573,7 @@ std::vector<RKInPerInstanceAttributesText> GaussianCubeVolume::atomTextData(RKFo
                {
                  for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
                  {
-                   float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), 1.0);
+                   float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)) + atom->displacement(), 1.0);
                    int elementIdentifier = atom->elementIdentifier();
 
                    QString text;

@@ -52,7 +52,7 @@ public:
   void deleteBuffers();
   void generateBuffers();
   void paintGLOpaque(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer);
-  void paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer);
+  void paintGLTransparent(GLuint structureUniformBuffer, GLuint isosurfaceUniformBuffer, int sceneIndex = -1, int movieIndex = -1);
 
   void reloadData();
   void initializeVertexArrayObject();

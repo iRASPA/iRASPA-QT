@@ -9,8 +9,7 @@ QT += core gui widgets concurrent
 equals(QT_MAJOR_VERSION, 5):lessThan (QT_MINOR_VERSION, 6): QT += webkitwidgets
 equals(QT_MAJOR_VERSION, 5):greaterThan (QT_MINOR_VERSION, 5): QT += webenginewidgets
 
-#DEFINES += USE_VULKAN
-#DEFINES += USE_DIRECTX
+DEFINES += USE_VULKAN
 DEFINES += USE_OPENGL
 
 contains(DEFINES, USE_OPENGL){
@@ -86,59 +85,27 @@ macx{
   }
   # Qt mkspecs treat implicit declarations as errors on recent Xcode toolchains.
   QMAKE_CXXFLAGS += -Wno-error=implicit-function-declaration
+  INCLUDEPATH += $$HOMEBREW_PREFIX/include
 
   contains(DEFINES,USE_VULKAN){
-    DEFINES += VK_USE_PLATFORM_MACOS_MVK
-    # CHANGE HERE TO YOUR SDK PATH:
-    VULKAN_SDK_PATH = /usr/local/VulkanSDK/1.2.182.0
-    VULKAN_DYLIB = $${VULKAN_SDK_PATH}/macOS/lib/libvulkan.1.dylib
-    LIBS += $$VULKAN_DYLIB
-    LIBS += -framework Cocoa -framework QuartzCore
-    # Copy dylib to app bundle
+    DEFINES += VK_USE_PLATFORM_MACOS_MVK VK_USE_PLATFORM_METAL_EXT
+    LIBS += -L$$HOMEBREW_PREFIX/lib -lMoltenVK
+    LIBS += -framework Cocoa -framework QuartzCore -framework Metal -framework IOKit -framework Foundation -framework IOSurface
+    MOLTENVK_DYLIB = $$HOMEBREW_PREFIX/lib/libMoltenVK.dylib
     VULKAN_DATA.path = Contents/Frameworks
-    VULKAN_DATA.files = $$VULKAN_DYLIB
+    VULKAN_DATA.files = $$MOLTENVK_DYLIB
     QMAKE_BUNDLE_DATA += VULKAN_DATA
-
-    INCLUDEPATH += $${VULKAN_SDK_PATH}/macOS/include
-    INCLUDEPATH += $$HOMEBREW_PREFIX/include
-    # Fix @rpath
     QMAKE_RPATHDIR += @executable_path/../Frameworks
-
-    #QMAKE_CXXFLAGS += -Wl,--stack,4194304
-    QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
-    exists($$HOMEBREW_PREFIX/bin/python3-config) {
-      INCLUDEPATH += $$system($$HOMEBREW_PREFIX/bin/python3-config --include | sed -e 's:-I::g')
-    }
-    QMAKE_LFLAGS += -framework OpenCL -framework Accelerate
-    LIBS += -L$$HOMEBREW_PREFIX/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
-    exists($$HOMEBREW_PREFIX/bin/python3-config) {
-      LIBS += $$system($$HOMEBREW_PREFIX/bin/python3-config --embed --ldflags --libs 2>/dev/null)
-    }
   }
 
-  contains(DEFINES,USE_OPENGL) {
-    #QMAKE_CXXFLAGS += -Wl,--stack,4194304
-    INCLUDEPATH += $$HOMEBREW_PREFIX/include
-    exists($$HOMEBREW_PREFIX/bin/python3-config) {
-      INCLUDEPATH += $$system($$HOMEBREW_PREFIX/bin/python3-config --include | sed -e 's:-I::g')
-    }
-    QMAKE_LFLAGS += -framework OpenCL -framework Accelerate
-
-    CONFIG(debug, debug|release){
-      QMAKE_CXXFLAGS += -g -O0 -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct  -fsanitize=address
-      LIBS += -L$$HOMEBREW_PREFIX/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz -fsanitize=address
-      exists($$HOMEBREW_PREFIX/bin/python3-config) {
-        LIBS += $$system($$HOMEBREW_PREFIX/bin/python3-config --embed --ldflags --libs 2>/dev/null)
-      }
-      }
-      else
-      {
-        QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
-        LIBS += -L$$HOMEBREW_PREFIX/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
-        exists($$HOMEBREW_PREFIX/bin/python3-config) {
-          LIBS += $$system($$HOMEBREW_PREFIX/bin/python3-config --embed --ldflags --libs 2>/dev/null)
-        }
-    }
+  QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wno-gnu-anonymous-struct
+  exists($$HOMEBREW_PREFIX/bin/python3-config) {
+    INCLUDEPATH += $$system($$HOMEBREW_PREFIX/bin/python3-config --include | sed -e 's:-I::g')
+  }
+  QMAKE_LFLAGS += -framework OpenCL -framework Accelerate
+  LIBS += -L$$HOMEBREW_PREFIX/lib -lx264 -lswscale -lavutil -lavformat -lavcodec -llzma -lz
+  exists($$HOMEBREW_PREFIX/bin/python3-config) {
+    LIBS += $$system($$HOMEBREW_PREFIX/bin/python3-config --embed --ldflags --libs 2>/dev/null)
   }
 }
 
@@ -146,10 +113,16 @@ win32{
   DEFINES += _CRT_SECURE_NO_WARNINGS
   contains(DEFINES,USE_VULKAN){
     DEFINES += VK_USE_PLATFORM_WIN32_KHR
-    # CHANGE HERE TO YOUR SDK PATH:
-    VULKAN_SDK_PATH = "C:/VulkanSDK/1.2.141.2"
+    isEmpty(VULKAN_SDK) {
+      VULKAN_SDK = $$(VULKAN_SDK)
+    }
+    isEmpty(VULKAN_SDK) {
+      VULKAN_SDK = "C:/VulkanSDK/1.2.141.2"
+    }
+    VULKAN_SDK_PATH = $$VULKAN_SDK
     VULKAN_DYLIB = $${VULKAN_SDK_PATH}/Lib/vulkan-1.lib
     LIBS += $$VULKAN_DYLIB
+    INCLUDEPATH += $${VULKAN_SDK_PATH}/Include
   }
   contains(DEFINES,USE_OPENGL){
     CONFIG(debug, debug|release){
@@ -208,6 +181,11 @@ win32{
 }
 
 unix:!macx{
+  contains(DEFINES,USE_VULKAN){
+    DEFINES += VK_USE_PLATFORM_XCB_KHR
+    QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -I/usr/include $$system(python3-config --includes) -I/usr/include/ffmpeg
+    LIBS += -lvulkan -lxcb -lOpenCL -lavcodec -lavutil -lavformat -lswscale $$system(python3-config --embed > /dev/null 2>&1  && python3-config --embed --libs  || python3-config --libs)  -llzma -lz
+  }
   contains(DEFINES,USE_OPENGL){
     QMAKE_CXXFLAGS += -g -std=c++17 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wl,--stack,4194304 -I/usr/include $$system(python3-config --includes) -I/usr/include/ffmpeg
     LIBS += -lOpenCL -lavcodec -lavutil -lavformat -lswscale $$system(python3-config --embed > /dev/null 2>&1  && python3-config --embed --libs  || python3-config --libs)  -llzma -lz

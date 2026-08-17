@@ -1,99 +1,104 @@
-#ifndef VKWINDOW_H
-#define VKWINDOW_H
-#include <qtimer.h>
-#include <vulkanrenderer.h>
+#pragma once
+
+#include <array>
+#include <memory>
+#include <optional>
+#include <vector>
+
+#include <QEvent>
+#include <QPoint>
 #include <QResizeEvent>
+#include <QStringList>
+#include <QTimer>
 #include <QWindow>
+
 #include "rkrenderkitprotocols.h"
 #include "trackball.h"
+#include "vulkanscene.h"
+
+enum class VulkanTracking
+{
+  none = 0,
+  panning = 1,
+  trucking = 2,
+  addToSelection = 3,
+  newSelection = 4,
+  draggedAddToSelection = 5,
+  draggedNewSelection = 6,
+  backgroundClick = 7,
+  measurement = 8,
+  translateSelection = 9,
+  other = 10
+};
 
 class VulkanWindow : public QWindow, public RKRenderViewController
 {
-    enum class Tracking
-    {
-      none = 0,
-      panning = 1,                   // alt + right-mouse drag
-      trucking = 2,                  // ctrl + right-mouse drag
-      addToSelection = 3,            // command-key
-      newSelection = 4,              // shift-key
-      draggedAddToSelection = 5,     // drag + command
-      draggedNewSelection = 6,       // drag + shift
-      backgroundClick = 7,
-      measurement = 8,               // alt-key
-      translateSelection = 9,        // alt and command-key
-      other = 10
-    };
+public:
+  explicit VulkanWindow(QWindow *parent = nullptr);
+  ~VulkanWindow() override;
+  void prepareForDestruction();
 
-   public:
-    VulkanWindow(QWindow *parent);
-    virtual ~VulkanWindow();
+  const QStringList &logData() const override final { return _logData; }
+  void redraw() override final;
+  void redrawWithQuality(RKRenderQuality quality) override final;
 
-    void resize(int w, int h);
-    void drawFrame();
+  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures) override final;
+  void setRenderDataSource(std::shared_ptr<RKRenderDataSource> source) override final;
+  void reloadData() override final;
+  void reloadData(RKRenderQuality ambientOcclusionQuality) override final;
+  void reloadAmbientOcclusionData() override final;
+  void reloadRenderData() override final;
+  void reloadSelectionData() override final;
+  void reloadRenderMeasurePointsData() override final;
+  void reloadBoundingBoxData() override final;
+  void reloadGlobalAxesData() override final;
+  void reloadBackgroundImage() override final;
+  void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
+  void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
 
-    void mousePressEvent(QMouseEvent *event) override final;
-    void mouseMoveEvent(QMouseEvent *event) override final;
-    void mouseReleaseEvent(QMouseEvent *event) override final;
-    void wheelEvent(QWheelEvent *event) override final;
+  void updateTransformUniforms() override final;
+  void updateStructureUniforms() override final;
+  void updateIsosurfaceUniforms() override final;
+  void updateLightUniforms() override final;
+  void updateGlobalAxesUniforms() override final;
+  void reloadStructureUniforms() override final;
+  void updateVertexArrays() override final;
 
-    const QStringList& logData() const override final {return _logData;};
-    virtual void redraw() override final;
-    virtual void redrawWithQuality(RKRenderQuality quality)  override final;
+  QImage renderSceneToImage(int width, int height, RKRenderQuality quality) override final;
+  std::array<int, 4> pickTexture(int x, int y, int width, int height) override final;
+  std::optional<float> pickDepth(int x, int y, int width, int height) override final;
+  void cycleRibbonAODebugMode();
 
-    virtual void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)  override final;
-    virtual void setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)  override final;
-    virtual void reloadData()  override final;
-    virtual void reloadData(RKRenderQuality ambientOcclusionQuality)  override final;
-    virtual void reloadAmbientOcclusionData()  override final;
-    virtual void reloadRenderData()  override final;
-    virtual void reloadSelectionData()  override final;
-    virtual void reloadRenderMeasurePointsData() override final;
-    virtual void reloadBoundingBoxData() override final;
-    virtual void reloadGlobalAxesData() override final;
+protected:
+  bool event(QEvent *event) override;
+  void exposeEvent(QExposeEvent *event) override;
+  void resizeEvent(QResizeEvent *event) override;
+  void mousePressEvent(QMouseEvent *event) override;
+  void mouseMoveEvent(QMouseEvent *event) override;
+  void mouseReleaseEvent(QMouseEvent *event) override;
+  void wheelEvent(QWheelEvent *event) override;
 
-    virtual void reloadBackgroundImage()  override final;
+private:
+  void initializeRenderer();
+  void drawFrame();
+  void scheduleFrame();
+  void updateSelectionOverlay();
 
-    virtual void invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
-    virtual void invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures) override final;
+  std::unique_ptr<VulkanRenderer> _renderer;
+  std::unique_ptr<VulkanScene> _scene;
 
-    virtual void updateTransformUniforms()  override final;
-    virtual void updateStructureUniforms()  override final;
-    virtual void updateIsosurfaceUniforms()  override final;
-    virtual void updateLightUniforms()  override final;
-    virtual void updateGlobalAxesUniforms() override final;
-    virtual void reloadStructureUniforms() override final;
+  bool _initialized = false;
+  bool _destroyed = false;
+  RKRenderQuality _quality = RKRenderQuality::high;
+  std::shared_ptr<RKRenderDataSource> _dataSource;
+  QStringList _logData{};
+  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures{};
+  std::weak_ptr<RKCamera> _camera;
 
-    virtual void updateVertexArrays() override final;
-
-    virtual QImage renderSceneToImage(int width, int height, RKRenderQuality quality)  override final;
-
-    virtual std::array<int,4> pickTexture(int x, int y, int width, int height)  override final;
-   protected:
-    void resizeEvent(QResizeEvent* event);
-
-    VulkanRenderer* vulkanRenderer = nullptr;
-    QTimer renderTimer;
-
-    uint32_t windowWidth = 800;
-    uint32_t windowHeigh = 600;
-
-    std::shared_ptr<RKRenderDataSource> _dataSource;
-    LogReporting* _logReporter = nullptr;
-    QStringList _logData{};
-
-    std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures = std::vector<std::vector<std::shared_ptr<RKRenderObject>>>{};
-
-    std::shared_ptr<RKCamera> _camera = std::make_shared<RKCamera>();
-    TrackBall _trackBall = TrackBall();
-
-    std::optional<QPoint> _startPoint = std::nullopt;
-    std::optional<QPoint> _panStartPoint = std::nullopt;
-
-    Tracking _tracking = Tracking::none;
-    QPoint _origin;
-    QPoint _draggedPos;
-
+  TrackBall _trackBall{};
+  std::optional<QPoint> _startPoint = std::nullopt;
+  VulkanTracking _tracking = VulkanTracking::none;
+  QPoint _origin;
+  QPoint _draggedPos;
+  QTimer *_timer = nullptr;
 };
-
-#endif  // VKWINDOW_H
-

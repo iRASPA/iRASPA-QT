@@ -26,6 +26,7 @@
 #include <QDate>
 #include <QImage>
 #include <cstdint>
+#include <optional>
 #include <vector>
 #include <mathkit.h>
 #include <foundationkit.h>
@@ -448,4 +449,12 @@ class RKRenderViewController
   virtual QImage renderSceneToImage(int width, int height, RKRenderQuality quality) = 0;
 
   virtual std::array<int,4> pickTexture(int x, int y, int width, int height) = 0;
+  virtual std::optional<float> pickDepth(int x, int y, int width, int height)
+  {
+    Q_UNUSED(x);
+    Q_UNUSED(y);
+    Q_UNUSED(width);
+    Q_UNUSED(height);
+    return std::nullopt;
+  }
 };

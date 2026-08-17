@@ -1,394 +1,530 @@
 #include "vulkanwindow.h"
 
-#include <vector>
+#include "rkcamera.h"
+#include "vulkanrenderer.h"
 
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "tiny_obj_loader.h"
+#include <cmath>
+#include <exception>
 
-#ifdef VK_USE_PLATFORM_MACOS_MVK
+#include <QEvent>
+#include <QExposeEvent>
+#include <QMouseEvent>
+#include <QRect>
+#include <QWheelEvent>
+
+#ifdef Q_OS_MACOS
 extern "C" {
-void makeViewMetalCompatible(void* handle);
+void *makeViewMetalCompatible(void *handle);
 }
 #endif
 
-VulkanWindow::VulkanWindow(QWindow *parent) : QWindow(parent) {
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-    makeViewMetalCompatible(reinterpret_cast<void*>(winId()));
-    const void* viewId = reinterpret_cast<void*>(winId());
-    vulkanRenderer = new VulkanRenderer(viewId);
-#elif VK_USE_PLATFORM_WIN32_KHR
-    vulkanRenderer = new VulkanRenderer(reinterpret_cast<HWND>(winId()));
-#endif
+VulkanWindow::VulkanWindow(QWindow *parent) : QWindow(parent)
+{
+  setSurfaceType(QSurface::RasterSurface);
 
-    {
-        std::vector<glm::vec3> vertices;
-        std::vector<uint32_t> indices;
-
-        tinyobj::attrib_t attrib;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
-        std::string err;
-#if defined(Q_OS_WIN)
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, "C:/Users/ddubb//Research/Codes/QtVulkan/Porsche_911_GT2.obj")) {
-                   throw std::runtime_error(err);
-#else
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, "/Users/dubbelda/Research/Codes/QtVulkan/Porsche_911_GT2.obj")) {
-                   throw std::runtime_error(err);
-#endif
-        }
-        for (const auto& shape : shapes) {
-            for (const auto& index : shape.mesh.indices) {
-                //                Vertex vertex = {};
-                glm::vec3 pos = {attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1],
-                                 attrib.vertices[3 * index.vertex_index + 2]};
-                vertices.push_back(pos);
-                indices.push_back(indices.size());
-            }
-        }
-        vulkanRenderer->addGeometry(vertices, indices, 1);
-        vulkanRenderer->recreateVertexBuffer();
-        vulkanRenderer->recreateIndexBuffer();
-
-        std::vector<InstanceData> instData;
-        InstanceData a;
-        a.transform = glm::mat4(1.0f);
-        a.color = glm::vec4(1.0f);
-        instData.push_back(a);
-        vulkanRenderer->updateInstanceBuffer(instData);
-
-        std::vector<DrawItem> drawItems;
-        DrawItem b;
-        b.meshId = 1;
-        b.instanceBase = 0;
-        b.instanceCount = 1;
-        drawItems.push_back(b);
-        vulkanRenderer->buildCommandBuffers(drawItems);
-    }
-
-    {
-        glm::vec3 camPos(2, 2, 3);
-        glm::vec3 worldUp(0.0f, 1.0f, 0.0f);
-
-        glm::mat4x4 view = glm::lookAt(camPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-        glm::mat4x4 proj = glm::perspective(glm::radians(45.0f), windowWidth / (float)windowHeigh, 0.1f, 1000.0f);
-        proj[1][1] *= -1;
-
-        vulkanRenderer->updateCamera(view, proj, camPos, worldUp);
-        vulkanRenderer->updateUniformBuffer(_camera);
-    }
-
+  _timer = new QTimer(this);
+  _timer->setSingleShot(true);
+  QObject::connect(_timer, &QTimer::timeout, this, [this]() {
+    _quality = RKRenderQuality::high;
     drawFrame();
-
-    //renderTimer.setInterval(16);
-    //QObject::connect(&renderTimer, &QTimer::timeout, this, &VkWindow::drawFrame);
-    //renderTimer.start();
+  });
 }
 
-void VulkanWindow::drawFrame() {
-    Q_ASSERT(vulkanRenderer != nullptr);
-    vulkanRenderer->drawFrame(_camera);
+VulkanWindow::~VulkanWindow()
+{
+  prepareForDestruction();
 }
 
-VulkanWindow::~VulkanWindow() {
-    delete vulkanRenderer;
+void VulkanWindow::prepareForDestruction()
+{
+  _destroyed = true;
+  if (_timer)
+  {
+    _timer->stop();
+  }
+  if (_renderer)
+  {
+    _renderer->waitIdle();
+  }
+  _scene.reset();
+  _renderer.reset();
+  _initialized = false;
 }
 
-void VulkanWindow::resizeEvent(QResizeEvent* event)
+void VulkanWindow::initializeRenderer()
+{
+  if (_destroyed || _initialized)
+  {
+    return;
+  }
+
+  try
+  {
+#ifdef Q_OS_MACOS
+    makeViewMetalCompatible(reinterpret_cast<void *>(winId()));
+#endif
+
+    _renderer = std::make_unique<VulkanRenderer>(this);
+    _scene = std::make_unique<VulkanScene>(_renderer.get());
+    if (_dataSource)
+    {
+      _scene->setRenderDataSource(_dataSource);
+    }
+    if (!_renderStructures.empty())
+    {
+      _scene->setRenderStructures(_renderStructures);
+    }
+    _scene->initialize();
+    _initialized = true;
+  }
+  catch (const std::exception &e)
+  {
+    qCritical("Vulkan renderer initialization failed: %s", e.what());
+  }
+}
+
+void VulkanWindow::exposeEvent(QExposeEvent *event)
+{
+  QWindow::exposeEvent(event);
+  if (_destroyed)
+  {
+    return;
+  }
+  if (isExposed())
+  {
+    initializeRenderer();
+    drawFrame();
+  }
+}
+
+bool VulkanWindow::event(QEvent *event)
+{
+  if (event->type() == QEvent::Close)
+  {
+    prepareForDestruction();
+  }
+  if (_destroyed)
+  {
+    return QWindow::event(event);
+  }
+  if (event->type() == QEvent::UpdateRequest)
+  {
+    drawFrame();
+    return true;
+  }
+  return QWindow::event(event);
+}
+
+void VulkanWindow::resizeEvent(QResizeEvent *event)
 {
   QWindow::resizeEvent(event);
-  if(vulkanRenderer)
+  if (_destroyed || !_initialized || !_renderer)
   {
-    if (windowWidth != event->size().width() || windowHeigh != event->size().height()) {
-        windowWidth = event->size().width();
-        windowHeigh = event->size().height();
-        vulkanRenderer->resize(windowWidth, windowHeigh);
-        drawFrame();
-    }
+    return;
   }
+  if (std::shared_ptr<RKCamera> camera = _camera.lock())
+  {
+    camera->updateCameraForWindowResize(event->size().width(), event->size().height());
+  }
+  _renderer->resize(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height()));
+  drawFrame();
+}
+
+void VulkanWindow::drawFrame()
+{
+  if (_destroyed || !_initialized || !_scene || !isExposed())
+  {
+    return;
+  }
+  _scene->draw(_quality);
+}
+
+void VulkanWindow::scheduleFrame()
+{
+  requestUpdate();
+}
+
+void VulkanWindow::cycleRibbonAODebugMode()
+{
+  if (!_scene)
+  {
+    return;
+  }
+  _scene->cycleRibbonAODebugMode();
+  scheduleFrame();
 }
 
 void VulkanWindow::redraw()
 {
-
+  scheduleFrame();
 }
 
 void VulkanWindow::redrawWithQuality(RKRenderQuality quality)
 {
-
+  _quality = quality;
+  redraw();
 }
 
 void VulkanWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _renderStructures = structures;
+  if (_scene)
+  {
+    _scene->setRenderStructures(_renderStructures);
+  }
 }
 
 void VulkanWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> source)
 {
-  qDebug() << "setRenderDataSource";
-
   _dataSource = source;
-
-  if(std::shared_ptr<RKRenderDataSource> dataSource = source)
+  if (source)
   {
-    //_camera = dataSource->camera();
-
-     _camera->updateCameraForWindowResize(this->size().width(),this->size().height());
-     _camera->resetForNewBoundingBox(dataSource->renderBoundingBox());
+    _camera = source->camera();
+    if (std::shared_ptr<RKCamera> camera = _camera.lock())
+    {
+      camera->updateCameraForWindowResize(size().width(), size().height());
+      camera->resetForNewBoundingBox(source->renderBoundingBox());
+    }
   }
-  drawFrame();
+
+  if (_scene)
+  {
+    _scene->setRenderDataSource(source);
+    scheduleFrame();
+  }
 }
 
 void VulkanWindow::reloadData()
 {
-
+  if (_scene)
+  {
+    _scene->reloadData();
+    scheduleFrame();
+  }
 }
 
-void VulkanWindow::reloadData(RKRenderQuality ambientOcclusionQuality)
+void VulkanWindow::reloadData(RKRenderQuality quality)
 {
-
+  if (_scene)
+  {
+    _scene->reloadData(quality);
+    scheduleFrame();
+  }
 }
 
 void VulkanWindow::reloadAmbientOcclusionData()
 {
-
+  if (_scene)
+  {
+    _scene->reloadAmbientOcclusionData();
+    scheduleFrame();
+  }
 }
+
 void VulkanWindow::reloadRenderData()
 {
-
+  reloadData();
 }
 
 void VulkanWindow::reloadSelectionData()
 {
-
+  if (_scene)
+  {
+    _scene->reloadSelectionData();
+    scheduleFrame();
+  }
 }
+
 void VulkanWindow::reloadRenderMeasurePointsData()
 {
-
+  if (_scene)
+  {
+    _scene->reloadRenderMeasurePointsData();
+    scheduleFrame();
+  }
 }
 
 void VulkanWindow::reloadBoundingBoxData()
 {
-
+  if (_scene)
+  {
+    _scene->reloadBoundingBoxData();
+    scheduleFrame();
+  }
 }
 
 void VulkanWindow::reloadGlobalAxesData()
 {
-
+  if (_scene)
+  {
+    _scene->reloadGlobalAxesData();
+    scheduleFrame();
+  }
 }
 
 void VulkanWindow::reloadBackgroundImage()
 {
-
-}
-
-void VulkanWindow::reloadStructureUniforms()
-{
-
+  if (_scene)
+  {
+    _scene->reloadBackgroundImage();
+    scheduleFrame();
+  }
 }
 
 void VulkanWindow::invalidateCachedAmbientOcclusionTextures(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
-
+  if (_scene)
+  {
+    _scene->invalidateCachedAmbientOcclusionTextures(structures);
+  }
 }
 
 void VulkanWindow::invalidateCachedIsosurfaces(std::vector<std::shared_ptr<RKRenderObject>> structures)
 {
-
+  if (_scene)
+  {
+    _scene->invalidateCachedIsosurfaces(structures);
+  }
 }
-
 
 void VulkanWindow::updateTransformUniforms()
 {
-  vulkanRenderer->updateUniformBuffer(_camera);
+  if (_scene)
+  {
+    _scene->updateTransformUniforms();
+  }
 }
 
 void VulkanWindow::updateStructureUniforms()
 {
-
+  if (_scene)
+  {
+    _scene->updateStructureUniforms();
+  }
 }
 
 void VulkanWindow::updateIsosurfaceUniforms()
 {
-
+  if (_scene)
+  {
+    _scene->updateIsosurfaceUniforms();
+  }
 }
 
 void VulkanWindow::updateLightUniforms()
 {
-
+  if (_scene)
+  {
+    _scene->updateLightUniforms();
+  }
 }
 
 void VulkanWindow::updateGlobalAxesUniforms()
 {
+  if (_scene)
+  {
+    _scene->updateGlobalAxesUniforms();
+  }
+}
 
+void VulkanWindow::reloadStructureUniforms()
+{
+  updateStructureUniforms();
 }
 
 void VulkanWindow::updateVertexArrays()
 {
-
+  reloadData();
 }
-
-
 
 QImage VulkanWindow::renderSceneToImage(int width, int height, RKRenderQuality quality)
 {
+  if (!_scene)
+  {
     return QImage();
+  }
+  return _scene->renderSceneToImage(width, height, quality);
 }
 
-std::array<int,4> VulkanWindow::pickTexture(int x, int y, int width, int height)
+std::array<int, 4> VulkanWindow::pickTexture(int x, int y, int, int)
 {
-    std::array<int,4> pixel;
-    return pixel;
+  if (!_scene)
+  {
+    return {0, 0, 0, 0};
+  }
+  const qreal dpr = devicePixelRatio();
+  const int px = static_cast<int>(std::lround(static_cast<qreal>(x) * dpr));
+  const int py = static_cast<int>(std::lround(static_cast<qreal>(y) * dpr));
+  return _scene->pickTexture(px, py, _quality);
+}
+
+std::optional<float> VulkanWindow::pickDepth(int x, int y, int, int)
+{
+  if (!_scene)
+  {
+    return std::nullopt;
+  }
+  const qreal dpr = devicePixelRatio();
+  const int px = static_cast<int>(std::lround(static_cast<qreal>(x) * dpr));
+  const int py = static_cast<int>(std::lround(static_cast<qreal>(y) * dpr));
+  return _scene->pickDepth(px, py, _quality);
 }
 
 void VulkanWindow::mousePressEvent(QMouseEvent *event)
 {
-  //_timer->stop();
-
-  _tracking = Tracking::none;
-
+  _timer->stop();
+  _tracking = VulkanTracking::none;
   _startPoint = event->pos();
   _origin = event->pos();
   _draggedPos = event->pos();
+  _quality = RKRenderQuality::medium;
 
-  //_quality = RKRenderQuality::medium;
-
-   _camera->setTrackBallRotation(simd_quatd(1.0, double3(0.0, 0.0, 0.0)));
-
-
-  if(event->modifiers() & Qt::ShiftModifier)   // contains shift
+  if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
-    // Using the shift key means a new selection is chosen. If later a drag occurs it is modified to 'draggedNewSelection'
-    _tracking = Tracking::newSelection;
+    camera->setTrackBallRotation(simd_quatd(1.0, double3(0.0, 0.0, 0.0)));
   }
-  else if(event->modifiers()  == Qt::ControlModifier)  // command, not option
-  {
-    // Using the command key means the selection is extended. If later a drag occurs it is modified to 'draggedAddToSelection'
-    _tracking = Tracking::addToSelection;
 
-  }
-  else if(event->modifiers()  & Qt::AltModifier & Qt::ControlModifier)  // option and command
+  if (event->modifiers() & Qt::ShiftModifier)
   {
-    _tracking = Tracking::translateSelection;
+    _tracking = VulkanTracking::newSelection;
   }
-  else if(event->modifiers()  == Qt::AltModifier) // option, not command
+  else if (event->modifiers() == Qt::ControlModifier)
   {
-    _tracking = Tracking::measurement;
-    #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
-      _trackBall.start(event->pos().x(),event->pos().y(), 0, 0, this->width(), this->height());
-    #else
-      _trackBall.start(event->position().x(),event->position().y(), 0, 0, this->width(), this->height());
-    #endif
+    _tracking = VulkanTracking::addToSelection;
+  }
+  else if ((event->modifiers() & Qt::AltModifier) && (event->modifiers() & Qt::ControlModifier))
+  {
+    _tracking = VulkanTracking::translateSelection;
+  }
+  else if (event->modifiers() == Qt::AltModifier)
+  {
+    _tracking = VulkanTracking::measurement;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    _trackBall.start(event->pos().x(), event->pos().y(), 0, 0, width(), height());
+#else
+    _trackBall.start(event->position().x(), event->position().y(), 0, 0, width(), height());
+#endif
   }
   else
   {
-      qDebug() << "background click";
-    _tracking = Tracking::backgroundClick;
-    #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
-      _trackBall.start(event->pos().x(),event->pos().y(), 0, 0, this->width(), this->height());
-    #else
-      _trackBall.start(event->position().x(),event->position().y(), 0, 0, this->width(), this->height());
-    #endif
+    _tracking = VulkanTracking::backgroundClick;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    _trackBall.start(event->pos().x(), event->pos().y(), 0, 0, width(), height());
+#else
+    _trackBall.start(event->position().x(), event->position().y(), 0, 0, width(), height());
+#endif
   }
-
   drawFrame();
 }
 
+void VulkanWindow::updateSelectionOverlay()
+{
+  if (!_renderer)
+  {
+    return;
+  }
+  if (_tracking != VulkanTracking::draggedNewSelection && _tracking != VulkanTracking::draggedAddToSelection)
+  {
+    _renderer->clearSelectionOverlay();
+    return;
+  }
+  const qreal dpr = devicePixelRatio();
+  const QRect logical = QRect(_origin, _draggedPos).normalized();
+  const QRect framebuffer(static_cast<int>(std::lround(static_cast<qreal>(logical.x()) * dpr)),
+                          static_cast<int>(std::lround(static_cast<qreal>(logical.y()) * dpr)),
+                          static_cast<int>(std::lround(static_cast<qreal>(logical.width()) * dpr)),
+                          static_cast<int>(std::lround(static_cast<qreal>(logical.height()) * dpr)));
+  _renderer->setSelectionOverlay(framebuffer, _tracking == VulkanTracking::draggedAddToSelection, static_cast<float>(dpr));
+}
 
 void VulkanWindow::mouseMoveEvent(QMouseEvent *event)
 {
-  //qDebug() << "mouse move";
-  switch(_tracking)
+  switch (_tracking)
   {
-    case Tracking::none:
-      break;
-    case Tracking::newSelection:
-      // convert to dragged version
-      _tracking = Tracking::draggedNewSelection;
-      //_draggedPos = event->pos();
-      break;
-    case Tracking::addToSelection:
-       // convert to dragged version
-       _tracking = Tracking::draggedAddToSelection;
-       //_draggedPos = event->pos();
-       break;
-    case Tracking::draggedNewSelection:
-      //_draggedPos = event->pos();
-       break;
-    case Tracking::draggedAddToSelection:
-      _draggedPos = event->pos();
-      break;
-    case Tracking::translateSelection:
-       break;
-    case Tracking::measurement:
-       break;
-    default:
-       _tracking =Tracking::other;
-       if(_startPoint)
-       {
-         #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
-           simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->pos().x(), event->pos().y());
-         #else
-           simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->position().x(), event->position().y());
-         #endif
-
-         _camera->setTrackBallRotation(trackBallRotation);
-         drawFrame();
-       }
-       break;
+  case VulkanTracking::none:
+    break;
+  case VulkanTracking::newSelection:
+    _tracking = VulkanTracking::draggedNewSelection;
+    _draggedPos = event->pos();
+    updateSelectionOverlay();
+    drawFrame();
+    break;
+  case VulkanTracking::addToSelection:
+    _tracking = VulkanTracking::draggedAddToSelection;
+    _draggedPos = event->pos();
+    updateSelectionOverlay();
+    drawFrame();
+    break;
+  case VulkanTracking::draggedNewSelection:
+  case VulkanTracking::draggedAddToSelection:
+    _draggedPos = event->pos();
+    updateSelectionOverlay();
+    drawFrame();
+    break;
+  case VulkanTracking::translateSelection:
+  case VulkanTracking::measurement:
+    break;
+  default:
+    _tracking = VulkanTracking::other;
+    if (_startPoint)
+    {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+      simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->pos().x(), event->pos().y());
+#else
+      simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->position().x(), event->position().y());
+#endif
+      if (std::shared_ptr<RKCamera> camera = _camera.lock())
+      {
+        camera->setTrackBallRotation(trackBallRotation);
+      }
+      drawFrame();
+    }
+    break;
   }
-
-
 }
 
 void VulkanWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-  qDebug() << "Mouse release event";
-  switch(_tracking)
+  switch (_tracking)
   {
-    case Tracking::none:
-      break;
-    case Tracking::newSelection:
-      break;
-    case Tracking::addToSelection:
-      break;
-    case Tracking::draggedNewSelection:
-      break;
-    case Tracking::draggedAddToSelection:
-      break;
-    case Tracking::translateSelection:
-      break;
-    case Tracking::measurement:
-      break;
-    case Tracking::backgroundClick:
-      break;
-    default:
-      #if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
-        simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->pos().x(), event->pos().y() );
-      #else
-        simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->position().x(), event->position().y() );
-      #endif
-
-        qDebug() << "set orientation";
-      simd_quatd worldRotation = _camera->worldRotation();
-      _camera->setWorldRotation(trackBallRotation * worldRotation);
-      _camera->setTrackBallRotation(simd_quatd(1.0, double3(0.0, 0.0, 0.0)));
-      break;
+  case VulkanTracking::none:
+  case VulkanTracking::newSelection:
+  case VulkanTracking::addToSelection:
+  case VulkanTracking::draggedNewSelection:
+  case VulkanTracking::draggedAddToSelection:
+  case VulkanTracking::translateSelection:
+  case VulkanTracking::measurement:
+  case VulkanTracking::backgroundClick:
+    break;
+  default:
+  {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->pos().x(), event->pos().y());
+#else
+    simd_quatd trackBallRotation = _trackBall.rollToTrackball(event->position().x(), event->position().y());
+#endif
+    if (std::shared_ptr<RKCamera> camera = _camera.lock())
+    {
+      camera->setWorldRotation(trackBallRotation * camera->worldRotation());
+      camera->setTrackBallRotation(simd_quatd(1.0, double3(0.0, 0.0, 0.0)));
+    }
+    break;
+  }
   }
 
-  //_quality = RKRenderQuality::high;
-  _tracking = Tracking::none;
-
+  _quality = RKRenderQuality::high;
+  _tracking = VulkanTracking::none;
+  updateSelectionOverlay();
   drawFrame();
 }
 
 void VulkanWindow::wheelEvent(QWheelEvent *event)
 {
-  //_quality = RKRenderQuality::medium;
-  //_timer->start(500);
-  //makeCurrent();
-
-   _camera->increaseDistance(event->angleDelta().y()/40.0);
-
+  _quality = RKRenderQuality::medium;
+  _timer->start(500);
+  if (std::shared_ptr<RKCamera> camera = _camera.lock())
+  {
+    camera->increaseDistance(event->angleDelta().y() / 40.0);
+  }
   drawFrame();
 }

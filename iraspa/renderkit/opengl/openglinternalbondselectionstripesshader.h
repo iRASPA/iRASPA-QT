@@ -32,16 +32,12 @@
 #include "openglshader.h"
 #include "openglbondshader.h"
 #include "rkrenderkitprotocols.h"
-#include "cappedcylindersinglebondgeometry.h"
-#include "cappedcylinderdoublebondgeometry.h"
-#include "cappedcylinderpartialdoublebondgeometry.h"
-#include "cappedcylindertriplebondgeometry.h"
 #include "openglinternalbondselectioninstanceshader.h"
 
 class OpenGLInternalBondSelectionStripesShader: public OpenGLShader
 {
 public:
-  OpenGLInternalBondSelectionStripesShader(OpenGLInternalBondSelectionInstanceShader &internalBondSelectionInstanceShader, OpenGLBondShader &bondShader);
+  OpenGLInternalBondSelectionStripesShader(OpenGLInternalBondSelectionInstanceShader &instanceShader, OpenGLBondShader &bondShader);
   void loadShader(void) override final;
   void deleteBuffers();
   void generateBuffers();
@@ -64,12 +60,12 @@ private:
   std::vector<std::vector<GLuint>> _vertexPartialDoubleBondsArrayObject;
   std::vector<std::vector<GLuint>> _vertexTripleBondsArrayObject;
 
-
-  GLint _vertexNormalAttributeLocation;
-  GLint _vertexPositionAttributeLocation;
   GLint _instancePositionFirstAtomAttributeLocation;
   GLint _instancePositionSecondAtomAttributeLocation;
-  GLint _instanceTypeAttributeLocation;
+  GLint _instanceColorFirstAtomAttributeLocation;
+  GLint _instanceColorSecondAtomAttributeLocation;
+  GLint _instanceScaleAttributeLocation;
+  GLint _imposterBondTypeUniformLocation;
 
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;

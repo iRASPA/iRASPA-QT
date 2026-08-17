@@ -49,7 +49,7 @@ public:
 
   bool initializeOpenGLFunctions() override;
   void paintGL(GLuint structureUniformBuffer);
-  void paintGLTransparent(GLuint structureUniformBuffer);
+  void paintGLTransparent(GLuint structureUniformBuffer, int sceneIndex = -1, int movieIndex = -1);
   void initializeVertexArrayObject();
   void loadShader(void);
 

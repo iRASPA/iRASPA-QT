@@ -207,6 +207,12 @@ void RKCamera::updateFieldOfView()
   updateCameraForWindowResize(_windowWidth, _windowHeight);
 }
 
+void RKCamera::updateViewMatrix()
+{
+  _eye = _centerOfScene + _distance + _panning;
+  _viewMatrix = RKCamera::GluLookAt(_eye + _trucking, _centerOfScene + _trucking, double3(0.0, 1.0, 0.0));
+}
+
 void RKCamera::updateCameraForWindowResize(double width, double height)
 {
   _windowWidth = width;

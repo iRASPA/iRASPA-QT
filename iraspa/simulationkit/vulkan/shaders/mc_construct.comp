@@ -1,0 +1,32 @@
+#version 450
+#extension GL_GOOGLE_include_directive : require
+
+layout(local_size_x = 4, local_size_y = 4, local_size_z = 4) in;
+
+layout(binding = 0) uniform usampler3D readHistoPyramid;
+layout(r32ui, binding = 1) uniform writeonly uimage3D writeHistoPyramid;
+
+#include "mc_common.glsl"
+
+void main()
+{
+  ivec3 writePos = ivec3(gl_GlobalInvocationID.xyz);
+  ivec3 imageSize = imageSize(writeHistoPyramid);
+  if (any(greaterThanEqual(writePos, imageSize)))
+  {
+    return;
+  }
+
+  ivec3 readPos = writePos * 2;
+  uint writeValue =
+      texelFetch(readHistoPyramid, readPos, 0).x +
+      texelFetch(readHistoPyramid, readPos + cubeOffsets[1], 0).x +
+      texelFetch(readHistoPyramid, readPos + cubeOffsets[2], 0).x +
+      texelFetch(readHistoPyramid, readPos + cubeOffsets[3], 0).x +
+      texelFetch(readHistoPyramid, readPos + cubeOffsets[4], 0).x +
+      texelFetch(readHistoPyramid, readPos + cubeOffsets[5], 0).x +
+      texelFetch(readHistoPyramid, readPos + cubeOffsets[6], 0).x +
+      texelFetch(readHistoPyramid, readPos + cubeOffsets[7], 0).x;
+
+  imageStore(writeHistoPyramid, writePos, uvec4(writeValue));
+}

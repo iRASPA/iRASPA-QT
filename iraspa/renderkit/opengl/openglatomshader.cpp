@@ -23,7 +23,6 @@
 #include <QDebug>
 #include <iostream>
 #include "glgeterror.h"
-#include "spheregeometry.h"
 
 OpenGLAtomShader::OpenGLAtomShader():
   _atomShader(),
@@ -76,20 +75,14 @@ void OpenGLAtomShader::setRenderStructures(std::vector<std::vector<std::shared_p
 
 void OpenGLAtomShader::paintGL(std::shared_ptr<RKCamera> camera, RKRenderQuality quality, GLuint structureUniformBuffer)
 {
-  if((quality == RKRenderQuality:: high && _numberOfAtoms < 10000) || quality == RKRenderQuality:: picture)
+  Q_UNUSED(quality);
+  if(camera->isOrthographic())
   {
-    _atomShader.paintGL(_atomAmbientOcclusionShader.generatedAmbientOcclusionTextures(), structureUniformBuffer);
+    _atomOrthographicImposterShader.paintGL(_atomAmbientOcclusionShader.generatedAmbientOcclusionTextures(), structureUniformBuffer);
   }
   else
   {
-    if(camera->isOrthographic())
-    {
-      _atomOrthographicImposterShader.paintGL(_atomAmbientOcclusionShader.generatedAmbientOcclusionTextures(), structureUniformBuffer);
-    }
-    else
-    {
-      _atomPerspectiveImposterShader.paintGL(_atomAmbientOcclusionShader.generatedAmbientOcclusionTextures(), structureUniformBuffer);
-    }
+    _atomPerspectiveImposterShader.paintGL(_atomAmbientOcclusionShader.generatedAmbientOcclusionTextures(), structureUniformBuffer);
   }
 }
 
@@ -130,7 +123,6 @@ void OpenGLAtomShader::reloadAmbientOcclusionData(std::shared_ptr<RKRenderDataSo
 
 void OpenGLAtomShader::loadShader(void)
 {
-  _atomShader.loadShader();
   _atomOrthographicImposterShader.loadShader();
   _atomPerspectiveImposterShader.loadShader();
   _atomAmbientOcclusionShader.loadShader();
@@ -138,21 +130,18 @@ void OpenGLAtomShader::loadShader(void)
 
 void OpenGLAtomShader::initializeTransformUniforms()
 {
-  glUniformBlockBinding(_atomShader.program(), glGetUniformBlockIndex(_atomShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_atomOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomOrthographicImposterShader.program(), "FrameUniformBlock"), 0);
   glUniformBlockBinding(_atomPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomPerspectiveImposterShader.program(), "FrameUniformBlock"), 0);
 }
 
 void OpenGLAtomShader::initializeStructureUniforms()
 {
-  glUniformBlockBinding(_atomShader.program(), glGetUniformBlockIndex(_atomShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_atomOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomOrthographicImposterShader.program(), "StructureUniformBlock"), 1);
   glUniformBlockBinding(_atomPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomPerspectiveImposterShader.program(), "StructureUniformBlock"), 1);
 }
 
 void OpenGLAtomShader::initializeLightUniforms()
 {
-  glUniformBlockBinding(_atomShader.program(), glGetUniformBlockIndex(_atomShader.program(), "LightsUniformBlock"), 3);
   glUniformBlockBinding(_atomOrthographicImposterShader.program(), glGetUniformBlockIndex(_atomOrthographicImposterShader.program(), "LightsUniformBlock"), 3);
   glUniformBlockBinding(_atomPerspectiveImposterShader.program(), glGetUniformBlockIndex(_atomPerspectiveImposterShader.program(), "LightsUniformBlock"), 3);
 }

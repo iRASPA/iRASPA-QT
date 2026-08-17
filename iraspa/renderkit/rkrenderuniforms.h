@@ -236,9 +236,11 @@ struct RKTransformationUniforms
 };
 
 
-// IMPORTANT: must be aligned on 256-bytes boundaries
-// current number of bytes: 512 bytes
-struct RKStructureUniforms
+// IMPORTANT: must be aligned on 256-bytes boundaries.
+// OpenGL glBindBufferRange offsets must be multiples of GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT
+// (256 on macOS). Trailing ribbon fields made the packed size 1168, so structure 1+
+// reused structure 0's origin/AO uniforms.
+struct alignas(256) RKStructureUniforms
 {
   int32_t sceneIdentifier = 0;
   int32_t MovieIdentifier = 0;
@@ -393,10 +395,13 @@ struct RKStructureUniforms
   RKStructureUniforms(size_t sceneIdentifier, size_t movieIdentifier, std::shared_ptr<RKRenderObject> structure, double4x4 inverseModelMatrix);
 };
 
+static_assert(sizeof(RKStructureUniforms) % 256 == 0,
+              "RKStructureUniforms must be a multiple of 256 bytes for UBO array offsets");
+
 
 // IMPORTANT: must be aligned on 256-bytes boundaries
 // current number of bytes: 256 bytes
-struct RKShadowUniforms
+struct alignas(256) RKShadowUniforms
 {
   float4x4 projectionMatrix = float4x4();
   float4x4 viewMatrix = float4x4();
@@ -408,7 +413,7 @@ struct RKShadowUniforms
 };
 
 
-struct RKIsosurfaceUniforms
+struct alignas(256) RKIsosurfaceUniforms
 {
   float4x4 unitCellMatrix = float4x4();
   float4x4 inverseUnitCellMatrix = float4x4();
@@ -454,6 +459,11 @@ struct RKIsosurfaceUniforms
   RKIsosurfaceUniforms();
   RKIsosurfaceUniforms(std::shared_ptr<RKRenderObject> structure);
 };
+
+static_assert(sizeof(RKIsosurfaceUniforms) % 256 == 0,
+              "RKIsosurfaceUniforms must be a multiple of 256 bytes for UBO array offsets");
+static_assert(sizeof(RKShadowUniforms) % 256 == 0,
+              "RKShadowUniforms must be a multiple of 256 bytes for UBO array offsets");
 
 
 

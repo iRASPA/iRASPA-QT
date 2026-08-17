@@ -1,0 +1,50 @@
+#version 450
+
+layout(local_size_x = 256) in;
+
+layout(std430, binding = 0) readonly buffer InputBuffer
+{
+  float inputEnergy[];
+};
+
+layout(std430, binding = 1) buffer PartialSumsBuffer
+{
+  float partialSums[];
+};
+
+layout(push_constant) uniform PushConstants
+{
+  int numberOfVoxels;
+} pc;
+
+shared float localSums[256];
+
+void main()
+{
+  uint localId = gl_LocalInvocationID.x;
+  uint globalId = gl_GlobalInvocationID.x;
+  uint groupId = gl_WorkGroupID.x;
+
+  float value = 0.0;
+  if (globalId < uint(pc.numberOfVoxels))
+  {
+    value = exp(-(1.0 / 298.0) * inputEnergy[globalId]);
+  }
+  localSums[localId] = value;
+
+  barrier();
+
+  for (uint stride = 128; stride > 0; stride >>= 1)
+  {
+    if (localId < stride)
+    {
+      localSums[localId] += localSums[localId + stride];
+    }
+    barrier();
+  }
+
+  if (localId == 0)
+  {
+    partialSums[groupId] = localSums[0];
+  }
+}

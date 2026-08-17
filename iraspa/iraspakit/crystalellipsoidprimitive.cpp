@@ -83,7 +83,7 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderCry
   double3 contentShift = _cell->contentShift();
   bool3 contentFlip = _cell->contentFlip();
 
-  uint32_t asymmetricAtomIndex = 0;
+  uint32_t instanceIndex = 0;
   for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
   {
     if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
@@ -110,9 +110,9 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderCry
               {
                 for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
                 {
-                  float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), 1.0);
+                  float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)) + atom->displacement(), 1.0);
 
-                  RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+                  RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, instanceIndex++);
                   atomData.push_back(atom1);
                 }
               }
@@ -121,7 +121,6 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderCry
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;
@@ -279,7 +278,7 @@ std::vector<RKInPerInstanceAttributesAtoms> CrystalEllipsoidPrimitive::renderSel
               {
                 for(int k3=minimumReplicaZ;k3<=maximumReplicaZ;k3++)
                 {
-                  float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)), 1.0);
+                  float4 position = float4(_cell->unitCell() * (copyPosition + double3(k1,k2,k3)) + atom->displacement(), 1.0);
 
                   RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
                   atomData.push_back(atom1);

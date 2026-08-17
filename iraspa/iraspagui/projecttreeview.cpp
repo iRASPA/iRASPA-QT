@@ -26,6 +26,7 @@
 #include "projecttreeviewinsertprojectgroupcommand.h"
 #include "projecttreeviewdeleteselectioncommand.h"
 #include "projecttreeviewchangeselectioncommand.h"
+#include "structureicons.h"
 #include <QApplication>
 #include <QClipboard>
 #include <QMimeData>
@@ -391,8 +392,15 @@ void ProjectTreeView::selectionChanged(const QItemSelection &selected, const QIt
       QModelIndex current = indices.front();
       if(ProjectTreeNode *selectedTreeNode = static_cast<ProjectTreeNode*>(current.internalPointer()))
       {
+        std::shared_ptr<ProjectTreeNode> previousNode = _projectTreeController->selectedTreeNode();
         IndexPath selectedTreeNodeIndexPath = IndexPath::indexPath(current);
         _projectTreeController->setSelectionIndexPaths(ProjectSelectionIndexPaths(selectedTreeNodeIndexPath,{selectedTreeNodeIndexPath}));
+        std::shared_ptr<ProjectTreeNode> currentNode = _projectTreeController->selectedTreeNode();
+        if (_mainWindow && currentNode && currentNode != previousNode)
+        {
+          _mainWindow->showInfoPanel(infoPanelIcon(currentNode),
+                                     QString("Loading (%1)").arg(currentNode->displayName()));
+        }
         selectedTreeNode->representedObject()->unwrapIfNeeded(_logReporting);
 
         if(std::shared_ptr<iRASPAProject> iraspa_project = selectedTreeNode->representedObject())

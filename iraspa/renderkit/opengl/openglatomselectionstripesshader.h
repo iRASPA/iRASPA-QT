@@ -21,52 +21,11 @@
 
 #pragma once
 
-#include <vector>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
 #include "openglshader.h"
-#include "rkrenderkitprotocols.h"
-#include "rkrenderuniforms.h"
-
 
 class OpenGLAtomSelectionStripesShader: public OpenGLShader
 {
 public:
-  OpenGLAtomSelectionStripesShader();
-  void loadShader(void) override final;
-  void deleteBuffers();
-  void generateBuffers();
-
-  void paintGL(GLuint structureUniformBuffer);
-
-  void reloadData();
-  void initializeVertexArrayObject();
-  void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
-  GLuint program() {return _program;}
-private:
-  GLuint _program;
-  std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
-
-  std::vector<std::vector<size_t>> _numberOfIndices;
-  std::vector<std::vector<size_t>> _numberOfDrawnAtoms;
-
-  std::vector<std::vector<GLuint>> _vertexBuffer;
-  std::vector<std::vector<GLuint>> _indexBuffer;
-  std::vector<std::vector<GLuint>> _instancePositionBuffer;
-  std::vector<std::vector<GLuint>> _scaleBuffer;
-
-  std::vector<std::vector<GLuint>> _vertexArrayObject;
-
-  GLint _vertexPositionAttributeLocation;
-  GLint _vertexNormalAttributeLocation;
-  GLint _instancePositionAttributeLocation;
-  GLint _scaleAttributeLocation;
-
-  static const std::string _vertexShaderSource;
-  static const std::string _fragmentShaderSource;
+  OpenGLAtomSelectionStripesShader() = default;
+  void loadShader(void) override final {}
 };

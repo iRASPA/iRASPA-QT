@@ -21,18 +21,38 @@
 
 #pragma once
 
-#include <QtGlobal>
-#include <QStringList>
-#include <array>
 #include <vector>
-#include <optional>
 #include <mathkit.h>
-
-
+#include "skvulkan.h"
 
 class SKComputeIsosurface
 {
-  public:
-    SKComputeIsosurface();
-    static std::vector<float4> computeIsosurface(int3 dimensions, std::vector<float>* voxels, double isoValue);
+public:
+  SKComputeIsosurface(const SKComputeIsosurface &) = delete;
+  void operator=(const SKComputeIsosurface &) = delete;
+  static std::vector<float4> computeIsosurface(int3 dimensions, std::vector<float> *voxels, double isoValue);
+  static std::vector<float4> computeIsosurfaceCPUImplementation(int3 dimensions, std::vector<float> *voxels, double isoValue) noexcept;
+
+private:
+  SKComputeIsosurface();
+  ~SKComputeIsosurface();
+
+  static SKComputeIsosurface &getInstance()
+  {
+    static SKComputeIsosurface instance;
+    return instance;
+  }
+
+  std::vector<float4> computeIsosurfaceGPUImplementation(int3 dimensions, std::vector<float> *voxels, double isoValue);
+
+  bool _ready = false;
+  VkDescriptorSetLayout _classifyLayout = VK_NULL_HANDLE;
+  VkDescriptorSetLayout _constructLayout = VK_NULL_HANDLE;
+  VkDescriptorSetLayout _traverseLayout = VK_NULL_HANDLE;
+  VkPipelineLayout _classifyPipelineLayout = VK_NULL_HANDLE;
+  VkPipelineLayout _constructPipelineLayout = VK_NULL_HANDLE;
+  VkPipelineLayout _traversePipelineLayout = VK_NULL_HANDLE;
+  VkPipeline _classifyPipeline = VK_NULL_HANDLE;
+  VkPipeline _constructPipeline = VK_NULL_HANDLE;
+  VkPipeline _traversePipeline = VK_NULL_HANDLE;
 };

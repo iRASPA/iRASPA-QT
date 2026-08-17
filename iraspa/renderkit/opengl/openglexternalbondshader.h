@@ -31,10 +31,6 @@
 #endif
 #include "openglshader.h"
 #include "rkrenderkitprotocols.h"
-#include "cappedcylindersinglebondgeometry.h"
-#include "cappedcylinderdoublebondgeometry.h"
-#include "cappedcylinderpartialdoublebondgeometry.h"
-#include "cappedcylindertriplebondgeometry.h"
 
 class OpenGLExternalBondPickingShader;
 class OpenGLExternalBondSelectionStripesShader;
@@ -56,86 +52,43 @@ public:
   void reloadData();
   void initializeVertexArrayObject();
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
-  GLuint program() {return _program;}
-  GLuint stencilProgram() {return _programStencil;}
-  GLuint boxProgram() {return _programBox;}
+  GLuint imposterProgram() {return _programImposter;}
 private:
-  GLuint _program;
-  GLuint _programStencil;
-  GLuint _programBox;
+  GLuint _programImposter;
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
+  void paintGLImposters(GLuint structureUniformBuffer);
+  void initializeImposterVertexArrayObject(GLuint vertexArrayObject, GLuint instanceBuffer);
+
   std::vector<std::vector<size_t>> _numberOfAllBonds;
-  std::vector<std::vector<size_t>> _allBondNumberOfIndices;
-  std::vector<std::vector<GLuint>> _vertexAllBondsArrayObject;
-  std::vector<std::vector<GLuint>> _vertexAllBondsStencilArrayObject;
+  std::vector<std::vector<GLuint>> _vertexAllBondsImposterArrayObject;
   std::vector<std::vector<GLuint>> _vertexAllBondsInstanceBuffer;
-  std::vector<std::vector<GLuint>> _vertexAllBondsBuffer;
-  std::vector<std::vector<GLuint>> _indexAllBondsBuffer;
 
   std::vector<std::vector<size_t>> _numberOfSingleBonds;
-  std::vector<std::vector<size_t>> _singleBondNumberOfIndices;
   std::vector<std::vector<GLuint>> _vertexSingleBondsInstanceBuffer;
-  std::vector<std::vector<GLuint>> _vertexSingleBondsArrayObject;
-  std::vector<std::vector<GLuint>> _vertexSingleBondsStencilArrayObject;
-  std::vector<std::vector<GLuint>> _vertexSingleBondsBuffer;
-  std::vector<std::vector<GLuint>> _indexSingleBondsBuffer;
+  std::vector<std::vector<GLuint>> _vertexSingleBondsImposterArrayObject;
 
   std::vector<std::vector<size_t>> _numberOfDoubleBonds;
-  std::vector<std::vector<size_t>> _doubleBondNumberOfIndices;
   std::vector<std::vector<GLuint>> _vertexDoubleBondsInstanceBuffer;
-  std::vector<std::vector<GLuint>> _vertexDoubleBondsArrayObject;
-  std::vector<std::vector<GLuint>> _vertexDoubleBondsStencilArrayObject;
-  std::vector<std::vector<GLuint>> _vertexDoubleBondsBuffer;
-  std::vector<std::vector<GLuint>> _indexDoubleBondsBuffer;
+  std::vector<std::vector<GLuint>> _vertexDoubleBondsImposterArrayObject;
 
   std::vector<std::vector<size_t>> _numberOfPartialDoubleBonds;
-  std::vector<std::vector<size_t>> _partialDoubleBondNumberOfIndices;
   std::vector<std::vector<GLuint>> _vertexPartialDoubleBondsInstanceBuffer;
-  std::vector<std::vector<GLuint>> _vertexPartialDoubleBondsArrayObject;
-  std::vector<std::vector<GLuint>> _vertexPartialDoubleBondsStencilArrayObject;
-  std::vector<std::vector<GLuint>> _vertexPartialDoubleBondsBuffer;
-  std::vector<std::vector<GLuint>> _indexPartialDoubleBondsBuffer;
+  std::vector<std::vector<GLuint>> _vertexPartialDoubleBondsImposterArrayObject;
 
   std::vector<std::vector<size_t>> _numberOfTripleBonds;
-  std::vector<std::vector<size_t>> _tripleBondNumberOfIndices;
   std::vector<std::vector<GLuint>> _vertexTripleBondsInstanceBuffer;
-  std::vector<std::vector<GLuint>> _vertexTripleBondsArrayObject;
-  std::vector<std::vector<GLuint>> _vertexTripleBondsStencilArrayObject;
-  std::vector<std::vector<GLuint>> _vertexTripleBondsBuffer;
-  std::vector<std::vector<GLuint>> _indexTripleBondsBuffer;
+  std::vector<std::vector<GLuint>> _vertexTripleBondsImposterArrayObject;
 
-  GLint _vertexNormalAttributeLocation;
-  GLint _vertexPositionAttributeLocation;
-  GLint _instancePositionFirstAtomAttributeLocation;
-  GLint _instancePositionSecondAtomAttributeLocation;
-  GLint _instanceColorFirstAtomAttributeLocation;
-  GLint _instanceColorSecondAtomAttributeLocation;
-  GLint _instanceScaleAttributeLocation;
+  GLint _imposterInstancePositionFirstAtomAttributeLocation;
+  GLint _imposterInstancePositionSecondAtomAttributeLocation;
+  GLint _imposterInstanceColorFirstAtomAttributeLocation;
+  GLint _imposterInstanceColorSecondAtomAttributeLocation;
+  GLint _imposterInstanceScaleAttributeLocation;
+  GLint _imposterBondTypeUniformLocation;
 
-  GLint _vertexStencilNormalAttributeLocation;
-  GLint _vertexStencilPositionAttributeLocation;
-  GLint _instanceStencilPositionFirstAtomAttributeLocation;
-  GLint _instanceStencilPositionSecondAtomAttributeLocation;
-  GLint _instanceStencilColorFirstAtomAttributeLocation;
-  GLint _instanceStencilColorSecondAtomAttributeLocation;
-  GLint _instanceStencilScaleAttributeLocation;
-
-  GLint _boxVertexPositionAttributeLocation;
-  GLint _boxVertexNormalAttributeLocation;
-
-  GLuint _boxVertexArray;
-  GLuint _boxVertexBuffer;
-  GLuint _boxIndexBuffer;
-
-  static const std::string _vertexShaderSource;
-  static const std::string _fragmentShaderSource;
-
-  static const std::string _vertexShaderSourceStencil;
-  static const std::string _fragmentShaderSourceStencil;
-
-  static const std::string _vertexShaderSourceBox;
-  static const std::string _fragmentShaderSourceBox;
+  static const std::string _vertexShaderSourceImposter;
+  static const std::string _fragmentShaderSourceImposter;
 
   friend OpenGLExternalBondPickingShader;
   friend OpenGLExternalBondSelectionStripesShader;

@@ -21,17 +21,31 @@
 
 #pragma once
 
-#include <QtGlobal>
-#include <QStringList>
-#include <array>
 #include <vector>
-#include <optional>
-#include <mathkit.h>
-
+#include "skvulkan.h"
 
 class SKComputeVoidFraction
 {
 public:
-  SKComputeVoidFraction();
+  SKComputeVoidFraction(const SKComputeVoidFraction &) = delete;
+  void operator=(const SKComputeVoidFraction &) = delete;
   static double ComputeVoidFraction(std::vector<float> *voxels);
+
+private:
+  SKComputeVoidFraction();
+  ~SKComputeVoidFraction();
+
+  static SKComputeVoidFraction &getInstance()
+  {
+    static SKComputeVoidFraction instance;
+    return instance;
+  }
+
+  double ComputeVoidFractionGPU(std::vector<float> *voxels);
+  static double ComputeVoidFractionCPU(std::vector<float> *voxels);
+
+  bool _ready = false;
+  VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
+  VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
+  VkPipeline _pipeline = VK_NULL_HANDLE;
 };

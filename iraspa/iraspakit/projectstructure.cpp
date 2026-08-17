@@ -20,13 +20,198 @@
  ********************************************************************************************************************/
 
 #include "projectstructure.h"
+#include "structure.h"
 #include <cfloat>
+#include <cmath>
+#include <optional>
+#include <utility>
 #include <QSize>
 #include <array>
 #include <algorithm>
 #include <QPainter>
 #include <QFileInfo>
 #include <QBuffer>
+
+namespace
+{
+constexpr double kPi = 3.141592653589793;
+
+bool isPeriodicObject(const std::shared_ptr<RKRenderObject> &object)
+{
+  auto *typed = dynamic_cast<Object *>(object.get());
+  if (!typed || !object->cell())
+  {
+    return false;
+  }
+  switch (typed->structureType())
+  {
+  case ObjectType::crystal:
+  case ObjectType::molecularCrystal:
+  case ObjectType::proteinCrystal:
+  case ObjectType::proteinCrystalSolvent:
+  case ObjectType::crystalSolvent:
+  case ObjectType::molecularCrystalSolvent:
+  case ObjectType::dnaCrystal:
+    return true;
+  default:
+    return false;
+  }
+}
+
+std::optional<double3> measurementModelPosition(const ProjectStructure::MeasurementAtom &atom)
+{
+  auto *source = dynamic_cast<RKRenderAtomSource *>(atom.structure.get());
+  if (!source)
+  {
+    return std::nullopt;
+  }
+  for (const RKInPerInstanceAttributesAtoms &instance : source->renderAtoms())
+  {
+    if (instance.tag == atom.instanceTag)
+    {
+      return double3(instance.position.x, instance.position.y, instance.position.z);
+    }
+  }
+  return std::nullopt;
+}
+
+double3 measurementScenePosition(const ProjectStructure::MeasurementAtom &atom, const double3 &modelPosition)
+{
+  return modelPosition + atom.structure->origin();
+}
+
+int measurementAtomTag(const ProjectStructure::MeasurementAtom &atom)
+{
+  if (atom.copy)
+  {
+    return static_cast<int>(atom.copy->tag());
+  }
+  return atom.asymmetricAtomId;
+}
+
+double clampUnit(double value)
+{
+  return std::max(-1.0, std::min(1.0, value));
+}
+
+std::pair<double, std::optional<double>> measurementDistance(const ProjectStructure::MeasurementAtom &a,
+                                                             const ProjectStructure::MeasurementAtom &b)
+{
+  const std::optional<double3> modelA = measurementModelPosition(a);
+  const std::optional<double3> modelB = measurementModelPosition(b);
+  if (!modelA || !modelB)
+  {
+    return {0.0, std::nullopt};
+  }
+
+  std::optional<double> periodicLength;
+  if (a.structure.get() == b.structure.get() && isPeriodicObject(a.structure))
+  {
+    periodicLength = a.structure->cell()->applyFullCellBoundaryCondition(*modelB - *modelA).length();
+  }
+
+  const double sceneLength = (measurementScenePosition(b, *modelB) - measurementScenePosition(a, *modelA)).length();
+  return {sceneLength, periodicLength};
+}
+
+double bendFromPositions(const double3 &a, const double3 &b, const double3 &c)
+{
+  const double3 vectorAB = double3::normalize(a - b);
+  const double3 vectorBC = double3::normalize(c - b);
+  return std::acos(clampUnit(double3::dot(vectorAB, vectorBC)));
+}
+
+std::pair<double, std::optional<double>> measurementBend(const ProjectStructure::MeasurementAtom &a,
+                                                         const ProjectStructure::MeasurementAtom &b,
+                                                         const ProjectStructure::MeasurementAtom &c)
+{
+  const std::optional<double3> modelA = measurementModelPosition(a);
+  const std::optional<double3> modelB = measurementModelPosition(b);
+  const std::optional<double3> modelC = measurementModelPosition(c);
+  if (!modelA || !modelB || !modelC)
+  {
+    return {0.0, std::nullopt};
+  }
+
+  std::optional<double> periodicAngle;
+  if (a.structure.get() == b.structure.get() && b.structure.get() == c.structure.get() && isPeriodicObject(a.structure))
+  {
+    const double3 dr1 = a.structure->cell()->applyFullCellBoundaryCondition(*modelA - *modelB);
+    const double3 dr2 = a.structure->cell()->applyFullCellBoundaryCondition(*modelC - *modelB);
+    periodicAngle = bendFromPositions(dr1 + *modelB, *modelB, dr2 + *modelB);
+  }
+
+  const double sceneAngle = bendFromPositions(measurementScenePosition(a, *modelA),
+                                              measurementScenePosition(b, *modelB),
+                                              measurementScenePosition(c, *modelC));
+  return {sceneAngle, periodicAngle};
+}
+
+double dihedralFromPositions(const double3 &a, const double3 &b, const double3 &c, const double3 &d)
+{
+  const double3 Dab = a - b;
+  const double3 Dbc = c - b;
+  const double3 Dcd = d - c;
+  const double3 dr = double3::normalize(Dab - double3::dot(Dab, Dbc) * Dbc);
+  const double3 ds = double3::normalize(Dcd - double3::dot(Dcd, Dbc) * Dbc);
+  const double cosPhi = clampUnit(double3::dot(dr, ds));
+  const double3 Pb = double3::cross(Dbc, Dab);
+  const double3 Pc = double3::cross(Dbc, Dcd);
+  const double sign = double3::dot(Dbc, double3::cross(Pb, Pc));
+  const double absPhi = std::fabs(std::acos(cosPhi));
+  return sign > 0.0 ? absPhi : -absPhi;
+}
+
+std::pair<double, std::optional<double>> measurementDihedral(const ProjectStructure::MeasurementAtom &a,
+                                                             const ProjectStructure::MeasurementAtom &b,
+                                                             const ProjectStructure::MeasurementAtom &c,
+                                                             const ProjectStructure::MeasurementAtom &d)
+{
+  const std::optional<double3> modelA = measurementModelPosition(a);
+  const std::optional<double3> modelB = measurementModelPosition(b);
+  const std::optional<double3> modelC = measurementModelPosition(c);
+  const std::optional<double3> modelD = measurementModelPosition(d);
+  if (!modelA || !modelB || !modelC || !modelD)
+  {
+    return {0.0, std::nullopt};
+  }
+
+  std::optional<double> periodicAngle;
+  if (a.structure.get() == b.structure.get() && b.structure.get() == c.structure.get() && isPeriodicObject(a.structure))
+  {
+    const double3 Dab = a.structure->cell()->applyFullCellBoundaryCondition(*modelA - *modelB);
+    const double3 Dbc = a.structure->cell()->applyFullCellBoundaryCondition(*modelC - *modelB);
+    const double3 Dcd = a.structure->cell()->applyFullCellBoundaryCondition(*modelD - *modelC);
+    periodicAngle = dihedralFromPositions(Dab + *modelB, *modelB, Dbc + *modelB, Dcd + *modelC);
+  }
+
+  const double sceneAngle = dihedralFromPositions(measurementScenePosition(a, *modelA),
+                                                  measurementScenePosition(b, *modelB),
+                                                  measurementScenePosition(c, *modelC),
+                                                  measurementScenePosition(d, *modelD));
+  return {sceneAngle, periodicAngle};
+}
+
+QString formatLength(const std::pair<double, std::optional<double>> &value)
+{
+  QString text = QString::number(value.first);
+  if (value.second)
+  {
+    text += QStringLiteral(" (periodic: %1)").arg(*value.second);
+  }
+  return text;
+}
+
+QString formatAngle(const std::pair<double, std::optional<double>> &value)
+{
+  QString text = QString::number(value.first * 180.0 / kPi);
+  if (value.second)
+  {
+    text += QStringLiteral(" (periodic: %1)").arg(*value.second * 180.0 / kPi);
+  }
+  return text;
+}
+}  // namespace
 
 ProjectStructure::ProjectStructure(): _camera(std::make_shared<RKCamera>())
 {
@@ -162,9 +347,106 @@ std::vector<std::shared_ptr<RKRenderObject>> ProjectStructure::renderStructuresF
   return structures;
 }
 
+bool ProjectStructure::addAtomToMeasurement(std::shared_ptr<RKRenderObject> structure, int instanceTag)
+{
+  const std::optional<AtomInstancePick> pick = decodeAtomInstancePick(structure.get(), instanceTag);
+  if (!structure || !pick || _measurementAtoms.size() >= 4)
+  {
+    return false;
+  }
+  _measurementAtoms.push_back({std::move(structure), instanceTag, pick->asymmetricAtomIndex, pick->copy, pick->replicaPosition});
+  return true;
+}
+
+void ProjectStructure::clearMeasurement()
+{
+  _measurementAtoms.clear();
+}
+
+QString ProjectStructure::measurementLogMessage() const
+{
+  if (_measurementAtoms.size() == 2)
+  {
+    const std::pair<double, std::optional<double>> distance = measurementDistance(_measurementAtoms[0], _measurementAtoms[1]);
+    return QStringLiteral("Distance between atoms [%1,   %2] is %3")
+        .arg(measurementAtomTag(_measurementAtoms[0]))
+        .arg(measurementAtomTag(_measurementAtoms[1]))
+        .arg(formatLength(distance));
+  }
+  if (_measurementAtoms.size() == 3)
+  {
+    const std::pair<double, std::optional<double>> distance1 = measurementDistance(_measurementAtoms[0], _measurementAtoms[1]);
+    const std::pair<double, std::optional<double>> distance2 = measurementDistance(_measurementAtoms[1], _measurementAtoms[2]);
+    const std::pair<double, std::optional<double>> bend = measurementBend(_measurementAtoms[0], _measurementAtoms[1], _measurementAtoms[2]);
+    return QStringLiteral("Distances between atoms [%1,   %2, %3] are [%4, %5]; Bend angle between the   atoms is %6")
+        .arg(measurementAtomTag(_measurementAtoms[0]))
+        .arg(measurementAtomTag(_measurementAtoms[1]))
+        .arg(measurementAtomTag(_measurementAtoms[2]))
+        .arg(formatLength(distance1))
+        .arg(formatLength(distance2))
+        .arg(formatAngle(bend));
+  }
+  if (_measurementAtoms.size() == 4)
+  {
+    const std::pair<double, std::optional<double>> distance1 = measurementDistance(_measurementAtoms[0], _measurementAtoms[1]);
+    const std::pair<double, std::optional<double>> distance2 = measurementDistance(_measurementAtoms[1], _measurementAtoms[2]);
+    const std::pair<double, std::optional<double>> distance3 = measurementDistance(_measurementAtoms[2], _measurementAtoms[3]);
+    const std::pair<double, std::optional<double>> bend1 = measurementBend(_measurementAtoms[0], _measurementAtoms[1], _measurementAtoms[2]);
+    const std::pair<double, std::optional<double>> bend2 = measurementBend(_measurementAtoms[1], _measurementAtoms[2], _measurementAtoms[3]);
+    const std::pair<double, std::optional<double>> dihedral = measurementDihedral(_measurementAtoms[0], _measurementAtoms[1],
+                                                                                 _measurementAtoms[2], _measurementAtoms[3]);
+    return QStringLiteral("Distances between atoms [%1,   %2, %3, %4] are   [%5, %6 %7]; Bend angles between the atoms are [%8, %9]; Dihedral angle   between the atoms is %10")
+        .arg(measurementAtomTag(_measurementAtoms[0]))
+        .arg(measurementAtomTag(_measurementAtoms[1]))
+        .arg(measurementAtomTag(_measurementAtoms[2]))
+        .arg(measurementAtomTag(_measurementAtoms[3]))
+        .arg(formatLength(distance1))
+        .arg(formatLength(distance2))
+        .arg(formatLength(distance3))
+        .arg(formatAngle(bend1))
+        .arg(formatAngle(bend2))
+        .arg(formatAngle(dihedral));
+  }
+  return {};
+}
+
 std::vector<RKInPerInstanceAttributesAtoms> ProjectStructure::renderMeasurementPoints() const
 {
-  return std::vector<RKInPerInstanceAttributesAtoms>();
+  std::vector<RKInPerInstanceAttributesAtoms> points;
+  const std::vector<std::vector<std::shared_ptr<iRASPAObject>>> selected = _sceneList->selectediRASPAStructures();
+  uint32_t flatIndex = 0;
+  for (const std::vector<std::shared_ptr<iRASPAObject>> &scene : selected)
+  {
+    for (const std::shared_ptr<iRASPAObject> &iraspaObject : scene)
+    {
+      std::shared_ptr<Object> object = iraspaObject ? iraspaObject->object() : nullptr;
+      auto *atomSource = dynamic_cast<RKRenderAtomSource *>(object.get());
+      if (atomSource && atomSource->drawAtoms())
+      {
+        for (const MeasurementAtom &measurement : _measurementAtoms)
+        {
+          if (measurement.structure.get() != object.get())
+          {
+            continue;
+          }
+          for (RKInPerInstanceAttributesAtoms instance : atomSource->renderAtoms())
+          {
+            if (instance.tag != measurement.instanceTag)
+            {
+              continue;
+            }
+            instance.ambient = float4(0.0f, 0.0f, 1.0f, 1.0f);
+            instance.diffuse = float4(0.0f, 0.0f, 1.0f, 1.0f);
+            instance.specular = float4(1.0f, 1.0f, 1.0f, 1.0f);
+            instance.tag = static_cast<int32_t>(flatIndex);
+            points.push_back(instance);
+          }
+        }
+      }
+      ++flatIndex;
+    }
+  }
+  return points;
 }
 
 std::vector<RKRenderObject> ProjectStructure::renderMeasurementStructure() const

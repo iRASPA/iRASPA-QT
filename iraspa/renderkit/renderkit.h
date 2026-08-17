@@ -21,7 +21,9 @@
 
 #pragma once
 
+#include "rkimposters.h"
 #include "rkrenderkitprotocols.h"
+#include "rkrendererbackend.h"
 #include "rkrenderuniforms.h"
 #include "rkcamera.h"
 #include "rkglobalaxes.h"

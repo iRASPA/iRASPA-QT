@@ -81,7 +81,7 @@ std::vector<RKInPerInstanceAttributesAtoms> Molecule::renderAtoms() const
 
   std::vector<RKInPerInstanceAttributesAtoms> atomData = std::vector<RKInPerInstanceAttributesAtoms>();
 
-  uint32_t asymmetricAtomIndex = 0;
+  uint32_t instanceIndex = 0;
   for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
@@ -93,7 +93,7 @@ std::vector<RKInPerInstanceAttributesAtoms> Molecule::renderAtoms() const
       {
         if (copy->type() == SKAtomCopy::AtomCopyType::copy)
         {
-          double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+          double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + atom->displacement();
           QColor color = atom->color();
 
           float4 position = float4(copyPosition, w);
@@ -106,12 +106,11 @@ std::vector<RKInPerInstanceAttributesAtoms> Molecule::renderAtoms() const
           double radius = atom->drawRadius() * atom->occupancy();
           float4 scale = float4(radius, radius, radius, 1.0);
 
-          RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+          RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, instanceIndex++);
           atomData.push_back(atom1);
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;
@@ -141,8 +140,8 @@ std::vector<RKInPerInstanceAttributesBonds> Molecule::renderInternalBonds() cons
           QColor color1 = bond->atom1()->parent()->color();
           QColor color2 = bond->atom2()->parent()->color();
 
-          double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
-          double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+          double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + bond->atom1()->parent()->displacement();
+          double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + bond->atom2()->parent()->displacement();
           double bondLength = (pos2 - pos1).length();
           double drawRadius1 = bond->atom1()->parent()->drawRadius() / bondLength;
           double drawRadius2 = bond->atom2()->parent()->drawRadius() / bondLength;
@@ -190,7 +189,7 @@ std::vector<RKInPerInstanceAttributesAtoms> Molecule::renderSelectedAtoms() cons
         {
           if (copy->type() == SKAtomCopy::AtomCopyType::copy)
           {
-            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + atom->displacement();
             QColor color = atom->color();
 
             float4 position = float4(copyPosition, 1.0);
@@ -237,8 +236,8 @@ std::vector<RKInPerInstanceAttributesBonds> Molecule::renderSelectedInternalBond
           QColor color1 = bond->atom1()->parent()->color();
           QColor color2 = bond->atom2()->parent()->color();
 
-          double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
-          double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+          double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + bond->atom1()->parent()->displacement();
+          double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + bond->atom2()->parent()->displacement();
           double bondLength = (pos2-pos1).length();
           double drawRadius1 = bond->atom1()->parent()->drawRadius()/bondLength;
           double drawRadius2 = bond->atom2()->parent()->drawRadius()/bondLength;
@@ -329,8 +328,8 @@ BondSelectionIndexSet Molecule::filterCartesianBondPositions(std::function<bool(
         const std::vector<std::shared_ptr<SKBond>> bonds = asymmetricBond->copies();
         for(const std::shared_ptr<SKBond> &bond : bonds)
         {
-          double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
-          double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+          double3 pos1 = double3::flip(bond->atom1()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + bond->atom1()->parent()->displacement();
+          double3 pos2 = double3::flip(bond->atom2()->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + bond->atom2()->parent()->displacement();
 
           double3 cartesianPosition = 0.5 * (pos1 + pos2);
 
@@ -727,7 +726,7 @@ std::vector<RKInPerInstanceAttributesText> Molecule::atomTextData(RKFontAtlas *f
         {
           if (copy->type() == SKAtomCopy::AtomCopyType::copy)
           {
-            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + atom->displacement();
 
             float4 position = float4(copyPosition, 1.0);
             double radius = atom->drawRadius() * atom->occupancy();

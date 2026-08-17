@@ -1,12 +1,11 @@
 INCLUDEPATH += $$PWD
 
-include(geometry/geometry.pri)
-
 SOURCES += \
     $$PWD/openglenergyvolumerenderedsurface.cpp \
     $$PWD/opengllocalaxesshader.cpp \
     $$PWD/opengluniformstringliterals.cpp \
     $$PWD/openglwindow.cpp \
+    $$PWD/opengloffscreenrenderer.cpp \
     $$PWD/openglglobalaxesbackgroundshader.cpp \
     $$PWD/openglglobalaxesshader.cpp \
     $$PWD/openglglobalaxessystemshader.cpp \
@@ -95,8 +94,7 @@ SOURCES += \
     $$PWD/openglribbonshaderpaths.cpp \
     $$PWD/openglribbonambientocclusionshader.cpp \
     $$PWD/openglribbonselectionshader.cpp \
-    $$PWD/openglribbonpickingshader.cpp \
-    $$PWD/rkfontatlas.cpp
+    $$PWD/openglribbonpickingshader.cpp
 
 
 HEADERS += \
@@ -104,6 +102,7 @@ HEADERS += \
     $$PWD/opengllocalaxesshader.h \
     $$PWD/opengluniformstringliterals.h \
     $$PWD/openglwindow.h \
+    $$PWD/opengloffscreenrenderer.h \
     $$PWD/openglglobalaxesbackgroundshader.h \
     $$PWD/openglglobalaxesshader.h \
     $$PWD/openglglobalaxessystemshader.h \

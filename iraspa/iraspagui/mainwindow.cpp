@@ -23,6 +23,8 @@
 #include "structureicons.h"
 #include "ui_mainwindow.h"
 #include "aboutdialog.h"
+#include "iraspatoolbar.h"
+#include "rkrendererbackend.h"
 
 #include <QUrl>
 #include <QTimer>
@@ -31,6 +33,7 @@
 #include <QByteArray>
 #include <QtConcurrent>
 #include <QDesktopServices>
+#include <QActionGroup>
 #include <QtGlobal>
 #include <iraspakit.h>
 #include <foundationkit.h>
@@ -615,6 +618,32 @@ void MainWindow::createMenus()
   _editMenu->addAction(_pasteAction);
   _editMenu->addAction(_cutAction);
 
+  QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
+  QMenu *rendererMenu = viewMenu->addMenu(tr("&Renderer"));
+  QActionGroup *rendererGroup = new QActionGroup(this);
+  rendererGroup->setExclusive(true);
+
+  _openGLRendererAction = rendererMenu->addAction(tr("&OpenGL"));
+  _openGLRendererAction->setCheckable(true);
+  _openGLRendererAction->setEnabled(RKRendererAvailability::isOpenGLAvailable());
+  rendererGroup->addAction(_openGLRendererAction);
+
+  _vulkanRendererAction = rendererMenu->addAction(tr("&Vulkan"));
+  _vulkanRendererAction->setCheckable(true);
+  _vulkanRendererAction->setEnabled(RKRendererAvailability::isVulkanAvailable());
+  rendererGroup->addAction(_vulkanRendererAction);
+
+  const RKRendererBackend currentBackend = ui->stackedRenderers->rendererBackend();
+  _openGLRendererAction->setChecked(currentBackend == RKRendererBackend::OpenGL);
+  _vulkanRendererAction->setChecked(currentBackend == RKRendererBackend::Vulkan);
+
+  QObject::connect(_openGLRendererAction, &QAction::triggered, this, [this]() {
+    ui->stackedRenderers->setRendererBackend(RKRendererBackend::OpenGL);
+  });
+  QObject::connect(_vulkanRendererAction, &QAction::triggered, this, [this]() {
+    ui->stackedRenderers->setRendererBackend(RKRendererBackend::Vulkan);
+  });
+
   // copy/paste implementation from: https://srivatsp.com/ostinato/qt-cut-copy-paste/
   QObject::connect(qApp, &QApplication::focusChanged, this, &MainWindow::focusChanged);
 
@@ -686,6 +715,42 @@ void MainWindow::setRedoAction(QAction *newRedoAction)
   _redoAction->setShortcuts(QKeySequence::Redo);
 }
 
+void MainWindow::showInfoPanel(const QIcon &icon, const QString &message)
+{
+  if (message.isEmpty())
+  {
+    return;
+  }
+  ui->mainToolBar->showInfoItem(icon, message);
+}
+
+void MainWindow::showInfoPanel(const std::shared_ptr<ProjectTreeNode> &node)
+{
+  if (!node)
+  {
+    return;
+  }
+  showInfoPanel(infoPanelIcon(node), infoPanelString(node));
+}
+
+void MainWindow::showInfoPanel(const std::shared_ptr<Movie> &movie)
+{
+  if (!movie)
+  {
+    return;
+  }
+  showInfoPanel(infoPanelIcon(movie), infoPanelString(movie));
+}
+
+void MainWindow::showInfoPanel(const std::shared_ptr<iRASPAObject> &object)
+{
+  if (!object)
+  {
+    return;
+  }
+  showInfoPanel(infoPanelIcon(object), infoPanelString(object));
+}
+
 void MainWindow::propagateProject(std::shared_ptr<ProjectTreeNode> project, QObject *widget)
 {
   if(project)
@@ -754,6 +819,11 @@ void MainWindow::propagateProject(std::shared_ptr<ProjectTreeNode> project, QObj
     this->propagateProject(project, child);
   }
 
+  if (widget == this && project)
+  {
+    showInfoPanel(project);
+  }
+
 }
 
 void MainWindow::propagateMainWindow(MainWindow* mainWindow, QObject *widget)
@@ -787,9 +857,15 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 #if defined (Q_OS_OSX)
   _timer->start(500);
 
-  ui->stackedRenderers->hideToolBarMenuMenu();
+  if (ui->stackedRenderers)
+  {
+    ui->stackedRenderers->hideToolBarMenuMenu();
+  }
 #else
-  ui->stackedRenderers->showToolBarMenuMenu();
+  if (ui->stackedRenderers)
+  {
+    ui->stackedRenderers->showToolBarMenuMenu();
+  }
 #endif
 
   QMainWindow::resizeEvent(event);
@@ -799,9 +875,15 @@ void MainWindow::moveEvent(QMoveEvent *event)
 {
 #if defined (Q_OS_OSX)
   _timer->start(500);
-  ui->stackedRenderers->hideToolBarMenuMenu();
+  if (ui->stackedRenderers)
+  {
+    ui->stackedRenderers->hideToolBarMenuMenu();
+  }
 #else
-  ui->stackedRenderers->showToolBarMenuMenu();
+  if (ui->stackedRenderers)
+  {
+    ui->stackedRenderers->showToolBarMenuMenu();
+  }
 #endif
 
   QMainWindow::moveEvent(event);
@@ -809,7 +891,10 @@ void MainWindow::moveEvent(QMoveEvent *event)
 
 void MainWindow::resizeStopped()
 {
-  ui->stackedRenderers->showToolBarMenuMenu();
+  if (ui->stackedRenderers)
+  {
+    ui->stackedRenderers->showToolBarMenuMenu();
+  }
 }
 
 // snoop global keyboard events

@@ -21,6 +21,7 @@
  ********************************************************************************************************************/
 
 #include "structure.h"
+#include <algorithm>
 #include <iostream>
 #include <unordered_set>
 #include <symmetrykit.h>
@@ -30,6 +31,47 @@
 #include "skbondsetcontroller.h"
 #include "gridvolume.h"
 #include "object.h"
+
+std::optional<AtomInstancePick> decodeAtomInstancePick(RKRenderObject *object, int instanceTag)
+{
+  if (!object || instanceTag < 0)
+  {
+    return std::nullopt;
+  }
+  auto *viewer = dynamic_cast<AtomViewer *>(object);
+  if (!viewer)
+  {
+    return std::nullopt;
+  }
+
+  const int replicaCount = object->cell() ? std::max(1, object->cell()->totalNumberOfReplicas()) : 1;
+  std::vector<std::shared_ptr<SKAtomCopy>> copies;
+  for (const std::shared_ptr<SKAtomTreeNode> &node : viewer->atomsTreeController()->flattenedLeafNodes())
+  {
+    if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+    {
+      for (const std::shared_ptr<SKAtomCopy> &copy : atom->copies())
+      {
+        if (copy->type() == SKAtomCopy::AtomCopyType::copy)
+        {
+          copies.push_back(copy);
+        }
+      }
+    }
+  }
+
+  const int copyIndex = instanceTag / replicaCount;
+  if (copyIndex < 0 || static_cast<size_t>(copyIndex) >= copies.size())
+  {
+    return std::nullopt;
+  }
+
+  AtomInstancePick pick;
+  pick.copy = copies[static_cast<size_t>(copyIndex)];
+  pick.asymmetricAtomIndex = static_cast<int>(pick.copy->asymmetricIndex());
+  pick.replicaPosition = object->cell() ? object->cell()->replicaFromIndex(instanceTag) : int3(0, 0, 0);
+  return pick;
+}
 
 Structure::Structure(): _atomsTreeController(std::make_shared<SKAtomTreeController>()),
                         _bondSetController(std::make_shared<SKBondSetController>(_atomsTreeController)), _legacySpaceGroup(1)
@@ -1465,6 +1507,10 @@ void Structure::setBondSelection(int asymmetricBondId)
 void Structure::addAtomToSelection(int atomId)
 {
   std::vector<std::shared_ptr<SKAtomTreeNode>> atomNodes = _atomsTreeController->flattenedLeafNodes();
+  if (atomId < 0 || static_cast<size_t>(atomId) >= atomNodes.size())
+  {
+    return;
+  }
 
   std::shared_ptr<SKAtomTreeNode> selectedAtom = atomNodes[atomId];
 
@@ -1483,6 +1529,10 @@ void Structure::addBondToSelection(int asymmetricBondId)
 void Structure::toggleAtomSelection(int asymmetricAtomId)
 {
   std::vector<std::shared_ptr<SKAtomTreeNode>> atomNodes = _atomsTreeController->flattenedLeafNodes();
+  if (asymmetricAtomId < 0 || static_cast<size_t>(asymmetricAtomId) >= atomNodes.size())
+  {
+    return;
+  }
 
   std::shared_ptr<SKAtomTreeNode> selectedAtom = atomNodes[asymmetricAtomId];
   IndexPath indexPathSelectedAtom = selectedAtom->indexPath();

@@ -25,6 +25,7 @@
 #include <QColor>
 #include <QDate>
 #include <QDataStream>
+#include <optional>
 #include <utility>
 #include <type_traits>
 #include <mathkit.h>
@@ -57,6 +58,14 @@ struct enum_hash
   }
 };
 
+struct AtomInstancePick
+{
+  int asymmetricAtomIndex = -1;
+  std::shared_ptr<SKAtomCopy> copy;
+  int3 replicaPosition = int3(0, 0, 0);
+};
+
+std::optional<AtomInstancePick> decodeAtomInstancePick(RKRenderObject *object, int instanceTag);
 
 class Structure: public Object, public InfoEditor,  public AtomViewer, public BondViewer,
                  public AtomStructureEditor, public BondStructureEditor,

@@ -26,6 +26,7 @@
 #include "framelistviewinsertcommand.h"
 #include "framelistviewchangeselectioncommand.h"
 #include "framelistviewdeleteselectioncommand.h"
+#include "structureicons.h"
 #include <optional>
 #include <algorithm>
 #include <QMimeData>
@@ -161,6 +162,11 @@ void FrameListView::reloadSelection()
     whileBlocking(selectionModel())->select(item, QItemSelectionModel::Select);
     whileBlocking(selectionModel())->setCurrentIndex(item, QItemSelectionModel::SelectionFlag::Current);
 
+    if (_mainWindow)
+    {
+      _mainWindow->showInfoPanel(_movie->frameAtIndex(_sceneList->selectedFrameIndex()));
+    }
+
     update();
   }
 }
@@ -213,6 +219,11 @@ void FrameListView::selectionChanged(const QItemSelection &selected, const QItem
 
         // propagates the selected frame to the atom and bond-views
         emit setSelectedFrame(iraspa_structure->shared_from_this());
+
+        if (_mainWindow)
+        {
+          _mainWindow->showInfoPanel(iraspa_structure->shared_from_this());
+        }
       }
     }
 

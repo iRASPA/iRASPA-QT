@@ -1,0 +1,153 @@
+#version 450
+#extension GL_GOOGLE_include_directive : require
+
+layout(local_size_x = 64) in;
+
+layout(binding = 0) uniform sampler3D rawData;
+layout(binding = 1) uniform usampler3D hp[10];
+layout(binding = 11) uniform usampler3D cubeIndexImage;
+
+layout(std430, binding = 12) buffer VBOBuffer
+{
+  vec4 vbo[];
+};
+
+layout(push_constant) uniform PushConstants
+{
+  ivec4 dimensions;
+  float isolevel;
+  int triangleCount;
+  int hpLevelCount;
+} pc;
+
+#include "mc_common.glsl"
+#include "mc_tables.glsl"
+
+uint fetchHP(int level, ivec3 p)
+{
+  if (level == 0) return texelFetch(hp[0], p, 0).x;
+  if (level == 1) return texelFetch(hp[1], p, 0).x;
+  if (level == 2) return texelFetch(hp[2], p, 0).x;
+  if (level == 3) return texelFetch(hp[3], p, 0).x;
+  if (level == 4) return texelFetch(hp[4], p, 0).x;
+  if (level == 5) return texelFetch(hp[5], p, 0).x;
+  if (level == 6) return texelFetch(hp[6], p, 0).x;
+  if (level == 7) return texelFetch(hp[7], p, 0).x;
+  if (level == 8) return texelFetch(hp[8], p, 0).x;
+  return texelFetch(hp[9], p, 0).x;
+}
+
+ivec4 scanHPLevel(int target, int level, ivec4 current)
+{
+  uint neighbors[8];
+  neighbors[0] = fetchHP(level, current.xyz);
+  neighbors[1] = fetchHP(level, current.xyz + cubeOffsets[1]);
+  neighbors[2] = fetchHP(level, current.xyz + cubeOffsets[2]);
+  neighbors[3] = fetchHP(level, current.xyz + cubeOffsets[3]);
+  neighbors[4] = fetchHP(level, current.xyz + cubeOffsets[4]);
+  neighbors[5] = fetchHP(level, current.xyz + cubeOffsets[5]);
+  neighbors[6] = fetchHP(level, current.xyz + cubeOffsets[6]);
+  neighbors[7] = fetchHP(level, current.xyz + cubeOffsets[7]);
+
+  int acc = current.w + int(neighbors[0]);
+  int cmp[8];
+  cmp[0] = int(acc <= target);
+  acc += int(neighbors[1]);
+  cmp[1] = int(acc <= target);
+  acc += int(neighbors[2]);
+  cmp[2] = int(acc <= target);
+  acc += int(neighbors[3]);
+  cmp[3] = int(acc <= target);
+  acc += int(neighbors[4]);
+  cmp[4] = int(acc <= target);
+  acc += int(neighbors[5]);
+  cmp[5] = int(acc <= target);
+  acc += int(neighbors[6]);
+  cmp[6] = int(acc <= target);
+  cmp[7] = 0;
+
+  int offsetIndex = cmp[0] + cmp[1] + cmp[2] + cmp[3] + cmp[4] + cmp[5] + cmp[6] + cmp[7];
+  current.xyz += cubeOffsets[offsetIndex];
+  current.xyz *= 2;
+  current.w += cmp[0] * int(neighbors[0]) +
+               cmp[1] * int(neighbors[1]) +
+               cmp[2] * int(neighbors[2]) +
+               cmp[3] * int(neighbors[3]) +
+               cmp[4] * int(neighbors[4]) +
+               cmp[5] * int(neighbors[5]) +
+               cmp[6] * int(neighbors[6]) +
+               cmp[7] * int(neighbors[7]);
+  return current;
+}
+
+void main()
+{
+  int target = int(gl_GlobalInvocationID.x);
+  if (target >= pc.triangleCount)
+  {
+    return;
+  }
+
+  ivec4 cubePosition = ivec4(0);
+  if (pc.hpLevelCount > 9) cubePosition = scanHPLevel(target, 9, cubePosition);
+  if (pc.hpLevelCount > 8) cubePosition = scanHPLevel(target, 8, cubePosition);
+  if (pc.hpLevelCount > 7) cubePosition = scanHPLevel(target, 7, cubePosition);
+  if (pc.hpLevelCount > 6) cubePosition = scanHPLevel(target, 6, cubePosition);
+  if (pc.hpLevelCount > 5) cubePosition = scanHPLevel(target, 5, cubePosition);
+  if (pc.hpLevelCount > 4) cubePosition = scanHPLevel(target, 4, cubePosition);
+  if (pc.hpLevelCount > 3) cubePosition = scanHPLevel(target, 3, cubePosition);
+  if (pc.hpLevelCount > 2) cubePosition = scanHPLevel(target, 2, cubePosition);
+  if (pc.hpLevelCount > 1) cubePosition = scanHPLevel(target, 1, cubePosition);
+  if (pc.hpLevelCount > 0) cubePosition = scanHPLevel(target, 0, cubePosition);
+  cubePosition.xyz /= 2;
+
+  uint cubeindex = texelFetch(cubeIndexImage, cubePosition.xyz, 0).x;
+  ivec3 dims = pc.dimensions.xyz;
+
+  int vertexNr = 0;
+  for (int i = (target - cubePosition.w) * 3; i < (target - cubePosition.w + 1) * 3; ++i)
+  {
+    int edge = triTable[int(cubeindex) * 16 + i];
+    ivec3 point0 = ivec3(cubePosition.x + offsets3[edge * 6],
+                         cubePosition.y + offsets3[edge * 6 + 1],
+                         cubePosition.z + offsets3[edge * 6 + 2]);
+    ivec3 point1 = ivec3(cubePosition.x + offsets3[edge * 6 + 3],
+                         cubePosition.y + offsets3[edge * 6 + 4],
+                         cubePosition.z + offsets3[edge * 6 + 5]);
+
+    ivec3 p0p = wrapCoord(point0 + ivec3(1, 0, 0), dims);
+    ivec3 p0m = wrapCoord(point0 + ivec3(-1, 0, 0), dims);
+    ivec3 p0yp = wrapCoord(point0 + ivec3(0, 1, 0), dims);
+    ivec3 p0ym = wrapCoord(point0 + ivec3(0, -1, 0), dims);
+    ivec3 p0zp = wrapCoord(point0 + ivec3(0, 0, 1), dims);
+    ivec3 p0zm = wrapCoord(point0 + ivec3(0, 0, -1), dims);
+    vec3 forwardDifference0 = vec3(
+        -texelFetch(rawData, p0p, 0).x + texelFetch(rawData, p0m, 0).x,
+        -texelFetch(rawData, p0yp, 0).x + texelFetch(rawData, p0ym, 0).x,
+        -texelFetch(rawData, p0zp, 0).x + texelFetch(rawData, p0zm, 0).x);
+
+    ivec3 p1p = wrapCoord(point1 + ivec3(1, 0, 0), dims);
+    ivec3 p1m = wrapCoord(point1 + ivec3(-1, 0, 0), dims);
+    ivec3 p1yp = wrapCoord(point1 + ivec3(0, 1, 0), dims);
+    ivec3 p1ym = wrapCoord(point1 + ivec3(0, -1, 0), dims);
+    ivec3 p1zp = wrapCoord(point1 + ivec3(0, 0, 1), dims);
+    ivec3 p1zm = wrapCoord(point1 + ivec3(0, 0, -1), dims);
+    vec3 forwardDifference1 = vec3(
+        -texelFetch(rawData, p1p, 0).x + texelFetch(rawData, p1m, 0).x,
+        -texelFetch(rawData, p1yp, 0).x + texelFetch(rawData, p1ym, 0).x,
+        -texelFetch(rawData, p1zp, 0).x + texelFetch(rawData, p1zm, 0).x);
+
+    float value0 = texelFetch(rawData, wrapCoord(point0, dims), 0).x;
+    float value1 = texelFetch(rawData, wrapCoord(point1, dims), 0).x;
+    float diff = (pc.isolevel - value0) / (value1 - value0);
+
+    vec3 vertex = vec3(point0) + (vec3(point1) - vec3(point0)) * diff;
+    vec4 scaledVertex = vec4(vertex.x / float(dims.x), vertex.y / float(dims.y), vertex.z / float(dims.z), 1.0);
+    vec3 normal = forwardDifference0 + (forwardDifference1 - forwardDifference0) * diff;
+
+    vbo[target * 9 + vertexNr * 3] = scaledVertex;
+    vbo[target * 9 + vertexNr * 3 + 1] = vec4(normal, 0.0);
+    vbo[target * 9 + vertexNr * 3 + 2] = vec4(0.0);
+    vertexNr += 1;
+  }
+}

@@ -20,33 +20,117 @@
  ********************************************************************************************************************/
 
 #include "informationpanelview.h"
+
+#include <algorithm>
+#include <QHBoxLayout>
+#include <QFontMetrics>
 #include <QPainter>
 #include <QPainterPath>
+#include <QResizeEvent>
 
-InformationPanelView::InformationPanelView(QWidget * parent):QLabel(parent)
+InformationPanelView::InformationPanelView(QWidget *parent) : QWidget(parent)
 {
-  setFixedWidth(340);
-  setFixedHeight(30);
-    //frame->setFrameStyle(QFrame::Box | QFrame::Raised);
-  setFrameStyle(QFrame::Box);
-  setLineWidth(2);
+  setFixedWidth(350);
+  setFixedHeight(32);
+  setAttribute(Qt::WA_TranslucentBackground, false);
+
+  _content = new QWidget(this);
+  _content->setAttribute(Qt::WA_TranslucentBackground);
+  _opacityEffect = new QGraphicsOpacityEffect(_content);
+  _opacityEffect->setOpacity(1.0);
+  _content->setGraphicsEffect(_opacityEffect);
+
+  QHBoxLayout *layout = new QHBoxLayout(_content);
+  layout->setContentsMargins(6, 0, 6, 0);
+  layout->setSpacing(4);
+  layout->setAlignment(Qt::AlignVCenter);
+
+  _iconLabel = new QLabel(_content);
+  _iconLabel->setFixedSize(20, 20);
+  _iconLabel->setScaledContents(true);
+  _iconLabel->setAttribute(Qt::WA_TranslucentBackground);
+
+  _textLabel = new QLabel(_content);
+  QFont font = _textLabel->font();
+  font.setPointSize(18);
+  _textLabel->setFont(font);
+  _textLabel->setStyleSheet("color: gray; background: transparent;");
+  _textLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  _textLabel->setWordWrap(false);
+  _textLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+  layout->addWidget(_iconLabel);
+  layout->addWidget(_textLabel, 1);
+
+  _hideTimer = new QTimer(this);
+  _hideTimer->setSingleShot(true);
+  QObject::connect(_hideTimer, &QTimer::timeout, this, &InformationPanelView::startFadeOut);
+
+  _fade = new QPropertyAnimation(_opacityEffect, "opacity", this);
+  _fade->setDuration(1000);
+  _fade->setStartValue(1.0);
+  _fade->setEndValue(0.0);
+  QObject::connect(_fade, &QPropertyAnimation::finished, this, &InformationPanelView::hideContent);
+
+  _content->hide();
+  _content->setGeometry(rect());
+}
+
+void InformationPanelView::showInfoItem(const QIcon &icon, const QString &message)
+{
+  _hideTimer->stop();
+  _fade->stop();
+  _opacityEffect->setOpacity(1.0);
+
+  _fullMessage = message;
+  _iconLabel->setPixmap(icon.pixmap(20, 20));
+  _iconLabel->setVisible(!icon.isNull());
+  updateElidedText();
+  _content->show();
+  _content->raise();
+  _hideTimer->start(5000);
+}
+
+void InformationPanelView::updateElidedText()
+{
+  const int textWidth = std::max(0, _content->width() - (_iconLabel->isVisible() ? 30 : 12));
+  const QFontMetrics metrics(_textLabel->font());
+  _textLabel->setText(metrics.elidedText(_fullMessage, Qt::ElideRight, textWidth));
+}
+
+void InformationPanelView::startFadeOut()
+{
+  _fade->start();
+}
+
+void InformationPanelView::hideContent()
+{
+  _content->hide();
+  _fullMessage.clear();
+}
+
+void InformationPanelView::resizeEvent(QResizeEvent *event)
+{
+  QWidget::resizeEvent(event);
+  _content->setGeometry(rect());
+  updateElidedText();
 }
 
 void InformationPanelView::paintEvent(QPaintEvent *)
 {
   QPainter painter(this);
+  painter.setRenderHint(QPainter::Antialiasing);
 
-  QLinearGradient grad1(0,0,0,30);
-  grad1.setColorAt(0.0,QColor(237,241,225));
-  grad1.setColorAt(0.5,QColor(230,235,213));
-  grad1.setColorAt(0.5,QColor(222,228,199));
-  grad1.setColorAt(1.0,QColor(242,245,224));
+  QLinearGradient grad1(0, 0, 0, height());
+  grad1.setColorAt(0.0, QColor(237, 241, 225));
+  grad1.setColorAt(0.5, QColor(230, 235, 213));
+  grad1.setColorAt(0.51, QColor(222, 228, 199));
+  grad1.setColorAt(1.0, QColor(242, 245, 224));
 
-  QRectF rectangle(0,0,340,30);
+  const QRectF rectangle(0.5, 0.5, width() - 1.0, height() - 1.0);
   QPainterPath path;
   path.addRoundedRect(rectangle, 3.5, 3.5);
-  QPen pen(Qt::darkGray, 2);
-  painter.setPen(pen);
   painter.fillPath(path, grad1);
-  painter.drawRoundedRect(rectangle, 3.5, 3.5);
+  painter.setPen(QPen(QColor(145, 145, 145), 1));
+  painter.drawPath(path);
 }

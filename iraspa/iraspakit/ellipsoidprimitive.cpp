@@ -73,7 +73,7 @@ std::vector<RKInPerInstanceAttributesAtoms> EllipsoidPrimitive::renderPrimitiveE
 
   std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
 
-  uint32_t asymmetricAtomIndex = 0;
+  uint32_t instanceIndex = 0;
   for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
     if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
@@ -86,7 +86,7 @@ std::vector<RKInPerInstanceAttributesAtoms> EllipsoidPrimitive::renderPrimitiveE
         {
           if (copy->type() == SKAtomCopy::AtomCopyType::copy)
           {
-            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + atom->displacement();
             QColor color = atom->color();
 
             float4 position = float4(copyPosition, 1.0);
@@ -99,13 +99,12 @@ std::vector<RKInPerInstanceAttributesAtoms> EllipsoidPrimitive::renderPrimitiveE
             double radius = atom->drawRadius() * atom->occupancy();
             float4 scale = float4(radius, radius, radius, 1.0);
 
-            RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, asymmetricAtomIndex);
+            RKInPerInstanceAttributesAtoms atom1 = RKInPerInstanceAttributesAtoms(position, ambient, diffuse, specular, scale, instanceIndex++);
             atomData.push_back(atom1);
           }
         }
       }
     }
-    asymmetricAtomIndex++;
   }
 
   return atomData;
@@ -136,7 +135,7 @@ std::vector<RKInPerInstanceAttributesAtoms> EllipsoidPrimitive::renderSelectedPr
         {
           if (copy->type() == SKAtomCopy::AtomCopyType::copy)
           {
-            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift;
+            double3 copyPosition = double3::flip(copy->position(), contentFlip, double3(0.0,0.0,0.0)) + contentShift + atom->displacement();
             QColor color = atom->color();
 
             float4 position = float4(copyPosition, 1.0);

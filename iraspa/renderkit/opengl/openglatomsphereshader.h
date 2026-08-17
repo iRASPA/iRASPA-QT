@@ -22,8 +22,6 @@
 #pragma once
 
 #include <vector>
-#include <cstring>
-#include <string>
 #define GL_GLEXT_PROTOTYPES
 #include <QtOpenGL>
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -31,7 +29,7 @@
 #else
   #include <QOpenGLFunctions>
 #endif
-#include "openglshader.h"
+#include <QOpenGLFunctions_3_3_Core>
 #include "rkrenderkitprotocols.h"
 
 class OpenGLAtomOrthographicImposterShader;
@@ -41,48 +39,21 @@ class OpenGLAtomPickingShader;
 class OpenGLTextRenderingShader;
 class OpenGLRibbonAmbientOcclusionShader;
 
-class OpenGLAtomSphereShader: public OpenGLShader
+class OpenGLAtomSphereShader: public QOpenGLFunctions_3_3_Core
 {
 public:
   OpenGLAtomSphereShader();
-  void loadShader(void) override;
   void deleteBuffers();
   void generateBuffers();
-
-  void paintGL(std::vector<std::vector<GLuint>>& atomTextures, GLuint structureUniformBuffer);
 
   void reloadData();
   void initializeVertexArrayObject();
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
-  GLuint program() {return _program;}
 private:
-  GLuint _program;
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
 
-  std::vector<std::vector<size_t>> _numberOfIndices;
   std::vector<std::vector<size_t>> _numberOfDrawnAtoms;
-
-  std::vector<std::vector<GLuint>> _vertexBuffer;
-  std::vector<std::vector<GLuint>> _indexBuffer;
   std::vector<std::vector<GLuint>> _instancePositionBuffer;
-  std::vector<std::vector<GLuint>> _scaleBuffer;
-
-  std::vector<std::vector<GLuint>> _vertexArrayObject;
-  std::vector<std::vector<GLuint>> _ambientColorBuffer;
-  std::vector<std::vector<GLuint>> _diffuseColorBuffer;
-  std::vector<std::vector<GLuint>> _specularColorBuffer;
-
-  GLint _ambientOcclusionTextureUniformLocation;
-  GLint _vertexNormalAttributeLocation;
-  GLint _vertexPositionAttributeLocation;
-  GLint _instancePositionAttributeLocation;
-  GLint _scaleAttributeLocation;
-  GLint _ambientColorAttributeLocation;
-  GLint _diffuseColorAttributeLocation;
-  GLint _specularColorAttributeLocation;
-
-  static const std::string _vertexShaderSource;
-  static const std::string _fragmentShaderSource;
 
   friend OpenGLAtomOrthographicImposterShader;
   friend OpenGLAtomPerspectiveImposterShader;
