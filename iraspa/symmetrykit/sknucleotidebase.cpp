@@ -69,7 +69,7 @@ namespace SKNucleotideBase
     }
     if (name.length() >= 2)
     {
-      return baseKindFromChar(name.back());
+      return baseKindFromChar(name.at(name.length() - 1));
     }
     return SKNucleotideBaseKind::unknown;
   }

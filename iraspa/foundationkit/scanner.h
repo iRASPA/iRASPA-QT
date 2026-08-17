@@ -40,6 +40,7 @@ public:
   Scanner(QUrl &url, CharacterSet charactersToBeSkipped);
   Scanner(QString &content, CharacterSet charactersToBeSkipped);
   QString string() const {return _string;}
+  const QString &content() const {return _string;}
   QString::const_iterator scanLocation() const {return _scanLocation;}
   void setScanLocation(QString::const_iterator location) {_scanLocation = location;}
   bool scanCharacters(CharacterSet set, QString &into);

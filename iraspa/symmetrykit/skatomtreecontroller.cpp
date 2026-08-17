@@ -52,6 +52,7 @@ void SKAtomTreeController::insertNodeInParent(std::shared_ptr<SKAtomTreeNode> no
     node->_parent = parent;
     _hiddenRootNode->updateFilteredChildren(this->_filterPredicate);
   }
+  skInvalidateAtomVisibilityGeneration();
 }
 
 void SKAtomTreeController::insertNodeAtIndexPath(std::shared_ptr<SKAtomTreeNode> node, IndexPath path)
@@ -59,6 +60,7 @@ void SKAtomTreeController::insertNodeAtIndexPath(std::shared_ptr<SKAtomTreeNode>
   size_t index = path.lastIndex();
   std::shared_ptr<SKAtomTreeNode> parent = _hiddenRootNode->descendantNodeAtIndexPath(path.removingLastIndex());
   node->insertInParent(parent, index);
+  skInvalidateAtomVisibilityGeneration();
 }
 
 void SKAtomTreeController::removeNode(std::shared_ptr<SKAtomTreeNode> node)
@@ -68,6 +70,7 @@ void SKAtomTreeController::removeNode(std::shared_ptr<SKAtomTreeNode> node)
     node->removeFromParent();
     parentNode->updateFilteredChildren(_filterPredicate);
   }
+  skInvalidateAtomVisibilityGeneration();
 }
 
 /*
@@ -88,6 +91,22 @@ void SKAtomTreeController::appendToRootnodes(std::shared_ptr<SKAtomTreeNode> ite
 {
   item->_parent = _hiddenRootNode;
   _hiddenRootNode->_childNodes.push_back(item);
+  skInvalidateAtomVisibilityGeneration();
+}
+
+void SKAtomTreeController::setRootNodes(std::vector<std::shared_ptr<SKAtomTreeNode>> nodes)
+{
+  for (const std::shared_ptr<SKAtomTreeNode> &child : _hiddenRootNode->_childNodes)
+  {
+    child->_parent.reset();
+  }
+  _hiddenRootNode->_childNodes = std::move(nodes);
+  for (const std::shared_ptr<SKAtomTreeNode> &child : _hiddenRootNode->_childNodes)
+  {
+    child->_parent = _hiddenRootNode;
+  }
+  _hiddenRootNode->updateFilteredChildren(_filterPredicate);
+  skInvalidateAtomVisibilityGeneration();
 }
 
 bool SKAtomTreeController::nodeIsChildOfItem(std::shared_ptr<SKAtomTreeNode> node, std::shared_ptr<SKAtomTreeNode> item)

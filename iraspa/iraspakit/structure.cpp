@@ -22,8 +22,11 @@
 
 #include "structure.h"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
+#include <iterator>
 #include <unordered_set>
+#include <vector>
 #include <symmetrykit.h>
 #include <simulationkit.h>
 #include <QFontInfo>
@@ -71,6 +74,291 @@ std::optional<AtomInstancePick> decodeAtomInstancePick(RKRenderObject *object, i
   pick.asymmetricAtomIndex = static_cast<int>(pick.copy->asymmetricIndex());
   pick.replicaPosition = object->cell() ? object->cell()->replicaFromIndex(instanceTag) : int3(0, 0, 0);
   return pick;
+}
+
+namespace SKBondCellList
+{
+  namespace
+  {
+    enum class Mode
+    {
+      Cartesian,
+      PeriodicCartesian,
+      PeriodicFractional
+    };
+
+    constexpr int kNeighborOffsets[14][3] = {
+      {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {-1, 1, 0},
+      {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}, {-1, 1, 1},
+      {-1, 0, 1}, {-1, -1, 1}, {0, -1, 1}, {1, -1, 1}
+    };
+
+    double covalentRadiusOfCopy(const std::shared_ptr<SKAtomCopy> &copy)
+    {
+      return PredefinedElements::predefinedElements[copy->parent()->elementIdentifier()]._covalentRadius;
+    }
+
+    bool occupancyPairAllowed(const std::shared_ptr<SKAtomCopy> &a, const std::shared_ptr<SKAtomCopy> &b)
+    {
+      const double occupancyA = a->parent()->occupancy();
+      const double occupancyB = b->parent()->occupancy();
+      return (occupancyA == 1.0 && occupancyB == 1.0) || (occupancyA < 1.0 && occupancyB < 1.0);
+    }
+
+    void markPeriodicDuplicate(const std::shared_ptr<SKAtomCopy> &a, const std::shared_ptr<SKAtomCopy> &b)
+    {
+      if (!(a->parent()->occupancy() < 1.0 || b->parent()->occupancy() < 1.0) || a->asymmetricIndex() == b->asymmetricIndex())
+      {
+        a->setType(SKAtomCopy::AtomCopyType::duplicate);
+      }
+    }
+
+    void considerPair(std::vector<std::shared_ptr<SKBond>> &bonds,
+                      const std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                      const std::vector<double3> &cartesianPositions,
+                      const std::vector<double> &radii,
+                      SKCell *cell,
+                      Mode mode,
+                      size_t i,
+                      size_t j)
+    {
+      const double bondCriteria = radii[i] + radii[j] + 0.56;
+
+      if (mode == Mode::Cartesian)
+      {
+        if (!occupancyPairAllowed(copies[i], copies[j]))
+        {
+          return;
+        }
+        const double length = (cartesianPositions[i] - cartesianPositions[j]).length();
+        if (length < bondCriteria)
+        {
+          if (length < 0.1)
+          {
+            copies[i]->setType(SKAtomCopy::AtomCopyType::duplicate);
+          }
+          bonds.push_back(std::make_shared<SKBond>(copies[i], copies[j]));
+        }
+        return;
+      }
+
+      const double3 separationVector = cartesianPositions[i] - cartesianPositions[j];
+      const double3 periodicSeparationVector = cell->applyUnitCellBoundaryCondition(separationVector);
+      const double bondLength = periodicSeparationVector.length();
+      if (bondLength >= bondCriteria)
+      {
+        return;
+      }
+      if (bondLength < 0.1)
+      {
+        markPeriodicDuplicate(copies[i], copies[j]);
+      }
+      const SKBond::BoundaryType boundary = (separationVector.length() > bondCriteria)
+                                                ? SKBond::BoundaryType::external
+                                                : SKBond::BoundaryType::internal;
+      bonds.push_back(std::make_shared<SKBond>(copies[i], copies[j], boundary));
+    }
+
+    void assignBruteForce(std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                          const std::vector<double3> &cartesianPositions,
+                          const std::vector<double> &radii,
+                          SKCell *cell,
+                          Mode mode,
+                          std::vector<std::shared_ptr<SKBond>> &bonds)
+    {
+      const size_t count = copies.size();
+      for (size_t i = 0; i < count; ++i)
+      {
+        for (size_t j = i + 1; j < count; ++j)
+        {
+          considerPair(bonds, copies, cartesianPositions, radii, cell, mode, i, j);
+        }
+      }
+    }
+
+    int wrapCellIndex(int index, int count)
+    {
+      return (index % count + count) % count;
+    }
+
+    int clampCellIndex(int index, int count)
+    {
+      if (index < 0)
+      {
+        return 0;
+      }
+      if (index >= count)
+      {
+        return count - 1;
+      }
+      return index;
+    }
+
+    void assignWithCellList(std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                            SKBondSetController &bondSetController,
+                            SKCell *cell,
+                            Mode mode)
+    {
+      const size_t count = copies.size();
+      std::vector<std::shared_ptr<SKBond>> bonds;
+      if (count == 0)
+      {
+        bondSetController.setBonds(bonds);
+        return;
+      }
+
+      std::vector<double3> cartesianPositions(count);
+      std::vector<double> radii(count);
+      double maxBondCriteria = 3.0;
+      double3 boxMinimum(1e100, 1e100, 1e100);
+      double3 boxMaximum(-1e100, -1e100, -1e100);
+
+      for (size_t i = 0; i < count; ++i)
+      {
+        copies[i]->setType(SKAtomCopy::AtomCopyType::copy);
+        radii[i] = covalentRadiusOfCopy(copies[i]);
+        maxBondCriteria = std::max(maxBondCriteria, 2.0 * radii[i] + 0.56);
+        if (mode == Mode::PeriodicFractional)
+        {
+          cartesianPositions[i] = cell->convertToCartesian(copies[i]->position());
+        }
+        else
+        {
+          cartesianPositions[i] = copies[i]->position();
+        }
+        boxMinimum = double3::min(boxMinimum, cartesianPositions[i]);
+        boxMaximum = double3::max(boxMaximum, cartesianPositions[i]);
+      }
+
+      double3 widths;
+      double3 binOrigin = boxMinimum;
+      double cutoff = maxBondCriteria;
+      double cutoffEpsilon = 0.0;
+
+      if (mode == Mode::PeriodicFractional)
+      {
+        widths = cell->perpendicularWidths();
+        binOrigin = double3(0.0, 0.0, 0.0);
+        cutoffEpsilon = 1e-4;
+      }
+      else if (mode == Mode::PeriodicCartesian)
+      {
+        const SKBoundingBox cellBox = cell->boundingBox();
+        const double3 cellWidths = cellBox.widths() + double3(0.1, 0.1, 0.1);
+        if (cellWidths.x > 0.0001 && cellWidths.y > 0.0001 && cellWidths.z > 0.0001)
+        {
+          widths = cellWidths;
+          binOrigin = cellBox.minimum();
+        }
+        else
+        {
+          widths = (boxMaximum - boxMinimum) + double3(0.1, 0.1, 0.1);
+        }
+      }
+      else
+      {
+        widths = (boxMaximum - boxMinimum) + double3(0.1, 0.1, 0.1);
+      }
+
+      const int nx = static_cast<int>(widths.x / cutoff);
+      const int ny = static_cast<int>(widths.y / cutoff);
+      const int nz = static_cast<int>(widths.z / cutoff);
+
+      if (nx < 3 || ny < 3 || nz < 3 || widths.x <= 0.0001 || widths.y <= 0.0001 || widths.z <= 0.0001)
+      {
+        assignBruteForce(copies, cartesianPositions, radii, cell, mode, bonds);
+      }
+      else
+      {
+        const size_t totalCells = static_cast<size_t>(nx) * static_cast<size_t>(ny) * static_cast<size_t>(nz);
+        const double3 cutoffVector(cutoffEpsilon + widths.x / double(nx),
+                                   cutoffEpsilon + widths.y / double(ny),
+                                   cutoffEpsilon + widths.z / double(nz));
+
+        std::vector<int> head(totalCells, -1);
+        std::vector<int> list(count, -1);
+
+        for (size_t i = 0; i < count; ++i)
+        {
+          double3 binPosition;
+          if (mode == Mode::PeriodicFractional)
+          {
+            const double3 fractional = double3::fract(copies[i]->position());
+            binPosition = double3(widths.x * fractional.x, widths.y * fractional.y, widths.z * fractional.z);
+          }
+          else
+          {
+            binPosition = cartesianPositions[i] - binOrigin;
+          }
+
+          const int ix = clampCellIndex(static_cast<int>(binPosition.x / cutoffVector.x), nx);
+          const int iy = clampCellIndex(static_cast<int>(binPosition.y / cutoffVector.y), ny);
+          const int iz = clampCellIndex(static_cast<int>(binPosition.z / cutoffVector.z), nz);
+          const int icell = ix + iy * nx + iz * nx * ny;
+          list[i] = head[static_cast<size_t>(icell)];
+          head[static_cast<size_t>(icell)] = static_cast<int>(i);
+        }
+
+        for (int k1 = 0; k1 < nx; ++k1)
+        {
+          for (int k2 = 0; k2 < ny; ++k2)
+          {
+            for (int k3 = 0; k3 < nz; ++k3)
+            {
+              const int icellI = k1 + k2 * nx + k3 * nx * ny;
+              for (int i = head[static_cast<size_t>(icellI)]; i >= 0; i = list[static_cast<size_t>(i)])
+              {
+                for (int offsetIndex = 0; offsetIndex < 14; ++offsetIndex)
+                {
+                  const int *offset = kNeighborOffsets[offsetIndex];
+                  const int icellJ = wrapCellIndex(k1 + offset[0], nx)
+                                     + wrapCellIndex(k2 + offset[1], ny) * nx
+                                     + wrapCellIndex(k3 + offset[2], nz) * nx * ny;
+                  for (int j = head[static_cast<size_t>(icellJ)]; j >= 0; j = list[static_cast<size_t>(j)])
+                  {
+                    if ((i < j) || (icellI != icellJ))
+                    {
+                      considerPair(bonds, copies, cartesianPositions, radii, cell, mode,
+                                   static_cast<size_t>(i), static_cast<size_t>(j));
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      std::vector<std::shared_ptr<SKBond>> filteredBonds;
+      std::copy_if(bonds.begin(), bonds.end(), std::back_inserter(filteredBonds),
+                   [](const std::shared_ptr<SKBond> &bond)
+                   {
+                     return bond->atom1()->type() == SKAtomCopy::AtomCopyType::copy
+                            && bond->atom2()->type() == SKAtomCopy::AtomCopyType::copy;
+                   });
+      bondSetController.setBonds(filteredBonds);
+    }
+  }
+
+  void assignCartesianBonds(std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                            SKBondSetController &bondSetController)
+  {
+    assignWithCellList(copies, bondSetController, nullptr, Mode::Cartesian);
+  }
+
+  void assignPeriodicCartesianBonds(std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                                    SKBondSetController &bondSetController,
+                                    SKCell &cell)
+  {
+    assignWithCellList(copies, bondSetController, &cell, Mode::PeriodicCartesian);
+  }
+
+  void assignPeriodicFractionalBonds(std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                                     SKBondSetController &bondSetController,
+                                     SKCell &cell)
+  {
+    assignWithCellList(copies, bondSetController, &cell, Mode::PeriodicFractional);
+  }
 }
 
 Structure::Structure(): _atomsTreeController(std::make_shared<SKAtomTreeController>()),

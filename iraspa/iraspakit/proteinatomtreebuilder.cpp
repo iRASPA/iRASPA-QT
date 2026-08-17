@@ -10,9 +10,12 @@
 #include "proteinribbonsegmentsupport.h"
 #include "proteinribbonsecondarystructure.h"
 #include "skelement.h"
+#include "skasymmetricatom.h"
+#include <QString>
 #include <map>
 #include <set>
 #include <algorithm>
+#include <utility>
 
 namespace
 {
@@ -50,16 +53,70 @@ namespace
     std::vector<ResidueKey> residueKeys;
   };
 
-  void replaceRootNodes(SKAtomTreeController &controller, const std::vector<std::shared_ptr<SKAtomTreeNode>> &nodes)
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> leafAtoms(const SKAtomTreeController &controller)
   {
-    std::vector<std::shared_ptr<SKAtomTreeNode>> roots = controller.rootNodes();
-    for (const std::shared_ptr<SKAtomTreeNode> &root : roots)
+    const std::vector<std::shared_ptr<SKAtomTreeNode>> leaves = controller.flattenedLeafNodes();
+    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms;
+    atoms.reserve(leaves.size());
+    for (const std::shared_ptr<SKAtomTreeNode> &node : leaves)
     {
-      controller.removeNode(root);
+      atoms.push_back(node->representedObject());
     }
+    return atoms;
+  }
+
+  bool haveSameShape(const std::vector<std::shared_ptr<SKAtomTreeNode>> &left,
+                     const std::vector<std::shared_ptr<SKAtomTreeNode>> &right)
+  {
+    if (left.size() != right.size()) return false;
+    for (size_t index = 0; index < left.size(); ++index)
+    {
+      const std::shared_ptr<SKAtomTreeNode> &leftNode = left[index];
+      const std::shared_ptr<SKAtomTreeNode> &rightNode = right[index];
+      if (leftNode->groupKind() != rightNode->groupKind()) return false;
+      if (leftNode->isGroup())
+      {
+        if (leftNode->displayName() != rightNode->displayName()) return false;
+        if (!haveSameShape(leftNode->childNodes(), rightNode->childNodes())) return false;
+      }
+      else if (leftNode->representedObject() != rightNode->representedObject())
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  std::set<QString> collectHiddenGroupPaths(const std::vector<std::shared_ptr<SKAtomTreeNode>> &nodes, const QString &prefix)
+  {
+    std::set<QString> hiddenPaths;
     for (const std::shared_ptr<SKAtomTreeNode> &node : nodes)
     {
-      controller.appendToRootnodes(node);
+      if (!node->isGroup()) continue;
+      const QString path = prefix + QStringLiteral("/") + node->displayName();
+      if (!node->representedObject()->isVisible())
+      {
+        hiddenPaths.insert(path);
+      }
+      const std::set<QString> childPaths = collectHiddenGroupPaths(node->childNodes(), path);
+      hiddenPaths.insert(childPaths.begin(), childPaths.end());
+    }
+    return hiddenPaths;
+  }
+
+  void applyHiddenGroupPaths(const std::vector<std::shared_ptr<SKAtomTreeNode>> &nodes,
+                             const QString &prefix,
+                             const std::set<QString> &hiddenPaths)
+  {
+    for (const std::shared_ptr<SKAtomTreeNode> &node : nodes)
+    {
+      if (!node->isGroup()) continue;
+      const QString path = prefix + QStringLiteral("/") + node->displayName();
+      if (hiddenPaths.find(path) != hiddenPaths.end())
+      {
+        node->representedObject()->setVisibility(false);
+      }
+      applyHiddenGroupPaths(node->childNodes(), path, hiddenPaths);
     }
   }
 
@@ -351,18 +408,24 @@ namespace
 bool ProteinAtomTreeBuilder::applyHierarchyIfNeeded(SKAtomTreeController &controller,
                                                     ProteinRibbonSecondaryStructureMethod secondaryStructureMethod)
 {
-  const std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = controller.flattenedObjects();
+  const std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = leafAtoms(controller);
   if (atoms.empty()) return false;
   if (ProteinBackbone::build(atoms).chains.empty()) return false;
 
-  if (hasChainOrderedSegmentHierarchy(controller.rootNodes()))
+  std::vector<std::shared_ptr<SKAtomTreeNode>> rebuilt = build(atoms, secondaryStructureMethod);
+  if (hasChainOrderedSegmentHierarchy(controller.rootNodes()) &&
+      haveSameShape(controller.rootNodes(), rebuilt))
   {
-    const ProteinBackbone backbone = ProteinBackbone::build(atoms);
-    const int segmentCount = static_cast<int>(ProteinRibbonSegmentSupport::residueSegments(backbone, double3(0.0, 0.0, 0.0), secondaryStructureMethod).size());
-    if (ProteinRibbonSegmentSupport::segmentTreeNodesAlignWithDrawRanges(controller, segmentCount)) return false;
+    return false;
   }
 
-  replaceRootNodes(controller, build(atoms, secondaryStructureMethod));
+  const std::set<QString> hiddenGroupPaths = collectHiddenGroupPaths(controller.rootNodes(), QString());
+  controller.setRootNodes(std::move(rebuilt));
+  if (!hiddenGroupPaths.empty())
+  {
+    applyHiddenGroupPaths(controller.rootNodes(), QString(), hiddenGroupPaths);
+  }
+  controller.setTags();
   return true;
 }
 

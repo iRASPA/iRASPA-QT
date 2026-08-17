@@ -8,6 +8,8 @@
 
 #include <QImage>
 #include <QtGlobal>
+#include <QColor>
+#include <QString>
 #include <algorithm>
 #include <cstddef>
 
@@ -155,7 +157,6 @@ void VulkanGlobalAxesShader::reloadData()
   {
     return;
   }
-  _renderer->waitIdle();
   destroyGpuResources();
   if (!_dataSource)
   {

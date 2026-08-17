@@ -105,6 +105,7 @@ public:
   std::vector<RKRibbonChainDrawRange> ribbonChainDrawRanges() const override;
   std::vector<RKRibbonChainDrawRange> ribbonSegmentDrawRanges() const override;
   std::vector<RKRibbonChainDrawRange> ribbonResidueDrawRanges() const override;
+  std::vector<RKRibbonChainDrawRange> ribbonDrawRangesForEncoding() const override;
   bool ribbonUsesSegmentVisibility() const override;
   bool ribbonUsesResidueVisibility() const override;
   bool isRibbonSegmentDrawRangeVisible(int index) const override;
@@ -149,6 +150,25 @@ protected:
   virtual SKAtomTreeController &ribbonAtomTreeController() = 0;
   virtual const SKAtomTreeController &ribbonAtomTreeController() const = 0;
   virtual double3 ribbonContentShift() const = 0;
+
+  /// Which ribbon pieces the atom tree currently hides. Resolving this means walking the tree, so it
+  /// is cached against the atom visibility generation rather than recomputed for every draw call.
+  struct RibbonVisibilityCache
+  {
+    qint64 generation = -1;
+    size_t residueDrawRangeCount = 0;
+    size_t segmentDrawRangeCount = 0;
+    bool usesResidueVisibility = false;
+    bool usesSegmentVisibility = false;
+    std::vector<uint8_t> residueVisibility;
+    std::vector<uint8_t> segmentVisibility;
+    std::vector<RKRibbonChainDrawRange> encodingDrawRanges;
+  };
+
+  const RibbonVisibilityCache &ribbonVisibilityCache() const;
+  void invalidateRibbonVisibilityCache();
+
+  mutable RibbonVisibilityCache _ribbonVisibilityCache;
 
   ProteinBackbone _backbone;
   RKRibbonMesh _ribbonMesh;

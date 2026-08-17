@@ -23,14 +23,15 @@
 
 #include <QTextBrowser>
 #include <QUrl>
+#include <QWidget>
 #include <QtGlobal>
-#if (QT_VERSION < QT_VERSION_CHECK(5,6,0))
+#if defined(USE_WEBENGINE) && (QT_VERSION < QT_VERSION_CHECK(5,6,0))
   #include <QWebView>
-#elif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+#elif defined(USE_WEBENGINE) && (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   #include <QWebEngineView>
 #endif
 
-#if (QT_VERSION < QT_VERSION_CHECK(5,6,0))
+#if defined(USE_WEBENGINE) && (QT_VERSION < QT_VERSION_CHECK(5,6,0))
   class HelpBrowser : public QWebView
   {
   public:
@@ -39,7 +40,7 @@
   //public slots:
   //  void home();
   };
-#elif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+#elif defined(USE_WEBENGINE) && (QT_VERSION < QT_VERSION_CHECK(6,0,0))
   class HelpBrowser : public QWebEngineView
   {
   public:

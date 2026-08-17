@@ -1,0 +1,335 @@
+name: create-binary-packages
+on:
+  workflow_dispatch:
+    branches: [ "main" ]
+    inputs:
+      tag-name:
+        description: 'Name of the tag that will be used for this release'
+        required: true
+      version:
+        description: 'Code version passed to cmake.'
+        required: true
+      target:
+        description: 'Only build this target (empty = all). Examples: debian-12, ubuntu-18, arch'
+        required: false
+        default: ''
+      create-release:
+        description: 'Create a GitHub release and upload packages to it'
+        type: boolean
+        default: true
+
+jobs:
+  release-job:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.step_upload_url.outputs.upload_url }}
+    steps:
+    - name: checkout-code
+      if: ${{ github.event.inputs.create-release == 'true' }}
+      uses: actions/checkout@v6
+    - name: conventional-changelog-action
+      if: ${{ github.event.inputs.create-release == 'true' }}
+      uses: TriPSs/conventional-changelog-action@v6
+      id: changelog
+      with:
+        create-summary: 'true'
+        skip-bump: 'true'
+        skip-commit: 'true'
+        skip-tag: 'false'
+        output-file: 'false'
+        github-token: ${{ secrets.github_token }}
+    - name: create-release
+      if: ${{ github.event.inputs.create-release == 'true' }}
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.tag-name }}
+        release_name: Release ${{ github.event.inputs.tag-name }}
+        body: ${{ steps.changelog.outputs.clean_changelog }}
+        draft: false
+        prerelease: false
+    - name: set-upload_url-output
+      id: step_upload_url
+      run: echo "upload_url=${{ steps.create_release.outputs.upload_url }}" >> "$GITHUB_OUTPUT"
+
+
+# Debian and Ubuntu .deb packages (except Ubuntu 18.04)
+# =====================================================================================================================
+#
+# Both renderer backends are compiled in. RKRendererAvailability probes at
+# runtime and falls back to OpenGL when no Vulkan device enumerates. Qt is
+# whatever the image ships (Qt 5 on Debian 11 and Ubuntu 20.04, Qt 6 elsewhere);
+# CMake's find_package(QT NAMES Qt6 Qt5 ...) picks it up. CMake 3.21 is the
+# floor, so Debian 11 and Ubuntu 20.04 install Kitware's 3.31.6.
+#
+# GitHub Actions does not allow `matrix` in a job-level `if`, so the target
+# filter is applied here by emitting only the matching cells.
+
+  select-deb-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.set.outputs.skip }}
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - id: set
+        env:
+          TARGET: ${{ github.event.inputs.target }}
+        run: |
+          python3 << 'PY'
+          import json, os
+          target = os.environ.get("TARGET", "").strip()
+          archs = [
+              {"runner": "ubuntu-latest", "cmake": "linux-x86_64", "deb": "amd64"},
+              {"runner": "ubuntu-24.04-arm", "cmake": "linux-aarch64", "deb": "arm64"},
+          ]
+          qt5 = "qtbase5-dev qtbase5-dev-tools qttools5-dev qttools5-dev-tools libqt5opengl5-dev"
+          qt6 = "qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools libqt6opengl6-dev"
+          vulkan = "libvulkan-dev glslang-tools libxcb1-dev"
+          distros = [
+              {"name": "debian-11", "image": "debian:11", "preset": "linux-debian-11",
+               "qt_packages": qt5, "backend_packages": vulkan, "kitware_cmake": "true"},
+              {"name": "debian-12", "image": "debian:12", "preset": "linux-debian-12",
+               "qt_packages": qt6, "backend_packages": vulkan, "kitware_cmake": "false"},
+              {"name": "debian-13", "image": "debian:13", "preset": "linux-debian-13",
+               "qt_packages": qt6, "backend_packages": vulkan, "kitware_cmake": "false"},
+              {"name": "ubuntu-26", "image": "ubuntu:26.04", "preset": "linux-ubuntu-26",
+               "qt_packages": qt6, "backend_packages": vulkan, "kitware_cmake": "false"},
+              {"name": "ubuntu-24", "image": "ubuntu:24.04", "preset": "linux-ubuntu-24",
+               "qt_packages": qt6, "backend_packages": vulkan, "kitware_cmake": "false"},
+              {"name": "ubuntu-22", "image": "ubuntu:22.04", "preset": "linux-ubuntu-22",
+               "qt_packages": qt6, "backend_packages": vulkan, "kitware_cmake": "false"},
+              {"name": "ubuntu-20", "image": "ubuntu:20.04", "preset": "linux-ubuntu-20",
+               "qt_packages": qt5, "backend_packages": vulkan, "kitware_cmake": "true"},
+          ]
+          include = [{**arch, **distro} for arch in archs for distro in distros
+                     if not target or target == distro["name"]]
+          skip = "true" if not include else "false"
+          matrix = {"include": include or [{"runner": "ubuntu-latest"}]}
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"skip={skip}\n")
+              fh.write("matrix<<EOF\n")
+              fh.write(json.dumps(matrix, separators=(",", ":")))
+              fh.write("\nEOF\n")
+          PY
+
+  deb-job:
+    runs-on: ${{ matrix.runner }}
+    needs: [release-job, select-deb-matrix]
+    permissions:
+      contents: write
+    if: ${{ needs.select-deb-matrix.outputs.skip != 'true' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select-deb-matrix.outputs.matrix) }}
+    container:
+      image: ${{ matrix.image }}
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v6
+      - name: configure-cmake-iraspa
+        shell: bash
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive TZ=Europe/Amsterdam apt-get -y install tzdata
+          apt-get install -y --no-install-recommends git ca-certificates wget xz-utils file
+          apt-get install -y --no-install-recommends build-essential pkg-config ninja-build dpkg-dev
+          apt-get install -y --no-install-recommends ${{ matrix.qt_packages }}
+          apt-get install -y --no-install-recommends libgl1-mesa-dev
+          apt-get install -y --no-install-recommends libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+          apt-get install -y --no-install-recommends liblzma-dev zlib1g-dev python3-dev
+          apt-get install -y --no-install-recommends ocl-icd-opencl-dev opencl-headers
+          if [ -n "${{ matrix.backend_packages }}" ]; then
+            apt-get install -y --no-install-recommends ${{ matrix.backend_packages }}
+          fi
+          if [ "${{ matrix.kitware_cmake }}" = "true" ]; then
+            wget https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-${{ matrix.cmake }}.sh
+            sh ./cmake-3.31.6-${{ matrix.cmake }}.sh --skip-license --prefix=/usr
+            rm -f cmake-3.31.6-${{ matrix.cmake }}.sh
+          else
+            apt-get install -y --no-install-recommends cmake
+          fi
+          cmake --preset ${{ matrix.preset }} -DIRASPA_VERSION=${{ github.event.inputs.version }}
+      - name: create-iraspa-deb-package
+        shell: bash
+        run: |
+          ninja -C build package
+          shopt -s nullglob
+          debs=(build/iraspa_*.deb build/iraspa/iraspa_*.deb)
+          mv "${debs[0]}" ./iraspa_${{ github.event.inputs.version }}_${{ matrix.deb }}.deb
+      - name: upload-release-asset
+        if: ${{ needs.release-job.outputs.upload_url != '' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release-job.outputs.upload_url }}
+          asset_path: ./iraspa_${{ github.event.inputs.version }}_${{ matrix.deb }}.deb
+          asset_name: iraspa_${{ github.event.inputs.version }}_${{ matrix.deb }}_${{ matrix.name }}.deb
+          asset_content_type: application/octet-stream
+      - name: upload-artifact
+        if: ${{ needs.release-job.outputs.upload_url == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: iraspa_${{ github.event.inputs.version }}_${{ matrix.deb }}_${{ matrix.name }}
+          path: ./iraspa_${{ github.event.inputs.version }}_${{ matrix.deb }}.deb
+
+
+  # The node runtime the javascript actions need does not run against the glibc
+  # in 18.04, so this job keeps the actions on the runner and puts only the
+  # build itself inside the container. glslang was never packaged in bionic, so
+  # the preset is OpenGL-only.
+  #
+  # x86_64 only: bionic builds qtbase with OpenGL ES on arm64 (QT_OPENGL_ES_2,
+  # see Launchpad #1811678), which drops QOpenGLFunctions_3_3_Core and with it
+  # the whole OpenGL renderer. Vulkan cannot stand in for it either, because
+  # bionic has no glslang-tools. Newer releases build arm64 against desktop
+  # OpenGL, so they keep both architectures.
+  ubuntu-18-job:
+    runs-on: ${{ matrix.arch.runner }}
+    needs: release-job
+    permissions:
+      contents: write
+    if: ${{ !github.event.inputs.target || github.event.inputs.target == 'ubuntu-18' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - name: x86_64
+            runner: ubuntu-latest
+            cmake: linux-x86_64
+            deb: amd64
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v6
+      - name: create-iraspa-deb-package
+        shell: bash
+        run: |
+          docker run --rm --volume ${{github.workspace}}:/iraspa --workdir /iraspa ubuntu:18.04 bash -eux -c '
+            if ! apt-get update; then
+              sed -i -e "s|archive.ubuntu.com|old-releases.ubuntu.com|g" \
+                     -e "s|security.ubuntu.com|old-releases.ubuntu.com|g" \
+                     -e "s|ports.ubuntu.com/ubuntu-ports|old-releases.ubuntu.com/ubuntu|g" \
+                     /etc/apt/sources.list
+              apt-get update
+            fi
+            DEBIAN_FRONTEND=noninteractive TZ=Europe/Amsterdam apt-get -y install tzdata
+            apt-get install -y --no-install-recommends git ca-certificates wget xz-utils file
+            apt-get install -y --no-install-recommends build-essential pkg-config ninja-build dpkg-dev
+            apt-get install -y --no-install-recommends qtbase5-dev qtbase5-dev-tools qttools5-dev qttools5-dev-tools
+            apt-get install -y --no-install-recommends libqt5opengl5-dev
+            apt-get install -y --no-install-recommends libgl1-mesa-dev
+            apt-get install -y --no-install-recommends libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+            apt-get install -y --no-install-recommends liblzma-dev zlib1g-dev python3-dev
+            apt-get install -y --no-install-recommends ocl-icd-opencl-dev opencl-headers
+            wget https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-${{ matrix.arch.cmake }}.sh
+            sh ./cmake-3.31.6-${{ matrix.arch.cmake }}.sh --skip-license --prefix=/usr
+            rm -f cmake-3.31.6-${{ matrix.arch.cmake }}.sh
+            cmake --preset linux-ubuntu-18 -DIRASPA_VERSION=${{ github.event.inputs.version }}
+            ninja -C /iraspa/build package
+            shopt -s nullglob
+            debs=(/iraspa/build/iraspa_*.deb /iraspa/build/iraspa/iraspa_*.deb)
+            mv "${debs[0]}" /iraspa/iraspa_${{ github.event.inputs.version }}_${{ matrix.arch.deb }}.deb
+            chown -R "$(stat -c %u:%g /iraspa/COPYING)" /iraspa/build /iraspa/iraspa_${{ github.event.inputs.version }}_${{ matrix.arch.deb }}.deb
+          '
+      - name: upload-release-asset
+        if: ${{ needs.release-job.outputs.upload_url != '' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release-job.outputs.upload_url }}
+          asset_path: ./iraspa_${{ github.event.inputs.version }}_${{ matrix.arch.deb }}.deb
+          asset_name: iraspa_${{ github.event.inputs.version }}_${{ matrix.arch.deb }}_ubuntu-18.deb
+          asset_content_type: application/octet-stream
+      - name: upload-artifact
+        if: ${{ needs.release-job.outputs.upload_url == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: iraspa_${{ github.event.inputs.version }}_${{ matrix.arch.deb }}_ubuntu-18
+          path: ./iraspa_${{ github.event.inputs.version }}_${{ matrix.arch.deb }}.deb
+
+
+# Arch Linux packages
+# =====================================================================================================================
+#
+# Built with makepkg from arch/PKGBUILD. The x86_64 job uses the official
+# archlinux:base-devel image; aarch64 is a separate distribution, so that job
+# uses menci/archlinuxarm:base-devel. makepkg -e skips extracting source= and
+# builds the checkout sitting in $srcdir.
+
+  arch-job:
+    runs-on: ${{ matrix.arch.runner }}
+    needs: release-job
+    permissions:
+      contents: write
+    if: ${{ !github.event.inputs.target || github.event.inputs.target == 'arch' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - name: x86_64
+            runner: ubuntu-latest
+            image: archlinux:base-devel
+            pkg: x86_64
+          - name: arm64
+            runner: ubuntu-24.04-arm
+            image: menci/archlinuxarm:base-devel
+            pkg: aarch64
+    container:
+      image: ${{ matrix.arch.image }}
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v6
+        with:
+          path: src
+      - name: create-package
+        id: create-package
+        shell: bash
+        run: |
+          # Pacman 7 applies a Landlock ruleset and drops to user 'alpm' for
+          # downloads. GitHub Actions containers do not allow Landlock, so the
+          # sync fails with "Operation not permitted" unless the sandbox is off.
+          sed -i 's/^DownloadUser/#DownloadUser/' /etc/pacman.conf
+          grep -q '^DisableSandbox' /etc/pacman.conf || echo 'DisableSandbox' >> /etc/pacman.conf
+          pacman-key --init
+          pacman-key --populate || true
+          pacman --disable-sandbox -Syu --noconfirm
+          pacman --disable-sandbox -S --noconfirm --needed git wget cmake ninja pkgconf
+          pacman --disable-sandbox -S --noconfirm --needed qt6-base qt6-tools
+          pacman --disable-sandbox -S --noconfirm --needed vulkan-headers vulkan-icd-loader glslang libxcb
+          pacman --disable-sandbox -S --noconfirm --needed opencl-headers ocl-icd python ffmpeg xz zlib
+          pacman --disable-sandbox -S --noconfirm --needed debugedit fakeroot shadow sudo
+          rm -f /var/cache/pacman/pkg/*
+          sed -i "s/^pkgver=.*/pkgver=${{ github.event.inputs.version }}/" src/arch/PKGBUILD
+          cp -r src /tmp/src
+          cd /tmp
+          chown -R nobody src
+          cp src/arch/PKGBUILD ./PKGBUILD
+          # makepkg -e skips extract, but still looks for source= unless the file exists.
+          touch /tmp/iraspa.tar.gz
+          sudo -u nobody makepkg -e
+          shopt -s nullglob
+          pkgs=(/tmp/iraspa-*.pkg.tar.*)
+          ext="${pkgs[0]##*.pkg.tar}"
+          asset="iraspa-${{ github.event.inputs.version }}-1-${{ matrix.arch.pkg }}.pkg.tar${ext}"
+          cp "${pkgs[0]}" "${GITHUB_WORKSPACE}/${asset}"
+          echo "asset=${asset}" >> "$GITHUB_OUTPUT"
+      - name: upload-release-asset
+        if: ${{ needs.release-job.outputs.upload_url != '' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release-job.outputs.upload_url }}
+          asset_path: ./${{ steps.create-package.outputs.asset }}
+          asset_name: ${{ steps.create-package.outputs.asset }}
+          asset_content_type: application/octet-stream
+      - name: upload-artifact
+        if: ${{ needs.release-job.outputs.upload_url == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: iraspa-${{ github.event.inputs.version }}-1-${{ matrix.arch.pkg }}
+          path: ./${{ steps.create-package.outputs.asset }}

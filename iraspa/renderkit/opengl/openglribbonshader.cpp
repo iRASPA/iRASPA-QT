@@ -124,6 +124,12 @@ void OpenGLRibbonShader::initializeVertexArrayObject()
     {
       if (RKRenderRibbonSource *ribbonSource = dynamic_cast<RKRenderRibbonSource*>(_renderStructures[i][j].get()))
       {
+        if (!ribbonSource->drawRibbon())
+        {
+          _numberOfVertices[i][j] = 0;
+          _numberOfIndices[i][j] = 0;
+          continue;
+        }
         const std::vector<RKVertex> vertices = ribbonSource->renderRibbonVertices();
         const std::vector<uint32_t> indices = ribbonSource->renderRibbonIndices();
         _numberOfVertices[i][j] = vertices.size();
@@ -171,39 +177,12 @@ void OpenGLRibbonShader::initializeVertexArrayObject()
 
 void OpenGLRibbonShader::drawRibbonRanges(RKRenderRibbonSource *ribbonSource, int /*sceneIndex*/, int /*movieIndex*/)
 {
-  std::vector<RKRibbonChainDrawRange> drawRanges;
-  RibbonDrawVisibilityMode visibilityMode = RibbonDrawVisibilityMode::none;
-
-  if (ribbonSource->ribbonUsesResidueVisibility() && !ribbonSource->ribbonResidueDrawRanges().empty())
+  if (!ribbonSource)
   {
-    drawRanges = ribbonSource->ribbonResidueDrawRanges();
-    visibilityMode = RibbonDrawVisibilityMode::residue;
+    return;
   }
-  else if (ribbonSource->ribbonUsesSegmentVisibility() && !ribbonSource->ribbonSegmentDrawRanges().empty())
+  for (const RKRibbonChainDrawRange &chainRange : ribbonSource->ribbonDrawRangesForEncoding())
   {
-    drawRanges = ribbonSource->ribbonSegmentDrawRanges();
-    visibilityMode = RibbonDrawVisibilityMode::segment;
-  }
-  else
-  {
-    drawRanges = ribbonSource->ribbonChainDrawRanges();
-  }
-
-  for (size_t rangeIndex = 0; rangeIndex < drawRanges.size(); ++rangeIndex)
-  {
-    const RKRibbonChainDrawRange &chainRange = drawRanges[rangeIndex];
-    if (chainRange.indexCount <= 0) { continue; }
-    switch (visibilityMode)
-    {
-    case RibbonDrawVisibilityMode::residue:
-      if (!ribbonSource->isRibbonResidueDrawRangeVisible(static_cast<int>(rangeIndex))) { continue; }
-      break;
-    case RibbonDrawVisibilityMode::segment:
-      if (!ribbonSource->isRibbonSegmentDrawRangeVisible(static_cast<int>(rangeIndex))) { continue; }
-      break;
-    case RibbonDrawVisibilityMode::none:
-      break;
-    }
     drawIndexedRange(chainRange);
   }
 }

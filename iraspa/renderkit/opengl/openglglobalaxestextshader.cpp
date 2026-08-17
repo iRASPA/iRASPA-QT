@@ -21,6 +21,7 @@
 
 #include "openglglobalaxestextshader.h"
 #include <QDebug>
+#include <QString>
 #include <iostream>
 #include "glgeterror.h"
 #include "spheregeometry.h"

@@ -12,6 +12,8 @@
 #include <stdexcept>
 
 #include <QDebug>
+#include <QImage>
+#include <QSurfaceFormat>
 
 OpenGLOffscreenRenderer::OpenGLOffscreenRenderer(int width, int height)
     : _selectionShader(_atomShader, _bondShader, _objectShader),

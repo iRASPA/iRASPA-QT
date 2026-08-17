@@ -61,6 +61,17 @@ target_wrapper.*
 # QtCreator CMake
 CMakeLists.txt.user*
 
+# CMake
+/build/
+/build-debug/
+/iraspa/build/
+*.deb
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+cmake_install.cmake
+CTestTestfile.cmake
+
 # Visual studio user-specific files
 *.rsuser
 *.suo

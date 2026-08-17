@@ -22,6 +22,8 @@
 #include "ribbonaotexturepostprocess.h"
 #include <mathkit.h>
 #include <QOpenGLContext>
+#include <QOpenGLFunctions_3_3_Core>
+#include <QString>
 #include <cstddef>
 #include <algorithm>
 #include <cmath>
@@ -204,7 +206,16 @@ void OpenGLRibbonAmbientOcclusionShader::adjustRibbonAmbientOcclusionTextureSize
         }
 
         RKRenderAtomSource *atomSource = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get());
-        const int numberOfAtoms = atomSource ? static_cast<int>(atomSource->renderAtoms().size()) : static_cast<int>(ribbonSource->ribbonResidueDrawRanges().size());
+        int numberOfAtoms = 0;
+        if (atomSource && atomSource->drawAtoms() && i < _atomShader._atomShader._numberOfDrawnAtoms.size() &&
+            j < _atomShader._atomShader._numberOfDrawnAtoms[i].size())
+        {
+          numberOfAtoms = static_cast<int>(_atomShader._atomShader._numberOfDrawnAtoms[i][j]);
+        }
+        else if (ribbonSource)
+        {
+          numberOfAtoms = static_cast<int>(ribbonSource->ribbonResidueDrawRanges().size());
+        }
         const auto atlasDimensions = RKRibbonMesh::ambientOcclusionAtlasDimensions(
             ribbonSource->ribbonMaxSplineSampleCount(),
             ribbonSource->ribbonNumberOfChains(),
@@ -298,43 +309,141 @@ namespace
     return maxValue > 1.0e-5f;
   }
 
-  void uploadWhiteRibbonTexture(GLuint texture, int width, int height)
+  void uploadWhiteRibbonTexture(QOpenGLFunctions_3_3_Core &gl, GLuint texture, int width, int height)
   {
     std::vector<uint16_t> data(static_cast<size_t>(width) * static_cast<size_t>(height), RKHalfFloat::halfBitsFromFloat(1.0f));
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, width, height, 0, GL_RED, GL_HALF_FLOAT, data.data());
-    glBindTexture(GL_TEXTURE_2D, 0);
+    gl.glBindTexture(GL_TEXTURE_2D, texture);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, width, height, 0, GL_RED, GL_HALF_FLOAT, data.data());
+    gl.glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  void uploadRibbonHalfFloatTexture(GLuint texture, int width, int height, const std::vector<uint16_t> &data)
+  void uploadRibbonHalfFloatTexture(QOpenGLFunctions_3_3_Core &gl, GLuint texture, int width, int height, const std::vector<uint16_t> &data)
   {
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, width, height, 0, GL_RED, GL_HALF_FLOAT, data.data());
-    glBindTexture(GL_TEXTURE_2D, 0);
+    gl.glBindTexture(GL_TEXTURE_2D, texture);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, width, height, 0, GL_RED, GL_HALF_FLOAT, data.data());
+    gl.glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  void restoreOpenGLStateAfterRibbonAOBake()
+  GLuint compileRibbonBlurShader(QOpenGLFunctions_3_3_Core &gl, GLenum type, const char *source)
   {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 1, 0);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 2, 0);
-    glUseProgram(0);
-    glBindVertexArray(0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    GLuint shader = gl.glCreateShader(type);
+    gl.glShaderSource(shader, 1, &source, nullptr);
+    gl.glCompileShader(shader);
+    return shader;
+  }
+
+  void gpuBlurRibbonTexture(QOpenGLFunctions_3_3_Core &gl, GLuint texture, int width, int height)
+  {
+    static GLuint program = 0;
+    static GLuint vao = 0;
+    static GLint sourceLocation = -1;
+    static GLint inverseLocation = -1;
+    static GLint axisLocation = -1;
+    if (program == 0)
+    {
+      const char *vertexSource = R"(#version 330
+        const vec2 positions[4] = vec2[](vec2(-1.0, -1.0), vec2(1.0, -1.0), vec2(-1.0, 1.0), vec2(1.0, 1.0));
+        out vec2 texCoord;
+        void main() {
+          gl_Position = vec4(positions[gl_VertexID], 0.0, 1.0);
+          texCoord = positions[gl_VertexID] * 0.5 + 0.5;
+        })";
+      const char *fragmentSource = R"(#version 330
+        uniform sampler2D sourceTexture;
+        uniform vec2 inverseTextureSize;
+        uniform vec2 axis;
+        in vec2 texCoord;
+        out float vFragColor;
+        void main() {
+          const float weights[8] = float[](0.159576912161, 0.147308056121, 0.115876621105, 0.0776744219933,
+                                           0.0443683338718, 0.0215963866053, 0.00895781211794, 0.0044299121055113265);
+          const float horizontalSteps[7] = float[](8.0, 16.0, 24.0, 32.0, 40.0, 48.0, 56.0);
+          const float verticalSteps[7] = float[](1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0);
+          float sum = texture(sourceTexture, texCoord).r * weights[0];
+          vec2 texel = inverseTextureSize * axis;
+          for (int i = 0; i < 7; ++i) {
+            float stepSize = axis.x > 0.5 ? horizontalSteps[i] : verticalSteps[i];
+            vec2 offset = texel * stepSize;
+            sum += texture(sourceTexture, texCoord - offset).r * weights[i + 1];
+            sum += texture(sourceTexture, texCoord + offset).r * weights[i + 1];
+          }
+          vFragColor = sum;
+        })";
+      GLuint vertexShader = compileRibbonBlurShader(gl, GL_VERTEX_SHADER, vertexSource);
+      GLuint fragmentShader = compileRibbonBlurShader(gl, GL_FRAGMENT_SHADER, fragmentSource);
+      program = gl.glCreateProgram();
+      gl.glAttachShader(program, vertexShader);
+      gl.glAttachShader(program, fragmentShader);
+      gl.glBindFragDataLocation(program, 0, "vFragColor");
+      gl.glLinkProgram(program);
+      gl.glDeleteShader(vertexShader);
+      gl.glDeleteShader(fragmentShader);
+      sourceLocation = gl.glGetUniformLocation(program, "sourceTexture");
+      inverseLocation = gl.glGetUniformLocation(program, "inverseTextureSize");
+      axisLocation = gl.glGetUniformLocation(program, "axis");
+      gl.glGenVertexArrays(1, &vao);
+    }
+
+    GLuint scratch = 0;
+    gl.glGenTextures(1, &scratch);
+    gl.glBindTexture(GL_TEXTURE_2D, scratch);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, width, height, 0, GL_RED, GL_HALF_FLOAT, nullptr);
+
+    GLuint framebuffer = 0;
+    gl.glGenFramebuffers(1, &framebuffer);
+    gl.glBindVertexArray(vao);
+    gl.glUseProgram(program);
+    gl.glUniform1i(sourceLocation, 0);
+    gl.glUniform2f(inverseLocation, 1.0f / static_cast<float>(width), 1.0f / static_cast<float>(height));
+    gl.glDisable(GL_DEPTH_TEST);
+    gl.glDisable(GL_BLEND);
+    gl.glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    gl.glViewport(0, 0, width, height);
+
+    auto blurPass = [&](GLuint source, GLuint destination, float axisX, float axisY) {
+      gl.glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+      gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, destination, 0);
+      gl.glActiveTexture(GL_TEXTURE0);
+      gl.glBindTexture(GL_TEXTURE_2D, source);
+      gl.glUniform2f(axisLocation, axisX, axisY);
+      gl.glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    };
+    blurPass(texture, scratch, 1.0f, 0.0f);
+    blurPass(scratch, texture, 0.0f, 1.0f);
+
+    gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    gl.glBindVertexArray(0);
+    gl.glUseProgram(0);
+    gl.glDeleteFramebuffers(1, &framebuffer);
+    gl.glDeleteTextures(1, &scratch);
+  }
+
+  void restoreOpenGLStateAfterRibbonAOBake(QOpenGLFunctions_3_3_Core &gl)
+  {
+    gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    gl.glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    gl.glBindBufferBase(GL_UNIFORM_BUFFER, 1, 0);
+    gl.glBindBufferBase(GL_UNIFORM_BUFFER, 2, 0);
+    gl.glUseProgram(0);
+    gl.glBindVertexArray(0);
+    gl.glActiveTexture(GL_TEXTURE0);
+    gl.glBindTexture(GL_TEXTURE_2D, 0);
+    gl.glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    gl.glDisable(GL_BLEND);
+    gl.glEnable(GL_DEPTH_TEST);
+    gl.glEnable(GL_CULL_FACE);
   }
 }
 
@@ -386,14 +495,14 @@ void OpenGLRibbonAmbientOcclusionShader::updateRibbonAmbientOcclusionTextures(st
         glDeleteTextures(1, &ribbonTextures[i][j]);
       }
       glGenTextures(1, &ribbonTextures[i][j]);
-      uploadWhiteRibbonTexture(ribbonTextures[i][j], width, height);
+      uploadWhiteRibbonTexture(*this, ribbonTextures[i][j], width, height);
 
       if (ribbonRawTextures[i][j] != 0)
       {
         glDeleteTextures(1, &ribbonRawTextures[i][j]);
       }
       glGenTextures(1, &ribbonRawTextures[i][j]);
-      uploadWhiteRibbonTexture(ribbonRawTextures[i][j], width, height);
+      uploadWhiteRibbonTexture(*this, ribbonRawTextures[i][j], width, height);
 
       if (!ribbonSource->ribbonAmbientOcclusion() || !_renderStructures[i][j]->isVisible() || ribbonSource->ribbonNumberOfChains() <= 0)
       {
@@ -404,23 +513,24 @@ void OpenGLRibbonAmbientOcclusionShader::updateRibbonAmbientOcclusionTextures(st
       if (_cache.contains(cacheKey))
       {
         RibbonAOCachedTextures *cachedTextures = _cache.object(cacheKey);
-        uploadRibbonHalfFloatTexture(ribbonTextures[i][j], width, height, cachedTextures->processed);
-        uploadRibbonHalfFloatTexture(ribbonRawTextures[i][j], width, height, cachedTextures->raw);
+        uploadRibbonHalfFloatTexture(*this, ribbonTextures[i][j], width, height, cachedTextures->processed);
+        gpuBlurRibbonTexture(*this, ribbonTextures[i][j], width, height);
+        uploadRibbonHalfFloatTexture(*this, ribbonRawTextures[i][j], width, height, cachedTextures->raw);
         continue;
       }
 
       if (!dataSource || _ribbonAmbientOcclusionProgram == 0 || _ribbonShadowMapProgram == 0)
       {
-        uploadWhiteRibbonTexture(ribbonTextures[i][j], width, height);
-        uploadWhiteRibbonTexture(ribbonRawTextures[i][j], width, height);
+        uploadWhiteRibbonTexture(*this, ribbonTextures[i][j], width, height);
+        uploadWhiteRibbonTexture(*this, ribbonRawTextures[i][j], width, height);
         continue;
       }
 
       RKRenderObject *renderStructure = dynamic_cast<RKRenderObject*>(_renderStructures[i][j].get());
       if (!renderStructure)
       {
-        uploadWhiteRibbonTexture(ribbonTextures[i][j], width, height);
-        uploadWhiteRibbonTexture(ribbonRawTextures[i][j], width, height);
+        uploadWhiteRibbonTexture(*this, ribbonTextures[i][j], width, height);
+        uploadWhiteRibbonTexture(*this, ribbonRawTextures[i][j], width, height);
         continue;
       }
 
@@ -661,7 +771,7 @@ void OpenGLRibbonAmbientOcclusionShader::updateRibbonAmbientOcclusionTextures(st
         glReadPixels(0, 0, width, height, GL_RED, GL_HALF_FLOAT, rawTextureData.data());
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
-        uploadRibbonHalfFloatTexture(ribbonRawTextures[i][j], width, height, rawTextureData);
+        uploadRibbonHalfFloatTexture(*this, ribbonRawTextures[i][j], width, height, rawTextureData);
 
         std::vector<float> channelData(static_cast<size_t>(width * height));
         for (size_t index = 0; index < channelData.size(); ++index)
@@ -669,7 +779,6 @@ void OpenGLRibbonAmbientOcclusionShader::updateRibbonAmbientOcclusionTextures(st
           channelData[index] = RKHalfFloat::floatFromHalfBits(rawTextureData[index]);
         }
         RibbonAOTexturePostProcess::dilateAndSmooth(channelData, width, height);
-        RibbonAOTexturePostProcess::gaussianBlur(channelData, width, height);
         std::vector<uint16_t> processedTextureData(static_cast<size_t>(width * height));
         for (size_t index = 0; index < processedTextureData.size(); ++index)
         {
@@ -678,11 +787,12 @@ void OpenGLRibbonAmbientOcclusionShader::updateRibbonAmbientOcclusionTextures(st
 
         if (ribbonAmbientOcclusionTextureHasContent(processedTextureData))
         {
-          uploadRibbonHalfFloatTexture(ribbonTextures[i][j], width, height, processedTextureData);
+          uploadRibbonHalfFloatTexture(*this, ribbonTextures[i][j], width, height, processedTextureData);
+          gpuBlurRibbonTexture(*this, ribbonTextures[i][j], width, height);
         }
         else
         {
-          uploadWhiteRibbonTexture(ribbonTextures[i][j], width, height);
+          uploadWhiteRibbonTexture(*this, ribbonTextures[i][j], width, height);
         }
 
         auto *cachedTextures = new RibbonAOCachedTextures();
@@ -692,8 +802,8 @@ void OpenGLRibbonAmbientOcclusionShader::updateRibbonAmbientOcclusionTextures(st
       }
       else
       {
-        uploadWhiteRibbonTexture(ribbonTextures[i][j], width, height);
-        uploadWhiteRibbonTexture(ribbonRawTextures[i][j], width, height);
+        uploadWhiteRibbonTexture(*this, ribbonTextures[i][j], width, height);
+        uploadWhiteRibbonTexture(*this, ribbonRawTextures[i][j], width, height);
       }
 
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -709,7 +819,7 @@ void OpenGLRibbonAmbientOcclusionShader::updateRibbonAmbientOcclusionTextures(st
     }
   }
 
-  restoreOpenGLStateAfterRibbonAOBake();
+  restoreOpenGLStateAfterRibbonAOBake(*this);
 }
 
 const std::string OpenGLRibbonAmbientOcclusionShader::_vertexRibbonAmbientOcclusionShaderSource =

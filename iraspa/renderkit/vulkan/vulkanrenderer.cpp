@@ -34,6 +34,10 @@
 #endif
 #endif
 
+// Included after vulkan.h so that the Vulkan prototypes this file calls stay
+// declared; QVulkanInstance defines VK_NO_PROTOTYPES.
+#include <QVulkanInstance>
+
 #ifdef Q_OS_MACOS
 extern "C" void *makeViewMetalCompatible(void *handle);
 #endif
@@ -100,6 +104,71 @@ VulkanRenderer::~VulkanRenderer()
     CFRelease(_metalLayer);
     _metalLayer = nullptr;
   }
+#endif
+}
+
+#if QT_CONFIG(vulkan)
+static QVulkanInstance *validInstanceOf(QWindow *window)
+{
+  QVulkanInstance *instance = window ? window->vulkanInstance() : nullptr;
+  return (instance && instance->isValid()) ? instance : nullptr;
+}
+#endif
+
+bool VulkanRenderer::usesQtManagedSurface() const
+{
+#if QT_CONFIG(vulkan)
+  return !_offscreen && validInstanceOf(_window) != nullptr;
+#else
+  return false;
+#endif
+}
+
+VkInstance VulkanRenderer::qtVkInstance() const
+{
+#if QT_CONFIG(vulkan)
+  if (QVulkanInstance *instance = usesQtManagedSurface() ? validInstanceOf(_window) : nullptr)
+  {
+    return instance->vkInstance();
+  }
+#endif
+  return VK_NULL_HANDLE;
+}
+
+VkSurfaceKHR VulkanRenderer::qtVkSurface() const
+{
+#if QT_CONFIG(vulkan)
+  if (usesQtManagedSurface())
+  {
+    return QVulkanInstance::surfaceForWindow(_window);
+  }
+#endif
+  return VK_NULL_HANDLE;
+}
+
+void VulkanRenderer::qtPresentNotify(bool aboutToBeQueued) const
+{
+#if QT_CONFIG(vulkan)
+  QVulkanInstance *instance = usesQtManagedSurface() ? validInstanceOf(_window) : nullptr;
+  if (!instance)
+  {
+    return;
+  }
+  if (aboutToBeQueued)
+  {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    // On Wayland this sends the wl_surface.frame request that keeps the driver
+    // from blocking while the window is minimized. Qt 5.15 added it; on older Qt
+    // the frame is simply queued without it.
+    instance->presentAboutToBeQueued(_window);
+#endif
+  }
+  else
+  {
+    instance->presentQueued(_window);
+  }
+#else
+  Q_UNUSED(aboutToBeQueued)
 #endif
 }
 
@@ -204,9 +273,7 @@ bool VulkanRenderer::beginFrame()
     return false;
   }
 
-#ifdef __APPLE__
-  vkDeviceWaitIdle(_device);
-#endif
+  vkWaitForFences(_device, 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
   if (_offscreen)
   {
@@ -214,8 +281,8 @@ bool VulkanRenderer::beginFrame()
   }
   else
   {
-    VkResult result = vkAcquireNextImageKHR(_device, _swapChain, std::numeric_limits<uint64_t>::max(), _imageAvailableSemaphore, VK_NULL_HANDLE,
-                                            &_currentImageIndex);
+    VkResult result = vkAcquireNextImageKHR(_device, _swapChain, std::numeric_limits<uint64_t>::max(),
+                                            _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &_currentImageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
       recreateSwapChain();
@@ -225,10 +292,15 @@ bool VulkanRenderer::beginFrame()
     {
       throw std::runtime_error("failed to acquire swap chain image");
     }
+
+    if (_imagesInFlight[_currentImageIndex] != VK_NULL_HANDLE)
+    {
+      vkWaitForFences(_device, 1, &_imagesInFlight[_currentImageIndex], VK_TRUE, UINT64_MAX);
+    }
+    _imagesInFlight[_currentImageIndex] = _inFlightFences[_currentFrame];
   }
 
-  vkWaitForFences(_device, 1, &_waitFences[_currentImageIndex], VK_TRUE, UINT64_MAX);
-  vkResetFences(_device, 1, &_waitFences[_currentImageIndex]);
+  vkResetFences(_device, 1, &_inFlightFences[_currentFrame]);
   vkResetCommandBuffer(_commandBuffers[_currentImageIndex], 0);
 
   VkCommandBufferBeginInfo beginInfo{};
@@ -338,7 +410,7 @@ void VulkanRenderer::endFrame()
 
   VkSubmitInfo submitInfo{};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  VkSemaphore waitSemaphores[] = {_imageAvailableSemaphore};
+  VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currentFrame]};
   VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
   if (!_offscreen)
   {
@@ -348,21 +420,21 @@ void VulkanRenderer::endFrame()
   }
   submitInfo.commandBufferCount = 1;
   submitInfo.pCommandBuffers = &_commandBuffers[_currentImageIndex];
-  VkSemaphore signalSemaphores[] = {_renderFinishedSemaphore};
+  VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]};
   if (!_offscreen)
   {
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
   }
 
-  if (vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _waitFences[_currentImageIndex]) != VK_SUCCESS)
+  if (vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFences[_currentFrame]) != VK_SUCCESS)
   {
     throw std::runtime_error("failed to submit draw command buffer");
   }
 
   if (_offscreen)
   {
-    vkWaitForFences(_device, 1, &_waitFences[_currentImageIndex], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(_device, 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
     const uint32_t width = _swapChainExtent.width;
     const uint32_t height = _swapChainExtent.height;
     std::vector<uint8_t> pixels(static_cast<size_t>(width) * height * 4);
@@ -381,7 +453,12 @@ void VulkanRenderer::endFrame()
     presentInfo.pSwapchains = &_swapChain;
     presentInfo.pImageIndices = &_currentImageIndex;
 
+    qtPresentNotify(true);
     VkResult result = vkQueuePresentKHR(_presentQueue, &presentInfo);
+    if (result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR)
+    {
+      qtPresentNotify(false);
+    }
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
       recreateSwapChain();
@@ -393,13 +470,15 @@ void VulkanRenderer::endFrame()
   }
 
   _frameStarted = false;
+  _currentFrame = (_currentFrame + 1) % kMaxFramesInFlight;
 }
 
 void VulkanRenderer::bindSceneDescriptors(VkCommandBuffer commandBuffer, VkPipelineLayout layout, uint32_t structureIndex) const
 {
   const uint32_t offsets[] = {static_cast<uint32_t>(structureIndex * _structureUniformStride),
                               static_cast<uint32_t>(structureIndex * _isosurfaceUniformStride)};
-  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 0, 1, &_sceneDescriptorSet, 2, offsets);
+  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 0, 1, &_sceneDescriptorSets[_currentFrame], 2,
+                          offsets);
 }
 
 void VulkanRenderer::bindSamplerDescriptorSet(VkCommandBuffer commandBuffer, VkPipelineLayout layout, VkDescriptorSet samplerSet) const
@@ -415,21 +494,43 @@ void VulkanRenderer::writeHostVisible(VkDeviceMemory memory, const void *data, V
   vkUnmapMemory(_device, memory);
 }
 
+void VulkanRenderer::prepareUniformWrite()
+{
+  if (_frameStarted || !_device || _inFlightFences[_currentFrame] == VK_NULL_HANDLE)
+  {
+    return;
+  }
+  vkWaitForFences(_device, 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
+}
+
 void VulkanRenderer::updateTransformUniforms(const RKTransformationUniforms &uniforms)
 {
-  writeHostVisible(_frameUniformBuffer.memory, &uniforms, sizeof(uniforms));
+  prepareUniformWrite();
+  writeHostVisible(_frameUniformBuffers[_currentFrame].memory, &uniforms, sizeof(uniforms));
 }
 
 void VulkanRenderer::updateStructureUniforms(const std::vector<RKStructureUniforms> &uniforms)
 {
   const size_t count = std::max<size_t>(uniforms.size(), 1);
   const VkDeviceSize needed = count * _structureUniformStride;
-  if (_structureUniformBuffer.size < needed)
+  const bool grow = _structureUniformBuffers[0].size < needed;
+  if (grow)
   {
-    destroyBuffer(_structureUniformBuffer);
-    createBuffer(needed, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                 _structureUniformBuffer);
-    createSceneDescriptorSet();
+    waitIdle();
+    const auto hostVisible = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    for (auto &buffer : _structureUniformBuffers)
+    {
+      destroyBuffer(buffer);
+      createBuffer(needed, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, buffer);
+    }
+    if (_descriptorPool)
+    {
+      createSceneDescriptorSet();
+    }
+  }
+  else
+  {
+    prepareUniformWrite();
   }
 
   std::vector<uint8_t> padded(static_cast<size_t>(needed), 0);
@@ -437,19 +538,36 @@ void VulkanRenderer::updateStructureUniforms(const std::vector<RKStructureUnifor
   {
     memcpy(padded.data() + i * _structureUniformStride, &uniforms[i], sizeof(RKStructureUniforms));
   }
-  writeHostVisible(_structureUniformBuffer.memory, padded.data(), needed);
+  const uint32_t first = grow ? 0 : _currentFrame;
+  const uint32_t last = grow ? kMaxFramesInFlight : _currentFrame + 1;
+  for (uint32_t slot = first; slot < last; ++slot)
+  {
+    writeHostVisible(_structureUniformBuffers[slot].memory, padded.data(), needed);
+  }
 }
 
 void VulkanRenderer::updateIsosurfaceUniforms(const std::vector<RKIsosurfaceUniforms> &uniforms)
 {
   const size_t count = std::max<size_t>(uniforms.size(), 1);
   const VkDeviceSize needed = count * _isosurfaceUniformStride;
-  if (_isosurfaceUniformBuffer.size < needed)
+  const bool grow = _isosurfaceUniformBuffers[0].size < needed;
+  if (grow)
   {
-    destroyBuffer(_isosurfaceUniformBuffer);
-    createBuffer(needed, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                 _isosurfaceUniformBuffer);
-    createSceneDescriptorSet();
+    waitIdle();
+    const auto hostVisible = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    for (auto &buffer : _isosurfaceUniformBuffers)
+    {
+      destroyBuffer(buffer);
+      createBuffer(needed, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, buffer);
+    }
+    if (_descriptorPool)
+    {
+      createSceneDescriptorSet();
+    }
+  }
+  else
+  {
+    prepareUniformWrite();
   }
 
   std::vector<uint8_t> padded(static_cast<size_t>(needed), 0);
@@ -457,22 +575,31 @@ void VulkanRenderer::updateIsosurfaceUniforms(const std::vector<RKIsosurfaceUnif
   {
     memcpy(padded.data() + i * _isosurfaceUniformStride, &uniforms[i], sizeof(RKIsosurfaceUniforms));
   }
-  writeHostVisible(_isosurfaceUniformBuffer.memory, padded.data(), needed);
+  const uint32_t first = grow ? 0 : _currentFrame;
+  const uint32_t last = grow ? kMaxFramesInFlight : _currentFrame + 1;
+  for (uint32_t slot = first; slot < last; ++slot)
+  {
+    writeHostVisible(_isosurfaceUniformBuffers[slot].memory, padded.data(), needed);
+  }
 }
 
 void VulkanRenderer::updateLightUniforms(const RKLightsUniforms &uniforms)
 {
-  writeHostVisible(_lightsUniformBuffer.memory, uniforms.lights.data(), uniforms.lights.size() * sizeof(RKLightUniform));
+  prepareUniformWrite();
+  writeHostVisible(_lightsUniformBuffers[_currentFrame].memory, uniforms.lights.data(),
+                   uniforms.lights.size() * sizeof(RKLightUniform));
 }
 
 void VulkanRenderer::updateGlobalAxesUniforms(const RKGlobalAxesUniforms &uniforms)
 {
-  writeHostVisible(_axesUniformBuffer.memory, &uniforms, sizeof(uniforms));
+  prepareUniformWrite();
+  writeHostVisible(_axesUniformBuffers[_currentFrame].memory, &uniforms, sizeof(uniforms));
 }
 
 void VulkanRenderer::updateRibbonAODebugUniforms(const RibbonAODebugUniforms &uniforms)
 {
-  writeHostVisible(_ribbonAODebugUniformBuffer.memory, &uniforms, sizeof(uniforms));
+  prepareUniformWrite();
+  writeHostVisible(_ribbonAODebugUniformBuffers[_currentFrame].memory, &uniforms, sizeof(uniforms));
 }
 
 void VulkanRenderer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VulkanBuffer &out)
@@ -792,7 +919,7 @@ void VulkanRenderer::setupDebugCallback()
   createInfo.pfnCallback = debugCallback;
   if (CreateDebugReportCallbackEXT(_instance, &createInfo, nullptr, &_callback) != VK_SUCCESS)
   {
-    throw std::runtime_error("failed to set up debug callback");
+    qWarning("VK_EXT_debug_report is not enabled on this instance, Vulkan validation messages are unavailable");
   }
 }
 
@@ -881,6 +1008,20 @@ void VulkanRenderer::createLogicalDevice()
 
 void VulkanRenderer::createSurface()
 {
+  if (usesQtManagedSurface())
+  {
+    _surface = qtVkSurface();
+    if (!_surface)
+    {
+      throw std::runtime_error("Qt failed to create a Vulkan surface for the " +
+                               QGuiApplication::platformName().toStdString() + " platform");
+    }
+    // The surface belongs to the QWindow, which destroys it along with the
+    // platform window.
+    _ownsSurface = false;
+    return;
+  }
+
 #ifdef VK_USE_PLATFORM_METAL_EXT
   VkMetalSurfaceCreateInfoEXT createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
@@ -962,24 +1103,7 @@ void VulkanRenderer::recreateOffscreenTargets()
   createPickFramebuffer();
   updatePostProcessDescriptors();
   createCommandBuffers();
-  if (_waitFences.size() != _commandBuffers.size())
-  {
-    for (auto fence : _waitFences)
-    {
-      vkDestroyFence(_device, fence, nullptr);
-    }
-    VkFenceCreateInfo fenceCreateInfo{};
-    fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-    _waitFences.resize(_commandBuffers.size());
-    for (auto &fence : _waitFences)
-    {
-      if (vkCreateFence(_device, &fenceCreateInfo, nullptr, &fence) != VK_SUCCESS)
-      {
-        throw std::runtime_error("failed to create fences");
-      }
-    }
-  }
+  _imagesInFlight.assign(_swapChainImages.size(), VK_NULL_HANDLE);
 }
 
 void VulkanRenderer::createSwapChain()
@@ -2454,8 +2578,8 @@ void VulkanRenderer::recordBlurAndComposite(VkCommandBuffer commandBuffer)
   setDefaultViewport(commandBuffer);
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _compositePipeline);
   const uint32_t dynamicOffsets[] = {0, 0};
-  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _compositePipelineLayout, 0, 1, &_sceneDescriptorSet, 2,
-                          dynamicOffsets);
+  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _compositePipelineLayout, 0, 1,
+                          &_sceneDescriptorSets[_currentFrame], 2, dynamicOffsets);
   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _compositePipelineLayout, 1, 1, &_compositeDescriptorSet,
                           0, nullptr);
   VkDeviceSize offset = 0;
@@ -2534,46 +2658,89 @@ void VulkanRenderer::createSyncObjects()
 {
   VkSemaphoreCreateInfo semaphoreInfo{};
   semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-  if (vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore) != VK_SUCCESS ||
-      vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore) != VK_SUCCESS)
-  {
-    throw std::runtime_error("failed to create semaphores");
-  }
-
   VkFenceCreateInfo fenceCreateInfo{};
   fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
   fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-  _waitFences.resize(_commandBuffers.size());
-  for (auto &fence : _waitFences)
+
+  for (uint32_t i = 0; i < kMaxFramesInFlight; ++i)
   {
-    if (vkCreateFence(_device, &fenceCreateInfo, nullptr, &fence) != VK_SUCCESS)
+    if (vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS ||
+        vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+        vkCreateFence(_device, &fenceCreateInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
     {
-      throw std::runtime_error("failed to create fences");
+      throw std::runtime_error("failed to create frame sync objects");
     }
   }
+  _imagesInFlight.assign(_swapChainImages.size(), VK_NULL_HANDLE);
+  _currentFrame = 0;
+}
+
+void VulkanRenderer::destroySyncObjects()
+{
+  for (uint32_t i = 0; i < kMaxFramesInFlight; ++i)
+  {
+    if (_inFlightFences[i])
+    {
+      vkDestroyFence(_device, _inFlightFences[i], nullptr);
+      _inFlightFences[i] = VK_NULL_HANDLE;
+    }
+    if (_renderFinishedSemaphores[i])
+    {
+      vkDestroySemaphore(_device, _renderFinishedSemaphores[i], nullptr);
+      _renderFinishedSemaphores[i] = VK_NULL_HANDLE;
+    }
+    if (_imageAvailableSemaphores[i])
+    {
+      vkDestroySemaphore(_device, _imageAvailableSemaphores[i], nullptr);
+      _imageAvailableSemaphores[i] = VK_NULL_HANDLE;
+    }
+  }
+  _imagesInFlight.clear();
 }
 
 void VulkanRenderer::createUniformBuffers()
 {
   const auto hostVisible = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-  createBuffer(sizeof(RKTransformationUniforms), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _frameUniformBuffer);
-  createBuffer(_structureUniformStride, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _structureUniformBuffer);
-  createBuffer(_isosurfaceUniformStride, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _isosurfaceUniformBuffer);
-  createBuffer(sizeof(RKLightUniform) * 4, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _lightsUniformBuffer);
-  createBuffer(sizeof(RKGlobalAxesUniforms), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _axesUniformBuffer);
-  createBuffer(256, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _ribbonAODebugUniformBuffer);
+  for (uint32_t i = 0; i < kMaxFramesInFlight; ++i)
+  {
+    createBuffer(sizeof(RKTransformationUniforms), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _frameUniformBuffers[i]);
+    createBuffer(_structureUniformStride, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _structureUniformBuffers[i]);
+    createBuffer(_isosurfaceUniformStride, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _isosurfaceUniformBuffers[i]);
+    createBuffer(sizeof(RKLightUniform) * 4, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _lightsUniformBuffers[i]);
+    createBuffer(sizeof(RKGlobalAxesUniforms), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _axesUniformBuffers[i]);
+    createBuffer(256, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, hostVisible, _ribbonAODebugUniformBuffers[i]);
+  }
 
   RKTransformationUniforms frame{};
   RKStructureUniforms structure{};
   RKIsosurfaceUniforms isosurface{};
   RKLightsUniforms lights{};
   RKGlobalAxesUniforms axes(nullptr);
-  updateTransformUniforms(frame);
-  updateStructureUniforms({structure});
-  updateIsosurfaceUniforms({isosurface});
-  updateLightUniforms(lights);
-  updateGlobalAxesUniforms(axes);
-  updateRibbonAODebugUniforms(RibbonAODebugUniforms{});
+  const uint32_t savedFrame = _currentFrame;
+  for (uint32_t i = 0; i < kMaxFramesInFlight; ++i)
+  {
+    _currentFrame = i;
+    updateTransformUniforms(frame);
+    updateStructureUniforms({structure});
+    updateIsosurfaceUniforms({isosurface});
+    updateLightUniforms(lights);
+    updateGlobalAxesUniforms(axes);
+    updateRibbonAODebugUniforms(RibbonAODebugUniforms{});
+  }
+  _currentFrame = savedFrame;
+}
+
+void VulkanRenderer::destroyUniformBuffers()
+{
+  for (uint32_t i = 0; i < kMaxFramesInFlight; ++i)
+  {
+    destroyBuffer(_frameUniformBuffers[i]);
+    destroyBuffer(_structureUniformBuffers[i]);
+    destroyBuffer(_isosurfaceUniformBuffers[i]);
+    destroyBuffer(_lightsUniformBuffers[i]);
+    destroyBuffer(_axesUniformBuffers[i]);
+    destroyBuffer(_ribbonAODebugUniformBuffers[i]);
+  }
 }
 
 void VulkanRenderer::createDescriptorPool()
@@ -2600,33 +2767,40 @@ void VulkanRenderer::createDescriptorPool()
 
 void VulkanRenderer::createSceneDescriptorSet()
 {
-  if (_sceneDescriptorSet)
+  if (_sceneDescriptorSets[0] == VK_NULL_HANDLE)
   {
-    vkFreeDescriptorSets(_device, _descriptorPool, 1, &_sceneDescriptorSet);
-    _sceneDescriptorSet = VK_NULL_HANDLE;
+    std::array<VkDescriptorSetLayout, kMaxFramesInFlight> layouts{};
+    layouts.fill(_sceneDescriptorSetLayout);
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = _descriptorPool;
+    allocInfo.descriptorSetCount = kMaxFramesInFlight;
+    allocInfo.pSetLayouts = layouts.data();
+    if (vkAllocateDescriptorSets(_device, &allocInfo, _sceneDescriptorSets.data()) != VK_SUCCESS)
+    {
+      throw std::runtime_error("failed to allocate scene descriptor set");
+    }
   }
 
-  VkDescriptorSetAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = _descriptorPool;
-  allocInfo.descriptorSetCount = 1;
-  allocInfo.pSetLayouts = &_sceneDescriptorSetLayout;
-  if (vkAllocateDescriptorSets(_device, &allocInfo, &_sceneDescriptorSet) != VK_SUCCESS)
+  for (uint32_t i = 0; i < kMaxFramesInFlight; ++i)
   {
-    throw std::runtime_error("failed to allocate scene descriptor set");
+    writeSceneDescriptorSet(i);
   }
+}
 
-  VkDescriptorBufferInfo frameInfo{_frameUniformBuffer.buffer, 0, sizeof(RKTransformationUniforms)};
-  VkDescriptorBufferInfo structureInfo{_structureUniformBuffer.buffer, 0, sizeof(RKStructureUniforms)};
-  VkDescriptorBufferInfo isosurfaceInfo{_isosurfaceUniformBuffer.buffer, 0, sizeof(RKIsosurfaceUniforms)};
-  VkDescriptorBufferInfo lightsInfo{_lightsUniformBuffer.buffer, 0, sizeof(RKLightUniform) * 4};
-  VkDescriptorBufferInfo ribbonAOInfo{_ribbonAODebugUniformBuffer.buffer, 0, 256};
-  VkDescriptorBufferInfo axesInfo{_axesUniformBuffer.buffer, 0, sizeof(RKGlobalAxesUniforms)};
+void VulkanRenderer::writeSceneDescriptorSet(uint32_t slot)
+{
+  VkDescriptorBufferInfo frameInfo{_frameUniformBuffers[slot].buffer, 0, sizeof(RKTransformationUniforms)};
+  VkDescriptorBufferInfo structureInfo{_structureUniformBuffers[slot].buffer, 0, sizeof(RKStructureUniforms)};
+  VkDescriptorBufferInfo isosurfaceInfo{_isosurfaceUniformBuffers[slot].buffer, 0, sizeof(RKIsosurfaceUniforms)};
+  VkDescriptorBufferInfo lightsInfo{_lightsUniformBuffers[slot].buffer, 0, sizeof(RKLightUniform) * 4};
+  VkDescriptorBufferInfo ribbonAOInfo{_ribbonAODebugUniformBuffers[slot].buffer, 0, 256};
+  VkDescriptorBufferInfo axesInfo{_axesUniformBuffers[slot].buffer, 0, sizeof(RKGlobalAxesUniforms)};
 
   auto write = [&](uint32_t binding, VkDescriptorType type, const VkDescriptorBufferInfo *info) {
     VkWriteDescriptorSet descriptorWrite{};
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = _sceneDescriptorSet;
+    descriptorWrite.dstSet = _sceneDescriptorSets[slot];
     descriptorWrite.dstBinding = binding;
     descriptorWrite.descriptorType = type;
     descriptorWrite.descriptorCount = 1;
@@ -2709,24 +2883,7 @@ void VulkanRenderer::recreateSwapChain()
   createPickFramebuffer();
   updatePostProcessDescriptors();
   createCommandBuffers();
-  if (_waitFences.size() != _commandBuffers.size())
-  {
-    for (auto fence : _waitFences)
-    {
-      vkDestroyFence(_device, fence, nullptr);
-    }
-    VkFenceCreateInfo fenceCreateInfo{};
-    fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-    _waitFences.resize(_commandBuffers.size());
-    for (auto &fence : _waitFences)
-    {
-      if (vkCreateFence(_device, &fenceCreateInfo, nullptr, &fence) != VK_SUCCESS)
-      {
-        throw std::runtime_error("failed to create fences");
-      }
-    }
-  }
+  _imagesInFlight.assign(_swapChainImages.size(), VK_NULL_HANDLE);
 }
 
 void VulkanRenderer::cleanup()
@@ -2739,12 +2896,7 @@ void VulkanRenderer::cleanup()
   cleanupSwapChain(true);
 
   destroyTexture(_whiteTexture);
-  destroyBuffer(_frameUniformBuffer);
-  destroyBuffer(_structureUniformBuffer);
-  destroyBuffer(_isosurfaceUniformBuffer);
-  destroyBuffer(_lightsUniformBuffer);
-  destroyBuffer(_axesUniformBuffer);
-  destroyBuffer(_ribbonAODebugUniformBuffer);
+  destroyUniformBuffers();
   destroyBuffer(_pickReadbackBuffer);
   destroyBuffer(_pickDepthReadbackBuffer);
   destroyBuffer(_quadVertexBuffer);
@@ -2818,29 +2970,21 @@ void VulkanRenderer::cleanup()
   {
     vkDestroyDescriptorSetLayout(_device, _compositeDescriptorSetLayout, nullptr);
   }
-  for (auto fence : _waitFences)
-  {
-    vkDestroyFence(_device, fence, nullptr);
-  }
-  if (_renderFinishedSemaphore)
-  {
-    vkDestroySemaphore(_device, _renderFinishedSemaphore, nullptr);
-  }
-  if (_imageAvailableSemaphore)
-  {
-    vkDestroySemaphore(_device, _imageAvailableSemaphore, nullptr);
-  }
+  destroySyncObjects();
   if (_commandPool)
   {
     vkDestroyCommandPool(_device, _commandPool, nullptr);
   }
   vkDestroyDevice(_device, nullptr);
   DestroyDebugReportCallbackEXT(_instance, _callback, nullptr);
-  if (_surface)
+  if (_surface && _ownsSurface)
   {
     vkDestroySurfaceKHR(_instance, _surface, nullptr);
   }
-  vkDestroyInstance(_instance, nullptr);
+  if (_ownsInstance)
+  {
+    vkDestroyInstance(_instance, nullptr);
+  }
 }
 
 void VulkanRenderer::cleanupSwapChain(bool destroyRenderPass)
@@ -2946,6 +3090,13 @@ void VulkanRenderer::cleanupSwapChain(bool destroyRenderPass)
 
 void VulkanRenderer::createInstance()
 {
+  if (usesQtManagedSurface())
+  {
+    _instance = qtVkInstance();
+    _ownsInstance = false;
+    return;
+  }
+
   if (enableValidationLayers && !checkValidationLayerSupport())
   {
     throw std::runtime_error("validation layers requested, but not available");
@@ -2965,10 +3116,12 @@ void VulkanRenderer::createInstance()
   createInfo.pApplicationInfo = &appInfo;
   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   createInfo.ppEnabledExtensionNames = extensions.data();
+#ifdef __APPLE__
   if (_usePortabilityEnumeration)
   {
     createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
   }
+#endif
   if (enableValidationLayers)
   {
     createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());

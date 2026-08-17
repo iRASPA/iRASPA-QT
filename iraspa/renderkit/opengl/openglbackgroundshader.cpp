@@ -27,6 +27,9 @@
 #include "quadgeometry.h"
 #include "glgeterror.h"
 #include "opengluniformstringliterals.h"
+#include <QColor>
+#include <QImage>
+#include <QSize>
 
 OpenGLBackgroundShader::OpenGLBackgroundShader()
 {

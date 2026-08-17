@@ -174,7 +174,7 @@ protected :
    * \param n    the number of triangles to produce
    * \param v12  the index of the interior vertex to use, if necessary
    */
-  void add_triangle ( const char* trig, char n, int v12 = -1 ) ;
+  void add_triangle ( const signed char* trig, char n, int v12 = -1 ) ;
 
   int add_vertex(const int3 &grid_coord, const int3&dir, int corner, float *cube);
   /** adds a vertex inside the current cube */

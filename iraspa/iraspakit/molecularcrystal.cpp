@@ -1074,53 +1074,8 @@ std::shared_ptr<Structure> MolecularCrystal::wrapAtomsToCell() const
 
 void MolecularCrystal::computeBonds()
 {
-  std::vector<std::shared_ptr<SKAtomCopy>> copies =  _atomsTreeController->atomCopies();
-
-  std::vector<std::shared_ptr<SKBond>> bonds;
-
-  for(size_t i=0;i<copies.size();i++)
-  {
-    copies[i]->setType(SKAtomCopy::AtomCopyType::copy);
-    double3 posA = copies[i]->position();
-    int elementIdentifierA = copies[i]->parent()->elementIdentifier();
-    double covalentRadiusA = PredefinedElements::predefinedElements[elementIdentifierA]._covalentRadius;
-    for(size_t j=i+1;j<copies.size();j++)
-    {
-      double3 posB = copies[j]->position();
-      int elementIdentifierB = copies[j]->parent()->elementIdentifier();
-      double covalentRadiusB = PredefinedElements::predefinedElements[elementIdentifierB]._covalentRadius;
-
-      double3 separationVector = (posA-posB);
-      double3 periodicSeparationVector = _cell->applyUnitCellBoundaryCondition(separationVector);
-      double bondCriteria = covalentRadiusA + covalentRadiusB + 0.56;
-      double bondLength = periodicSeparationVector.length();
-      if(bondLength < bondCriteria)
-      {
-        if(bondLength<0.1)
-        {
-          // a duplicate when: (a) both occupancies are 1.0, or (b) when they are the same asymmetric type
-          if(!(copies[i]->parent()->occupancy() < 1.0 || copies[j]->parent()->occupancy() < 1.0) || copies[i]->asymmetricIndex() == copies[j]->asymmetricIndex())
-          {
-            copies[i]->setType(SKAtomCopy::AtomCopyType::duplicate);
-          }
-        }
-        if (separationVector.length() > bondCriteria)
-        {
-          std::shared_ptr<SKBond> bond = std::make_shared<SKBond>(copies[i],copies[j], SKBond::BoundaryType::external);
-          bonds.push_back(bond);
-        }
-        else
-        {
-          std::shared_ptr<SKBond> bond = std::make_shared<SKBond>(copies[i],copies[j], SKBond::BoundaryType::internal);
-          bonds.push_back(bond);
-        }
-      }
-    }
-  }
-
-  std::vector<std::shared_ptr<SKBond>> filtered_bonds;
-  std::copy_if (bonds.begin(), bonds.end(), std::back_inserter(filtered_bonds), [](std::shared_ptr<SKBond> i){return i->atom1()->type() == SKAtomCopy::AtomCopyType::copy && i->atom2()->type() == SKAtomCopy::AtomCopyType::copy;} );
-  _bondSetController->setBonds(filtered_bonds);
+  std::vector<std::shared_ptr<SKAtomCopy>> copies = _atomsTreeController->atomCopies();
+  SKBondCellList::assignPeriodicCartesianBonds(copies, *_bondSetController, *_cell);
 }
 
 double MolecularCrystal::bondLength(std::shared_ptr<SKBond> bond) const

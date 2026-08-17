@@ -23,13 +23,7 @@
 
 #include <vector>
 #include <QCache>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
+#include <QString>
 #include "openglshader.h"
 #include "rkrenderkitprotocols.h"
 #include "openglatomshader.h"

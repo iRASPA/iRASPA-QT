@@ -23,13 +23,6 @@
 
 #include <vector>
 #include <array>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
 #include "rkrenderkitprotocols.h"
 #include "rkrenderuniforms.h"
 
@@ -71,7 +64,7 @@ public:
   void initializeStructureUniforms();
   void generateFrameBuffers();
 
-  void paintGL(GLuint structureUniformBuffer);
+  void paintGL(GLuint structureUniformBuffer, bool skipRibbonPicking = false);
   void resizeGL(int w, int h);
 
   std::array<int,4> pickTexture(int x, int y, int width, int height);

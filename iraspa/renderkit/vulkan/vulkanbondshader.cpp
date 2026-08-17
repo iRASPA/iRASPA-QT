@@ -152,7 +152,6 @@ void VulkanBondShader::setRenderStructures(std::vector<std::vector<std::shared_p
 
 void VulkanBondShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _internalBonds.resize(_renderStructures.size());
   _externalBonds.resize(_renderStructures.size());
@@ -164,7 +163,7 @@ void VulkanBondShader::reloadData()
     for (size_t j = 0; j < _renderStructures[i].size(); ++j)
     {
       auto *source = dynamic_cast<RKRenderBondSource *>(_renderStructures[i][j].get());
-      if (!source)
+      if (!source || !source->drawBonds())
       {
         continue;
       }

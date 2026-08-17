@@ -134,7 +134,6 @@ void VulkanVolumeShader::invalidateIsosurface(const std::vector<std::shared_ptr<
 
 void VulkanVolumeShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureResources();
   _structureResources.resize(_renderStructures.size());
 

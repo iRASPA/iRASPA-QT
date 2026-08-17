@@ -5,6 +5,7 @@
 #include "ribbonaotexturepostprocess.h"
 #include "rkcamera.h"
 #include "rkribbonmesh.h"
+#include "vulkanatomambientocclusionshader.h"
 #include "vulkanatomsphereshader.h"
 #include "vulkanribbonshader.h"
 #include "vulkanshader.h"
@@ -105,6 +106,7 @@ VulkanRibbonAmbientOcclusionShader::~VulkanRibbonAmbientOcclusionShader()
   freeSet(_generationSetAO);
   freeSet(_generationSetRibbon);
   freeSet(_shadowSamplerSet);
+  freeSet(_blurSamplerSet);
   if (_shadowPipelineLayout)
   {
     vkDestroyPipelineLayout(_renderer->device(), _shadowPipelineLayout, nullptr);
@@ -113,6 +115,10 @@ VulkanRibbonAmbientOcclusionShader::~VulkanRibbonAmbientOcclusionShader()
   {
     vkDestroyPipelineLayout(_renderer->device(), _accumulatePipelineLayout, nullptr);
   }
+  if (_blurPipelineLayout)
+  {
+    vkDestroyPipelineLayout(_renderer->device(), _blurPipelineLayout, nullptr);
+  }
   if (_generationSetLayout)
   {
     vkDestroyDescriptorSetLayout(_renderer->device(), _generationSetLayout, nullptr);
@@ -120,6 +126,10 @@ VulkanRibbonAmbientOcclusionShader::~VulkanRibbonAmbientOcclusionShader()
   if (_shadowSamplerSetLayout)
   {
     vkDestroyDescriptorSetLayout(_renderer->device(), _shadowSamplerSetLayout, nullptr);
+  }
+  if (_blurSamplerSetLayout)
+  {
+    vkDestroyDescriptorSetLayout(_renderer->device(), _blurSamplerSetLayout, nullptr);
   }
   if (_shadowRenderPass)
   {
@@ -132,6 +142,10 @@ VulkanRibbonAmbientOcclusionShader::~VulkanRibbonAmbientOcclusionShader()
   if (_aoAccumulateRenderPass)
   {
     vkDestroyRenderPass(_renderer->device(), _aoAccumulateRenderPass, nullptr);
+  }
+  if (_blurRenderPass)
+  {
+    vkDestroyRenderPass(_renderer->device(), _blurRenderPass, nullptr);
   }
 }
 
@@ -163,6 +177,7 @@ void VulkanRibbonAmbientOcclusionShader::destroyPipelines()
   destroyPipeline(_atomShadowPipeline);
   destroyPipeline(_ribbonShadowPipeline);
   destroyPipeline(_accumulatePipeline);
+  destroyPipeline(_blurPipeline);
 }
 
 void VulkanRibbonAmbientOcclusionShader::destroyShadowResources()
@@ -191,6 +206,7 @@ void VulkanRibbonAmbientOcclusionShader::initialize()
   createShadowResources();
   createGenerationDescriptors();
   createPipelines();
+  createBlurResources();
 }
 
 void VulkanRibbonAmbientOcclusionShader::createRenderPasses()
@@ -462,6 +478,92 @@ void VulkanRibbonAmbientOcclusionShader::createPipelines()
   _accumulatePipeline = VulkanShader::createGraphicsPipeline(_renderer, _accumulatePipelineLayout, accumulate);
 }
 
+void VulkanRibbonAmbientOcclusionShader::createBlurResources()
+{
+  VkAttachmentDescription color{};
+  color.format = VK_FORMAT_R16_SFLOAT;
+  color.samples = VK_SAMPLE_COUNT_1_BIT;
+  color.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  color.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+  color.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  color.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  color.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  color.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+  VkAttachmentReference colorRef{};
+  colorRef.attachment = 0;
+  colorRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+  VkSubpassDescription subpass{};
+  subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+  subpass.colorAttachmentCount = 1;
+  subpass.pColorAttachments = &colorRef;
+  VkRenderPassCreateInfo passInfo{};
+  passInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+  passInfo.attachmentCount = 1;
+  passInfo.pAttachments = &color;
+  passInfo.subpassCount = 1;
+  passInfo.pSubpasses = &subpass;
+  if (vkCreateRenderPass(_renderer->device(), &passInfo, nullptr, &_blurRenderPass) != VK_SUCCESS)
+  {
+    throw std::runtime_error("failed to create ribbon AO blur render pass");
+  }
+
+  VkDescriptorSetLayoutBinding samplerBinding{};
+  samplerBinding.binding = 0;
+  samplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  samplerBinding.descriptorCount = 1;
+  samplerBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  VkDescriptorSetLayoutCreateInfo samplerLayoutInfo{};
+  samplerLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  samplerLayoutInfo.bindingCount = 1;
+  samplerLayoutInfo.pBindings = &samplerBinding;
+  if (vkCreateDescriptorSetLayout(_renderer->device(), &samplerLayoutInfo, nullptr, &_blurSamplerSetLayout) != VK_SUCCESS)
+  {
+    throw std::runtime_error("failed to create ribbon AO blur sampler layout");
+  }
+
+  VkPushConstantRange pushRange{};
+  pushRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  pushRange.size = sizeof(float) * 4;
+  VkPipelineLayoutCreateInfo layoutInfo{};
+  layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+  layoutInfo.setLayoutCount = 1;
+  layoutInfo.pSetLayouts = &_blurSamplerSetLayout;
+  layoutInfo.pushConstantRangeCount = 1;
+  layoutInfo.pPushConstantRanges = &pushRange;
+  if (vkCreatePipelineLayout(_renderer->device(), &layoutInfo, nullptr, &_blurPipelineLayout) != VK_SUCCESS)
+  {
+    throw std::runtime_error("failed to create ribbon AO blur pipeline layout");
+  }
+
+  VkVertexInputBindingDescription vertexBinding{};
+  vertexBinding.binding = 0;
+  vertexBinding.stride = sizeof(RKVertex);
+  vertexBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+  VulkanShader::PipelineConfig blur;
+  blur.vertexShaderResource = QStringLiteral(":/shaders/ribbon_ao_blur.vert.spv");
+  blur.fragmentShaderResource = QStringLiteral(":/shaders/ribbon_ao_blur.frag.spv");
+  blur.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+  blur.cullMode = VK_CULL_MODE_NONE;
+  blur.depthTest = false;
+  blur.depthWrite = false;
+  blur.colorAttachmentCount = 1;
+  blur.colorWriteMask = VK_COLOR_COMPONENT_R_BIT;
+  blur.renderPass = _blurRenderPass;
+  blur.bindings = {vertexBinding};
+  blur.attributes = {float4Attribute(0, 0, offsetof(RKVertex, position))};
+  _blurPipeline = VulkanShader::createGraphicsPipeline(_renderer, _blurPipelineLayout, blur);
+
+  VkDescriptorSetAllocateInfo alloc{};
+  alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  alloc.descriptorPool = _renderer->descriptorPool();
+  alloc.descriptorSetCount = 1;
+  alloc.pSetLayouts = &_blurSamplerSetLayout;
+  if (vkAllocateDescriptorSets(_renderer->device(), &alloc, &_blurSamplerSet) != VK_SUCCESS)
+  {
+    throw std::runtime_error("failed to allocate ribbon AO blur sampler set");
+  }
+}
+
 void VulkanRibbonAmbientOcclusionShader::setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures)
 {
   _renderStructures = std::move(structures);
@@ -485,9 +587,110 @@ VkDescriptorSet VulkanRibbonAmbientOcclusionShader::samplerSet(size_t sceneIndex
   return _structureResources[sceneIndex][movieIndex].samplerSet;
 }
 
+bool VulkanRibbonAmbientOcclusionShader::hasCachedTexture(RKRenderObject *structure, uint32_t width, uint32_t height) const
+{
+  if (!structure || width == 0 || height == 0)
+  {
+    return false;
+  }
+  auto cacheIt = _cache.find(ribbonAmbientOcclusionCacheKey(structure).toStdString());
+  return cacheIt != _cache.end() && cacheIt->second && cacheIt->second->size() == static_cast<size_t>(width) * height;
+}
+
+void VulkanRibbonAmbientOcclusionShader::blurAtlas(VulkanTexture &atlas, uint32_t width, uint32_t height)
+{
+  if (!_blurPipeline || !_blurSamplerSet || !atlas.view || width == 0 || height == 0)
+  {
+    return;
+  }
+
+  auto makeTarget = [&]() {
+    return _renderer->createAttachmentTexture(width, height, VK_FORMAT_R16_SFLOAT,
+                                              VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                              VK_IMAGE_ASPECT_COLOR_BIT);
+  };
+  VulkanTexture horizontal = makeTarget();
+  VulkanTexture vertical = makeTarget();
+
+  auto makeFramebuffer = [&](const VulkanTexture &target) {
+    VkFramebuffer framebuffer = VK_NULL_HANDLE;
+    VkFramebufferCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    info.renderPass = _blurRenderPass;
+    info.attachmentCount = 1;
+    info.pAttachments = &target.view;
+    info.width = width;
+    info.height = height;
+    info.layers = 1;
+    if (vkCreateFramebuffer(_renderer->device(), &info, nullptr, &framebuffer) != VK_SUCCESS)
+    {
+      throw std::runtime_error("failed to create ribbon AO blur framebuffer");
+    }
+    return framebuffer;
+  };
+  VkFramebuffer horizontalFramebuffer = makeFramebuffer(horizontal);
+  VkFramebuffer verticalFramebuffer = makeFramebuffer(vertical);
+
+  auto writeSampler = [&](VkImageView view) {
+    VkDescriptorImageInfo image{};
+    image.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    image.imageView = view;
+    image.sampler = _renderer->linearSampler();
+    VkWriteDescriptorSet write{};
+    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.dstSet = _blurSamplerSet;
+    write.dstBinding = 0;
+    write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    write.descriptorCount = 1;
+    write.pImageInfo = &image;
+    vkUpdateDescriptorSets(_renderer->device(), 1, &write, 0, nullptr);
+  };
+
+  struct BlurPush
+  {
+    float inverseWidth;
+    float inverseHeight;
+    float axisX;
+    float axisY;
+  };
+
+  auto recordPass = [&](VkImageView sourceView, VkFramebuffer framebuffer, VulkanTexture &destination, float axisX, float axisY) {
+    writeSampler(sourceView);
+    VkCommandBuffer commandBuffer = _renderer->beginOneTimeCommands();
+    VkRenderPassBeginInfo begin{};
+    begin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    begin.renderPass = _blurRenderPass;
+    begin.framebuffer = framebuffer;
+    begin.renderArea.extent = {width, height};
+    vkCmdBeginRenderPass(commandBuffer, &begin, VK_SUBPASS_CONTENTS_INLINE);
+    setViewport(commandBuffer, width, height);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _blurPipeline);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _blurPipelineLayout, 0, 1, &_blurSamplerSet, 0, nullptr);
+    BlurPush push{1.0f / static_cast<float>(width), 1.0f / static_cast<float>(height), axisX, axisY};
+    vkCmdPushConstants(commandBuffer, _blurPipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(BlurPush), &push);
+    VkDeviceSize vertexOffset = 0;
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &_quadVertexBuffer.buffer, &vertexOffset);
+    vkCmdBindIndexBuffer(commandBuffer, _quadIndexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdDrawIndexed(commandBuffer, _quadIndexCount, 1, 0, 0, 0);
+    vkCmdEndRenderPass(commandBuffer);
+    recordImageBarrier(commandBuffer, destination.image, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT,
+                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+    _renderer->submitOneTimeCommands(commandBuffer);
+  };
+
+  recordPass(atlas.view, horizontalFramebuffer, horizontal, 1.0f, 0.0f);
+  recordPass(horizontal.view, verticalFramebuffer, vertical, 0.0f, 1.0f);
+
+  vkDestroyFramebuffer(_renderer->device(), horizontalFramebuffer, nullptr);
+  vkDestroyFramebuffer(_renderer->device(), verticalFramebuffer, nullptr);
+  _renderer->destroyTexture(atlas);
+  _renderer->destroyTexture(horizontal);
+  atlas = vertical;
+}
+
 void VulkanRibbonAmbientOcclusionShader::reloadData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality)
 {
-  _renderer->waitIdle();
   destroyStructureResources();
   _structureResources.resize(_renderStructures.size());
   for (size_t i = 0; i < _renderStructures.size(); ++i)
@@ -511,8 +714,9 @@ void VulkanRibbonAmbientOcclusionShader::adjustTextureSizes()
         continue;
       }
       auto *atomSource = dynamic_cast<RKRenderAtomSource *>(_renderStructures[i][j].get());
-      const int numberOfAtoms = atomSource ? static_cast<int>(atomSource->renderAtoms().size())
-                                           : static_cast<int>(ribbonSource->ribbonResidueDrawRanges().size());
+      const int numberOfAtoms = (atomSource && atomSource->drawAtoms() && _atomShader)
+                                    ? static_cast<int>(_atomShader->instanceCount(i, j))
+                                    : static_cast<int>(ribbonSource->ribbonResidueDrawRanges().size());
       const auto atlasDimensions = RKRibbonMesh::ambientOcclusionAtlasDimensions(
           ribbonSource->ribbonMaxSplineSampleCount(), ribbonSource->ribbonNumberOfChains(), numberOfAtoms, maxSize);
       ribbonSource->setRibbonAmbientOcclusionTextureWidth(std::get<0>(atlasDimensions));
@@ -589,13 +793,17 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
       const uint32_t height = static_cast<uint32_t>(std::max(ribbonSource->ribbonAmbientOcclusionTextureHeight(), 1));
       StructureResources &resources = _structureResources[i][j];
 
-      auto assignTexture = [&](const std::vector<uint16_t> &data) {
+      auto assignTexture = [&](const std::vector<uint16_t> &data, bool applyGpuBlur = false) {
         resources.texture = _renderer->createTextureR16F(width, height, data.data());
+        if (applyGpuBlur)
+        {
+          blurAtlas(resources.texture, width, height);
+        }
         resources.samplerSet = _renderer->allocateSamplerDescriptorSet(resources.texture);
       };
 
-      if (!ribbonSource->ribbonAmbientOcclusion() || !object->isVisible() || ribbonSource->ribbonNumberOfChains() <= 0 ||
-          _ribbonShader->indexCount(i, j) == 0)
+      if (!ribbonSource->drawRibbon() || !ribbonSource->ribbonAmbientOcclusion() || !object->isVisible() ||
+          ribbonSource->ribbonNumberOfChains() <= 0 || _ribbonShader->indexCount(i, j) == 0)
       {
         assignTexture(whiteAtlas(width, height));
         continue;
@@ -605,7 +813,7 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
       auto cacheIt = _cache.find(cacheKey);
       if (cacheIt != _cache.end() && cacheIt->second && cacheIt->second->size() == static_cast<size_t>(width) * height)
       {
-        assignTexture(*cacheIt->second);
+        assignTexture(*cacheIt->second, true);
         continue;
       }
 
@@ -688,6 +896,21 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
       rewriteGenerationSet(_generationSetRibbon, _ribbonStructureUniformBuffer);
       VkDescriptorSet ribbonGenerationSet = ribbonUsesRenderUniformsForShadow ? _generationSetRibbon : _generationSetAO;
 
+      VulkanAtomAmbientOcclusionShader *atomAO = _atomShader ? _atomShader->ambientOcclusionShader() : nullptr;
+      auto *atomSource = dynamic_cast<RKRenderAtomSource *>(object);
+      const uint32_t atomTextureSize =
+          atomSource ? static_cast<uint32_t>(std::max(atomSource->atomAmbientOcclusionTextureSize(), 1)) : 0;
+      bool bakeAtomsHere = atomAO && atomAO->wantsBake(i, j) && !atomAO->hasCachedTexture(object, atomTextureSize);
+      if (bakeAtomsHere)
+      {
+        bakeAtomsHere = atomAO->prepareTarget(i, j);
+      }
+      if (bakeAtomsHere)
+      {
+        atomAO->setGenerationBuffers(_aoStructureUniformBuffer, _shadowUniformBuffer);
+        atomAO->useShadowMap(_shadowMap.view);
+      }
+
       VulkanTexture atlas = _renderer->createAttachmentTexture(
           width, height, VK_FORMAT_R16_SFLOAT,
           VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
@@ -719,6 +942,10 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
       aoBegin.pClearValues = &aoClear;
       vkCmdBeginRenderPass(commandBuffer, &aoBegin, VK_SUBPASS_CONTENTS_INLINE);
       vkCmdEndRenderPass(commandBuffer);
+      if (bakeAtomsHere)
+      {
+        atomAO->recordClear(commandBuffer, i, j);
+      }
 
       bool drewGeometry = false;
       for (int k = 0; k < maxk; ++k)
@@ -780,6 +1007,12 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT,
                            VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
+        const float weight = simd_quatd::ambientOcclusionBlendWeight(k, maxk);
+        if (bakeAtomsHere)
+        {
+          atomAO->recordAccumulate(commandBuffer, i, j, static_cast<uint32_t>(k), _structureStride, _shadowStride, weight);
+        }
+
         VkRenderPassBeginInfo accumulateBegin{};
         accumulateBegin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         accumulateBegin.renderPass = _aoAccumulateRenderPass;
@@ -793,7 +1026,6 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
                                 2, offsets);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _accumulatePipelineLayout, 1, 1, &_shadowSamplerSet, 0,
                                 nullptr);
-        const float weight = simd_quatd::ambientOcclusionBlendWeight(k, maxk);
         vkCmdPushConstants(commandBuffer, _accumulatePipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &weight);
         VkBuffer ribbonVertices = _ribbonShader->vertexBuffer(i, j);
         VkBuffer ribbonIndices = _ribbonShader->indexBuffer(i, j);
@@ -805,6 +1037,11 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
       }
 
       _renderer->submitOneTimeCommands(commandBuffer);
+      if (bakeAtomsHere)
+      {
+        atomAO->finalizeTarget(i, j);
+        atomAO->restoreDefaultShadowMap();
+      }
 
       std::vector<uint16_t> raw(static_cast<size_t>(width) * height);
       _renderer->copyImageToHost(atlas.image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_FORMAT_R16_SFLOAT,
@@ -820,7 +1057,6 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
           channel[index] = RKHalfFloat::floatFromHalfBits(raw[index]);
         }
         RibbonAOTexturePostProcess::dilateAndSmooth(channel, static_cast<int>(width), static_cast<int>(height));
-        RibbonAOTexturePostProcess::gaussianBlur(channel, static_cast<int>(width), static_cast<int>(height));
         std::vector<uint16_t> processed(channel.size());
         for (size_t index = 0; index < processed.size(); ++index)
         {
@@ -829,9 +1065,13 @@ void VulkanRibbonAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRend
         if (!ribbonAmbientOcclusionTextureHasContent(processed))
         {
           processed = whiteAtlas(width, height);
+          assignTexture(processed);
         }
-        _cache[cacheKey] = std::make_shared<std::vector<uint16_t>>(processed);
-        assignTexture(processed);
+        else
+        {
+          _cache[cacheKey] = std::make_shared<std::vector<uint16_t>>(processed);
+          assignTexture(processed, true);
+        }
       }
       else
       {

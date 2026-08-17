@@ -159,7 +159,6 @@ void VulkanPrimitiveObjectShader::setRenderStructures(std::vector<std::vector<st
 
 void VulkanPrimitiveObjectShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _structureBuffers.resize(_renderStructures.size());
 

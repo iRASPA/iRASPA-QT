@@ -298,7 +298,6 @@ void VulkanSelectionShader::setRenderStructures(std::vector<std::vector<std::sha
 
 void VulkanSelectionShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _structureBuffers.resize(_renderStructures.size());
 
@@ -314,7 +313,8 @@ void VulkanSelectionShader::reloadData()
         uploadInstances(buffers.atoms, atoms.data(), atoms.size() * sizeof(RKInPerInstanceAttributesAtoms),
                         static_cast<uint32_t>(atoms.size()));
       }
-      if (auto *bondSource = dynamic_cast<RKRenderBondSource *>(_renderStructures[i][j].get()))
+      if (auto *bondSource = dynamic_cast<RKRenderBondSource *>(_renderStructures[i][j].get());
+          bondSource && bondSource->drawBonds())
       {
         const std::vector<RKInPerInstanceAttributesBonds> internal = bondSource->renderSelectedInternalBonds();
         uploadInstances(buffers.internalBonds, internal.data(), internal.size() * sizeof(RKInPerInstanceAttributesBonds),

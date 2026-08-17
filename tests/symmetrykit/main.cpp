@@ -1,4 +1,5 @@
 #include <QTest>
+#include "tst_cifparser.h"
 #include "tst_symmetrykitfindspacegroupnopartialoccupancies.h"
 #include "tst_symmetrykitfindspacegroup.h"
 #include "tst_symmetrykitfindpointgroupnopartialoccupancies.h"
@@ -13,6 +14,10 @@ int main(int argc, char** argv)
 {
    int status = 0;
 
+   {
+      CIFParser tc;
+      status |= QTest::qExec(&tc, argc, argv);
+   }
    {
       TestTransformationMatrix tc;
       status |= QTest::qExec(&tc, argc, argv);

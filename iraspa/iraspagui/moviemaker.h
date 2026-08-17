@@ -66,7 +66,10 @@ private:
   const unsigned int _width, _height;
   int _fps;
   SwsContext* _swsCtx;
-#if LIBAVCODEC_VERSION_MAJOR >= 60
+// libavformat 59 (FFmpeg 5.0) constified av_guess_format() and the oformat
+// argument of avformat_alloc_output_context2() together, so the two have to be
+// declared with matching constness on either side of that release.
+#if LIBAVFORMAT_VERSION_MAJOR >= 59
   const AVOutputFormat* _oformat;
 #else
   AVOutputFormat* _oformat;

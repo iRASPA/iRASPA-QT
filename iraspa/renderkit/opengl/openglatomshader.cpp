@@ -57,19 +57,6 @@ void OpenGLAtomShader::setRenderStructures(std::vector<std::vector<std::shared_p
   _atomAmbientOcclusionShader.setRenderStructures(structures);
 
   _numberOfAtoms = 0;
-  for(size_t i=0;i<_renderStructures.size();i++)
-  {
-    for(size_t j=0;j<_renderStructures[i].size();j++)
-    {
-      if (RKRenderAtomSource* object = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
-      {
-        if(object->drawAtoms() && _renderStructures[i][j]->isVisible())
-        {
-          _numberOfAtoms += object->renderAtoms().size();
-        }
-      }
-    }
-  }
 }
 
 
@@ -101,17 +88,11 @@ void OpenGLAtomShader::reloadData()
   _atomPerspectiveImposterShader.reloadData();
 
   _numberOfAtoms = 0;
-  for(size_t i=0;i<_renderStructures.size();i++)
+  for(size_t i=0;i<_atomShader._numberOfDrawnAtoms.size();i++)
   {
-    for(size_t j=0;j<_renderStructures[i].size();j++)
+    for(size_t j=0;j<_atomShader._numberOfDrawnAtoms[i].size();j++)
     {
-      if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
-      {
-        if(source->drawAtoms() && _renderStructures[i][j]->isVisible())
-        {
-           _numberOfAtoms += source->renderAtoms().size();
-        }
-      }
+      _numberOfAtoms += _atomShader._numberOfDrawnAtoms[i][j];
     }
   }
 }

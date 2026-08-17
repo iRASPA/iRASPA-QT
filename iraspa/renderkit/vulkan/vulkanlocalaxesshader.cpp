@@ -129,7 +129,6 @@ void VulkanLocalAxesShader::setRenderStructures(std::vector<std::vector<std::sha
 
 void VulkanLocalAxesShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _structureBuffers.resize(_renderStructures.size());
 

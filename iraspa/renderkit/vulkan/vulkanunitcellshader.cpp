@@ -135,7 +135,6 @@ void VulkanUnitCellShader::setRenderStructures(std::vector<std::vector<std::shar
 
 void VulkanUnitCellShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _structureBuffers.resize(_renderStructures.size());
 

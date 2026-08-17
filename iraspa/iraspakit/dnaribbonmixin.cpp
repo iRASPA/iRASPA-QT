@@ -10,6 +10,21 @@
 #include "proteinnucleicacidcartoon.h"
 #include "skasymmetricatom.h"
 
+namespace
+{
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> leafAtoms(const SKAtomTreeController &controller)
+  {
+    const std::vector<std::shared_ptr<SKAtomTreeNode>> leaves = controller.flattenedLeafNodes();
+    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms;
+    atoms.reserve(leaves.size());
+    for (const std::shared_ptr<SKAtomTreeNode> &node : leaves)
+    {
+      atoms.push_back(node->representedObject());
+    }
+    return atoms;
+  }
+}
+
 DNARibbonMixin::DNARibbonMixin() = default;
 
 DNARibbonMixin::DNARibbonMixin(const DNARibbonMixin &other)
@@ -124,8 +139,7 @@ void DNARibbonMixin::applyFancyRibbonAppearance()
 
 void DNARibbonMixin::rebuildBackboneStructure()
 {
-  const std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = ribbonAtomTreeController().flattenedObjects();
-  _dnaBackbone = DNABackbone::build(atoms);
+  _dnaBackbone = DNABackbone::build(leafAtoms(ribbonAtomTreeController()));
 }
 
 void DNARibbonMixin::rebuildBackbone()
@@ -138,7 +152,8 @@ void DNARibbonMixin::rebuildBackbone()
 void DNARibbonMixin::rebuildRibbonMesh()
 {
   if (!_drawRibbon) { return; }
-  const int atomCount = static_cast<int>(ribbonAtomTreeController().flattenedLeafNodes().size());
+  const std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = leafAtoms(ribbonAtomTreeController());
+  const int atomCount = static_cast<int>(atoms.size());
   const int residueCount = nucleotideResidueCount();
   const ProteinRibbonMeshParameters meshParameters =
     dnaRibbonMeshParameters(*this).effectiveForStructure(atomCount, residueCount);
@@ -157,7 +172,7 @@ void DNARibbonMixin::rebuildRibbonMesh()
   nucleicParameters.nucleicAcidDumbbellRadius = _nucleicAcidDumbbellRadius;
   nucleicParameters = nucleicParameters.clamped();
   _ribbonMesh = ProteinRibbonMeshBuilder::buildNucleicAcidRibbon(_dnaBackbone,
-                                                                 ribbonAtomTreeController().flattenedObjects(),
+                                                                 atoms,
                                                                  _ribbonScaleFactor,
                                                                  ribbonContentShift(),
                                                                  nucleicParameters);
@@ -197,6 +212,11 @@ std::vector<RKRibbonChainDrawRange> DNARibbonMixin::ribbonSegmentDrawRanges() co
 std::vector<RKRibbonChainDrawRange> DNARibbonMixin::ribbonResidueDrawRanges() const
 {
   return _ribbonMesh.residueDrawRanges;
+}
+
+std::vector<RKRibbonChainDrawRange> DNARibbonMixin::ribbonDrawRangesForEncoding() const
+{
+  return _ribbonMesh.chainDrawRanges;
 }
 
 // A DNA strand is drawn as one double helix per chain: its draw ranges follow the backbone, not the

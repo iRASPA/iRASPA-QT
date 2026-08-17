@@ -4,6 +4,7 @@
 #include "vulkanshader.h"
 
 #include <QImage>
+#include <QString>
 #include <cstddef>
 
 namespace
@@ -132,7 +133,6 @@ void VulkanAtomTextShader::setRenderStructures(std::vector<std::vector<std::shar
 
 void VulkanAtomTextShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _structureBuffers.resize(_renderStructures.size());
 

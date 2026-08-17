@@ -7,15 +7,15 @@ builddir:
 	rm -f ./debian/changelog.Debian.gz
 	gzip -n --best ./debian/changelog.Debian
 
-builddir/Makefile: builddir
-	cd builddir && qmake PREFIX=/usr ../$(APPNAME).pro
+builddir/CMakeCache.txt: builddir
+	cmake -S . -B builddir -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
 
 build: build-stamp
 
-build-stamp: builddir/Makefile
+build-stamp: builddir/CMakeCache.txt
 	dh_testdir
 	# Add here commands to compile the package.
-	cd builddir && $(MAKE)
+	cmake --build builddir
 	touch $@
 
 clean:
@@ -51,7 +51,7 @@ install: build
 	install -D -m 644 builddir/iraspa.iconset/icon_512x512.png $(CURDIR)/debian/iraspa/usr/share/icons/hicolor/512x512/apps/iraspa.png
 
 	# Add here commands to install the package into debian/your_appname
-	cd builddir && $(MAKE) INSTALL_ROOT=$(CURDIR)/debian/$(APPNAME) install
+	DESTDIR=$(CURDIR)/debian/$(APPNAME) cmake --install builddir
 # Build architecture-independent files here.
 binary-indep: build install
 # We have nothing to do by default.

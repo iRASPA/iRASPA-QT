@@ -137,7 +137,7 @@ void OpenGLPickingShader::reloadData()
   _ribbonPickingShader.reloadData();
 }
 
-void OpenGLPickingShader::paintGL(GLuint structureUniformBuffer)
+void OpenGLPickingShader::paintGL(GLuint structureUniformBuffer, bool skipRibbonPicking)
 {
   GLfloat black[4] = {0.0,0.0,0.0,0.0};
 
@@ -158,7 +158,10 @@ void OpenGLPickingShader::paintGL(GLuint structureUniformBuffer)
   _cylinderPickingShader.paintGL(structureUniformBuffer);
   _ellipsePickingShader.paintGL(structureUniformBuffer);
   _polygonalPrismPickingShader.paintGL(structureUniformBuffer);
-  _ribbonPickingShader.paintGL(structureUniformBuffer);
+  if (!skipRibbonPicking)
+  {
+    _ribbonPickingShader.paintGL(structureUniformBuffer);
+  }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

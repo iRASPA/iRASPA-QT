@@ -26,6 +26,11 @@
 
 class AboutDialog : public QDialog, public Ui::Dialog
 {
+  Q_OBJECT
+
 public:
   AboutDialog(QWidget * parent = nullptr);
+
+private:
+  QString creditsHtml() const;
 };

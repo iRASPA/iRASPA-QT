@@ -22,16 +22,10 @@
 #pragma once
 
 #include <vector>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
 #include <QOpenGLFunctions_3_3_Core>
 #include "rkrenderkitprotocols.h"
 
+class OpenGLAtomShader;
 class OpenGLAtomOrthographicImposterShader;
 class OpenGLAtomPerspectiveImposterShader;
 class OpenGLAmbientOcclusionShadowMapShader;
@@ -55,6 +49,7 @@ private:
   std::vector<std::vector<size_t>> _numberOfDrawnAtoms;
   std::vector<std::vector<GLuint>> _instancePositionBuffer;
 
+  friend OpenGLAtomShader;
   friend OpenGLAtomOrthographicImposterShader;
   friend OpenGLAtomPerspectiveImposterShader;
   friend OpenGLAmbientOcclusionShadowMapShader;

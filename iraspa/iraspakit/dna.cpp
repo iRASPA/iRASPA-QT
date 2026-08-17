@@ -51,9 +51,9 @@ DNA::DNA(const DNA &protein): Structure(protein), DNARibbonMixin(protein)
 
 DNA::DNA(std::shared_ptr<SKStructure> frame): Structure(frame)
 {
+  _atomsTreeController->setRootNodes(DNAAtomTreeBuilder::build(frame->atoms));
   expandSymmetry();
   _atomsTreeController->setTags();
-  DNAAtomTreeBuilder::applyHierarchyIfNeeded(*_atomsTreeController);
   rebuildBackboneStructure();
 }
 
@@ -654,43 +654,7 @@ std::pair<double3, double3> DNA::computeChangedBondLength(std::shared_ptr<SKBond
 void DNA::computeBonds()
 {
   std::vector<std::shared_ptr<SKAtomCopy>> copies = _atomsTreeController->atomCopies();
-
-  std::vector<std::shared_ptr<SKBond>> bonds;
-
-  for (size_t i = 0;i < copies.size();i++)
-  {
-    copies[i]->setType(SKAtomCopy::AtomCopyType::copy);
-    double3 posA = copies[i]->position();
-    int elementIdentifierA = copies[i]->parent()->elementIdentifier();
-    double covalentRadiusA = PredefinedElements::predefinedElements[elementIdentifierA]._covalentRadius;
-    for (size_t j = i + 1;j < copies.size();j++)
-    {
-      if ((copies[i]->parent()->occupancy() == 1.0 && copies[j]->parent()->occupancy() == 1.0) ||
-        (copies[i]->parent()->occupancy() < 1.0 && copies[j]->parent()->occupancy() < 1.0))
-      {
-        double3 posB = copies[j]->position();
-        int elementIdentifierB = copies[j]->parent()->elementIdentifier();
-        double covalentRadiusB = PredefinedElements::predefinedElements[elementIdentifierB]._covalentRadius;
-
-        double length = (posA - posB).length();
-
-        if (length < covalentRadiusA + covalentRadiusB + 0.56)
-        {
-          if (length < 0.1)
-          {
-            copies[i]->setType(SKAtomCopy::AtomCopyType::duplicate);
-          }
-
-          std::shared_ptr<SKBond> bond = std::make_shared<SKBond>(copies[i], copies[j]);
-          bonds.push_back(bond);
-        }
-      }
-    }
-  }
-
-  std::vector<std::shared_ptr<SKBond>> filtered_bonds;
-  std::copy_if (bonds.begin(), bonds.end(), std::back_inserter(filtered_bonds), [](std::shared_ptr<SKBond> i){return i->atom1()->type() == SKAtomCopy::AtomCopyType::copy && i->atom2()->type() == SKAtomCopy::AtomCopyType::copy;} );
-  _bondSetController->setBonds(filtered_bonds);
+  SKBondCellList::assignCartesianBonds(copies, *_bondSetController);
 }
 
 

@@ -694,7 +694,7 @@ void MarchingCubes::process_cube(float *cube)
 
 //_____________________________________________________________________________
 // Adding triangles
-void MarchingCubes::add_triangle( const char* trig, char n, int v12 ) {
+void MarchingCubes::add_triangle( const signed char* trig, char n, int v12 ) {
     int i = 0;
     while(i < 3 * n) {
         int tv[3];

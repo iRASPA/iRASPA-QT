@@ -1,0 +1,120 @@
+target_include_directories(iraspa PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+
+target_sources(iraspa PRIVATE
+  vulkanatomambientocclusionshader.cpp
+  vulkanatomsphereshader.cpp
+  vulkanatomtextshader.cpp
+  vulkanbackgroundshader.cpp
+  vulkanbondshader.cpp
+  vulkanboundingboxshader.cpp
+  vulkanglobalaxesshader.cpp
+  vulkanisosurfaceshader.cpp
+  vulkanlocalaxesshader.cpp
+  vulkanmeasurementshader.cpp
+  vulkanpickingshader.cpp
+  vulkanprimitiveobjectshader.cpp
+  vulkanrenderer.cpp
+  vulkanribbonambientocclusionshader.cpp
+  vulkanribbonshader.cpp
+  vulkanscene.cpp
+  vulkanselectionshader.cpp
+  vulkanshader.cpp
+  vulkanunitcellshader.cpp
+  vulkanvolumeshader.cpp
+  vulkanwindow.cpp
+)
+
+if(APPLE)
+  # Creates the CAMetalLayer that MoltenVK renders into.
+  target_sources(iraspa PRIVATE makeviewmetal.mm)
+endif()
+
+iraspa_add_shader_resource(iraspa
+  NAME vulkanshaders
+  PREFIX "/"
+  SHADERS
+    shaders/ao_accumulate.frag
+    shaders/ao_accumulate.vert
+    shaders/ao_shadow.frag
+    shaders/ao_shadow.vert
+    shaders/atom_measurement_imposter.frag
+    shaders/atom_measurement_ortho_imposter.vert
+    shaders/atom_measurement_persp_imposter.vert
+    shaders/atom_ortho_imposter.frag
+    shaders/atom_ortho_imposter.vert
+    shaders/atom_persp_imposter.frag
+    shaders/atom_persp_imposter.vert
+    shaders/atom_selection_glow_imposter.frag
+    shaders/atom_selection_ortho_imposter.vert
+    shaders/atom_selection_persp_imposter.vert
+    shaders/atom_selection_stripes_imposter.frag
+    shaders/atom_selection_worley_imposter.frag
+    shaders/atom_text.frag
+    shaders/atom_text.vert
+    shaders/background.frag
+    shaders/background.vert
+    shaders/blur.frag
+    shaders/blur_downsample.frag
+    shaders/blur_horizontal.vert
+    shaders/blur_vertical.vert
+    shaders/bond_imposter.frag
+    shaders/bond_imposter.vert
+    shaders/bond_imposter_external.frag
+    shaders/bond_selection_glow_imposter.frag
+    shaders/bond_selection_imposter.vert
+    shaders/bond_selection_stripes_imposter.frag
+    shaders/bond_selection_worley_imposter.frag
+    shaders/bounding_box.frag
+    shaders/bounding_box_cylinder.vert
+    shaders/bounding_box_sphere.vert
+    shaders/composite.frag
+    shaders/depth_resolve.frag
+    shaders/fullscreen.vert
+    shaders/global_axes_background.frag
+    shaders/global_axes_background.vert
+    shaders/global_axes_system.frag
+    shaders/global_axes_system.vert
+    shaders/global_axes_text.frag
+    shaders/global_axes_text.vert
+    shaders/isosurface.frag
+    shaders/isosurface.vert
+    shaders/local_axes.frag
+    shaders/local_axes.vert
+    shaders/pick_atom_imposter.frag
+    shaders/pick_atom_ortho_imposter.vert
+    shaders/pick_atom_persp_imposter.vert
+    shaders/pick_bond_imposter.frag
+    shaders/pick_bond_imposter.vert
+    shaders/pick_bond_imposter_external.frag
+    shaders/pick_primitive.frag
+    shaders/pick_primitive.vert
+    shaders/pick_ribbon.frag
+    shaders/pick_ribbon.vert
+    shaders/primitive_object.frag
+    shaders/primitive_object.vert
+    shaders/primitive_selection.vert
+    shaders/primitive_selection_glow.frag
+    shaders/primitive_selection_stripes.frag
+    shaders/primitive_selection_worley.frag
+    shaders/ribbon.frag
+    shaders/ribbon.vert
+    shaders/ribbon_ao_accumulate.frag
+    shaders/ribbon_ao_accumulate.vert
+    shaders/ribbon_ao_blur.frag
+    shaders/ribbon_ao_blur.vert
+    shaders/ribbon_ao_shadow.frag
+    shaders/ribbon_ao_shadow.vert
+    shaders/ribbon_selection_glow.frag
+    shaders/ribbon_selection_glow.vert
+    shaders/ribbon_selection_stripes.frag
+    shaders/ribbon_selection_stripes.vert
+    shaders/ribbon_selection_worley.frag
+    shaders/ribbon_selection_worley.vert
+    shaders/selection_overlay.frag
+    shaders/unit_cell_cylinder.frag
+    shaders/unit_cell_cylinder.vert
+    shaders/unit_cell_sphere.frag
+    shaders/unit_cell_sphere.vert
+    shaders/volume.frag
+    shaders/volume.vert
+)

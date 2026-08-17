@@ -40,16 +40,16 @@ namespace
     std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms;
   };
 
-  void replaceRootNodes(SKAtomTreeController &controller, const std::vector<std::shared_ptr<SKAtomTreeNode>> &nodes)
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> leafAtoms(const SKAtomTreeController &controller)
   {
-    for (const std::shared_ptr<SKAtomTreeNode> &root : controller.rootNodes())
+    const std::vector<std::shared_ptr<SKAtomTreeNode>> leaves = controller.flattenedLeafNodes();
+    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms;
+    atoms.reserve(leaves.size());
+    for (const std::shared_ptr<SKAtomTreeNode> &node : leaves)
     {
-      controller.removeNode(root);
+      atoms.push_back(node->representedObject());
     }
-    for (const std::shared_ptr<SKAtomTreeNode> &node : nodes)
-    {
-      controller.appendToRootnodes(node);
-    }
+    return atoms;
   }
 
   bool hasChainHelixHierarchy(const std::vector<std::shared_ptr<SKAtomTreeNode>> &rootNodes)
@@ -155,11 +155,11 @@ namespace
 
 bool DNAAtomTreeBuilder::applyHierarchyIfNeeded(SKAtomTreeController &controller)
 {
-  const std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = controller.flattenedObjects();
+  const std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = leafAtoms(controller);
   if (atoms.empty()) return false;
   if (DNABackbone::build(atoms).chains.empty()) return false;
   if (hasChainHelixHierarchy(controller.rootNodes())) return false;
-  replaceRootNodes(controller, build(atoms));
+  controller.setRootNodes(build(atoms));
   return true;
 }
 

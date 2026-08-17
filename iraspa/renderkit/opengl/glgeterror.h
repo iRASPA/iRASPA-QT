@@ -23,7 +23,6 @@
 
 #include <string>
 #include <iostream>
-#include <QtOpenGL>
 #include <QOpenGLFunctions_3_3_Core>
 
 

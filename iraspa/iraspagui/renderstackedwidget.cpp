@@ -54,6 +54,23 @@
 #include <QPainter>
 #include <QPointer>
 #include <QtConcurrent>
+#include <QBrush>
+#include <QColor>
+#include <QEvent>
+#include <QImage>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPen>
+#include <QPoint>
+#include <QRect>
+#include <QResizeEvent>
+#include <QSize>
+#include <QString>
+#include <QUrl>
+#include <QVector>
+#include <QWidget>
+#include <QWindow>
 #include "iraspaexport.h"
 #include "rkrendererbackend.h"
 
@@ -261,6 +278,10 @@ void RenderStackedWidget::createVulkanRenderer()
 #if defined (USE_VULKAN)
   VulkanWindow* w = new VulkanWindow(nullptr);
   renderWindow = w;
+  // Queued, because the failure is reported from inside the expose event of the
+  // window that the fallback deletes.
+  connect(w, &VulkanWindow::rendererInitializationFailed, this, &RenderStackedWidget::fallBackToOpenGL,
+          Qt::QueuedConnection);
   w->installEventFilter(this);
   renderViewController = w;
   renderWidget = QWidget::createWindowContainer(w, this);
@@ -335,6 +356,31 @@ void RenderStackedWidget::createRenderer(RKRendererBackend backend)
 #endif
 }
 
+void RenderStackedWidget::fallBackToOpenGL(const QString &reason)
+{
+  if (_backend != RKRendererBackend::Vulkan)
+  {
+    return;
+  }
+#if defined(USE_OPENGL)
+  if (RKRendererAvailability::isOpenGLAvailable())
+  {
+    if (_logReporter)
+    {
+      _logReporter->logMessage(LogReporting::ErrorLevel::warning,
+                               QString("Vulkan renderer failed to start (%1), switching to OpenGL").arg(reason));
+    }
+    setRendererBackend(RKRendererBackend::OpenGL);
+    return;
+  }
+#endif
+  if (_logReporter)
+  {
+    _logReporter->logMessage(LogReporting::ErrorLevel::error,
+                             QString("Vulkan renderer failed to start (%1) and OpenGL is unavailable").arg(reason));
+  }
+}
+
 void RenderStackedWidget::rebindCurrentProject()
 {
   if (std::shared_ptr<ProjectTreeNode> projectTreeNode = _projectTreeNode.lock())
@@ -386,6 +432,8 @@ void RenderStackedWidget::setRendererBackend(RKRendererBackend backend)
     const QString name = (_backend == RKRendererBackend::Vulkan) ? QString("Vulkan") : QString("OpenGL");
     _logReporter->logMessage(LogReporting::ErrorLevel::info, QString("Switched renderer to %1").arg(name));
   }
+
+  emit rendererBackendChanged(_backend);
 }
 
 void RenderStackedWidget::setProject(std::shared_ptr<ProjectTreeNode> projectTreeNode)

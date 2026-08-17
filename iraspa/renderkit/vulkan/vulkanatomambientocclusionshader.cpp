@@ -1,8 +1,10 @@
 #include "vulkanatomambientocclusionshader.h"
 
 #include "quadgeometry.h"
+#include "ribbonaolayout.h"
 #include "rkcamera.h"
 #include "vulkanatomsphereshader.h"
+#include "vulkanribbonambientocclusionshader.h"
 #include "vulkanshader.h"
 
 #include <algorithm>
@@ -411,9 +413,179 @@ VkDescriptorSet VulkanAtomAmbientOcclusionShader::samplerSet(size_t sceneIndex, 
   return _structureResources[sceneIndex][movieIndex].samplerSet;
 }
 
-void VulkanAtomAmbientOcclusionShader::reloadData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality)
+bool VulkanAtomAmbientOcclusionShader::wantsBake(size_t sceneIndex, size_t movieIndex) const
 {
-  _renderer->waitIdle();
+  if (sceneIndex >= _renderStructures.size() || movieIndex >= _renderStructures[sceneIndex].size())
+  {
+    return false;
+  }
+  auto *object = dynamic_cast<RKRenderObject *>(_renderStructures[sceneIndex][movieIndex].get());
+  auto *source = dynamic_cast<RKRenderAtomSource *>(_renderStructures[sceneIndex][movieIndex].get());
+  return object && source && object->cell() && source->drawAtoms() && source->atomAmbientOcclusion() && object->isVisible() &&
+         _atomShader->instanceCount(sceneIndex, movieIndex) > 0;
+}
+
+bool VulkanAtomAmbientOcclusionShader::hasCachedTexture(RKRenderObject *key, uint32_t textureSize) const
+{
+  auto cacheIt = _cache.find(key);
+  return cacheIt != _cache.end() && cacheIt->second &&
+         cacheIt->second->size() == static_cast<size_t>(textureSize) * textureSize;
+}
+
+void VulkanAtomAmbientOcclusionShader::setGenerationBuffers(const VulkanBuffer &structureBuffer, const VulkanBuffer &shadowBuffer)
+{
+  VkDescriptorBufferInfo structureInfo{structureBuffer.buffer, 0, sizeof(RKStructureUniforms)};
+  VkDescriptorBufferInfo shadowInfo{shadowBuffer.buffer, 0, sizeof(RKShadowUniforms)};
+  auto writeBuffer = [&](uint32_t binding, const VkDescriptorBufferInfo *info) {
+    VkWriteDescriptorSet write{};
+    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.dstSet = _generationSet;
+    write.dstBinding = binding;
+    write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    write.descriptorCount = 1;
+    write.pBufferInfo = info;
+    return write;
+  };
+  std::array<VkWriteDescriptorSet, 2> writes = {writeBuffer(0, &structureInfo), writeBuffer(1, &shadowInfo)};
+  vkUpdateDescriptorSets(_renderer->device(), 2, writes.data(), 0, nullptr);
+}
+
+void VulkanAtomAmbientOcclusionShader::useShadowMap(VkImageView shadowMapView)
+{
+  VkDescriptorImageInfo shadowImage{};
+  shadowImage.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  shadowImage.imageView = shadowMapView;
+  shadowImage.sampler = _renderer->shadowCompareSampler();
+  VkWriteDescriptorSet shadowWrite{};
+  shadowWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  shadowWrite.dstSet = _shadowSamplerSet;
+  shadowWrite.dstBinding = 0;
+  shadowWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  shadowWrite.descriptorCount = 1;
+  shadowWrite.pImageInfo = &shadowImage;
+  vkUpdateDescriptorSets(_renderer->device(), 1, &shadowWrite, 0, nullptr);
+}
+
+void VulkanAtomAmbientOcclusionShader::restoreDefaultShadowMap()
+{
+  useShadowMap(_shadowMap.view);
+}
+
+bool VulkanAtomAmbientOcclusionShader::prepareTarget(size_t sceneIndex, size_t movieIndex)
+{
+  if (!wantsBake(sceneIndex, movieIndex) || !_accumulatePipeline)
+  {
+    return false;
+  }
+
+  auto *source = dynamic_cast<RKRenderAtomSource *>(_renderStructures[sceneIndex][movieIndex].get());
+  StructureResources &resources = _structureResources[sceneIndex][movieIndex];
+  const uint32_t textureSize = static_cast<uint32_t>(std::max(source->atomAmbientOcclusionTextureSize(), 1));
+  resources.textureSize = textureSize;
+
+  RKRenderObject *key = _renderStructures[sceneIndex][movieIndex].get();
+  if (hasCachedTexture(key, textureSize))
+  {
+    resources.texture = _renderer->createTextureR16F(textureSize, textureSize, _cache[key]->data());
+    resources.samplerSet = _renderer->allocateSamplerDescriptorSet(resources.texture);
+    return false;
+  }
+
+  resources.texture = _renderer->createAttachmentTexture(
+      textureSize, textureSize, VK_FORMAT_R16_SFLOAT,
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+      VK_IMAGE_ASPECT_COLOR_BIT);
+  VkFramebufferCreateInfo framebufferInfo{};
+  framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+  framebufferInfo.renderPass = _aoClearRenderPass;
+  framebufferInfo.attachmentCount = 1;
+  framebufferInfo.pAttachments = &resources.texture.view;
+  framebufferInfo.width = textureSize;
+  framebufferInfo.height = textureSize;
+  framebufferInfo.layers = 1;
+  if (vkCreateFramebuffer(_renderer->device(), &framebufferInfo, nullptr, &resources.framebuffer) != VK_SUCCESS)
+  {
+    throw std::runtime_error("failed to create AO atlas framebuffer");
+  }
+  return true;
+}
+
+void VulkanAtomAmbientOcclusionShader::recordClear(VkCommandBuffer commandBuffer, size_t sceneIndex, size_t movieIndex)
+{
+  StructureResources &resources = _structureResources[sceneIndex][movieIndex];
+  VkRenderPassBeginInfo aoBegin{};
+  aoBegin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  aoBegin.renderPass = _aoClearRenderPass;
+  aoBegin.framebuffer = resources.framebuffer;
+  aoBegin.renderArea.extent = {resources.textureSize, resources.textureSize};
+  VkClearValue aoClear{};
+  aoClear.color = {{0.0f, 0.0f, 0.0f, 0.0f}};
+  aoBegin.clearValueCount = 1;
+  aoBegin.pClearValues = &aoClear;
+  vkCmdBeginRenderPass(commandBuffer, &aoBegin, VK_SUBPASS_CONTENTS_INLINE);
+  vkCmdEndRenderPass(commandBuffer);
+}
+
+void VulkanAtomAmbientOcclusionShader::recordAccumulate(VkCommandBuffer commandBuffer, size_t sceneIndex, size_t movieIndex,
+                                                        uint32_t directionIndex, VkDeviceSize structureStride,
+                                                        VkDeviceSize shadowStride, float weight)
+{
+  StructureResources &resources = _structureResources[sceneIndex][movieIndex];
+  VkBuffer instances = _atomShader->instanceBuffer(sceneIndex, movieIndex);
+  const uint32_t count = _atomShader->instanceCount(sceneIndex, movieIndex);
+  if (!instances || count == 0 || !resources.framebuffer)
+  {
+    return;
+  }
+
+  VkRenderPassBeginInfo accumulateBegin{};
+  accumulateBegin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  accumulateBegin.renderPass = _aoAccumulateRenderPass;
+  accumulateBegin.framebuffer = resources.framebuffer;
+  accumulateBegin.renderArea.extent = {resources.textureSize, resources.textureSize};
+  vkCmdBeginRenderPass(commandBuffer, &accumulateBegin, VK_SUBPASS_CONTENTS_INLINE);
+  setViewport(commandBuffer, resources.textureSize, resources.textureSize);
+  vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _accumulatePipeline);
+  VkDeviceSize vertexOffset = 0;
+  vkCmdBindVertexBuffers(commandBuffer, 0, 1, &_quadVertexBuffer.buffer, &vertexOffset);
+  vkCmdBindIndexBuffer(commandBuffer, _quadIndexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+  const uint32_t offsets[] = {static_cast<uint32_t>(movieIndex * structureStride),
+                              static_cast<uint32_t>(directionIndex * shadowStride)};
+  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _accumulatePipelineLayout, 0, 1, &_generationSet, 2,
+                          offsets);
+  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _accumulatePipelineLayout, 1, 1, &_shadowSamplerSet, 0,
+                          nullptr);
+  vkCmdPushConstants(commandBuffer, _accumulatePipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &weight);
+  vkCmdBindVertexBuffers(commandBuffer, 1, 1, &instances, &vertexOffset);
+  vkCmdDrawIndexed(commandBuffer, _quadIndexCount, count, 0, 0, 0);
+  vkCmdEndRenderPass(commandBuffer);
+}
+
+void VulkanAtomAmbientOcclusionShader::finalizeTarget(size_t sceneIndex, size_t movieIndex)
+{
+  StructureResources &resources = _structureResources[sceneIndex][movieIndex];
+  RKRenderObject *key = _renderStructures[sceneIndex][movieIndex].get();
+  if (resources.textureSize < 2048)
+  {
+    auto cached = std::make_shared<std::vector<uint16_t>>(static_cast<size_t>(resources.textureSize) * resources.textureSize);
+    _renderer->copyImageToHost(resources.texture.image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_FORMAT_R16_SFLOAT,
+                               VK_IMAGE_ASPECT_COLOR_BIT, resources.textureSize, resources.textureSize, cached->data(),
+                               cached->size() * sizeof(uint16_t));
+    _renderer->transitionImageLayout(resources.texture.image, VK_FORMAT_R16_SFLOAT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    _cache[key] = cached;
+  }
+  else
+  {
+    _renderer->transitionImageLayout(resources.texture.image, VK_FORMAT_R16_SFLOAT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+  }
+  resources.samplerSet = _renderer->allocateSamplerDescriptorSet(resources.texture);
+}
+
+void VulkanAtomAmbientOcclusionShader::reloadData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality,
+                                                 VulkanRibbonAmbientOcclusionShader *ribbonAO)
+{
   destroyStructureResources();
   _structureResources.resize(_renderStructures.size());
   for (size_t i = 0; i < _renderStructures.size(); ++i)
@@ -421,7 +593,7 @@ void VulkanAtomAmbientOcclusionShader::reloadData(std::shared_ptr<RKRenderDataSo
     _structureResources[i].resize(_renderStructures[i].size());
   }
   adjustTextureSizes();
-  generateTextures(dataSource, quality);
+  generateTextures(dataSource, quality, ribbonAO);
 }
 
 void VulkanAtomAmbientOcclusionShader::adjustTextureSizes()
@@ -431,11 +603,11 @@ void VulkanAtomAmbientOcclusionShader::adjustTextureSizes()
     for (size_t j = 0; j < _renderStructures[i].size(); ++j)
     {
       auto *source = dynamic_cast<RKRenderAtomSource *>(_renderStructures[i][j].get());
-      if (!source)
+      if (!source || !source->drawAtoms() || !source->atomAmbientOcclusion())
       {
         continue;
       }
-      const size_t numberOfAtoms = source->renderAtoms().size();
+      const size_t numberOfAtoms = _atomShader->instanceCount(i, j);
       int textureSize = 256;
       if (numberOfAtoms < 64)
       {
@@ -489,7 +661,8 @@ void VulkanAtomAmbientOcclusionShader::recordImageBarrier(VkCommandBuffer comman
   vkCmdPipelineBarrier(commandBuffer, srcStage, dstStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 }
 
-void VulkanAtomAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality)
+void VulkanAtomAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality,
+                                                        VulkanRibbonAmbientOcclusionShader *ribbonAO)
 {
   if (!dataSource || !_shadowPipeline || !_accumulatePipeline)
   {
@@ -504,8 +677,20 @@ void VulkanAtomAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRender
     {
       auto *object = dynamic_cast<RKRenderObject *>(_renderStructures[i][j].get());
       auto *source = dynamic_cast<RKRenderAtomSource *>(_renderStructures[i][j].get());
-      if (!object || !source || !object->cell() || !source->atomAmbientOcclusion() || !object->isVisible() ||
-          _atomShader->instanceCount(i, j) == 0)
+      if (!object || !source || !object->cell() || !source->drawAtoms() || !source->atomAmbientOcclusion() ||
+          !object->isVisible() || _atomShader->instanceCount(i, j) == 0)
+      {
+        continue;
+      }
+
+      const uint32_t atomTextureSize = static_cast<uint32_t>(std::max(source->atomAmbientOcclusionTextureSize(), 1));
+      auto *ribbonSource = dynamic_cast<RKRenderRibbonSource *>(object);
+      const bool ribbonFreshBake =
+          ribbonAO && shouldBakeRibbonAmbientOcclusion(object) && ribbonSource &&
+          !ribbonAO->hasCachedTexture(object,
+                                      static_cast<uint32_t>(std::max(ribbonSource->ribbonAmbientOcclusionTextureWidth(), 1)),
+                                      static_cast<uint32_t>(std::max(ribbonSource->ribbonAmbientOcclusionTextureHeight(), 1)));
+      if (ribbonFreshBake && !hasCachedTexture(object, atomTextureSize))
       {
         continue;
       }
@@ -705,13 +890,23 @@ void VulkanAtomAmbientOcclusionShader::generateTextures(std::shared_ptr<RKRender
 
       _renderer->submitOneTimeCommands(commandBuffer);
 
-      auto cached = std::make_shared<std::vector<uint16_t>>(static_cast<size_t>(textureSize) * textureSize);
-      _renderer->copyImageToHost(resources.texture.image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_FORMAT_R16_SFLOAT,
-                                 VK_IMAGE_ASPECT_COLOR_BIT, textureSize, textureSize, cached->data(),
-                                 cached->size() * sizeof(uint16_t));
-      _renderer->transitionImageLayout(resources.texture.image, VK_FORMAT_R16_SFLOAT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-      _cache[key] = cached;
+      // Large atlases stay on the GPU. A host readback stalls the UI for tens of
+      // milliseconds extra and is only useful when switching back to a cached project.
+      if (textureSize < 2048)
+      {
+        auto cached = std::make_shared<std::vector<uint16_t>>(static_cast<size_t>(textureSize) * textureSize);
+        _renderer->copyImageToHost(resources.texture.image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_FORMAT_R16_SFLOAT,
+                                   VK_IMAGE_ASPECT_COLOR_BIT, textureSize, textureSize, cached->data(),
+                                   cached->size() * sizeof(uint16_t));
+        _renderer->transitionImageLayout(resources.texture.image, VK_FORMAT_R16_SFLOAT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        _cache[key] = cached;
+      }
+      else
+      {
+        _renderer->transitionImageLayout(resources.texture.image, VK_FORMAT_R16_SFLOAT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+      }
       resources.samplerSet = _renderer->allocateSamplerDescriptorSet(resources.texture);
     }
   }

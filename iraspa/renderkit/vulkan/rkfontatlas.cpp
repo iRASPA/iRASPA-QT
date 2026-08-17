@@ -23,6 +23,12 @@
 #include <QPainter>
 #include <QRectF>
 #include <QtGlobal>
+#include <QChar>
+#include <QFont>
+#include <QImage>
+#include <QRawFont>
+#include <QString>
+#include <QVector>
 #include "rkfontatlas.h"
 #include "foundationkit.h"
 const int scaler = 16;
@@ -89,7 +95,7 @@ bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
   //	render all the glyphs individually
   qDebug() << "Rendering characters into a packed " + QString::number(texture_size) + " image";
   int packed_glyph_index = 0;
-  int tin = clock();
+  clock_t tin = clock();
   for( unsigned int char_index = 0; char_index < render_list.size(); ++char_index )
   {
     QVector<quint32> glyph_index2 = rawFont.glyphIndexesForString(QString(QChar(render_list[char_index])));
@@ -146,7 +152,7 @@ bool RKFontAtlas::renderSignedDistanceFont(QRawFont &rawFont, int texture_size)
     printf( "%i ", render_list[char_index] );
   }
   tin = clock() - tin;
-  printf( "\nRenderint took %1.3f seconds\n\n", 0.001f * tin );
+  printf( "\nRendering took %1.3f seconds\n\n", static_cast<double>(tin) / CLOCKS_PER_SEC );
 
   //printf( "\nCompressing the image to PNG\n" );
   //tin = save_png_SDFont(

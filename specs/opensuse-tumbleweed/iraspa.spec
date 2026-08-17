@@ -1,5 +1,5 @@
 Name:           iraspa
-Version:        2.2.4
+Version:        2.3.7
 Release:        1%{?dist}
 Summary:        A molecular visualizer/editor
 Group:          Sciences/Chemistry
@@ -18,15 +18,15 @@ the latest visualization technologies with stunning performance. It can
 handle large structures (hundreds of thousands of atoms), including ambient
 occlusion, with high frame rates.
 
-BuildRequires:  gcc11-c++, gcc-c++, qt6-tools-devel, qt6-core-devel, qt6-concurrent-devel, qt6-opengl-devel, qt6-base-devel, qt6-openglwidgets-devel, qt6-platformsupport-devel-static, ffmpeg-4-libavcodec-devel, ffmpeg-4-libavdevice-devel, ffmpeg-4-libavfilter-devel, ffmpeg-4-libavformat-devel, ffmpeg-4-libavresample-devel, ffmpeg-4-libavutil-devel, ffmpeg-4-libpostproc-devel, ffmpeg-4-libswresample-dev, ffmpeg-4-libswscale-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel, python3-devel
+BuildRequires:  cmake, gcc11-c++, gcc-c++, qt6-tools-devel, qt6-core-devel, qt6-concurrent-devel, qt6-opengl-devel, qt6-base-devel, qt6-openglwidgets-devel, qt6-platformsupport-devel-static, ffmpeg-4-libavcodec-devel, ffmpeg-4-libavdevice-devel, ffmpeg-4-libavfilter-devel, ffmpeg-4-libavformat-devel, ffmpeg-4-libavresample-devel, ffmpeg-4-libavutil-devel, ffmpeg-4-libpostproc-devel, ffmpeg-4-libswresample-dev, ffmpeg-4-libswscale-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel, python3-devel
 Requires:       libQt6Core6, libQt6DBus6, libQt6Gui6, ffmpeg-4, libpython3_9-1_0, liblzma5, zlib
 
 %prep
 %setup -q -n %{name}
 
 %build
-qmake6 iraspa.pro
-make %{?_smp_mflags} BINDIR=%{_bindir}
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%{_prefix}
+cmake --build build -- %{?_smp_mflags}
 
 %install
 mkdir -p $RPM_BUILD_ROOT/usr/bin
@@ -40,7 +40,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/64x64/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/128x128/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/256x256/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/512x512/apps
-install -m 755 %{name} $RPM_BUILD_ROOT/usr/bin/%{name}
+install -m 755 build/%{name} $RPM_BUILD_ROOT/usr/bin/%{name}
 install -m 644 datafiles/databasecoremof.irspdoc $RPM_BUILD_ROOT/usr/share/%{name}
 install -m 644 datafiles/databasecoremofddec.irspdoc $RPM_BUILD_ROOT/usr/share/%{name}
 install -m 644 datafiles/databaseiza.irspdoc $RPM_BUILD_ROOT/usr/share/%{name}

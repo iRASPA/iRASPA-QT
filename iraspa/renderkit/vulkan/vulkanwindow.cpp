@@ -8,8 +8,10 @@
 
 #include <QEvent>
 #include <QExposeEvent>
+#include <QGuiApplication>
 #include <QMouseEvent>
 #include <QRect>
+#include <QVulkanInstance>
 #include <QWheelEvent>
 
 #ifdef Q_OS_MACOS
@@ -21,6 +23,30 @@ void *makeViewMetalCompatible(void *handle);
 VulkanWindow::VulkanWindow(QWindow *parent) : QWindow(parent)
 {
   setSurfaceType(QSurface::RasterSurface);
+
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS) && QT_CONFIG(vulkan)
+  // Let Qt create the instance and the surface, because it is the only party
+  // that knows whether the session is X11 or Wayland. Both the surface type and
+  // the instance have to be set before the platform window is created, hence
+  // here rather than in initializeRenderer(). Falls back to the hand-written
+  // XCB path in VulkanRenderer when this Qt was built without Vulkan support.
+  auto instance = std::make_unique<QVulkanInstance>();
+#ifndef NDEBUG
+  instance->setLayers({"VK_LAYER_KHRONOS_validation"});
+  instance->setExtensions({"VK_EXT_debug_report"});
+#endif
+  if (instance->create())
+  {
+    _vulkanInstance = std::move(instance);
+    setSurfaceType(QSurface::VulkanSurface);
+    setVulkanInstance(_vulkanInstance.get());
+  }
+  else
+  {
+    qWarning("Qt could not create a Vulkan instance for %s; falling back to creating the surface by hand",
+             qPrintable(QGuiApplication::platformName()));
+  }
+#endif
 
   _timer = new QTimer(this);
   _timer->setSingleShot(true);
@@ -53,7 +79,7 @@ void VulkanWindow::prepareForDestruction()
 
 void VulkanWindow::initializeRenderer()
 {
-  if (_destroyed || _initialized)
+  if (_destroyed || _initialized || _initializationFailed)
   {
     return;
   }
@@ -80,6 +106,10 @@ void VulkanWindow::initializeRenderer()
   catch (const std::exception &e)
   {
     qCritical("Vulkan renderer initialization failed: %s", e.what());
+    _initializationFailed = true;
+    _scene.reset();
+    _renderer.reset();
+    emit rendererInitializationFailed(QString::fromUtf8(e.what()));
   }
 }
 
@@ -447,19 +477,19 @@ void VulkanWindow::mouseMoveEvent(QMouseEvent *event)
     _tracking = VulkanTracking::draggedNewSelection;
     _draggedPos = event->pos();
     updateSelectionOverlay();
-    drawFrame();
+    scheduleFrame();
     break;
   case VulkanTracking::addToSelection:
     _tracking = VulkanTracking::draggedAddToSelection;
     _draggedPos = event->pos();
     updateSelectionOverlay();
-    drawFrame();
+    scheduleFrame();
     break;
   case VulkanTracking::draggedNewSelection:
   case VulkanTracking::draggedAddToSelection:
     _draggedPos = event->pos();
     updateSelectionOverlay();
-    drawFrame();
+    scheduleFrame();
     break;
   case VulkanTracking::translateSelection:
   case VulkanTracking::measurement:
@@ -477,7 +507,7 @@ void VulkanWindow::mouseMoveEvent(QMouseEvent *event)
       {
         camera->setTrackBallRotation(trackBallRotation);
       }
-      drawFrame();
+      scheduleFrame();
     }
     break;
   }
@@ -526,5 +556,5 @@ void VulkanWindow::wheelEvent(QWheelEvent *event)
   {
     camera->increaseDistance(event->angleDelta().y() / 40.0);
   }
-  drawFrame();
+  scheduleFrame();
 }

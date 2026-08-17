@@ -117,9 +117,7 @@ void OpenGLRibbonPickingShader::paintGL(GLuint structureUniformBuffer)
           glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, GLintptr(index * sizeof(RKStructureUniforms)), GLsizeiptr(sizeof(RKStructureUniforms)));
           glBindVertexArray(_vertexArrayObject[i][j]);
 
-          const std::vector<RKRibbonChainDrawRange> drawRanges = ribbonSource->ribbonResidueDrawRanges().empty()
-              ? ribbonSource->ribbonChainDrawRanges()
-              : ribbonSource->ribbonResidueDrawRanges();
+          const std::vector<RKRibbonChainDrawRange> drawRanges = ribbonSource->ribbonDrawRangesForEncoding();
           for (const RKRibbonChainDrawRange &drawRange : drawRanges)
           {
             _ribbonShader.drawIndexedRange(drawRange);

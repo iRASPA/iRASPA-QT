@@ -123,7 +123,6 @@ void VulkanIsosurfaceShader::invalidateIsosurface(const std::vector<std::shared_
 
 void VulkanIsosurfaceShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _structureBuffers.resize(_renderStructures.size());
 

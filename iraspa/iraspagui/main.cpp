@@ -62,6 +62,8 @@ int main(int argc, char *argv[])
 #endif
 
   QApplication a(argc, argv);
+  QApplication::setApplicationName(QStringLiteral("iRASPA"));
+  QApplication::setApplicationVersion(QStringLiteral(IRASPA_VERSION_STRING));
   RKRendererAvailability::probe();
 
   QTranslator qtTranslator, appTranslator;

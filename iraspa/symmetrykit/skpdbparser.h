@@ -75,7 +75,7 @@ private:
   bool _proteinOnlyAsymmetricUnitCell;
   bool _asMolecule;
   bool _separatePolymerChains;
-  QString::const_iterator _previousScanLocation;
+  [[maybe_unused]] QString::const_iterator _previousScanLocation;
 
   int _numberOfAtoms = 0;
   int _numberOfAminoAcidAtoms = 0;
@@ -102,7 +102,9 @@ private:
   void noteResidueAtom(const std::shared_ptr<SKAsymmetricAtom> &atom);
   void parseSeqres(const QString &line);
   void parseModres(const QString &line);
+  void parseAndAppendAtomRecord(const QString &line, bool isHetatm);
   SKStructure::Kind kindOfCurrentPart();
 
   void addFrameToStructure(size_t currentMovie, size_t currentFrame);
+  void reserveAtomCapacity(int fileCharacterCount);
 };

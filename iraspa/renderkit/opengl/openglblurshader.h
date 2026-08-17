@@ -23,13 +23,6 @@
 
 #include <vector>
 #include <array>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
 #include "rkrenderkitprotocols.h"
 #include "rkrenderuniforms.h"
 #include "openglshader.h"

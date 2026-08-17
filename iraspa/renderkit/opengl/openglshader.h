@@ -21,20 +21,19 @@
 
 #pragma once
 
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
 #include <QOpenGLFunctions_3_3_Core>
 
-class OpenGLShader: public QOpenGLFunctions_3_3_Core
+class OpenGLShader : public QOpenGLFunctions_3_3_Core
 {
 public:
   OpenGLShader();
-  ~OpenGLShader();
+  virtual ~OpenGLShader();
+
+  bool initializeOpenGLFunctions() override;
   virtual void loadShader() = 0;
-private:
 
 protected:
-  GLuint compileShaderOfType(GLenum shaderType,const GLchar * shaderSourceCode);
+  GLuint compileShaderOfType(GLenum shaderType, const GLchar *shaderSourceCode);
   void linkProgram(GLuint program);
 };
 

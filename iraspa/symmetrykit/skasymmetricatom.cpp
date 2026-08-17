@@ -21,8 +21,28 @@
 
 #include "skasymmetricatom.h"
 #include "skelement.h"
+#include <atomic>
 
-SKAsymmetricAtom::SKAsymmetricAtom(): _displayName("C"), _elementIdentifier(6)
+namespace
+{
+  // Atomic so that the counter stays well defined if drawing ever moves off the GUI thread; only
+  // the change of value matters, never its ordering against the visibility flag itself.
+  std::atomic<qint64> atomVisibilityGeneration{0};
+}
+
+qint64 skAtomVisibilityGeneration()
+{
+  return atomVisibilityGeneration.load(std::memory_order_relaxed);
+}
+
+void skInvalidateAtomVisibilityGeneration()
+{
+  atomVisibilityGeneration.fetch_add(1, std::memory_order_relaxed);
+}
+
+// Element 0 means 'not identified', as it does in every parser and in
+// iRASPA-Cocoa. Callers that want an actual carbon ask for one by name.
+SKAsymmetricAtom::SKAsymmetricAtom()
 {
 
 }
@@ -85,6 +105,7 @@ SKAsymmetricAtom::~SKAsymmetricAtom()
 void SKAsymmetricAtom::toggleVisibility()
 {
   _isVisible = !_isVisible;
+  skInvalidateAtomVisibilityGeneration();
 }
 
 QDataStream &operator<<(QDataStream& stream, const std::vector<std::shared_ptr<SKAtomCopy>>& val)

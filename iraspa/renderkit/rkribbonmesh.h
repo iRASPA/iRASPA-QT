@@ -58,4 +58,9 @@ struct RKRibbonMesh
   RKRibbonMesh() = default;
   RKRibbonMesh(std::vector<RKVertex> vertices, std::vector<uint32_t> indices, std::vector<RKRibbonChainDrawRange> chainDrawRanges):
     vertices(std::move(vertices)), indices(std::move(indices)), chainDrawRanges(std::move(chainDrawRanges)) {}
+
+  /// Merges contiguous or overlapping visible ranges into fewer GPU draw calls.
+  /// Residue/segment ribbon ranges intentionally overlap by one ring pair at boundaries.
+  static std::vector<RKRibbonChainDrawRange> mergedVisibleDrawRanges(const std::vector<RKRibbonChainDrawRange> &ranges,
+                                                                     const std::vector<uint8_t> &visible);
 };

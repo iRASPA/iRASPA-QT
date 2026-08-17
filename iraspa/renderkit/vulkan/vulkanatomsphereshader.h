@@ -18,7 +18,8 @@ public:
   void initialize();
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   void reloadData();
-  void reloadAmbientOcclusionData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality);
+  void reloadAmbientOcclusionData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality,
+                                  class VulkanRibbonShader *ribbonShader = nullptr);
   void invalidateCachedAmbientOcclusionTexture(const std::vector<std::shared_ptr<RKRenderObject>> &structures);
   void paint(VkCommandBuffer commandBuffer, RKRenderQuality quality, bool orthographic);
   void paintPick(VkCommandBuffer commandBuffer, VkPipeline pipeline);
@@ -26,6 +27,7 @@ public:
 
   uint32_t instanceCount(size_t sceneIndex, size_t movieIndex) const;
   VkBuffer instanceBuffer(size_t sceneIndex, size_t movieIndex) const;
+  VulkanAtomAmbientOcclusionShader *ambientOcclusionShader() const;
 
 private:
   void destroyStructureBuffers();

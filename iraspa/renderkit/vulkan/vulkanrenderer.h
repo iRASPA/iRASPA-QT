@@ -140,6 +140,16 @@ public:
   static VkDeviceSize alignedUniformSize(VkDeviceSize size, VkDeviceSize alignment);
 
 private:
+  // Qt hands out the VkInstance and the VkSurfaceKHR when the window was set up
+  // for it, which is what lets the same code serve an X11 and a Wayland session.
+  // All four are inert when Qt does not manage the window, either because the
+  // platform has its own surface code below or because this Qt was built
+  // without Vulkan support.
+  bool usesQtManagedSurface() const;
+  VkInstance qtVkInstance() const;
+  VkSurfaceKHR qtVkSurface() const;
+  void qtPresentNotify(bool aboutToBeQueued) const;
+
   void initVulkan();
   void setupDebugCallback();
   void pickPhysicalDevice();
@@ -189,6 +199,10 @@ private:
   void createUniformBuffers();
   void createDescriptorPool();
   void createSceneDescriptorSet();
+  void writeSceneDescriptorSet(uint32_t slot);
+  void prepareUniformWrite();
+  void destroyUniformBuffers();
+  void destroySyncObjects();
   void createSampler();
   void createWhiteTexture();
   void recreateSwapChain();
@@ -221,6 +235,9 @@ private:
                          uint32_t layerCount = 1);
   void destroySampledDepth();
   void writeHostVisible(VkDeviceMemory memory, const void *data, VkDeviceSize size);
+  uint32_t uniformSlot() const { return _currentFrame; }
+
+  static constexpr uint32_t kMaxFramesInFlight = 3;
 
   QWindow *_window = nullptr;
   const void *_metalLayer = nullptr;
@@ -242,6 +259,8 @@ private:
   VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
   VkDevice _device = VK_NULL_HANDLE;
   VkSurfaceKHR _surface = VK_NULL_HANDLE;
+  bool _ownsInstance = true;
+  bool _ownsSurface = true;
   VkQueue _graphicsQueue = VK_NULL_HANDLE;
   VkQueue _presentQueue = VK_NULL_HANDLE;
 
@@ -325,21 +344,22 @@ private:
   VulkanBuffer _quadIndexBuffer;
   uint32_t _quadIndexCount = 0;
 
-  VkSemaphore _imageAvailableSemaphore = VK_NULL_HANDLE;
-  VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
+  std::array<VkSemaphore, kMaxFramesInFlight> _imageAvailableSemaphores{};
+  std::array<VkSemaphore, kMaxFramesInFlight> _renderFinishedSemaphores{};
+  std::array<VkFence, kMaxFramesInFlight> _inFlightFences{};
+  std::vector<VkFence> _imagesInFlight;
   VkCommandPool _commandPool = VK_NULL_HANDLE;
   std::vector<VkCommandBuffer> _commandBuffers;
-  std::vector<VkFence> _waitFences;
 
-  VulkanBuffer _frameUniformBuffer;
-  VulkanBuffer _structureUniformBuffer;
-  VulkanBuffer _isosurfaceUniformBuffer;
-  VulkanBuffer _lightsUniformBuffer;
-  VulkanBuffer _axesUniformBuffer;
-  VulkanBuffer _ribbonAODebugUniformBuffer;
+  std::array<VulkanBuffer, kMaxFramesInFlight> _frameUniformBuffers{};
+  std::array<VulkanBuffer, kMaxFramesInFlight> _structureUniformBuffers{};
+  std::array<VulkanBuffer, kMaxFramesInFlight> _isosurfaceUniformBuffers{};
+  std::array<VulkanBuffer, kMaxFramesInFlight> _lightsUniformBuffers{};
+  std::array<VulkanBuffer, kMaxFramesInFlight> _axesUniformBuffers{};
+  std::array<VulkanBuffer, kMaxFramesInFlight> _ribbonAODebugUniformBuffers{};
 
   VkDescriptorPool _descriptorPool = VK_NULL_HANDLE;
-  VkDescriptorSet _sceneDescriptorSet = VK_NULL_HANDLE;
+  std::array<VkDescriptorSet, kMaxFramesInFlight> _sceneDescriptorSets{};
   VkSampler _linearSampler = VK_NULL_HANDLE;
   VkSampler _repeatSampler = VK_NULL_HANDLE;
   VkSampler _nearestSampler = VK_NULL_HANDLE;
@@ -353,6 +373,7 @@ private:
   VkDeviceSize _isosurfaceUniformStride = 256;
 
   uint32_t _currentImageIndex = 0;
+  uint32_t _currentFrame = 0;
   bool _frameStarted = false;
   bool _continuedPass = false;
   bool _usePortabilityEnumeration = false;

@@ -117,6 +117,7 @@ private:
   void createVulkanRenderer();
   void destroyRenderer();
   void createRenderer(RKRendererBackend backend);
+  void fallBackToOpenGL(const QString &reason);
   void rebindCurrentProject();
   QStackedWidget *_controlPanel;
 protected:
@@ -182,4 +183,5 @@ signals:
   void rendererWidgetResized();
   void updateAtomSelection();
   void updateBondSelection();
+  void rendererBackendChanged(RKRendererBackend backend);
 };

@@ -12,6 +12,22 @@
 #include "proteinribbonmeshparameters.h"
 #include "proteinribbonsegmentsupport.h"
 #include "skasymmetricatom.h"
+#include <algorithm>
+
+namespace
+{
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> leafAtoms(const SKAtomTreeController &controller)
+  {
+    const std::vector<std::shared_ptr<SKAtomTreeNode>> leaves = controller.flattenedLeafNodes();
+    std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms;
+    atoms.reserve(leaves.size());
+    for (const std::shared_ptr<SKAtomTreeNode> &node : leaves)
+    {
+      atoms.push_back(node->representedObject());
+    }
+    return atoms;
+  }
+}
 
 ProteinRibbonMixin::ProteinRibbonMixin() = default;
 
@@ -57,6 +73,7 @@ void ProteinRibbonMixin::cloneRibbonStateFrom(const ProteinRibbonMixin &other)
   _ribbonAmbientOcclusionTextureWidth = other._ribbonAmbientOcclusionTextureWidth;
   _ribbonAmbientOcclusionTextureHeight = other._ribbonAmbientOcclusionTextureHeight;
   _ribbonAmbientOcclusionStripHeight = other._ribbonAmbientOcclusionStripHeight;
+  invalidateRibbonVisibilityCache();
 }
 
 bool ProteinRibbonMixin::drawRibbon() const { return _drawRibbon; }
@@ -129,8 +146,7 @@ void ProteinRibbonMixin::recheckRibbonRepresentationStyle()
 
 void ProteinRibbonMixin::rebuildBackboneStructure()
 {
-  const std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = ribbonAtomTreeController().flattenedObjects();
-  _backbone = ProteinBackbone::build(atoms);
+  _backbone = ProteinBackbone::build(leafAtoms(ribbonAtomTreeController()));
 }
 
 void ProteinRibbonMixin::rebuildBackbone()
@@ -153,6 +169,7 @@ void ProteinRibbonMixin::rebuildRibbonMesh()
                                                 meshParameters,
                                                 _ribbonSecondaryStructureMethod);
   _ribbonAmbientOcclusionStripHeight = meshParameters.crossSectionRingResolution;
+  invalidateRibbonVisibilityCache();
 }
 
 std::vector<RKVertex> ProteinRibbonMixin::renderRibbonVertices() const
@@ -190,60 +207,110 @@ std::vector<RKRibbonChainDrawRange> ProteinRibbonMixin::ribbonResidueDrawRanges(
   return _ribbonMesh.residueDrawRanges;
 }
 
+const ProteinRibbonMixin::RibbonVisibilityCache &ProteinRibbonMixin::ribbonVisibilityCache() const
+{
+  RibbonVisibilityCache &cache = _ribbonVisibilityCache;
+  const qint64 generation = skAtomVisibilityGeneration();
+  if (cache.generation == generation &&
+      cache.residueDrawRangeCount == _ribbonMesh.residueDrawRanges.size() &&
+      cache.segmentDrawRangeCount == _ribbonMesh.segmentDrawRanges.size())
+  {
+    return cache;
+  }
+
+  SKAtomTreeController &controller = const_cast<SKAtomTreeController&>(ribbonAtomTreeController());
+
+  cache = RibbonVisibilityCache();
+  cache.generation = generation;
+  cache.residueDrawRangeCount = _ribbonMesh.residueDrawRanges.size();
+  cache.segmentDrawRangeCount = _ribbonMesh.segmentDrawRanges.size();
+
+  const bool hasResidueTags = !_ribbonMesh.residueAlphaCarbonTags.empty();
+  const bool hasSegmentTags = !_ribbonMesh.segmentAlphaCarbonTags.empty();
+  cache.usesResidueVisibility = hasResidueTags
+    ? _ribbonMesh.residueAlphaCarbonTags.size() == cache.residueDrawRangeCount
+    : ProteinRibbonSegmentSupport::residueTreeNodesAlignWithDrawRanges(controller, static_cast<int>(cache.residueDrawRangeCount));
+  cache.usesSegmentVisibility = hasSegmentTags
+    ? _ribbonMesh.segmentAlphaCarbonTags.size() == cache.segmentDrawRangeCount
+    : ProteinRibbonSegmentSupport::segmentTreeNodesAlignWithDrawRanges(controller, static_cast<int>(cache.segmentDrawRangeCount));
+
+  const ProteinRibbonSegmentSupport::RibbonVisibilityMasks masks =
+    ProteinRibbonSegmentSupport::visibilityMasks(cache.usesResidueVisibility && hasResidueTags ? _ribbonMesh.residueAlphaCarbonTags : std::vector<int>(),
+                                                 cache.usesSegmentVisibility && hasSegmentTags ? _ribbonMesh.segmentAlphaCarbonTags : std::vector<int>(),
+                                                 controller);
+  cache.residueVisibility = masks.residues;
+  cache.segmentVisibility = masks.segments;
+
+  if (cache.usesResidueVisibility && !hasResidueTags)
+  {
+    cache.residueVisibility =
+      ProteinRibbonSegmentSupport::visibilityMaskForNodes(ProteinRibbonSegmentSupport::orderedResidueTreeNodes(controller));
+  }
+  if (cache.usesSegmentVisibility && !hasSegmentTags)
+  {
+    cache.segmentVisibility =
+      ProteinRibbonSegmentSupport::visibilityMaskForNodes(ProteinRibbonSegmentSupport::orderedSegmentTreeNodes(controller));
+  }
+
+  auto isFullyVisible = [](const std::vector<uint8_t> &mask)
+  {
+    return std::all_of(mask.begin(), mask.end(), [](uint8_t value) { return value != 0; });
+  };
+
+  // Residue ranges win when they drive visibility, exactly as the per-frame path used to decide.
+  cache.encodingDrawRanges = _ribbonMesh.chainDrawRanges;
+  if (cache.usesResidueVisibility && cache.residueDrawRangeCount > 0)
+  {
+    if (cache.residueVisibility.size() == cache.residueDrawRangeCount && !isFullyVisible(cache.residueVisibility))
+    {
+      cache.encodingDrawRanges = RKRibbonMesh::mergedVisibleDrawRanges(_ribbonMesh.residueDrawRanges, cache.residueVisibility);
+    }
+  }
+  else if (cache.usesSegmentVisibility && cache.segmentDrawRangeCount > 0)
+  {
+    if (cache.segmentVisibility.size() == cache.segmentDrawRangeCount && !isFullyVisible(cache.segmentVisibility))
+    {
+      cache.encodingDrawRanges = RKRibbonMesh::mergedVisibleDrawRanges(_ribbonMesh.segmentDrawRanges, cache.segmentVisibility);
+    }
+  }
+
+  return cache;
+}
+
+void ProteinRibbonMixin::invalidateRibbonVisibilityCache()
+{
+  _ribbonVisibilityCache = RibbonVisibilityCache();
+}
+
+std::vector<RKRibbonChainDrawRange> ProteinRibbonMixin::ribbonDrawRangesForEncoding() const
+{
+  return ribbonVisibilityCache().encodingDrawRanges;
+}
+
 bool ProteinRibbonMixin::ribbonUsesSegmentVisibility() const
 {
-  if (!_ribbonMesh.segmentAlphaCarbonTags.empty())
-  {
-    return _ribbonMesh.segmentAlphaCarbonTags.size() == _ribbonMesh.segmentDrawRanges.size();
-  }
-  return ProteinRibbonSegmentSupport::segmentTreeNodesAlignWithDrawRanges(const_cast<SKAtomTreeController&>(ribbonAtomTreeController()),
-                                                                          static_cast<int>(_ribbonMesh.segmentDrawRanges.size()));
+  return ribbonVisibilityCache().usesSegmentVisibility;
 }
 
 bool ProteinRibbonMixin::ribbonUsesResidueVisibility() const
 {
-  if (!_ribbonMesh.residueAlphaCarbonTags.empty())
-  {
-    return _ribbonMesh.residueAlphaCarbonTags.size() == _ribbonMesh.residueDrawRanges.size();
-  }
-  return ProteinRibbonSegmentSupport::residueTreeNodesAlignWithDrawRanges(const_cast<SKAtomTreeController&>(ribbonAtomTreeController()),
-                                                                          static_cast<int>(_ribbonMesh.residueDrawRanges.size()));
+  return ribbonVisibilityCache().usesResidueVisibility;
 }
 
 bool ProteinRibbonMixin::isRibbonSegmentDrawRangeVisible(int index) const
 {
-  if (!ribbonUsesSegmentVisibility()) { return true; }
-  SKAtomTreeController &controller = const_cast<SKAtomTreeController&>(ribbonAtomTreeController());
-  if (!_ribbonMesh.segmentAlphaCarbonTags.empty())
-  {
-    if (index < 0 || index >= static_cast<int>(_ribbonMesh.segmentAlphaCarbonTags.size())) { return true; }
-    const int tag = _ribbonMesh.segmentAlphaCarbonTags[static_cast<size_t>(index)];
-    const std::shared_ptr<SKAtomTreeNode> segmentNode = ProteinRibbonSegmentSupport::segmentTreeNodeForAtomTag(tag, controller);
-    if (!segmentNode) { return true; }
-    return ProteinRibbonSegmentSupport::isRibbonSegmentVisible(segmentNode);
-  }
-  const std::vector<std::shared_ptr<SKAtomTreeNode>> segmentNodes =
-    ProteinRibbonSegmentSupport::orderedSegmentTreeNodes(controller);
-  if (index < 0 || index >= static_cast<int>(segmentNodes.size())) { return true; }
-  return ProteinRibbonSegmentSupport::isRibbonSegmentVisible(segmentNodes[static_cast<size_t>(index)]);
+  const RibbonVisibilityCache &cache = ribbonVisibilityCache();
+  if (!cache.usesSegmentVisibility) { return true; }
+  if (index < 0 || index >= static_cast<int>(cache.segmentVisibility.size())) { return true; }
+  return cache.segmentVisibility[static_cast<size_t>(index)] != 0;
 }
 
 bool ProteinRibbonMixin::isRibbonResidueDrawRangeVisible(int index) const
 {
-  if (!ribbonUsesResidueVisibility()) { return true; }
-  SKAtomTreeController &controller = const_cast<SKAtomTreeController&>(ribbonAtomTreeController());
-  if (!_ribbonMesh.residueAlphaCarbonTags.empty())
-  {
-    if (index < 0 || index >= static_cast<int>(_ribbonMesh.residueAlphaCarbonTags.size())) { return true; }
-    const int tag = _ribbonMesh.residueAlphaCarbonTags[static_cast<size_t>(index)];
-    const std::shared_ptr<SKAtomTreeNode> residueNode = ProteinRibbonSegmentSupport::residueTreeNodeForAtomTag(tag, controller);
-    if (!residueNode) { return true; }
-    return ProteinRibbonSegmentSupport::isRibbonResidueVisible(residueNode);
-  }
-  const std::vector<std::shared_ptr<SKAtomTreeNode>> residueNodes =
-    ProteinRibbonSegmentSupport::orderedResidueTreeNodes(controller);
-  if (index < 0 || index >= static_cast<int>(residueNodes.size())) { return true; }
-  return ProteinRibbonSegmentSupport::isRibbonResidueVisible(residueNodes[static_cast<size_t>(index)]);
+  const RibbonVisibilityCache &cache = ribbonVisibilityCache();
+  if (!cache.usesResidueVisibility) { return true; }
+  if (index < 0 || index >= static_cast<int>(cache.residueVisibility.size())) { return true; }
+  return cache.residueVisibility[static_cast<size_t>(index)] != 0;
 }
 
 std::set<int> ProteinRibbonMixin::renderSelectedRibbonSegmentDrawRangeIndices() const

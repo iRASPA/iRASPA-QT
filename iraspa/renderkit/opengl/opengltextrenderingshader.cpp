@@ -21,6 +21,8 @@
 
 #include "opengltextrenderingshader.h"
 #include <QDebug>
+#include <QCache>
+#include <QString>
 #include <iostream>
 #include "glgeterror.h"
 #include "spheregeometry.h"

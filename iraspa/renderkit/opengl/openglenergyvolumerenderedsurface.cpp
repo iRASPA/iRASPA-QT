@@ -26,6 +26,7 @@
 #include "rkrenderuniforms.h"
 #include "opengluniformstringliterals.h"
 #include <QDebug>
+#include <QCache>
 #include <algorithm>
 #include <cmath>
 

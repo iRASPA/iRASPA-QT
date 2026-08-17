@@ -24,7 +24,7 @@
 #include <QtGlobal>
 
 
-#if (QT_VERSION < QT_VERSION_CHECK(5,6,0))
+#if defined(USE_WEBENGINE) && (QT_VERSION < QT_VERSION_CHECK(5,6,0))
 #include <QtNetwork>
 #include <QNetworkConfiguration>
   HelpBrowser::HelpBrowser(QWidget* parent): QWebView(parent)
@@ -33,7 +33,7 @@
     setUrl(_home);
   }
 
-#elif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+#elif defined(USE_WEBENGINE) && (QT_VERSION < QT_VERSION_CHECK(6,0,0))
 #include <QtNetwork>
 #include <QNetworkConfiguration>
   HelpBrowser::HelpBrowser(QWidget* parent): QWebEngineView(parent)

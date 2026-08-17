@@ -21,6 +21,7 @@ public:
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
   void reloadData();
   void reloadAmbientOcclusionData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality);
+  VulkanRibbonAmbientOcclusionShader *ambientOcclusionShader() const { return _aoShader.get(); }
   void invalidateCachedAmbientOcclusionTexture(const std::vector<std::shared_ptr<RKRenderObject>> &structures);
   void paint(VkCommandBuffer commandBuffer);
   RibbonAODebugMode aoDebugMode() const { return _aoDebugMode; }
@@ -36,13 +37,6 @@ public:
   void drawAllChains(VkCommandBuffer commandBuffer, RKRenderRibbonSource *ribbonSource) const;
 
 private:
-  enum class RibbonDrawVisibilityMode
-  {
-    none,
-    segment,
-    residue
-  };
-
   void destroyStructureBuffers();
   void drawRibbonRanges(VkCommandBuffer commandBuffer, RKRenderRibbonSource *ribbonSource) const;
   void drawSelectedRibbonRanges(VkCommandBuffer commandBuffer, RKRenderRibbonSource *ribbonSource) const;

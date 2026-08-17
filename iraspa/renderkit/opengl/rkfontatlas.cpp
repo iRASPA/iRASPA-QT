@@ -23,6 +23,15 @@
 #include "foundationkit.h"
 #include <QPainter>
 #include <QPainterPath>
+#include <QChar>
+#include <QFont>
+#include <QImage>
+#include <QList>
+#include <QPointF>
+#include <QRawFont>
+#include <QRectF>
+#include <QString>
+#include <QVector>
 const int scaler = 16;
 
 RKFontAtlas::RKFontAtlas(QString fontName, int texture_size): width(texture_size), height(texture_size), textureData(texture_size * texture_size), _pdata( 4 * texture_size * texture_size, 0 ), characters()

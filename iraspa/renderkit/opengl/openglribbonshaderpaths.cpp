@@ -3,6 +3,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
+#include <QIODevice>
+#include <QString>
 
 namespace OpenGLRibbonShaders
 {

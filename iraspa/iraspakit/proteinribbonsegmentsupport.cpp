@@ -7,6 +7,7 @@
 
 #include "proteinribbonsegmentsupport.h"
 #include <algorithm>
+#include <unordered_map>
 
 namespace
 {
@@ -24,19 +25,16 @@ namespace
     return true;
   }
 
-  std::shared_ptr<SKAtomTreeNode> leafNodeForAtomTag(qint64 tag, SKAtomTreeController &controller)
+  std::unordered_map<int, std::shared_ptr<SKAtomTreeNode>> leafNodesByTag(SKAtomTreeController &controller)
   {
-    if (tag < 0) return nullptr;
     const std::vector<std::shared_ptr<SKAtomTreeNode>> leafNodes = controller.flattenedLeafNodes();
-    if (tag < static_cast<qint64>(leafNodes.size()) && leafNodes[static_cast<size_t>(tag)]->representedObject()->tag() == tag)
-    {
-      return leafNodes[static_cast<size_t>(tag)];
-    }
+    std::unordered_map<int, std::shared_ptr<SKAtomTreeNode>> nodesByTag;
+    nodesByTag.reserve(leafNodes.size());
     for (const std::shared_ptr<SKAtomTreeNode> &leafNode : leafNodes)
     {
-      if (leafNode->representedObject()->tag() == tag) return leafNode;
+      nodesByTag[static_cast<int>(leafNode->representedObject()->tag())] = leafNode;
     }
-    return nullptr;
+    return nodesByTag;
   }
 
   std::vector<std::shared_ptr<SKAsymmetricAtom>> backboneAlphaCarbonAtoms(const ProteinBackbone &backbone)
@@ -429,12 +427,41 @@ std::shared_ptr<SKAtomTreeNode> ProteinRibbonSegmentSupport::enclosingSecondaryS
   return nullptr;
 }
 
-std::shared_ptr<SKAtomTreeNode> ProteinRibbonSegmentSupport::residueTreeNodeForAtomTag(qint64 tag, SKAtomTreeController &controller)
+std::vector<uint8_t> ProteinRibbonSegmentSupport::visibilityMaskForNodes(const std::vector<std::shared_ptr<SKAtomTreeNode>> &nodes)
 {
-  return enclosingResidueGroupNode(leafNodeForAtomTag(tag, controller));
+  std::vector<uint8_t> visible;
+  visible.reserve(nodes.size());
+  for (const std::shared_ptr<SKAtomTreeNode> &node : nodes)
+  {
+    visible.push_back(!node || isRibbonHierarchyNodeVisible(node) ? 1 : 0);
+  }
+  return visible;
 }
 
-std::shared_ptr<SKAtomTreeNode> ProteinRibbonSegmentSupport::segmentTreeNodeForAtomTag(qint64 tag, SKAtomTreeController &controller)
+ProteinRibbonSegmentSupport::RibbonVisibilityMasks ProteinRibbonSegmentSupport::visibilityMasks(const std::vector<int> &residueAlphaCarbonTags,
+                                                                                               const std::vector<int> &segmentAlphaCarbonTags,
+                                                                                               SKAtomTreeController &controller)
 {
-  return enclosingSecondaryStructureSegmentNode(leafNodeForAtomTag(tag, controller));
+  RibbonVisibilityMasks masks;
+  if (residueAlphaCarbonTags.empty() && segmentAlphaCarbonTags.empty()) return masks;
+
+  const std::unordered_map<int, std::shared_ptr<SKAtomTreeNode>> nodesByTag = leafNodesByTag(controller);
+
+  auto maskForTags = [&nodesByTag](const std::vector<int> &tags,
+                                   const std::function<std::shared_ptr<SKAtomTreeNode>(const std::shared_ptr<SKAtomTreeNode>&)> &enclosing)
+  {
+    std::vector<uint8_t> visible;
+    visible.reserve(tags.size());
+    for (int tag : tags)
+    {
+      const auto it = tag >= 0 ? nodesByTag.find(tag) : nodesByTag.end();
+      const std::shared_ptr<SKAtomTreeNode> node = it != nodesByTag.end() ? enclosing(it->second) : nullptr;
+      visible.push_back(!node || isRibbonHierarchyNodeVisible(node) ? 1 : 0);
+    }
+    return visible;
+  };
+
+  masks.residues = maskForTags(residueAlphaCarbonTags, enclosingResidueGroupNode);
+  masks.segments = maskForTags(segmentAlphaCarbonTags, enclosingSecondaryStructureSegmentNode);
+  return masks;
 }

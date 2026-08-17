@@ -15,7 +15,7 @@ ProteinBSpline::ProteinBSpline(std::vector<double3> controlPoints,
                                int degree):
   _controlPoints(std::move(controlPoints)),
   _orientationVectors(std::move(orientationVectors)),
-  _degree(std::min(degree, static_cast<int>(_controlPoints.size()) - 1))
+  _degree(std::min({degree, static_cast<int>(_controlPoints.size()) - 1, maximumDegree}))
 {
   if (_controlPoints.size() != _orientationVectors.size())
   {
@@ -26,6 +26,7 @@ ProteinBSpline::ProteinBSpline(std::vector<double3> controlPoints,
     throw std::invalid_argument("ProteinBSpline requires at least two control points");
   }
   _knots = computeKnots(static_cast<int>(_controlPoints.size()), _degree);
+  computeDerivativeCurve(_controlPoints, _degree, _knots, _derivativeControlPoints, _derivativeKnots);
   _arcLengthCache = buildArcLengthCache(_controlPoints, _degree, _knots);
 }
 
@@ -60,7 +61,7 @@ double ProteinBSpline::parameterFromArcLength(double targetLength) const
 
   const double lengthBefore = _arcLengthCache[index - 1];
   const double lengthAfter = _arcLengthCache[index];
-  const double fraction = (targetLength - lengthBefore) / (lengthAfter - lengthBefore);
+  const double fraction = (targetLength - lengthBefore) / std::max(lengthAfter - lengthBefore, 1.0e-18);
   const double tBefore = static_cast<double>(index - 1) / static_cast<double>(_arcLengthCache.size() - 1);
   const double tAfter = static_cast<double>(index) / static_cast<double>(_arcLengthCache.size() - 1);
   return tBefore + fraction * (tAfter - tBefore);
@@ -76,10 +77,16 @@ double3 ProteinBSpline::evaluateOrientation(double t) const
   if (t <= 0.0) return double3::normalize(_orientationVectors.front());
   if (t >= 1.0) return double3::normalize(_orientationVectors.back());
 
+  const int controlPointCount = static_cast<int>(_controlPoints.size());
+  const double clampedT = std::min(std::max(t, _knots[_degree]), _knots[controlPointCount] - 1.0e-12);
+  const int span = findSpan(clampedT, _degree, _knots, controlPointCount);
+  double basis[maximumDegree + 1] = {0.0};
+  basisFunctions(span, clampedT, _degree, _knots, basis);
+
   double3 orientation = double3(0.0, 0.0, 0.0);
-  for (int i = 0; i < static_cast<int>(_controlPoints.size()); ++i)
+  for (int i = 0; i <= _degree; ++i)
   {
-    orientation += basisFunction(i, _degree, t) * _orientationVectors[i];
+    orientation += basis[i] * _orientationVectors[span - _degree + i];
   }
 
   const double3 tangent = derivative(t);
@@ -92,23 +99,34 @@ double3 ProteinBSpline::evaluateOrientation(double t) const
   return orientation;
 }
 
+/// Analytic first derivative: the derivative of a clamped B-spline of degree p is a
+/// B-spline of degree p-1 over the trimmed knot vector (Piegl & Tiller, eq. 3.4).
 double3 ProteinBSpline::derivative(double t) const
 {
-  const double epsilon = 1.0e-5;
-  if (t <= epsilon)
-  {
-    return (evaluate(t + epsilon) - evaluate(t)) / epsilon;
-  }
-  if (t >= 1.0 - epsilon)
-  {
-    return (evaluate(t) - evaluate(t - epsilon)) / epsilon;
-  }
-  return (evaluate(t + epsilon) - evaluate(t - epsilon)) / (2.0 * epsilon);
+  return evaluatePoint(t, _derivativeControlPoints, _degree - 1, _derivativeKnots);
 }
 
-double ProteinBSpline::basisFunction(int i, int p, double u) const
+void ProteinBSpline::computeDerivativeCurve(const std::vector<double3> &controlPoints,
+                                            int degree,
+                                            const std::vector<double> &knots,
+                                            std::vector<double3> &derivativeControlPoints,
+                                            std::vector<double> &derivativeKnots)
 {
-  return basisFunction(i, p, u, _knots);
+  derivativeControlPoints.clear();
+  derivativeControlPoints.reserve(controlPoints.size() - 1);
+  for (size_t i = 0; i + 1 < controlPoints.size(); ++i)
+  {
+    const double denominator = knots[i + static_cast<size_t>(degree) + 1] - knots[i + 1];
+    if (denominator > 1.0e-18)
+    {
+      derivativeControlPoints.push_back((static_cast<double>(degree) / denominator) * (controlPoints[i + 1] - controlPoints[i]));
+    }
+    else
+    {
+      derivativeControlPoints.push_back(double3(0.0, 0.0, 0.0));
+    }
+  }
+  derivativeKnots.assign(knots.begin() + 1, knots.end() - 1);
 }
 
 double3 ProteinBSpline::evaluatePoint(double t,
@@ -119,32 +137,58 @@ double3 ProteinBSpline::evaluatePoint(double t,
   if (t <= 0.0) return controlPoints.front();
   if (t >= 1.0) return controlPoints.back();
 
+  const int controlPointCount = static_cast<int>(controlPoints.size());
+  const double clampedT = std::min(std::max(t, knots[degree]), knots[controlPointCount] - 1.0e-12);
+  const int span = findSpan(clampedT, degree, knots, controlPointCount);
+  double basis[maximumDegree + 1] = {0.0};
+  basisFunctions(span, clampedT, degree, knots, basis);
+
   double3 point = double3(0.0, 0.0, 0.0);
-  for (int i = 0; i < static_cast<int>(controlPoints.size()); ++i)
+  for (int i = 0; i <= degree; ++i)
   {
-    point += basisFunction(i, degree, t, knots) * controlPoints[i];
+    point += basis[i] * controlPoints[span - degree + i];
   }
   return point;
 }
 
-double ProteinBSpline::basisFunction(int i, int p, double u, const std::vector<double> &knots)
+int ProteinBSpline::findSpan(double u, int degree, const std::vector<double> &knots, int controlPointCount)
 {
-  if (p == 0)
-  {
-    return (u >= knots[i] && u < knots[i + 1]) ? 1.0 : 0.0;
-  }
+  if (u >= knots[controlPointCount]) return controlPointCount - 1;
+  if (u <= knots[degree]) return degree;
 
-  double left = 0.0;
-  double right = 0.0;
-  if (knots[i + p] != knots[i])
+  int low = degree;
+  int high = controlPointCount;
+  int mid = (low + high) / 2;
+  while (u < knots[mid] || u >= knots[mid + 1])
   {
-    left = (u - knots[i]) / (knots[i + p] - knots[i]) * basisFunction(i, p - 1, u, knots);
+    if (u < knots[mid]) high = mid;
+    else low = mid;
+    mid = (low + high) / 2;
   }
-  if (knots[i + p + 1] != knots[i + 1])
+  return mid;
+}
+
+void ProteinBSpline::basisFunctions(int span, double u, int degree, const std::vector<double> &knots, double *basis)
+{
+  double left[maximumDegree + 1] = {0.0};
+  double right[maximumDegree + 1] = {0.0};
+  basis[0] = 1.0;
+  if (degree <= 0) return;
+
+  for (int j = 1; j <= degree; ++j)
   {
-    right = (knots[i + p + 1] - u) / (knots[i + p + 1] - knots[i + 1]) * basisFunction(i + 1, p - 1, u, knots);
+    left[j] = u - knots[span + 1 - j];
+    right[j] = knots[span + j] - u;
+    double saved = 0.0;
+    for (int r = 0; r < j; ++r)
+    {
+      const double denominator = right[r + 1] + left[j - r];
+      const double temp = std::abs(denominator) > 1.0e-18 ? basis[r] / denominator : 0.0;
+      basis[r] = saved + right[r + 1] * temp;
+      saved = left[j - r] * temp;
+    }
+    basis[j] = saved;
   }
-  return left + right;
 }
 
 std::vector<double> ProteinBSpline::computeKnots(int numberOfControlPoints, int degree)

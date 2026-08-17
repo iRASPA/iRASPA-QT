@@ -170,6 +170,15 @@ void OpenGLInternalBondShader::initializeVertexArrayObject()
     {
       if (RKRenderBondSource* source = dynamic_cast<RKRenderBondSource*>(_renderStructures[i][j].get()))
       {
+        if (!source->drawBonds())
+        {
+          _numberOfAllBonds[i][j] = 0;
+          _numberOfSingleBonds[i][j] = 0;
+          _numberOfDoubleBonds[i][j] = 0;
+          _numberOfPartialDoubleBonds[i][j] = 0;
+          _numberOfTripleBonds[i][j] = 0;
+          continue;
+        }
         std::vector<RKInPerInstanceAttributesBonds> bondInstanceData = source->renderInternalBonds();
         _numberOfAllBonds[i][j] = bondInstanceData.size();
 

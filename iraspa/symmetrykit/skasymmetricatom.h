@@ -30,6 +30,12 @@
 #include "skbond.h"
 #include "skatomcopy.h"
 
+/// Monotonic counter bumped whenever atom visibility flags or the shape of an atom tree change.
+/// Consumers that derive expensive data from the tree (such as the ribbon visibility mask, which
+/// would otherwise be recomputed for every draw call) cache it against this generation.
+qint64 skAtomVisibilityGeneration();
+void skInvalidateAtomVisibilityGeneration();
+
 class  SKAsymmetricAtom
 {
 public:
@@ -68,7 +74,7 @@ public:
     void setTag(qint64 tag) {_tag = tag;}
     bool isVisible() {return _isVisible;}
     void toggleVisibility();
-    void setVisibility(bool visibility) {_isVisible = visibility;}
+    void setVisibility(bool visibility) {_isVisible = visibility; skInvalidateAtomVisibilityGeneration();}
 
     QColor color() {return _color;}
     void setColor(QColor color) {_color = color;}

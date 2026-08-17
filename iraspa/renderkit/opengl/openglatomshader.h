@@ -22,13 +22,6 @@
 #pragma once
 
 #include <vector>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
 #include <QOpenGLFunctions_3_3_Core>
 #include "openglshader.h"
 #include "rkrenderkitprotocols.h"
@@ -42,7 +35,7 @@ class OpenGLAtomPickingShader;
 class OpenGLTextRenderingShader;
 class OpenGLRibbonAmbientOcclusionShader;
 
-class OpenGLAtomShader: public QOpenGLFunctions_3_3_Core
+class OpenGLAtomShader : public OpenGLShader
 {
 public:
   OpenGLAtomShader();
@@ -50,7 +43,7 @@ public:
   bool initializeOpenGLFunctions() override;
   void paintGL(std::shared_ptr<RKCamera> camera, RKRenderQuality quality, GLuint structureUniformBuffer);
   void initializeVertexArrayObject();
-  void loadShader(void);
+  void loadShader(void) override;
 
   void initializeTransformUniforms();
   void initializeStructureUniforms();

@@ -170,18 +170,14 @@ void recheckRibbonRepresentationStyle(ProteinRibbonStructureEditor &editor)
 
 void rebuildRibbonSecondaryStructureHierarchy(ProteinRibbonStructureEditor &editor, AtomViewer &atomViewer)
 {
-  const std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms = atomViewer.atomsTreeController()->flattenedObjects();
-  const std::vector<std::shared_ptr<SKAtomTreeNode>> newRoots =
-    ProteinAtomTreeBuilder::build(atoms, editor.ribbonSecondaryStructureMethod());
-  std::vector<std::shared_ptr<SKAtomTreeNode>> oldRoots = atomViewer.atomsTreeController()->rootNodes();
-  for (const std::shared_ptr<SKAtomTreeNode> &root : oldRoots)
+  const std::vector<std::shared_ptr<SKAtomTreeNode>> leaves = atomViewer.atomsTreeController()->flattenedLeafNodes();
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms;
+  atoms.reserve(leaves.size());
+  for (const std::shared_ptr<SKAtomTreeNode> &node : leaves)
   {
-    atomViewer.atomsTreeController()->removeNode(root);
+    atoms.push_back(node->representedObject());
   }
-  for (const std::shared_ptr<SKAtomTreeNode> &node : newRoots)
-  {
-    atomViewer.atomsTreeController()->appendToRootnodes(node);
-  }
+  atomViewer.atomsTreeController()->setRootNodes(ProteinAtomTreeBuilder::build(atoms, editor.ribbonSecondaryStructureMethod()));
   atomViewer.atomsTreeController()->setTags();
   editor.rebuildBackbone();
 }

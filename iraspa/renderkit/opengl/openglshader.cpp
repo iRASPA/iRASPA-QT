@@ -22,15 +22,20 @@
 #include "openglshader.h"
 #include "glgeterror.h"
 #include <QDebug>
+#include <cstring>
 #include <iostream>
 
 OpenGLShader::OpenGLShader()
 {
-
 }
 
 OpenGLShader::~OpenGLShader()
 {
+}
+
+bool OpenGLShader::initializeOpenGLFunctions()
+{
+  return QOpenGLFunctions_3_3_Core::initializeOpenGLFunctions();
 }
 
 

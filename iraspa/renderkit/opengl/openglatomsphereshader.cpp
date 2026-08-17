@@ -74,6 +74,11 @@ void OpenGLAtomSphereShader::initializeVertexArrayObject()
     {
       if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
+        if (!source->drawAtoms() || !_renderStructures[i][j]->isVisible())
+        {
+          _numberOfDrawnAtoms[i][j] = 0;
+          continue;
+        }
         std::vector<RKInPerInstanceAttributesAtoms> atomData = source->renderAtoms();
         _numberOfDrawnAtoms[i][j] = atomData.size();
 

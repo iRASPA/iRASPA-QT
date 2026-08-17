@@ -78,6 +78,7 @@ public:
     std::vector<std::shared_ptr<SKAtomTreeNode>> childrenForItem(std::shared_ptr<SKAtomTreeNode> item);
     std::shared_ptr<SKAtomTreeNode> nodeAtIndexPath(IndexPath indexpath) const;
     void appendToRootnodes(std::shared_ptr<SKAtomTreeNode> item);
+    void setRootNodes(std::vector<std::shared_ptr<SKAtomTreeNode>> nodes);
 
     std::vector<std::shared_ptr<SKAtomTreeNode>> flattenedLeafNodes() const;
     std::vector<std::shared_ptr<SKAsymmetricAtom>> flattenedObjects() const;

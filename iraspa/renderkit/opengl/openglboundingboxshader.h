@@ -22,13 +22,6 @@
 #pragma once
 
 #include <vector>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
 #include <QOpenGLFunctions_3_3_Core>
 #include "openglshader.h"
 #include "rkrenderkitprotocols.h"
@@ -38,7 +31,7 @@
 
 class OpenGLWindow;
 
-class OpenGLBoundingBoxShader: public QOpenGLFunctions_3_3_Core
+class OpenGLBoundingBoxShader : public OpenGLShader
 {
 public:
   OpenGLBoundingBoxShader();
@@ -49,7 +42,7 @@ public:
   bool initializeOpenGLFunctions() override;
   void paintGL();
   void initializeVertexArrayObject();
-  void loadShader(void);
+  void loadShader(void) override;
 
   void initializeTransformUniforms();
   void initializeLightUniforms();

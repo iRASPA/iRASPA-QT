@@ -11,6 +11,56 @@
 #include "rkribbonmesh.h"
 #include <algorithm>
 
+std::vector<RKRibbonChainDrawRange> RKRibbonMesh::mergedVisibleDrawRanges(const std::vector<RKRibbonChainDrawRange> &ranges,
+                                                                          const std::vector<uint8_t> &visible)
+{
+  std::vector<RKRibbonChainDrawRange> merged;
+  if (visible.size() != ranges.size())
+  {
+    return merged;
+  }
+  merged.reserve(ranges.size());
+
+  bool hasCurrent = false;
+  int currentStart = 0;
+  int currentEnd = 0;
+  for (size_t index = 0; index < ranges.size(); ++index)
+  {
+    const RKRibbonChainDrawRange &range = ranges[index];
+    if (!visible[index] || range.indexCount <= 0)
+    {
+      if (hasCurrent)
+      {
+        merged.emplace_back(currentStart, currentEnd - currentStart);
+        hasCurrent = false;
+      }
+      continue;
+    }
+
+    const int rangeEnd = range.indexStart + range.indexCount;
+    if (hasCurrent && range.indexStart <= currentEnd)
+    {
+      currentEnd = std::max(currentEnd, rangeEnd);
+    }
+    else
+    {
+      if (hasCurrent)
+      {
+        merged.emplace_back(currentStart, currentEnd - currentStart);
+      }
+      currentStart = range.indexStart;
+      currentEnd = rangeEnd;
+      hasCurrent = true;
+    }
+  }
+
+  if (hasCurrent)
+  {
+    merged.emplace_back(currentStart, currentEnd - currentStart);
+  }
+  return merged;
+}
+
 std::tuple<int, int, int> RKRibbonMesh::ambientOcclusionAtlasDimensions(int maxSplineSampleCount,
                                                                         int numberOfChains,
                                                                         int numberOfAtoms,

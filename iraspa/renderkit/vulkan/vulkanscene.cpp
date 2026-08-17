@@ -137,7 +137,7 @@ void VulkanScene::reloadData(RKRenderQuality quality)
   _boundingBoxShader->reloadData();
   _isosurfaceShader->reloadData();
   _volumeShader->reloadData();
-  _atomShader->reloadAmbientOcclusionData(_dataSource, quality);
+  _atomShader->reloadAmbientOcclusionData(_dataSource, quality, _ribbonShader.get());
   _ribbonShader->reloadAmbientOcclusionData(_dataSource, quality);
   _atomTextShader->reloadData();
   _selectionShader->reloadData();
@@ -157,7 +157,7 @@ void VulkanScene::reloadAmbientOcclusionData()
   {
     _renderer->waitIdle();
   }
-  _atomShader->reloadAmbientOcclusionData(_dataSource, RKRenderQuality::low);
+  _atomShader->reloadAmbientOcclusionData(_dataSource, RKRenderQuality::low, _ribbonShader.get());
   _ribbonShader->reloadAmbientOcclusionData(_dataSource, RKRenderQuality::low);
   updateStructureUniforms();
 }
@@ -393,10 +393,12 @@ void VulkanScene::draw(RKRenderQuality quality)
     return;
   }
 
-  // Shared UBOs are overwritten in place. Finish the previous submit before
-  // replacing camera/structure uniforms, or one in-flight frame can present
-  // the new camera with the previous project's geometry (or vice versa).
-  _renderer->waitIdle();
+  // beginFrame waits only the fence for this in-flight slot, then we write that
+  // slot's camera/structure UBOs. Cocoa uses the same triple-buffered pattern.
+  if (!_renderer->beginFrame())
+  {
+    return;
+  }
   updateTransformUniforms();
   updateStructureUniforms();
   updateIsosurfaceUniforms();
@@ -408,10 +410,6 @@ void VulkanScene::draw(RKRenderQuality quality)
     _renderer->updateRibbonAODebugUniforms(_ribbonShader->debugUniforms(static_cast<int>(extent.width), static_cast<int>(extent.height)));
   }
 
-  if (!_renderer->beginFrame())
-  {
-    return;
-  }
   recordScene(_renderer->currentCommandBuffer(), quality);
   _renderer->endFrame();
 }
@@ -463,14 +461,14 @@ std::array<int, 4> VulkanScene::pickTexture(int x, int y, RKRenderQuality qualit
     return {0, 0, 0, 0};
   }
 
-  updateTransformUniforms();
-  updateStructureUniforms();
-
   VkCommandBuffer commandBuffer = _renderer->beginPickPass();
   if (!commandBuffer)
   {
     return {0, 0, 0, 0};
   }
+
+  updateTransformUniforms();
+  updateStructureUniforms();
 
   _pickingShader->paint(commandBuffer, quality, _isOrthographic);
   return _renderer->endPickPassAndReadPixel(x, y);
@@ -483,14 +481,14 @@ std::optional<float> VulkanScene::pickDepth(int x, int y, RKRenderQuality qualit
     return std::nullopt;
   }
 
-  updateTransformUniforms();
-  updateStructureUniforms();
-
   VkCommandBuffer commandBuffer = _renderer->beginPickPass();
   if (!commandBuffer)
   {
     return std::nullopt;
   }
+
+  updateTransformUniforms();
+  updateStructureUniforms();
 
   _pickingShader->paint(commandBuffer, quality, _isOrthographic);
   float depth = 1.0f;

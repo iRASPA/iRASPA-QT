@@ -133,7 +133,6 @@ void VulkanBoundingBoxShader::reloadData()
   {
     return;
   }
-  _renderer->waitIdle();
   destroyInstanceBuffers();
 
   if (!_dataSource)

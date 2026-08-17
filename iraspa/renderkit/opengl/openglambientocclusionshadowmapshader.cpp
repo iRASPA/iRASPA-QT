@@ -261,7 +261,11 @@ void OpenGLAmbientOcclusionShadowMapShader::adjustAmbientOcclusionTextureSize()
     {
       if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
       {
-        size_t numberOfAtoms = source->renderAtoms().size();
+        if (!source->drawAtoms() || !source->atomAmbientOcclusion())
+        {
+          continue;
+        }
+        size_t numberOfAtoms = _atomShader._numberOfDrawnAtoms[i][j];
 
         if(numberOfAtoms < 64)
         {
@@ -398,7 +402,9 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
           if (RKRenderObject* renderStructure = dynamic_cast<RKRenderObject*>(_renderStructures[i][j].get()))
         if (RKRenderAtomSource* source = dynamic_cast<RKRenderAtomSource*>(_renderStructures[i][j].get()))
         {
-          if(source->atomAmbientOcclusion() && _renderStructures[i][j]->isVisible())
+          if(source->drawAtoms() && source->atomAmbientOcclusion() && _renderStructures[i][j]->isVisible() &&
+             i < _atomShader._numberOfDrawnAtoms.size() && j < _atomShader._numberOfDrawnAtoms[i].size() &&
+             _atomShader._numberOfDrawnAtoms[i][j] > 0)
           {
             if(_cache.contains(_renderStructures[i][j].get())) // case cached
             {
@@ -592,11 +598,14 @@ void  OpenGLAmbientOcclusionShadowMapShader::updateAmbientOcclusionTextures(std:
                 glEnable(GLenum(GL_DEPTH_TEST));
               }
 
-              glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
-              std::vector<uint16_t>* textureData = new std::vector<uint16_t>(textureSize * textureSize);
-              glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_HALF_FLOAT, textureData->data());
-              glBindTexture(GL_TEXTURE_2D, 0);
-              _cache.insert(_renderStructures[i][j].get(), textureData);
+              if (textureSize < 2048)
+              {
+                glBindTexture(GL_TEXTURE_2D, _generatedAmbientOcclusionTexture[i][j]);
+                std::vector<uint16_t>* textureData = new std::vector<uint16_t>(textureSize * textureSize);
+                glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_HALF_FLOAT, textureData->data());
+                glBindTexture(GL_TEXTURE_2D, 0);
+                _cache.insert(_renderStructures[i][j].get(), textureData);
+              }
             }
           }
         }

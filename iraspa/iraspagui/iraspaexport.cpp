@@ -11,6 +11,7 @@
 
 #include <QDebug>
 #include <QImage>
+#include <QUrl>
 
 #if defined(USE_VULKAN)
 #include "vulkanrenderer.h"

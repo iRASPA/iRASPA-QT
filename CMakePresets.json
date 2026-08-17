@@ -1,0 +1,250 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "description": "Sets the generator and the build directory",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build"
+    },
+    {
+      "name": "default",
+      "description": "Release build against whatever Qt the system provides",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "IRASPA_USE_OPENGL": true,
+        "IRASPA_USE_VULKAN": true,
+        "IRASPA_BUILD_TESTS": true
+      }
+    },
+    {
+      "name": "debug",
+      "description": "Debug build with the unit tests",
+      "inherits": "default",
+      "binaryDir": "${sourceDir}/build-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "opengl-only",
+      "description": "Release build without the Vulkan backend",
+      "inherits": "default",
+      "cacheVariables": {
+        "IRASPA_USE_VULKAN": false
+      }
+    },
+
+    {
+      "name": "linux-package",
+      "description": "Common settings for the Linux release packages",
+      "hidden": true,
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "CMAKE_INSTALL_PREFIX": "/usr",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": false,
+        "IRASPA_USE_OPENGL": true,
+        "IRASPA_USE_VULKAN": true,
+        "IRASPA_USE_WEBENGINE": false,
+        "IRASPA_BUILD_TESTS": false,
+        "IRASPA_BUILD_DEB_PACKAGE": true
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [
+            "Linux"
+          ]
+        }
+      }
+    },
+    {
+      "name": "linux-debian-11",
+      "description": "Debian 11 package, Qt 5, OpenGL and Vulkan",
+      "inherits": "linux-package"
+    },
+    {
+      "name": "linux-debian-12",
+      "description": "Debian 12 package, Qt 6, OpenGL and Vulkan",
+      "inherits": "linux-package"
+    },
+    {
+      "name": "linux-debian-13",
+      "description": "Debian 13 package, Qt 6, OpenGL and Vulkan",
+      "inherits": "linux-package"
+    },
+    {
+      "name": "linux-ubuntu-26",
+      "description": "Ubuntu 26.04 package, Qt 6, OpenGL and Vulkan",
+      "inherits": "linux-package"
+    },
+    {
+      "name": "linux-ubuntu-24",
+      "description": "Ubuntu 24.04 package, Qt 6, OpenGL and Vulkan",
+      "inherits": "linux-package"
+    },
+    {
+      "name": "linux-ubuntu-22",
+      "description": "Ubuntu 22.04 package, Qt 6, OpenGL and Vulkan",
+      "inherits": "linux-package"
+    },
+    {
+      "name": "linux-ubuntu-20",
+      "description": "Ubuntu 20.04 package, Qt 5, OpenGL and Vulkan",
+      "inherits": "linux-package"
+    },
+    {
+      "name": "linux-ubuntu-18",
+      "description": "Ubuntu 18.04 package, Qt 5. glslang is not packaged, so OpenGL only",
+      "inherits": "linux-package",
+      "cacheVariables": {
+        "IRASPA_USE_VULKAN": false
+      }
+    },
+    {
+      "name": "linux-arch",
+      "description": "Arch Linux package, Qt 6, OpenGL and Vulkan",
+      "inherits": "linux-package",
+      "cacheVariables": {
+        "IRASPA_BUILD_DEB_PACKAGE": false
+      }
+    },
+
+    {
+      "name": "macos-apple-silicon",
+      "description": "Release build against Homebrew in /opt/homebrew",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "CMAKE_PREFIX_PATH": "/opt/homebrew;/opt/homebrew/opt/qt",
+        "IRASPA_USE_OPENGL": true,
+        "IRASPA_USE_VULKAN": true,
+        "IRASPA_BUILD_TESTS": true
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [
+            "macOS"
+          ]
+        }
+      }
+    },
+    {
+      "name": "macos-x86_64",
+      "description": "Release build against Homebrew in /usr/local",
+      "inherits": "macos-apple-silicon",
+      "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "x86_64",
+        "CMAKE_PREFIX_PATH": "/usr/local;/usr/local/opt/qt"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    },
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "macos-apple-silicon",
+      "configurePreset": "macos-apple-silicon"
+    },
+    {
+      "name": "linux-arch",
+      "configurePreset": "linux-arch"
+    },
+    {
+      "name": "linux-debian-11-package",
+      "configurePreset": "linux-debian-11",
+      "targets": [
+        "package"
+      ]
+    },
+    {
+      "name": "linux-debian-12-package",
+      "configurePreset": "linux-debian-12",
+      "targets": [
+        "package"
+      ]
+    },
+    {
+      "name": "linux-debian-13-package",
+      "configurePreset": "linux-debian-13",
+      "targets": [
+        "package"
+      ]
+    },
+    {
+      "name": "linux-ubuntu-26-package",
+      "configurePreset": "linux-ubuntu-26",
+      "targets": [
+        "package"
+      ]
+    },
+    {
+      "name": "linux-ubuntu-24-package",
+      "configurePreset": "linux-ubuntu-24",
+      "targets": [
+        "package"
+      ]
+    },
+    {
+      "name": "linux-ubuntu-22-package",
+      "configurePreset": "linux-ubuntu-22",
+      "targets": [
+        "package"
+      ]
+    },
+    {
+      "name": "linux-ubuntu-20-package",
+      "configurePreset": "linux-ubuntu-20",
+      "targets": [
+        "package"
+      ]
+    },
+    {
+      "name": "linux-ubuntu-18-package",
+      "configurePreset": "linux-ubuntu-18",
+      "targets": [
+        "package"
+      ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "macos-apple-silicon",
+      "configurePreset": "macos-apple-silicon",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

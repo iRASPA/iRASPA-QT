@@ -21,17 +21,40 @@
 
 #include "skpdbparser.h"
 #include <QDebug>
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-  #include <QStringRef>
-#else
-  #include<QStringView>
-#endif
+#include <algorithm>
 #include <cmath>
 #include <qmath.h>
 #include "symmetrykitprotocols.h"
 #include "skasymmetricatom.h"
 #include "skelement.h"
 #include "sknucleotide.h"
+
+namespace
+{
+  QString pdbViewField(const QString &line, int location, int length)
+  {
+    if(line.size() < location + length) return QString();
+    return line.mid(location, length);
+  }
+
+  QString titleCaseSymbol(const QString &field)
+  {
+    QString symbol = field.trimmed();
+    if(symbol.isEmpty()) return symbol;
+    symbol = symbol.toLower();
+    symbol[0] = symbol[0].toUpper();
+    return symbol;
+  }
+
+  std::optional<int> atomicNumberForSymbol(const QString &field)
+  {
+    const QString symbol = titleCaseSymbol(field);
+    if(symbol.isEmpty()) return std::nullopt;
+    const auto index = PredefinedElements::atomicNumberData.find(symbol);
+    if(index == PredefinedElements::atomicNumberData.end()) return std::nullopt;
+    return index->second;
+  }
+}
 
 SKPDBParser::SKPDBParser(QUrl url, bool proteinOnlyAsymmetricUnitCell, bool asMolecule, CharacterSet charactersToBeSkipped, bool separatePolymerChains): SKParser(),
   _scanner(url, charactersToBeSkipped), _proteinOnlyAsymmetricUnitCell(proteinOnlyAsymmetricUnitCell), _asMolecule(asMolecule),
@@ -291,505 +314,334 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
     _numberOfSolventAtoms=0;
     _numberOfAtoms=0;
     _residues.clear();
+    reserveAtomCapacity(_scanner.content().size());
   }
 }
 
-void SKPDBParser::startParsing() noexcept(false)
+void SKPDBParser::reserveAtomCapacity(int fileCharacterCount)
 {
-  int lineNumber = 0;
-  int modelNumber = 0;
-  size_t currentMovie = 0;
-  size_t currentFrame = 0;
+  const int estimatedAtoms = std::min(std::max(fileCharacterCount / 50, 256), 1000000);
+  _frame->atoms.reserve(static_cast<size_t>(estimatedAtoms));
+}
 
-  while(!_scanner.isAtEnd())
+void SKPDBParser::parseAndAppendAtomRecord(const QString &line, bool isHetatm)
+{
+  _numberOfAtoms += 1;
+  if(isHetatm)
   {
-    QString scannedLine;
+    _numberOfSolventAtoms++;
+  }
 
-    // scan to first keyword
-    _previousScanLocation = _scanner.scanLocation();
-    if (_scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine) && !scannedLine.isEmpty())
+  if(line.size() < 11) return;
+
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  atom->setSolvent(isHetatm);
+  atom->fractional(false);
+
+  bool success = false;
+  const int atomSerialNumber = pdbViewField(line, 6, 5).trimmed().toInt(&success);
+  if(success)
+  {
+    atom->setSerialNumber(atomSerialNumber);
+  }
+
+  QString atomName;
+  if(line.size() >= 16)
+  {
+    atomName = pdbViewField(line, 12, 4).trimmed();
+    atom->setDisplayName(atomName);
+    if(line.size() >= 15)
     {
-      lineNumber += 1;
+      atom->setRemotenessIndicator(line.at(14).toLatin1());
+    }
+    if(line.size() >= 16)
+    {
+      atom->setBranchDesignator(line.at(15).toLatin1());
+    }
 
-      int length = scannedLine.size();
+    if(const std::optional<int> atomicNumber = atomicNumberForSymbol(pdbViewField(line, 12, 2)))
+    {
+      atom->setElementIdentifier(*atomicNumber);
+    }
 
-      if(length < 3) continue;
+    if(line.size() >= 20)
+    {
+      const QString residueName = pdbViewField(line, 17, 3).trimmed().toUpper();
+      atom->setResidueName(residueName);
 
-      #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        QStringRef shortKeyword(&scannedLine, 0, 3);
-      #else
-        QStringView shortKeyword(&scannedLine[0], 3);
-      #endif
-
-      if(shortKeyword == QString("TER"))
+      if(PredefinedElements::residueDefinitions.find(residueName) != PredefinedElements::residueDefinitions.end())
       {
-        // TER marks the end of a polymer chain. Splitting on it puts each chain in its own movie;
-        // with 'separate polymer chains' off, keep reading into the current structure.
-        if(_separatePolymerChains && _frame->atoms.size() > 0)
-        {
-          addFrameToStructure(currentMovie,currentFrame);
-          currentMovie += 1;
-        }
-        continue;
+        _numberOfAminoAcidAtoms += 1;
+      }
+      else if(SKNucleotide::isNucleotideResidueName(residueName))
+      {
+        _numberOfNucleotideAtoms += 1;
       }
 
-      if(length < 6) continue;
-
-      #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        QStringRef keyword(&scannedLine, 0, 6);
-      #else
-        QStringView keyword(&scannedLine[0], 6);
-      #endif
-
-      if(keyword == QString("HEADER"))
+      const QString residueAtomKey = residueName + QLatin1Char('+') + atomName.toUpper();
+      const auto elementIt = PredefinedElements::residueDefinitionsElement.find(residueAtomKey);
+      if(elementIt != PredefinedElements::residueDefinitionsElement.end())
       {
-        continue;
+        const auto index = PredefinedElements::atomicNumberData.find(elementIt->second);
+        if(index != PredefinedElements::atomicNumberData.end())
+        {
+          atom->setElementIdentifier(index->second);
+        }
       }
-
-      if(keyword == QString("AUTHOR"))
+      const auto typeIt = PredefinedElements::residueDefinitionsType.find(residueAtomKey);
+      if(typeIt != PredefinedElements::residueDefinitionsType.end())
       {
-        continue;
-      }
-
-      if(keyword == QString("REVDAT"))
-      {
-        continue;
-      }
-
-      if(keyword == QString("JRNL  "))
-      {
-        continue;
-      }
-
-      if(keyword == QString("REMARK"))
-      {
-        continue;
-      }
-
-      if(keyword == QString("EXPDTA"))
-      {
-        const QString experiment = scannedLine.mid(6).trimmed().toUpper();
-        if(experiment.contains(QString("NMR")) || experiment.contains(QString("ELECTRON MICROSCOPY")) ||
-           experiment.contains(QString("SOLUTION SCATTERING")) || experiment.contains(QString("THEORETICAL MODEL")))
-        {
-          _experimentIsNonPeriodic = true;
-          _periodic = false;
-        }
-        continue;
-      }
-
-      if(keyword == QString("SEQRES"))
-      {
-        parseSeqres(scannedLine);
-        continue;
-      }
-
-      if(keyword == QString("MODRES"))
-      {
-        parseModres(scannedLine);
-        continue;
-      }
-
-      if(keyword == QString("MODEL"))
-      {
-        currentMovie = 0;
-
-        if(length <= 10) continue;
-
-        #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-          QStringRef modelString(&scannedLine, 6, length - 6);
-        #else
-          QStringView modelString(&scannedLine[6], length - 6);
-        #endif
-
-        bool success = false;
-        int integerValue = modelString.toInt(&success);
-        if(success)
-        {
-          _frame = std::make_shared<SKStructure>();
-          currentFrame = std::max(0, integerValue-1);
-          currentFrame = modelNumber;
-          modelNumber += 1;
-        }
-        continue;
-      }
-      if(keyword == QString("ENDMDL"))
-      {
-        // also frames with zero atoms are allowed in PDB movies from RASPA. This happens in grand-canonical ensembles at low fugacities.
-        addFrameToStructure(currentMovie,currentFrame);
-        currentFrame += 1;
-        continue;
-      }
-      if(keyword == QString("SCALE1"))
-      {
-        continue;
-      }
-
-      if(keyword == QString("SCALE2"))
-      {
-        continue;
-      }
-
-      if(keyword == QString("SCALE3"))
-      {
-        continue;
-      }
-
-      if(keyword == QString("CRYST1"))
-      {
-        #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-          QStringRef lengthAString{};
-          QStringRef lengthBString{};
-          QStringRef lengthCString{};
-        #else
-          QStringView lengthAString{};
-          QStringView lengthBString{};
-          QStringView lengthCString{};
-        #endif
-
-        if(scannedLine.size()>=17)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            lengthAString = QStringRef(&scannedLine, 6, 9);
-          #else
-            lengthAString = QStringView(&scannedLine[6], 9);
-          #endif
-        }
-        if(scannedLine.size()>=24)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            lengthBString = QStringRef(&scannedLine, 15, 9);
-          #else
-            lengthBString = QStringView(&scannedLine[15], 9);
-          #endif
-        }
-        if(scannedLine.size()>=33)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            lengthCString = QStringRef(&scannedLine, 24, 9);
-          #else
-            lengthCString = QStringView(&scannedLine[24], 9);
-          #endif
-        }
-
-        bool succes = false;
-        _a = lengthAString.toDouble(&succes);
-        _b = lengthBString.toDouble(&succes);
-        _c = lengthCString.toDouble(&succes);
-
-        _alpha = 90.0;
-        _beta = 90.0;
-        _gamma = 90.0;
-        if(scannedLine.size()>=54)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QStringRef alphaAngleString{};
-            QStringRef betaAngleString{};
-            QStringRef gammaAngleString{};
-          #else
-            QStringView alphaAngleString{};
-            QStringView betaAngleString{};
-            QStringView gammaAngleString{};
-          #endif
-          if(scannedLine.size()>=40)
-          {
-            #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-              alphaAngleString = QStringRef(&scannedLine, 33, 7);
-            #else
-              alphaAngleString = QStringView(&scannedLine[33], 7);
-            #endif
-          }
-          if(scannedLine.size()>=47)
-          {
-            #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-              betaAngleString = QStringRef(&scannedLine, 40, 7);
-            #else
-              betaAngleString = QStringView(&scannedLine[40], 7);
-            #endif
-          }
-          if(scannedLine.size()>=54)
-          {
-            #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-              gammaAngleString = QStringRef(&scannedLine, 47, 7);
-            #else
-              gammaAngleString = QStringView(&scannedLine[47], 7);
-            #endif
-          }
-
-          _alpha = alphaAngleString.toDouble(&succes);
-          _beta = betaAngleString.toDouble(&succes);
-          _gamma = gammaAngleString.toDouble(&succes);
-        }
-        _cell = SKCell(_a, _b, _c, _alpha * M_PI/180.0, _beta*M_PI/180.0, _gamma*M_PI/180.0);
-
-        // structures without a crystal carry a 1x1x1, 90-degree placeholder cell
-        const bool cellIsReal = _a > 0.0 && _b > 0.0 && _c > 0.0 &&
-                                !isPlaceholderCell(_a, _b, _c, _alpha, _beta, _gamma);
-        _periodic = cellIsReal && !_experimentIsNonPeriodic;
-
-        if(scannedLine.size()>=66)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QStringRef spaceGroupString(&scannedLine, 55, 11);
-          #else
-            QStringView spaceGroupString(&scannedLine[55], 11);
-          #endif
-
-          if(std::optional<int> spaceGroupHallNumber = SKSpaceGroup::HallNumberFromHMString(spaceGroupString.toString().simplified()))
-          {
-            _spaceGroupHallNumber = *spaceGroupHallNumber;
-          }
-        }
-        continue;
-      }
-
-      if(keyword == QString("ORIGX1"))
-      {
-        continue;
-      }
-
-      if(keyword == QString("ORIGX2"))
-      {
-        continue;
-      }
-
-      if(keyword == QString("ORIGX3"))
-      {
-        continue;
-      }
-
-
-      if(keyword == QString("ATOM  ") || keyword == QString("HETATM"))
-      {
-         //  COLUMNS   LENGHT  DATA TYPE       CONTENTS
-         //  --------------------------------------------------------------------------------
-         //   0 -  5   6       Record name     "ATOM  "
-         //   6 - 10   5       Integer         Atom serial number.
-         //  11        1
-         //  12 - 15   4       Atom            Atom name.
-         //  16        1       Character       Alternate location indicator.
-         //  17 - 19   3       Residue name    Residue name.
-         //  20        1
-         //  21        1       Character       Chain identifier.
-         //  22 - 25   4       Integer         Residue sequence number.
-         //  26        1       AChar           Code for insertion of residues.
-         //  27 - 29   3
-         //  30 - 37   8       Real(8.3)       Orthogonal coordinates for X in Angstroms.
-         //  38 - 45   8       Real(8.3)       Orthogonal coordinates for Y in Angstroms.
-         //  46 - 53   8       Real(8.3)       Orthogonal coordinates for Z in Angstroms.
-         //  54 - 59   6       Real(6.2)       Occupancy.
-         //  60 - 65   6       Real(6.2)       Temperature factor (Default = 0.0).
-         //  66 - 71   6
-         //  72 - 75   4       LString(4)      Segment identifier, left-justified.
-         //  76 - 77   2       LString(2)      Element symbol, right-justified.
-         //  78 - 79   2       LString(2)      Charge on the atom.
-
-        _numberOfAtoms += 1;
-        const bool isHetatm = keyword == QString("HETATM");
-        if(isHetatm)
-        {
-          _numberOfSolventAtoms++;
-        }
-        std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
-        atom->setSolvent(isHetatm);
-        atom->fractional(false);
-
-        #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-          QStringRef positionsX{};
-          QStringRef positionsY{};
-          QStringRef positionsZ{};
-        #else
-          QStringView positionsX{};
-          QStringView positionsY{};
-          QStringView positionsZ{};
-        #endif
-
-        if(scannedLine.size()>=11)
-        {
-          bool succes = false;
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QString atomSerialNumberString = QStringRef(&scannedLine, 6, 5).toString().simplified();
-          #else
-            QString atomSerialNumberString = QStringView(&scannedLine[6], 5).toString().simplified();
-          #endif
-          int atomSerialNumber = atomSerialNumberString.toInt(&succes);
-          if(succes)
-          {
-            atom->setSerialNumber(atomSerialNumber);
-          }
-        }
-
-        QString atomName;
-        if(scannedLine.size()>=16)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            atomName = QStringRef(&scannedLine, 12, 4).toString().simplified();
-            atom->setDisplayName(atomName);
-            atom->setRemotenessIndicator(QStringRef(&scannedLine, 14, 1).toString().toUtf8().at(0));
-            atom->setBranchDesignator(QStringRef(&scannedLine, 15, 1).toString().toUtf8().at(0));
-          #else
-            atomName = QStringView(&scannedLine[12], 4).toString().simplified();
-            atom->setDisplayName(atomName);
-            atom->setRemotenessIndicator(QStringView(&scannedLine[14],1).toString().toUtf8().at(0));
-            atom->setBranchDesignator(QStringView(&scannedLine[15],1).toString().toUtf8().at(0));
-          #endif
-
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QString elementString = QStringRef(&scannedLine, 12, 2).toString().simplified().toLower();
-          #else
-            QString elementString = QStringView(&scannedLine[12], 2).toString().simplified().toLower();
-          #endif
-          if(!elementString.isEmpty())
-          {
-            elementString.replace(0, 1, elementString[0].toUpper());
-          }
-          if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(elementString); index != PredefinedElements::atomicNumberData.end())
-          {
-             atom->setElementIdentifier(index->second);
-          }
-
-          if(scannedLine.size()>=20)
-          {
-            #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-              QString residueName = QStringRef(&scannedLine, 17, 3).toString().simplified().toUpper();
-            #else
-              QString residueName = QStringView(&scannedLine[17], 3).toString().simplified().toUpper();
-            #endif
-
-            atom->setResidueName(residueName);
-
-            if(PredefinedElements::residueDefinitions.find(residueName) != PredefinedElements::residueDefinitions.end())
-            {
-              _numberOfAminoAcidAtoms += 1;
-            }
-            else if(SKNucleotide::isNucleotideResidueName(residueName))
-            {
-              _numberOfNucleotideAtoms += 1;
-            }
-
-            const QString backboneLookupName = atomName.toUpper();
-            auto it = PredefinedElements::residueDefinitionsElement.find(residueName + "+" + backboneLookupName);
-            if(it !=  PredefinedElements::residueDefinitionsElement.end())
-            {
-              if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(it->second); index != PredefinedElements::atomicNumberData.end())
-              {
-                 atom->setElementIdentifier(index->second);
-              }
-            }
-            auto typeIt = PredefinedElements::residueDefinitionsType.find(residueName + "+" + backboneLookupName);
-            if (typeIt != PredefinedElements::residueDefinitionsType.end())
-            {
-              atom->backBoneAtom(PredefinedElements::isBackboneAtomType(typeIt->second));
-            }
-          }
-        }
-
-        if(scannedLine.size() >= 22)
-        {
-          const QChar chainIdentifier = scannedLine.at(21);
-          if (!chainIdentifier.isSpace())
-          {
-            atom->setChainIdentifier(chainIdentifier.toLatin1());
-          }
-        }
-
-        if(scannedLine.size() >= 26)
-        {
-          bool success = false;
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            const int residueSequenceNumber = QStringRef(&scannedLine, 22, 4).toString().trimmed().toInt(&success);
-          #else
-            const int residueSequenceNumber = QStringView(&scannedLine[22], 4).toString().trimmed().toInt(&success);
-          #endif
-          if (success)
-          {
-            atom->setResidueSequenceNumber(residueSequenceNumber);
-          }
-        }
-
-        if(scannedLine.size() >= 27)
-        {
-          const QChar insertionCode = scannedLine.at(26);
-          if (!insertionCode.isSpace())
-          {
-            atom->setCodeForInsertionOfResidues(insertionCode.toLatin1());
-          }
-        }
-
-        if(scannedLine.size()>=38)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            positionsX = QStringRef(&scannedLine, 30, 8);
-          #else
-            positionsX = QStringView(&scannedLine[30], 8);
-          #endif
-        }
-        if(scannedLine.size()>=46)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            positionsY = QStringRef(&scannedLine, 38, 8);
-          #else
-            positionsY = QStringView(&scannedLine[38], 8);
-          #endif
-        }
-        if(scannedLine.size()>=54)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            positionsZ = QStringRef(&scannedLine, 46, 8);
-          #else
-            positionsZ = QStringView(&scannedLine[46], 8);
-          #endif
-        }
-        if(scannedLine.size()>=60)
-        {
-          bool succes = false;
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QStringRef occupancyString = QStringRef(&scannedLine, 54, 6);
-          #else
-            QStringView occupancyString = QStringView(&scannedLine[54], 6);
-          #endif
-          double occupancy = occupancyString.toDouble(&succes);
-          if(succes)
-          {
-            atom->setOccupancy(occupancy);
-          }
-        }
-        if(scannedLine.size()>=78)
-        {
-          #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QString chemicalElement = QStringRef(&scannedLine, 76, 2).toString().simplified().toLower();
-          #else
-            QString chemicalElement = QStringView(&scannedLine[76], 2).toString().simplified().toLower();
-          #endif
-
-          if(!chemicalElement.isEmpty())
-          {
-            chemicalElement.replace(0, 1, chemicalElement[0].toUpper());
-            if (std::map<QString,int>::iterator index = PredefinedElements::atomicNumberData.find(chemicalElement); index != PredefinedElements::atomicNumberData.end())
-            {
-               atom->setElementIdentifier(index->second);
-            }
-          }
-        }
-
-        double3 position;
-        bool succes = false;
-        position.x = positionsX.toDouble(&succes);
-        position.y = positionsY.toDouble(&succes);
-        position.z = positionsZ.toDouble(&succes);
-        atom->setPosition(position);
-
-        noteResidueAtom(atom);
-
-        _frame->atoms.push_back(atom);
-        continue;
+        atom->backBoneAtom(PredefinedElements::isBackboneAtomType(typeIt->second));
       }
     }
   }
 
-  // add current frame in case last TER, ENDMDL, or END is missing
-  if(_frame->atoms.size()>0)
+  if(line.size() >= 22)
   {
-    addFrameToStructure(currentMovie,currentFrame);
+    const QChar chainIdentifier = line.at(21);
+    if(!chainIdentifier.isSpace())
+    {
+      atom->setChainIdentifier(chainIdentifier.toLatin1());
+    }
+  }
+
+  if(line.size() >= 26)
+  {
+    success = false;
+    const int residueSequenceNumber = pdbViewField(line, 22, 4).trimmed().toInt(&success);
+    if(success)
+    {
+      atom->setResidueSequenceNumber(residueSequenceNumber);
+    }
+  }
+
+  if(line.size() >= 27)
+  {
+    const QChar insertionCode = line.at(26);
+    if(!insertionCode.isSpace())
+    {
+      atom->setCodeForInsertionOfResidues(insertionCode.toLatin1());
+    }
+  }
+
+  double3 position{};
+  if(line.size() >= 38)
+  {
+    success = false;
+    position.x = pdbViewField(line, 30, 8).trimmed().toDouble(&success);
+  }
+  if(line.size() >= 46)
+  {
+    success = false;
+    position.y = pdbViewField(line, 38, 8).trimmed().toDouble(&success);
+  }
+  if(line.size() >= 54)
+  {
+    success = false;
+    position.z = pdbViewField(line, 46, 8).trimmed().toDouble(&success);
+  }
+  atom->setPosition(position);
+
+  if(line.size() >= 60)
+  {
+    success = false;
+    const double occupancy = pdbViewField(line, 54, 6).trimmed().toDouble(&success);
+    if(success)
+    {
+      atom->setOccupancy(occupancy);
+    }
+  }
+
+  if(line.size() >= 66)
+  {
+    success = false;
+    const double temperatureFactor = pdbViewField(line, 60, 6).trimmed().toDouble(&success);
+    if(success)
+    {
+      atom->setTemperaturefactor(temperatureFactor);
+    }
+  }
+
+  if(line.size() >= 78)
+  {
+    if(const std::optional<int> atomicNumber = atomicNumberForSymbol(pdbViewField(line, 76, 2)))
+    {
+      atom->setElementIdentifier(*atomicNumber);
+    }
+  }
+
+  noteResidueAtom(atom);
+  _frame->atoms.push_back(atom);
+}
+
+void SKPDBParser::startParsing() noexcept(false)
+{
+  [[maybe_unused]] int lineNumber = 0;
+  int modelNumber = 0;
+  size_t currentMovie = 0;
+  size_t currentFrame = 0;
+
+  const QString &text = _scanner.content();
+  reserveAtomCapacity(text.size());
+
+  int pos = 0;
+  const int n = text.size();
+  while(pos < n)
+  {
+    int end = text.indexOf(QLatin1Char('\n'), pos);
+    if(end < 0) end = n;
+    QString scannedLine = text.mid(pos, end - pos);
+    if(!scannedLine.isEmpty() && scannedLine.at(scannedLine.size() - 1) == QLatin1Char('\r'))
+    {
+      scannedLine.chop(1);
+    }
+    pos = (end < n) ? end + 1 : n;
+
+    if(scannedLine.isEmpty()) continue;
+    lineNumber += 1;
+
+    const int length = scannedLine.size();
+    if(length < 3) continue;
+
+    // Cocoa checks ATOM/HETATM before the rare record types so the 58k-atom hot path
+    // does not construct a QString for HEADER, AUTHOR, REMARK, ... on every line.
+    if(scannedLine.startsWith(QLatin1String("ATOM  ")))
+    {
+      parseAndAppendAtomRecord(scannedLine, false);
+      continue;
+    }
+    if(scannedLine.startsWith(QLatin1String("HETATM")))
+    {
+      parseAndAppendAtomRecord(scannedLine, true);
+      continue;
+    }
+    if(scannedLine.startsWith(QLatin1String("TER")))
+    {
+      if(_separatePolymerChains && _frame->atoms.size() > 0)
+      {
+        addFrameToStructure(currentMovie, currentFrame);
+        currentMovie += 1;
+      }
+      continue;
+    }
+
+    if(length < 6) continue;
+    const QString keyword = scannedLine.left(6);
+
+    if(keyword == QLatin1String("HEADER") ||
+       keyword == QLatin1String("AUTHOR") ||
+       keyword == QLatin1String("REVDAT") ||
+       keyword == QLatin1String("JRNL  ") ||
+       keyword == QLatin1String("REMARK") ||
+       keyword == QLatin1String("SCALE1") ||
+       keyword == QLatin1String("SCALE2") ||
+       keyword == QLatin1String("SCALE3") ||
+       keyword == QLatin1String("ORIGX1") ||
+       keyword == QLatin1String("ORIGX2") ||
+       keyword == QLatin1String("ORIGX3"))
+    {
+      continue;
+    }
+
+    if(keyword == QLatin1String("EXPDTA"))
+    {
+      const QString experiment = scannedLine.mid(6).trimmed().toUpper();
+      if(experiment.contains(QLatin1String("NMR")) || experiment.contains(QLatin1String("ELECTRON MICROSCOPY")) ||
+         experiment.contains(QLatin1String("SOLUTION SCATTERING")) || experiment.contains(QLatin1String("THEORETICAL MODEL")))
+      {
+        _experimentIsNonPeriodic = true;
+        _periodic = false;
+      }
+      continue;
+    }
+
+    if(keyword == QLatin1String("SEQRES"))
+    {
+      parseSeqres(scannedLine);
+      continue;
+    }
+
+    if(keyword == QLatin1String("MODRES"))
+    {
+      parseModres(scannedLine);
+      continue;
+    }
+
+    if(keyword == QLatin1String("MODEL "))
+    {
+      currentMovie = 0;
+      if(length <= 10) continue;
+
+      bool success = false;
+      const int integerValue = scannedLine.mid(6).trimmed().toInt(&success);
+      if(success)
+      {
+        _frame = std::make_shared<SKStructure>();
+        reserveAtomCapacity(text.size());
+        currentFrame = std::max(0, integerValue - 1);
+        currentFrame = modelNumber;
+        modelNumber += 1;
+      }
+      continue;
+    }
+
+    if(keyword == QLatin1String("ENDMDL"))
+    {
+      addFrameToStructure(currentMovie, currentFrame);
+      currentFrame += 1;
+      continue;
+    }
+
+    if(keyword == QLatin1String("CRYST1"))
+    {
+      bool success = false;
+      if(scannedLine.size() >= 17)
+      {
+        _a = pdbViewField(scannedLine, 6, 9).trimmed().toDouble(&success);
+      }
+      if(scannedLine.size() >= 24)
+      {
+        _b = pdbViewField(scannedLine, 15, 9).trimmed().toDouble(&success);
+      }
+      if(scannedLine.size() >= 33)
+      {
+        _c = pdbViewField(scannedLine, 24, 9).trimmed().toDouble(&success);
+      }
+
+      _alpha = 90.0;
+      _beta = 90.0;
+      _gamma = 90.0;
+      if(scannedLine.size() >= 40)
+      {
+        _alpha = pdbViewField(scannedLine, 33, 7).trimmed().toDouble(&success);
+      }
+      if(scannedLine.size() >= 47)
+      {
+        _beta = pdbViewField(scannedLine, 40, 7).trimmed().toDouble(&success);
+      }
+      if(scannedLine.size() >= 54)
+      {
+        _gamma = pdbViewField(scannedLine, 47, 7).trimmed().toDouble(&success);
+      }
+      _cell = SKCell(_a, _b, _c, _alpha * M_PI / 180.0, _beta * M_PI / 180.0, _gamma * M_PI / 180.0);
+
+      const bool cellIsReal = _a > 0.0 && _b > 0.0 && _c > 0.0 &&
+                              !isPlaceholderCell(_a, _b, _c, _alpha, _beta, _gamma);
+      _periodic = cellIsReal && !_experimentIsNonPeriodic;
+
+      if(scannedLine.size() >= 66)
+      {
+        if(std::optional<int> spaceGroupHallNumber = SKSpaceGroup::HallNumberFromHMString(pdbViewField(scannedLine, 55, 11).simplified()))
+        {
+          _spaceGroupHallNumber = *spaceGroupHallNumber;
+        }
+      }
+      continue;
+    }
+  }
+
+  if(_frame->atoms.size() > 0)
+  {
+    addFrameToStructure(currentMovie, currentFrame);
   }
 }

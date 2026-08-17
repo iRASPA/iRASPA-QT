@@ -4,6 +4,7 @@
 #include "rkrenderkitprotocols.h"
 #include "rkimposters.h"
 #include "vulkanatomambientocclusionshader.h"
+#include "vulkanribbonshader.h"
 #include "vulkanshader.h"
 
 #include <cstddef>
@@ -132,7 +133,6 @@ void VulkanAtomSphereShader::setRenderStructures(std::vector<std::vector<std::sh
 
 void VulkanAtomSphereShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _structureBuffers.resize(_renderStructures.size());
   _numberOfAtoms = 0;
@@ -143,16 +143,13 @@ void VulkanAtomSphereShader::reloadData()
     for (size_t j = 0; j < _renderStructures[i].size(); ++j)
     {
       auto *source = dynamic_cast<RKRenderAtomSource *>(_renderStructures[i][j].get());
-      if (!source)
+      if (!source || !source->drawAtoms() || !_renderStructures[i][j]->isVisible())
       {
         continue;
       }
       const std::vector<RKInPerInstanceAttributesAtoms> atomData = source->renderAtoms();
       _structureBuffers[i][j].instanceCount = static_cast<uint32_t>(atomData.size());
-      if (source->drawAtoms() && _renderStructures[i][j]->isVisible())
-      {
-        _numberOfAtoms += static_cast<uint32_t>(atomData.size());
-      }
+      _numberOfAtoms += static_cast<uint32_t>(atomData.size());
       if (!atomData.empty())
       {
         _renderer->uploadBuffer(_structureBuffers[i][j].instanceBuffer, atomData.data(),
@@ -162,12 +159,18 @@ void VulkanAtomSphereShader::reloadData()
   }
 }
 
-void VulkanAtomSphereShader::reloadAmbientOcclusionData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality)
+void VulkanAtomSphereShader::reloadAmbientOcclusionData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality,
+                                                        VulkanRibbonShader *ribbonShader)
 {
   if (_aoShader)
   {
-    _aoShader->reloadData(dataSource, quality);
+    _aoShader->reloadData(dataSource, quality, ribbonShader ? ribbonShader->ambientOcclusionShader() : nullptr);
   }
+}
+
+VulkanAtomAmbientOcclusionShader *VulkanAtomSphereShader::ambientOcclusionShader() const
+{
+  return _aoShader.get();
 }
 
 void VulkanAtomSphereShader::invalidateCachedAmbientOcclusionTexture(const std::vector<std::shared_ptr<RKRenderObject>> &structures)

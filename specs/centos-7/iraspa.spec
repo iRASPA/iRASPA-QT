@@ -1,5 +1,5 @@
 Name:           iraspa
-Version:        2.2.4
+Version:        2.3.7
 Release:        1%{?dist}
 Summary:        A molecular visualizer/editor
 Group:          Sciences/Chemistry
@@ -18,15 +18,15 @@ the latest visualization technologies with stunning performance. It can
 handle large structures (hundreds of thousands of atoms), including ambient
 occlusion, with high frame rates.
 
-BuildRequires:  gcc-c++, dbus-devel, qt5-qtbase-devel, qt5-qttools-devel, qt5-qtwebkit-devel, qt5-qtdeclarative-devel, python3-devel, ffmpeg-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel
+BuildRequires:  cmake, gcc-c++, dbus-devel, qt5-qtbase-devel, qt5-qttools-devel, qt5-qtwebkit-devel, qt5-qtdeclarative-devel, python3-devel, ffmpeg-devel, xz-devel, zlib-devel, opencl-headers, ocl-icd-devel
 Requires:       dbus-libs, qt5-qtbase, qt5-qtbase-gui, qt5-qtwebchannel, qt5-qtlocation, qt5-qtwebkit, qt5-qtdeclarative, ocl-icd, platform-python-devel, xz-devel, zlib, ffmpeg-libs
 
 %prep
 %setup -q -n %{name}
 
 %build
-qmake-qt5 iraspa.pro
-make %{?_smp_mflags} BINDIR=%{_bindir}
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%{_prefix}
+cmake --build build -- %{?_smp_mflags}
 
 %install
 mkdir -p $RPM_BUILD_ROOT/usr/bin
@@ -40,7 +40,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/64x64/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/128x128/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/256x256/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/512x512/apps
-install -m 755 %{name} $RPM_BUILD_ROOT/usr/bin/%{name}
+install -m 755 build/%{name} $RPM_BUILD_ROOT/usr/bin/%{name}
 install -m 644 datafiles/databasecoremof.irspdoc $RPM_BUILD_ROOT/usr/share/%{name}
 install -m 644 datafiles/databasecoremofddec.irspdoc $RPM_BUILD_ROOT/usr/share/%{name}
 install -m 644 datafiles/databaseiza.irspdoc $RPM_BUILD_ROOT/usr/share/%{name}

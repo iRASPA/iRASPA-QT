@@ -10,6 +10,7 @@
 #include "vulkanrenderer.h"
 
 class VulkanAtomSphereShader;
+class VulkanRibbonAmbientOcclusionShader;
 
 class VulkanAtomAmbientOcclusionShader
 {
@@ -19,9 +20,21 @@ public:
 
   void initialize();
   void setRenderStructures(std::vector<std::vector<std::shared_ptr<RKRenderObject>>> structures);
-  void reloadData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality);
+  void reloadData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality,
+                  VulkanRibbonAmbientOcclusionShader *ribbonAO = nullptr);
   void invalidateCachedAmbientOcclusionTexture(const std::vector<std::shared_ptr<RKRenderObject>> &structures);
   VkDescriptorSet samplerSet(size_t sceneIndex, size_t movieIndex) const;
+
+  bool wantsBake(size_t sceneIndex, size_t movieIndex) const;
+  bool hasCachedTexture(RKRenderObject *key, uint32_t textureSize) const;
+  bool prepareTarget(size_t sceneIndex, size_t movieIndex);
+  void setGenerationBuffers(const VulkanBuffer &structureBuffer, const VulkanBuffer &shadowBuffer);
+  void useShadowMap(VkImageView shadowMapView);
+  void restoreDefaultShadowMap();
+  void recordClear(VkCommandBuffer commandBuffer, size_t sceneIndex, size_t movieIndex);
+  void recordAccumulate(VkCommandBuffer commandBuffer, size_t sceneIndex, size_t movieIndex, uint32_t directionIndex,
+                        VkDeviceSize structureStride, VkDeviceSize shadowStride, float weight);
+  void finalizeTarget(size_t sceneIndex, size_t movieIndex);
 
 private:
   struct StructureResources
@@ -40,7 +53,8 @@ private:
   void createPipelines();
   void createGenerationDescriptors();
   void adjustTextureSizes();
-  void generateTextures(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality);
+  void generateTextures(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality,
+                        VulkanRibbonAmbientOcclusionShader *ribbonAO);
   void recordImageBarrier(VkCommandBuffer commandBuffer, VkImage image, VkImageAspectFlags aspect, VkImageLayout oldLayout,
                           VkImageLayout newLayout, VkAccessFlags srcAccess, VkAccessFlags dstAccess,
                           VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage);

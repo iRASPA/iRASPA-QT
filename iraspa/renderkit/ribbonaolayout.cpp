@@ -83,6 +83,13 @@ int RKAmbientOcclusionSizing::maxTextureSize(int numberOfAtoms, int maxTextureDi
   return std::min(8192, cappedMax);
 }
 
+bool shouldBakeRibbonAmbientOcclusion(RKRenderObject *object)
+{
+  auto *ribbonSource = dynamic_cast<RKRenderRibbonSource *>(object);
+  return object && object->isVisible() && ribbonSource && ribbonSource->drawRibbon() && ribbonSource->ribbonAmbientOcclusion() &&
+         ribbonSource->ribbonNumberOfChains() > 0;
+}
+
 QString ribbonAmbientOcclusionCacheKey(RKRenderObject *structure)
 {
   RKRenderAtomSource *atomSource = dynamic_cast<RKRenderAtomSource*>(structure);
@@ -95,7 +102,7 @@ QString ribbonAmbientOcclusionCacheKey(RKRenderObject *structure)
   const int textureHeight = ribbonSource ? ribbonSource->ribbonAmbientOcclusionTextureHeight() : 0;
   const int maxSamples = ribbonSource ? ribbonSource->ribbonMaxSplineSampleCount() : 0;
 
-  return QString("ribbon-ao-v64-cocoa-weights-%1x%2-rings-%3-ribbonAO-%4-drawAtoms-%5-atomShadows-%6-%7")
+  return QString("ribbon-ao-v65-dilate-gpublur-%1x%2-rings-%3-ribbonAO-%4-drawAtoms-%5-atomShadows-%6-%7")
       .arg(textureWidth)
       .arg(textureHeight)
       .arg(maxSamples)

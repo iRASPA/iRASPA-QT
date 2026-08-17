@@ -93,7 +93,6 @@ void VulkanRibbonShader::setRenderStructures(std::vector<std::vector<std::shared
 
 void VulkanRibbonShader::reloadData()
 {
-  _renderer->waitIdle();
   destroyStructureBuffers();
   _structureBuffers.resize(_renderStructures.size());
 
@@ -103,7 +102,7 @@ void VulkanRibbonShader::reloadData()
     for (size_t j = 0; j < _renderStructures[i].size(); ++j)
     {
       auto *ribbonSource = dynamic_cast<RKRenderRibbonSource *>(_renderStructures[i][j].get());
-      if (!ribbonSource)
+      if (!ribbonSource || !ribbonSource->drawRibbon())
       {
         continue;
       }
@@ -186,50 +185,17 @@ void VulkanRibbonShader::drawAllChains(VkCommandBuffer commandBuffer, RKRenderRi
 
 void VulkanRibbonShader::drawRibbonRanges(VkCommandBuffer commandBuffer, RKRenderRibbonSource *ribbonSource) const
 {
-  std::vector<RKRibbonChainDrawRange> drawRanges;
-  RibbonDrawVisibilityMode visibilityMode = RibbonDrawVisibilityMode::none;
-
-  if (ribbonSource->ribbonUsesResidueVisibility() && !ribbonSource->ribbonResidueDrawRanges().empty())
+  if (!ribbonSource)
   {
-    drawRanges = ribbonSource->ribbonResidueDrawRanges();
-    visibilityMode = RibbonDrawVisibilityMode::residue;
+    return;
   }
-  else if (ribbonSource->ribbonUsesSegmentVisibility() && !ribbonSource->ribbonSegmentDrawRanges().empty())
+  for (const RKRibbonChainDrawRange &chainRange : ribbonSource->ribbonDrawRangesForEncoding())
   {
-    drawRanges = ribbonSource->ribbonSegmentDrawRanges();
-    visibilityMode = RibbonDrawVisibilityMode::segment;
-  }
-  else
-  {
-    drawRanges = ribbonSource->ribbonChainDrawRanges();
-  }
-
-  for (size_t rangeIndex = 0; rangeIndex < drawRanges.size(); ++rangeIndex)
-  {
-    const RKRibbonChainDrawRange &chainRange = drawRanges[rangeIndex];
-    if (chainRange.indexCount <= 0)
+    if (chainRange.indexCount > 0)
     {
-      continue;
+      vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(chainRange.indexCount), 1,
+                       static_cast<uint32_t>(chainRange.indexStart), 0, 0);
     }
-    switch (visibilityMode)
-    {
-    case RibbonDrawVisibilityMode::residue:
-      if (!ribbonSource->isRibbonResidueDrawRangeVisible(static_cast<int>(rangeIndex)))
-      {
-        continue;
-      }
-      break;
-    case RibbonDrawVisibilityMode::segment:
-      if (!ribbonSource->isRibbonSegmentDrawRangeVisible(static_cast<int>(rangeIndex)))
-      {
-        continue;
-      }
-      break;
-    case RibbonDrawVisibilityMode::none:
-      break;
-    }
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(chainRange.indexCount), 1,
-                     static_cast<uint32_t>(chainRange.indexStart), 0, 0);
   }
 }
 

@@ -644,6 +644,12 @@ void MainWindow::createMenus()
     ui->stackedRenderers->setRendererBackend(RKRendererBackend::Vulkan);
   });
 
+  QObject::connect(ui->stackedRenderers, &RenderStackedWidget::rendererBackendChanged, this,
+                   [this](RKRendererBackend backend) {
+    _openGLRendererAction->setChecked(backend == RKRendererBackend::OpenGL);
+    _vulkanRendererAction->setChecked(backend == RKRendererBackend::Vulkan);
+  });
+
   // copy/paste implementation from: https://srivatsp.com/ostinato/qt-cut-copy-paste/
   QObject::connect(qApp, &QApplication::focusChanged, this, &MainWindow::focusChanged);
 

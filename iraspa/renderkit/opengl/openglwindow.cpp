@@ -26,7 +26,6 @@
 #include <foundationkit.h>
 #include "quadgeometry.h"
 #include "rkimposters.h"
-#include <QtOpenGL/QtOpenGL>
 #include <iostream>
 #include <array>
 #include <algorithm>
@@ -39,6 +38,26 @@
 #include <QPainter>
 #include <QFont>
 #include <QStylePainter>
+#include <QBrush>
+#include <QByteArray>
+#include <QColor>
+#include <QDateTime>
+#include <QFontMetrics>
+#include <QImage>
+#include <QMouseEvent>
+#include <QOpenGLContext>
+#include <QOpenGLDebugLogger>
+#include <QOpenGLDebugMessage>
+#include <QOpenGLWindow>
+#include <QPen>
+#include <QRect>
+#include <QString>
+#include <QSurfaceFormat>
+#include <QTimer>
+#include <QVector>
+#include <QWheelEvent>
+#include <QWidget>
+#include <QWindow>
 #include "opengluniformstringliterals.h"
 #include "ribbonaolayout.h"
 
@@ -207,11 +226,6 @@ void OpenGLWindow::setRenderDataSource(std::shared_ptr<RKRenderDataSource> sourc
   {
     reloadData();
     update();
-
-    if (source)
-    {
-      renderSceneToImage(width(), height(), RKRenderQuality::low);
-    }
   }
 }
 
@@ -245,6 +259,8 @@ void OpenGLWindow::setRenderStructures(std::vector<std::vector<std::shared_ptr<R
   _ribbonShader.reloadData();
   _ribbonSelectionShader.reloadData();
   _pickingShader.reloadData();
+  _pickBufferValid = false;
+  _pickBufferValid = false;
 }
 
 
@@ -288,7 +304,20 @@ std::array<int,4> OpenGLWindow::pickTexture(int x, int y, int width, int height)
     return {0, 0, 0, 0};
   }
   makeCurrent();
+  if (!_pickBufferValid)
+  {
+    updateStructureUniforms();
+    updateTransformUniforms();
+    glViewport(0, 0, _width, _height);
+    renderPickingPass(false);
+  }
   return _pickingShader.pickTexture(x,y,width,height);
+}
+
+void OpenGLWindow::renderPickingPass(bool skipRibbonPicking)
+{
+  _pickingShader.paintGL(_structureUniformBuffer, skipRibbonPicking);
+  _pickBufferValid = true;
 }
 
 void OpenGLWindow::handleLoggedMessage(const QOpenGLDebugMessage &debugMessage)
@@ -647,6 +676,7 @@ void OpenGLWindow::resizeGL( int w, int h )
     }
 
     _pickingShader.resizeGL(w,h);
+    _pickBufferValid = false;
 
     _width = std::max(16, w);
     _height = std::max(16, h);
@@ -774,8 +804,16 @@ void OpenGLWindow::paintGL()
 
     glViewport(0,0,_width,_height);
 
-    // pass mouse coordinates (real coordinates twice larger for retina-displays)
-    _pickingShader.paintGL(_structureUniformBuffer);
+    // Skip picking during trackball/wheel; pickTexture() rebuilds it on click.
+    const bool rotating = (_tracking == Tracking::other);
+    if (_quality == RKRenderQuality::high && !rotating)
+    {
+      renderPickingPass(false);
+    }
+    else
+    {
+      _pickBufferValid = false;
+    }
 
     glViewport(0,0,_width * _devicePixelRatio,_height * _devicePixelRatio);
     drawSceneOpaqueToFramebuffer(_sceneFrameBuffer);
@@ -852,7 +890,11 @@ void OpenGLWindow::paintOverGL()
       font.setPointSize(10);
       painter.setFont(font);
       const QFontMetrics metrics(font);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
       const int textWidth = metrics.horizontalAdvance(text);
+#else
+      const int textWidth = metrics.width(text);
+#endif
       const int textHeight = metrics.height();
       const QRect backgroundRect(2, 2, textWidth + 8, textHeight + 6);
       painter.fillRect(backgroundRect, QColor(255, 255, 255, 220));
@@ -1308,7 +1350,6 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
 
 void OpenGLWindow::mouseMoveEvent(QMouseEvent *event)
 {
-  makeCurrent();
   switch(_tracking)
   {
     case Tracking::none:
@@ -1403,7 +1444,6 @@ void OpenGLWindow::wheelEvent(QWheelEvent *event)
 {
   _quality = RKRenderQuality::medium;
   _timer->start(500);
-  makeCurrent();
   if (std::shared_ptr<RKCamera> camera = _camera.lock())
   {
     camera->increaseDistance(event->angleDelta().y()/40.0);
@@ -1698,6 +1738,7 @@ void OpenGLWindow::reloadData()
   _ribbonShader.reloadData();
   _ribbonSelectionShader.reloadData();
   _pickingShader.reloadData();
+  _pickBufferValid = false;
   reloadRibbonAmbientOcclusionTextures(RKRenderQuality::low);
   _textShader.reloadData();
 
@@ -1732,6 +1773,7 @@ void OpenGLWindow::reloadData(RKRenderQuality quality)
   _ribbonShader.reloadData();
   _ribbonSelectionShader.reloadData();
   _pickingShader.reloadData();
+  _pickBufferValid = false;
   reloadRibbonAmbientOcclusionTextures(quality);
   _textShader.reloadData();
 
@@ -1776,6 +1818,7 @@ void OpenGLWindow::reloadRenderData()
   _ribbonShader.reloadData();
   _ribbonSelectionShader.reloadData();
   _pickingShader.reloadData();
+  _pickBufferValid = false;
   reloadRibbonAmbientOcclusionTextures(RKRenderQuality::low);
   _textShader.reloadData();
 

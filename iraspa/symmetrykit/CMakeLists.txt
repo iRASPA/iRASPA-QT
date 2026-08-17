@@ -1,0 +1,74 @@
+add_library(symmetrykit STATIC
+  skaminoacididealgeometry.cpp
+  skasymmetricatom.cpp
+  skasymmetricbond.cpp
+  skasymmetricunit.cpp
+  skatomcopy.cpp
+  skatomtreecontroller.cpp
+  skatomtreenode.cpp
+  skbond.cpp
+  skbondsetcontroller.cpp
+  skboundingbox.cpp
+  skcell.cpp
+  skchgcarparser.cpp
+  skcifparser.cpp
+  skcifwriter.cpp
+  skcolorset.cpp
+  skcolorsets.cpp
+  skdsspsecondarystructureassigner.cpp
+  skdsssecondarystructureassigner.cpp
+  skelement.cpp
+  skelfcarparser.cpp
+  skgaussiancubeparser.cpp
+  skintegerchangeofbasis.cpp
+  skintegersymmetryoperationset.cpp
+  sklocpotparser.cpp
+  skmmcifparser.cpp
+  skmmcifwriter.cpp
+  sknucleotide.cpp
+  sknucleotidebase.cpp
+  skonethirdseitzmatrix.cpp
+  skparser.cpp
+  skpdbparser.cpp
+  skpdbwriter.cpp
+  skpointgroup.cpp
+  skpointsymmetryset.cpp
+  skposcarlegacyparser.cpp
+  skposcarparser.cpp
+  skposcarwriter.cpp
+  skpseasecondarystructureassigner.cpp
+  skrotationalchangeofbasis.cpp
+  skrotationaloccurancetable.cpp
+  skrotationmatrix.cpp
+  sksecondarystructure.cpp
+  sksecondarystructuregeometry.cpp
+  sksegnosecondarystructureassigner.cpp
+  skseitzintegermatrix.cpp
+  skseitzmatrix.cpp
+  sksequoiasecondarystructureassigner.cpp
+  skspacegroup.cpp
+  skspacegroupdatabase.cpp
+  skspacegroupsetting.cpp
+  skstrideramachandranmaps.cpp
+  skstridesecondarystructureassigner.cpp
+  sksymmetrycell.cpp
+  sksymmetryoperationset.cpp
+  sktransformationmatrix.cpp
+  skvtkparser.cpp
+  skxyzparser.cpp
+  skxyzwriter.cpp
+  symmetrykitprotocols.cpp
+)
+add_library(iRASPA::symmetrykit ALIAS symmetrykit)
+
+target_include_directories(symmetrykit PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+
+target_link_libraries(symmetrykit
+  PUBLIC
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    iRASPA::mathkit
+    iRASPA::foundationkit
+  PRIVATE
+    iRASPA::compile_options
+)

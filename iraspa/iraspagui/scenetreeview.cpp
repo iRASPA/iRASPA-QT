@@ -434,7 +434,7 @@ void SceneTreeView::dragMoveEvent(QDragMoveEvent* event)
 void SceneTreeView::newCrystal()
 {
   std::shared_ptr<Crystal> crystal = std::make_shared<Crystal>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   crystal->atomsTreeController()->appendToRootnodes(atomtreeNode);
   crystal->expandSymmetry();
@@ -450,7 +450,7 @@ void SceneTreeView::newCrystal()
 void SceneTreeView::newMolecularCrystal()
 {
   std::shared_ptr<MolecularCrystal> molecularCrystal = std::make_shared<MolecularCrystal>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   molecularCrystal->atomsTreeController()->appendToRootnodes(atomtreeNode);
   molecularCrystal->expandSymmetry();
@@ -466,7 +466,7 @@ void SceneTreeView::newMolecularCrystal()
 void SceneTreeView::newProteinCrystal()
 {
   std::shared_ptr<ProteinCrystal> proteinCrystal = std::make_shared<ProteinCrystal>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   proteinCrystal->atomsTreeController()->appendToRootnodes(atomtreeNode);
   proteinCrystal->expandSymmetry();
@@ -482,7 +482,7 @@ void SceneTreeView::newProteinCrystal()
 void SceneTreeView::newMolecule()
 {
   std::shared_ptr<Molecule> molecule = std::make_shared<Molecule>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   molecule->atomsTreeController()->appendToRootnodes(atomtreeNode);
   molecule->expandSymmetry();
@@ -499,7 +499,7 @@ void SceneTreeView::newMolecule()
 void SceneTreeView::newProtein()
 {
   std::shared_ptr<Protein> protein = std::make_shared<Protein>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   protein->atomsTreeController()->appendToRootnodes(atomtreeNode);
   protein->expandSymmetry();
@@ -515,7 +515,7 @@ void SceneTreeView::newProtein()
 void SceneTreeView::newDNA()
 {
   std::shared_ptr<DNA> dna = std::make_shared<DNA>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   dna->atomsTreeController()->appendToRootnodes(atomtreeNode);
   dna->expandSymmetry();
@@ -531,7 +531,7 @@ void SceneTreeView::newDNA()
 void SceneTreeView::newDNACrystal()
 {
   std::shared_ptr<DNACrystal> dnaCrystal = std::make_shared<DNACrystal>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   dnaCrystal->atomsTreeController()->appendToRootnodes(atomtreeNode);
   dnaCrystal->expandSymmetry();
@@ -547,7 +547,7 @@ void SceneTreeView::newDNACrystal()
 void SceneTreeView::newCrystalEllipsoid()
 {
   std::shared_ptr<CrystalEllipsoidPrimitive> crystalEllipsoid = std::make_shared<CrystalEllipsoidPrimitive>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   crystalEllipsoid->atomsTreeController()->appendToRootnodes(atomtreeNode);
   crystalEllipsoid->expandSymmetry();
@@ -563,7 +563,7 @@ void SceneTreeView::newCrystalEllipsoid()
 void SceneTreeView::newCrystalCylinder()
 {
   std::shared_ptr<CrystalCylinderPrimitive> crystalCylinder = std::make_shared<CrystalCylinderPrimitive>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   crystalCylinder->atomsTreeController()->appendToRootnodes(atomtreeNode);
   crystalCylinder->expandSymmetry();
@@ -579,7 +579,7 @@ void SceneTreeView::newCrystalCylinder()
 void SceneTreeView::newCrystalPolygonalPrism()
 {
   std::shared_ptr<CrystalPolygonalPrismPrimitive> crystalPolygonalPrismPrimitive = std::make_shared<CrystalPolygonalPrismPrimitive>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   crystalPolygonalPrismPrimitive->atomsTreeController()->appendToRootnodes(atomtreeNode);
   crystalPolygonalPrismPrimitive->expandSymmetry();
@@ -595,7 +595,7 @@ void SceneTreeView::newCrystalPolygonalPrism()
 void SceneTreeView::newEllipsoid()
 {
   std::shared_ptr<EllipsoidPrimitive> ellipsoidPrimitive = std::make_shared<EllipsoidPrimitive>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   ellipsoidPrimitive->atomsTreeController()->appendToRootnodes(atomtreeNode);
   ellipsoidPrimitive->expandSymmetry();
@@ -611,7 +611,7 @@ void SceneTreeView::newEllipsoid()
 void SceneTreeView::newCylinder()
 {
   std::shared_ptr<CylinderPrimitive> cylinderPrimitive = std::make_shared<CylinderPrimitive>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   cylinderPrimitive->atomsTreeController()->appendToRootnodes(atomtreeNode);
   cylinderPrimitive->expandSymmetry();
@@ -627,7 +627,7 @@ void SceneTreeView::newCylinder()
 void SceneTreeView::newPolygonalPrism()
 {
   std::shared_ptr<PolygonalPrismPrimitive> polygonalPrismPrimitive = std::make_shared<PolygonalPrismPrimitive>();
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
   std::shared_ptr<SKAtomTreeNode> atomtreeNode = std::make_shared<SKAtomTreeNode>(atom);
   polygonalPrismPrimitive->atomsTreeController()->appendToRootnodes(atomtreeNode);
   polygonalPrismPrimitive->expandSymmetry();

@@ -105,6 +105,7 @@ public:
   std::vector<RKRibbonChainDrawRange> ribbonChainDrawRanges() const override;
   std::vector<RKRibbonChainDrawRange> ribbonSegmentDrawRanges() const override;
   std::vector<RKRibbonChainDrawRange> ribbonResidueDrawRanges() const override;
+  std::vector<RKRibbonChainDrawRange> ribbonDrawRangesForEncoding() const override;
   bool ribbonUsesSegmentVisibility() const override;
   bool ribbonUsesResidueVisibility() const override;
   bool isRibbonSegmentDrawRangeVisible(int index) const override;

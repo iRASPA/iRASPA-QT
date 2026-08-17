@@ -31,6 +31,7 @@
 #include <exception>
 #include <stdexcept>
 #include "opengluniformstringliterals.h"
+#include <QCache>
 
 namespace
 {

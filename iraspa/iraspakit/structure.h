@@ -67,6 +67,18 @@ struct AtomInstancePick
 
 std::optional<AtomInstancePick> decodeAtomInstancePick(RKRenderObject *object, int instanceTag);
 
+namespace SKBondCellList
+{
+  void assignCartesianBonds(std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                            SKBondSetController &bondSetController);
+  void assignPeriodicCartesianBonds(std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                                    SKBondSetController &bondSetController,
+                                    SKCell &cell);
+  void assignPeriodicFractionalBonds(std::vector<std::shared_ptr<SKAtomCopy>> &copies,
+                                     SKBondSetController &bondSetController,
+                                     SKCell &cell);
+}
+
 class Structure: public Object, public InfoEditor,  public AtomViewer, public BondViewer,
                  public AtomStructureEditor, public BondStructureEditor,
                  public AnnotationEditor,

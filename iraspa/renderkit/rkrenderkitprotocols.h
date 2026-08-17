@@ -25,6 +25,7 @@
 #include <QColor>
 #include <QDate>
 #include <QImage>
+#include <QStringList>
 #include <cstdint>
 #include <optional>
 #include <vector>
@@ -150,6 +151,7 @@ public:
   virtual std::vector<RKRibbonChainDrawRange> ribbonChainDrawRanges() const = 0;
   virtual std::vector<RKRibbonChainDrawRange> ribbonSegmentDrawRanges() const = 0;
   virtual std::vector<RKRibbonChainDrawRange> ribbonResidueDrawRanges() const = 0;
+  virtual std::vector<RKRibbonChainDrawRange> ribbonDrawRangesForEncoding() const = 0;
   virtual bool ribbonUsesSegmentVisibility() const = 0;
   virtual bool ribbonUsesResidueVisibility() const = 0;
   virtual bool isRibbonSegmentDrawRangeVisible(int index) const = 0;

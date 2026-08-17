@@ -70,3 +70,4 @@ class RKRenderAtomSource;
 class RKRenderRibbonSource;
 
 QString ribbonAmbientOcclusionCacheKey(RKRenderObject *structure);
+bool shouldBakeRibbonAmbientOcclusion(RKRenderObject *object);

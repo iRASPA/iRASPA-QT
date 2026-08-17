@@ -25,6 +25,7 @@ public:
   void reloadData(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality);
   void invalidateCachedAmbientOcclusionTexture(const std::vector<std::shared_ptr<RKRenderObject>> &structures);
   VkDescriptorSet samplerSet(size_t sceneIndex, size_t movieIndex) const;
+  bool hasCachedTexture(RKRenderObject *structure, uint32_t width, uint32_t height) const;
 
 private:
   struct StructureResources
@@ -42,6 +43,8 @@ private:
   void createGenerationDescriptors();
   void adjustTextureSizes();
   void generateTextures(std::shared_ptr<RKRenderDataSource> dataSource, RKRenderQuality quality);
+  void createBlurResources();
+  void blurAtlas(VulkanTexture &atlas, uint32_t width, uint32_t height);
   void recordImageBarrier(VkCommandBuffer commandBuffer, VkImage image, VkImageAspectFlags aspect, VkImageLayout oldLayout,
                           VkImageLayout newLayout, VkAccessFlags srcAccess, VkAccessFlags dstAccess,
                           VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage);
@@ -62,6 +65,11 @@ private:
   VkPipeline _atomShadowPipeline = VK_NULL_HANDLE;
   VkPipeline _ribbonShadowPipeline = VK_NULL_HANDLE;
   VkPipeline _accumulatePipeline = VK_NULL_HANDLE;
+  VkPipeline _blurPipeline = VK_NULL_HANDLE;
+  VkPipelineLayout _blurPipelineLayout = VK_NULL_HANDLE;
+  VkRenderPass _blurRenderPass = VK_NULL_HANDLE;
+  VkDescriptorSetLayout _blurSamplerSetLayout = VK_NULL_HANDLE;
+  VkDescriptorSet _blurSamplerSet = VK_NULL_HANDLE;
 
   VulkanTexture _shadowMap;
   VkFramebuffer _shadowFramebuffer = VK_NULL_HANDLE;

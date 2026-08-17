@@ -23,20 +23,9 @@
 
 #include <QObject>
 #include <QtGlobal>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
+#include <QOpenGLWindow>
 #include <QOpenGLFunctions_3_3_Core>
-#if (QT_VERSION < QT_VERSION_CHECK(5,4,0))
-  #include <QGLWidget>
-#elif (QT_VERSION < QT_VERSION_CHECK(6,0,0))
-  #include <QOpenGLWidget>
-#else
-  #if defined(Q_OS_WIN)
-    #include <QtOpenGLWidgets/QOpenGLWidget>
-  #else 
-    #include <QOpenGLWidget>
-  #endif
-#endif
+#include "openglshader.h"
 #include <QTimer>
 #include <QPoint>
 #include <QCache>
@@ -45,6 +34,14 @@
 #include <QFrame>
 #include <QStackedWidget>
 #include <QOpenGLTexture>
+#include <QImage>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QOpenGLDebugLogger>
+#include <QOpenGLDebugMessage>
+#include <QString>
+#include <QWheelEvent>
+#include <QWidget>
 #include <foundationkit.h>
 #include <optional>
 #include "rkrenderkitprotocols.h"
@@ -246,9 +243,11 @@ private:
   Tracking _tracking = Tracking::none;
   QPoint _origin;
   QPoint _draggedPos;
+  bool _pickBufferValid = false;
 
   QTimer *_timer;
   void timeoutEventHandler();
+  void renderPickingPass(bool skipRibbonPicking);
 protected:
   virtual void initializeGL() final override;
   virtual void resizeGL( int w, int h ) final override;

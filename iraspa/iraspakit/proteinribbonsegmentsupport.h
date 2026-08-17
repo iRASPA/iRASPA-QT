@@ -8,6 +8,7 @@
 #pragma once
 
 #include <QChar>
+#include <cstdint>
 #include <optional>
 #include <set>
 #include <vector>
@@ -101,8 +102,17 @@ struct ProteinRibbonSegmentSupport
   static std::shared_ptr<SKAtomTreeNode> enclosingResidueGroupNode(const std::shared_ptr<SKAtomTreeNode> &leafNode);
   static std::shared_ptr<SKAtomTreeNode> enclosingSecondaryStructureSegmentNode(const std::shared_ptr<SKAtomTreeNode> &node);
 
-  /// Resolves the residue group node for a Cα tag stored on the ribbon mesh (1:1 with residue draw ranges).
-  static std::shared_ptr<SKAtomTreeNode> residueTreeNodeForAtomTag(qint64 tag, SKAtomTreeController &controller);
-  /// Resolves the secondary-structure segment node for a Cα tag stored on the ribbon mesh.
-  static std::shared_ptr<SKAtomTreeNode> segmentTreeNodeForAtomTag(qint64 tag, SKAtomTreeController &controller);
+  struct RibbonVisibilityMasks
+  {
+    std::vector<uint8_t> residues;
+    std::vector<uint8_t> segments;
+  };
+  /// Both masks from a single tree walk. An empty tag list yields an empty mask, so a caller that
+  /// only drives one of the two pays for one walk and nothing more.
+  static RibbonVisibilityMasks visibilityMasks(const std::vector<int> &residueAlphaCarbonTags,
+                                               const std::vector<int> &segmentAlphaCarbonTags,
+                                               SKAtomTreeController &controller);
+  /// Mask for an already-resolved node list, used when the ribbon mesh carries no Cα tags and the
+  /// draw ranges line up with the tree groups by count alone.
+  static std::vector<uint8_t> visibilityMaskForNodes(const std::vector<std::shared_ptr<SKAtomTreeNode>> &nodes);
 };

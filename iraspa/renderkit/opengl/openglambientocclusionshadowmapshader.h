@@ -21,14 +21,8 @@
 
 #pragma once
 
+#include <QCache>
 #include <vector>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
 #include "openglshader.h"
 #include "openglatomsphereshader.h"
 #include "rkrenderkitprotocols.h"

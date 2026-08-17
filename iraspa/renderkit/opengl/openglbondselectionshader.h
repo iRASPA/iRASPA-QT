@@ -22,13 +22,6 @@
 #pragma once
 
 #include <vector>
-#define GL_GLEXT_PROTOTYPES
-#include <QtOpenGL>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  #include <QGLFunctions>
-#else
-  #include <QOpenGLFunctions>
-#endif
 #include <QOpenGLFunctions_3_3_Core>
 #include "openglshader.h"
 #include "rkrenderkitprotocols.h"
@@ -43,7 +36,7 @@
 #include "openglexternalbondselectionstripesshader.h"
 #include "openglexternalbondselectionglowshader.h"
 
-class OpenGLBondSelectionShader: public QOpenGLFunctions_3_3_Core
+class OpenGLBondSelectionShader : public OpenGLShader
 {
 public:
   OpenGLBondSelectionShader(OpenGLBondShader &bondShader);
@@ -52,7 +45,7 @@ public:
   void paintGL(GLuint structureUniformBuffer);
   void paintGLGlow(GLuint structureUniformBuffer);
   void initializeVertexArrayObject();
-  void loadShader(void);
+  void loadShader(void) override;
 
   void initializeTransformUniforms();
   void initializeStructureUniforms();

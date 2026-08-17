@@ -451,7 +451,9 @@ void SKCIFParser::appendAtomSite(const std::map<QString,QString> &dictionary, co
 {
   _numberOfAtoms += 1;
 
-  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+  // Element 0 stands for 'not identified yet': the residue dictionary below
+  // claims the site first, and the chemical symbol of the site fills in the rest.
+  std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(chemicalSymbol, 0);
 
   if (const std::optional<QString> groupPDB = dictionaryValue(dictionary, {QString("_atom_site.group_pdb")}))
   {

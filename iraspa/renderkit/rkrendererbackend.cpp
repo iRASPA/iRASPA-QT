@@ -25,6 +25,7 @@
 #include <vector>
 
 #include <QDebug>
+#include <QGuiApplication>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QSurfaceFormat>
@@ -40,6 +41,9 @@
 #ifndef VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
 #define VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR 0x00000001
 #endif
+// After vulkan.h: QVulkanInstance defines VK_NO_PROTOTYPES, which would leave
+// the entry points called below undeclared.
+#include <QVulkanInstance>
 #endif
 
 namespace
@@ -47,6 +51,7 @@ namespace
 bool gProbed = false;
 bool gOpenGLAvailable = false;
 bool gVulkanAvailable = false;
+bool gVulkanHasGPU = false;
 
 #if defined(USE_OPENGL)
 bool probeOpenGL()
@@ -102,6 +107,33 @@ bool hasInstanceExtension(const std::vector<VkExtensionProperties> &available, c
   return false;
 }
 
+// A driver that renders is of no use when its images cannot reach the screen.
+// The renderer builds an XCB surface itself, every other windowing system
+// (Wayland above all) goes through the Vulkan support of the Qt platform plugin.
+bool canPresentVulkan()
+{
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+  if (!qGuiApp || QGuiApplication::platformName().startsWith(QLatin1String("xcb")))
+  {
+    return true;
+  }
+#if QT_CONFIG(vulkan)
+  QVulkanInstance instance;
+  if (!instance.create())
+  {
+    qDebug() << "Vulkan probe: this Qt cannot present Vulkan on the"
+             << QGuiApplication::platformName() << "platform";
+    return false;
+  }
+#else
+  qDebug() << "Vulkan probe: this Qt was built without Vulkan support, so only"
+           << "an X11 session can present";
+  return false;
+#endif
+#endif
+  return true;
+}
+
 bool probeVulkan()
 {
   uint32_t extensionCount = 0;
@@ -150,14 +182,30 @@ bool probeVulkan()
   }
 
   uint32_t deviceCount = 0;
-  const VkResult deviceResult = vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+  VkResult deviceResult = vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+  std::vector<VkPhysicalDevice> devices(deviceCount);
+  if (deviceResult == VK_SUCCESS && deviceCount > 0)
+  {
+    deviceResult = vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+  }
+  for (VkPhysicalDevice device : devices)
+  {
+    VkPhysicalDeviceProperties properties{};
+    vkGetPhysicalDeviceProperties(device, &properties);
+    qDebug() << "Vulkan probe: device" << properties.deviceName
+             << (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU ? "(software)" : "(gpu)");
+    if (properties.deviceType != VK_PHYSICAL_DEVICE_TYPE_CPU)
+    {
+      gVulkanHasGPU = true;
+    }
+  }
   vkDestroyInstance(instance, nullptr);
   if (deviceResult != VK_SUCCESS || deviceCount == 0)
   {
     qDebug() << "Vulkan probe: no physical devices";
     return false;
   }
-  return true;
+  return canPresentVulkan();
 }
 #endif
 } // namespace
@@ -179,7 +227,8 @@ void RKRendererAvailability::probe()
 #else
   gVulkanAvailable = false;
 #endif
-  qDebug() << "Renderer availability: OpenGL =" << gOpenGLAvailable << "Vulkan =" << gVulkanAvailable;
+  qDebug() << "Renderer availability: OpenGL =" << gOpenGLAvailable << "Vulkan =" << gVulkanAvailable
+           << "Vulkan GPU =" << gVulkanHasGPU;
 }
 
 bool RKRendererAvailability::isOpenGLAvailable()
@@ -197,7 +246,11 @@ bool RKRendererAvailability::isVulkanAvailable()
 RKRendererBackend RKRendererAvailability::preferredBackend()
 {
   probe();
-  if (gVulkanAvailable)
+  // A CPU rasterizer such as lavapipe enumerates as a perfectly usable Vulkan
+  // device, yet it loses to an OpenGL driver that has a GPU behind it. That is
+  // the common case in a virtual machine, where the guest driver exposes OpenGL
+  // but no Vulkan.
+  if (gVulkanAvailable && (gVulkanHasGPU || !gOpenGLAvailable))
   {
     return RKRendererBackend::Vulkan;
   }

@@ -68,23 +68,12 @@ namespace
       structure->setDrawBonds(false);
     }
 
-    int atomCount = 0;
-    int residueCount = 0;
-    if (AtomViewer *atomViewer = dynamic_cast<AtomViewer*>(object.get()))
-    {
-      atomCount = static_cast<int>(atomViewer->atomsTreeController()->flattenedLeafNodes().size());
-    }
-    if (ProteinRibbonMixin *ribbonMixin = dynamic_cast<ProteinRibbonMixin*>(object.get()))
-    {
-      residueCount = ribbonMixin->backbone().alphaCarbonResidueCount();
-    }
-    if (residueCount <= 0) { residueCount = atomCount; }
-
-    setRibbonMeshParameters(*ribbonEditor, ProteinRibbonMeshParameters::forImportedStructure(atomCount, residueCount));
+    setRibbonMeshParameters(*ribbonEditor, ProteinRibbonMeshParameters::forImportedStructure(0, 0));
     // Cocoa: imported proteins use Default ribbon lighting (not Fancy).
     applyRibbonRepresentationStyle(*ribbonEditor, ProteinRibbonRepresentationStyle::defaultStyle);
     applyImportedStructureRibbonSelectionDefaults(dynamic_cast<Structure*>(object.get()));
-    ribbonEditor->rebuildBackbone();
+    // Constructor already rebuilt the backbone structure; only the mesh is still missing.
+    ribbonEditor->rebuildRibbonMesh();
   }
 
   void applyImportedDNARibbonDefaults(const std::shared_ptr<Object> &object)
@@ -100,19 +89,7 @@ namespace
       structure->setDrawBonds(false);
     }
 
-    int atomCount = 0;
-    int residueCount = 0;
-    if (AtomViewer *atomViewer = dynamic_cast<AtomViewer*>(object.get()))
-    {
-      atomCount = static_cast<int>(atomViewer->atomsTreeController()->flattenedLeafNodes().size());
-    }
-    if (DNARibbonMixin *dnaMixin = dynamic_cast<DNARibbonMixin*>(object.get()))
-    {
-      residueCount = dnaMixin->nucleotideResidueCount();
-    }
-    if (residueCount <= 0) { residueCount = atomCount; }
-
-    setDnaRibbonMeshParameters(*ribbonEditor, ProteinRibbonMeshParameters::forImportedStructure(atomCount, residueCount));
+    setDnaRibbonMeshParameters(*ribbonEditor, ProteinRibbonMeshParameters::forImportedStructure(0, 0));
     applyFancyDnaRibbonAppearanceDefault(*ribbonEditor);
     ribbonEditor->setRibbonScaleFactor(1.0);
     ribbonEditor->setNucleicAcidBackboneStyle(NucleicAcidBackboneStyle::oval);
@@ -127,7 +104,7 @@ namespace
     ribbonEditor->setNucleicAcidDumbbellWidth(0.15);
     ribbonEditor->setNucleicAcidDumbbellRadius(0.3);
     applyImportedStructureRibbonSelectionDefaults(dynamic_cast<Structure*>(object.get()));
-    ribbonEditor->rebuildBackbone();
+    ribbonEditor->rebuildRibbonMesh();
   }
 
   void applyImportedRibbonDefaults(const std::shared_ptr<Object> &object)

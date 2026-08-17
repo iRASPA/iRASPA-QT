@@ -529,7 +529,7 @@ bool AtomTreeViewModel::insertRows(int position, int rows, const QModelIndex &pa
   beginInsertRows(parent, position, position + rows - 1);
   for (int row = 0; row < rows; ++row)
   {
-    std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
+    std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>(QString("C"), 6);
     std::shared_ptr<SKAtomTreeNode> newItem = std::make_shared<SKAtomTreeNode>(parentItem->shared_from_this(), atom);
 
     if (!parentItem->insertChild(position, newItem))

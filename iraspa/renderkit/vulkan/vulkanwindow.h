@@ -8,6 +8,7 @@
 #include <QEvent>
 #include <QPoint>
 #include <QResizeEvent>
+#include <QString>
 #include <QStringList>
 #include <QTimer>
 #include <QWindow>
@@ -33,6 +34,8 @@ enum class VulkanTracking
 
 class VulkanWindow : public QWindow, public RKRenderViewController
 {
+  Q_OBJECT
+
 public:
   explicit VulkanWindow(QWindow *parent = nullptr);
   ~VulkanWindow() override;
@@ -69,6 +72,9 @@ public:
   std::optional<float> pickDepth(int x, int y, int width, int height) override final;
   void cycleRibbonAODebugMode();
 
+signals:
+  void rendererInitializationFailed(const QString &reason);
+
 protected:
   bool event(QEvent *event) override;
   void exposeEvent(QExposeEvent *event) override;
@@ -84,10 +90,19 @@ private:
   void scheduleFrame();
   void updateSelectionOverlay();
 
+  // Declared before the renderer so that it outlives the VkInstance and the
+  // VkSurfaceKHR the renderer borrows from it. <QVulkanInstance> is deliberately
+  // not included here: it defines VK_NO_PROTOTYPES before pulling in vulkan.h,
+  // which would undeclare the entry points the renderkit calls directly. QWindow
+  // already forward declares the class.
+#if QT_CONFIG(vulkan)
+  std::unique_ptr<QVulkanInstance> _vulkanInstance;
+#endif
   std::unique_ptr<VulkanRenderer> _renderer;
   std::unique_ptr<VulkanScene> _scene;
 
   bool _initialized = false;
+  bool _initializationFailed = false;
   bool _destroyed = false;
   RKRenderQuality _quality = RKRenderQuality::high;
   std::shared_ptr<RKRenderDataSource> _dataSource;
