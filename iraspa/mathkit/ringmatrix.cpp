@@ -686,7 +686,7 @@ std::tuple<RingMatrix, RingMatrix, RingMatrix> RingMatrix::SmithNormalForm()
 
     // Insert AA
     AA = AA.transposed();
-    A.assignSubmatrix(beg, beg, AA.transposed());
+    A.assignSubmatrix(beg, beg, AA);
 
    // Insert transformations
     RingMatrix temp = UU;

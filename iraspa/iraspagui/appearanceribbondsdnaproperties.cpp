@@ -49,6 +49,7 @@ void AppearanceTreeWidgetController::reloadDNARibbonProperties()
   reloadDNARibbonDiffuseLight();
   reloadDNARibbonSpecularLight();
   reloadDNARibbonShininess();
+  reloadDNARibbonEdgeCueing();
 }
 
 void AppearanceTreeWidgetController::reloadDNADrawRibbonsCheckBox()
@@ -1307,4 +1308,69 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::dnaRib
   }
   return set.empty() ? std::nullopt : std::optional<std::unordered_set<double>>(set);
 }
+
+void AppearanceTreeWidgetController::reloadDNARibbonEdgeCueing()
+{
+  _appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox->setDisabled(true);
+
+  if (_projectTreeNode && hasDNARibbonStructure(_iraspa_structures))
+  {
+    if (std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> values = dnaRibbonEdgeCueing(); values)
+    {
+      _appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (values->size() == 1)
+      {
+        if (int index = _appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox->findText("Multiple values"); index >= 0)
+        {
+          whileBlocking(_appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox)->removeItem(index);
+        }
+        whileBlocking(_appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox)->setCurrentIndex(static_cast<int>(*(values->begin())));
+      }
+      else
+      {
+        if (int index = _appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox->findText("Multiple values"); index < 0)
+        {
+          whileBlocking(_appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox)->addItem("Multiple values");
+        }
+        whileBlocking(_appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox)->setCurrentText("Multiple values");
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::setDNARibbonEdgeCueing(int value)
+{
+  if (value >= 0 && value < static_cast<int>(RKEdgeCueing::multiple_values))
+  {
+    for (const std::shared_ptr<iRASPAObject> &iraspaStructure : _iraspa_structures)
+    {
+      if (!objectIsDNARibbon(iraspaStructure)) { continue; }
+      if (std::shared_ptr<DNARibbonStructureEditor> editor = std::dynamic_pointer_cast<DNARibbonStructureEditor>(iraspaStructure->object()))
+      {
+        editor->setRibbonEdgeCueing(static_cast<RKEdgeCueing>(value));
+      }
+    }
+    reloadDNARibbonEdgeCueing();
+    emit rendererReloadStructureUniforms();
+    emit rendererReloadData();
+    emit redrawRenderer();
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> AppearanceTreeWidgetController::dnaRibbonEdgeCueing()
+{
+  if (_iraspa_structures.empty()) return std::nullopt;
+  std::unordered_set<RKEdgeCueing, enum_hash> set;
+  for (const std::shared_ptr<iRASPAObject> &iraspaStructure : _iraspa_structures)
+  {
+    if (!objectIsDNARibbon(iraspaStructure)) { continue; }
+    if (std::shared_ptr<DNARibbonStructureEditor> editor = std::dynamic_pointer_cast<DNARibbonStructureEditor>(iraspaStructure->object()))
+    {
+      set.insert(editor->ribbonEdgeCueing());
+    }
+  }
+  return set.empty() ? std::nullopt : std::optional<std::unordered_set<RKEdgeCueing, enum_hash>>(set);
+}
+
 

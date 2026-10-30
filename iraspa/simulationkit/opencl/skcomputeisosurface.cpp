@@ -298,6 +298,11 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceGPUImplementation(int3
 
 std::vector<float4> SKComputeIsosurface::computeIsosurfaceCPUImplementation(int3 dimensions, std::vector<cl_float> *voxels, double isoValue) noexcept
 {
+  if (!voxels || voxels->empty() || dimensions.x <= 0 || dimensions.y <= 0 || dimensions.z <= 0)
+  {
+    return {};
+  }
+
   int largestSize = std::max({dimensions.x,dimensions.y,dimensions.z});
   int powerOfTwo = 1;
   while(largestSize > pow(2,powerOfTwo))
@@ -305,22 +310,28 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceCPUImplementation(int3
     powerOfTwo += 1;
   }
   size_t size = pow(2,powerOfTwo); // the encompassing size to use as textures (size 16,32,64,128,256, and 512 are supported).
+  size_t tightCount = static_cast<size_t>(dimensions.x) * static_cast<size_t>(dimensions.y) * static_cast<size_t>(dimensions.z);
+  bool usePowerOfTwoStride = (voxels->size() >= size * size * size && voxels->size() != tightCount);
+  size_t strideX = usePowerOfTwoStride ? size : static_cast<size_t>(dimensions.x);
+  size_t strideY = usePowerOfTwoStride ? size : static_cast<size_t>(dimensions.y);
 
-  // brute force implementation
-  // Create marching cubes object
-  MarchingCubes cube(dimensions.x,dimensions.y,dimensions.z);
+  // brute force implementation with periodic boundary wrapping (+1 in each dimension)
+  MarchingCubes cube(dimensions.x + 1, dimensions.y + 1, dimensions.z + 1);
 
   // Initiate the cube
   cube.init_all();
 
-  // Set the data
-  for(int i=0; i<dimensions.x; i++)
+  // Set the data periodically
+  for(int i=0; i<=dimensions.x; i++)
   {
-    for(int j=0; j<dimensions.y; j++)
+    int ix = i % dimensions.x;
+    for(int j=0; j<=dimensions.y; j++)
     {
-      for(int k=0; k<dimensions.z; k++)
+      int iy = j % dimensions.y;
+      for(int k=0; k<=dimensions.z; k++)
       {
-        double value = (*voxels)[i + size * j + k * size * size];
+        int iz = k % dimensions.z;
+        double value = (*voxels)[static_cast<size_t>(ix) + strideX * static_cast<size_t>(iy) + static_cast<size_t>(iz) * strideX * strideY];
         cube.set_data(value, i, j, k);
       }
     }

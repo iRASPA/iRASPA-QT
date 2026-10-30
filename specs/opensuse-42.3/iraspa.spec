@@ -1,5 +1,5 @@
 Name:           iraspa
-Version:        2.3.7
+Version:        2.3.14
 Release:        1%{?dist}
 Summary:        A molecular visualizer/editor
 Group:          Sciences/Chemistry

@@ -90,7 +90,7 @@ namespace
     }
 
     setDnaRibbonMeshParameters(*ribbonEditor, ProteinRibbonMeshParameters::forImportedStructure(0, 0));
-    applyFancyDnaRibbonAppearanceDefault(*ribbonEditor);
+    applyIllustrativeDnaRibbonAppearanceDefault(*ribbonEditor);
     ribbonEditor->setRibbonScaleFactor(1.0);
     ribbonEditor->setNucleicAcidBackboneStyle(NucleicAcidBackboneStyle::oval);
     ribbonEditor->setNucleicAcidTraceMode(NucleicAcidTraceMode::phosphateMode4);
@@ -276,11 +276,21 @@ Scene::Scene(QUrl url, const SKColorSets& colorSets, ForceFieldSets& forcefieldS
 
       if(std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspastructure->object()))
       {
+        if (frame->materialType == SKStructure::MaterialType::unspecified)
+        {
+          frame->applyInferredMaterialType({}, frame->kind);
+        }
+        structure->setStructureMaterialType(SKStructure::materialTypeDisplayName(frame->materialType));
         structure->setRepresentationStyle(Structure::RepresentationStyle::defaultStyle, colorSets);
-        structure->setAtomForceFieldIdentifier("Default", forcefieldSets);
+        QString forceFieldName = ForceFieldSets::suggestedDisplayName(frame->materialType);
+        structure->setAtomForceFieldIdentifier(forceFieldName, forcefieldSets);
         structure->updateForceField(forcefieldSets);
 
         structure->computeBonds();
+        if (SKStructure::usesAluminosilicateForceField(frame->materialType))
+        {
+          structure->updateForceField(forcefieldSets);
+        }
 
         structure->reComputeBoundingBox();
         structure->recomputeDensityProperties();

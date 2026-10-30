@@ -350,7 +350,7 @@ void ProjectTreeNode::updateFilteredChildren(std::function<bool(std::shared_ptr<
   for(const std::shared_ptr<ProjectTreeNode> &child : this->_childNodes)
   {
     child->_matchesFilter = true;
-    child->_matchesFilter = predicate(shared_from_this());
+    child->_matchesFilter = predicate(child);
   }
 
   this->_filteredAndSortedNodes.clear();

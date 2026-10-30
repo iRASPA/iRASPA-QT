@@ -8,6 +8,7 @@
 #pragma once
 
 #include <QColor>
+#include "rkrenderkitprotocols.h"
 #include "proteinribboncolorset.h"
 #include "proteinribbonrepresentationstyle.h"
 #include "proteinribbonsecondarystructuremethod.h"
@@ -27,6 +28,8 @@ public:
   virtual void setRibbonColorSet(ProteinRibbonColorSet value) = 0;
   virtual ProteinRibbonRepresentationStyle ribbonRepresentationStyle() const = 0;
   virtual void setRibbonRepresentationStyle(ProteinRibbonRepresentationStyle value) = 0;
+  virtual RKEdgeCueing ribbonEdgeCueing() const = 0;
+  virtual void setRibbonEdgeCueing(RKEdgeCueing value) = 0;
   virtual ProteinRibbonSecondaryStructureMethod ribbonSecondaryStructureMethod() const = 0;
   virtual void setRibbonSecondaryStructureMethod(ProteinRibbonSecondaryStructureMethod value) = 0;
   virtual ProteinRibbonSplineType ribbonSplineType() const = 0;
@@ -89,9 +92,11 @@ void setRibbonMeshParameters(ProteinRibbonStructureEditor &editor, const Protein
 void migrateLegacySheetArrowDefaultsIfNeeded(ProteinRibbonStructureEditor &editor);
 void applyDefaultRibbonAppearance(ProteinRibbonStructureEditor &editor);
 void applyFancyRibbonAppearanceDefault(ProteinRibbonStructureEditor &editor);
+void applyIllustrativeRibbonAppearanceDefault(ProteinRibbonStructureEditor &editor);
 void applyRibbonRepresentationStyle(ProteinRibbonStructureEditor &editor, ProteinRibbonRepresentationStyle style);
 bool matchesDefaultRibbonAppearance(const ProteinRibbonStructureEditor &editor);
 bool matchesFancyRibbonAppearance(const ProteinRibbonStructureEditor &editor);
+bool matchesIllustrativeRibbonAppearance(const ProteinRibbonStructureEditor &editor);
 void recheckRibbonRepresentationStyle(ProteinRibbonStructureEditor &editor);
 
 class AtomViewer;

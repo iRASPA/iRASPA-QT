@@ -218,13 +218,12 @@ void ProteinNucleicAcidMeshBuilder::appendRingAndLadderMeshes(RKRibbonMesh &mesh
       const float baseColor = SKNucleotideBase::vertexStructureTypeCode(residue.baseKind, false);
       const std::optional<double3> c1 = residue.c1PrimePosition(contentShift);
       const std::optional<double3> base = residue.baseAnchorPosition(contentShift);
+      const std::optional<double3> phosphate = residue.phosphatePosition(contentShift);
       if (c1.has_value() && base.has_value())
       {
         appendCylinder(auxiliaryVertices, auxiliaryIndices, *c1, *base, ladderRadius, cylinderSegments, pickIndex, baseColor);
       }
-
-      const std::optional<double3> phosphate = residue.phosphatePosition(contentShift);
-      if (phosphate.has_value() && base.has_value())
+      else if (phosphate.has_value() && base.has_value())
       {
         const double3 outer = *phosphate * 0.333333 + *base * 0.666667;
         appendCylinder(auxiliaryVertices, auxiliaryIndices, outer, *base, ladderRadius, cylinderSegments, pickIndex, baseColor);

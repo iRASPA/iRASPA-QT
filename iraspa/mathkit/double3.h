@@ -64,6 +64,8 @@ union double3
   double3 operator-() const {return double3(-this->x, -this->y, -this->z);}
   double3& operator+=(const double3 &b) {this->x += b.x, this->y += b.y, this->z += b.z; return *this;}
   double3& operator-=(const double3 &b) {this->x -= b.x, this->y -= b.y, this->z -= b.z; return *this;}
+  double3& operator*=(double b) {this->x *= b, this->y *= b, this->z *= b; return *this;}
+  double3& operator/=(double b) {this->x /= b, this->y /= b, this->z /= b; return *this;}
 
   friend std::ostream& operator<<(std::ostream& out, const double3& vec) ;
 
@@ -83,7 +85,7 @@ union double3
 
   struct KeyEqual{
     bool operator()( const double3& lhs, const double3& rhs ) const{
-      return (std::fabs(lhs.x - rhs.x) < 1e-3) && std::fabs(lhs.y - rhs.y) < 1e-3 && std::fabs(lhs.z == rhs.z) < 1e-3;
+      return (std::fabs(lhs.x - rhs.x) < 1e-3) && std::fabs(lhs.y - rhs.y) < 1e-3 && std::fabs(lhs.z - rhs.z) < 1e-3;
     }
   };
 };

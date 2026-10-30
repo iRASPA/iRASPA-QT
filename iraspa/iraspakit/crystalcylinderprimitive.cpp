@@ -40,6 +40,7 @@ CrystalCylinderPrimitive::CrystalCylinderPrimitive()
 
 CrystalCylinderPrimitive::CrystalCylinderPrimitive(const CrystalCylinderPrimitive &crystalCylinderPrimitive): Primitive(crystalCylinderPrimitive)
 {
+  _spaceGroup = crystalCylinderPrimitive._spaceGroup;
 }
 
 

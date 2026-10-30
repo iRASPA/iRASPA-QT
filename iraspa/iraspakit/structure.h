@@ -82,7 +82,7 @@ namespace SKBondCellList
 class Structure: public Object, public InfoEditor,  public AtomViewer, public BondViewer,
                  public AtomStructureEditor, public BondStructureEditor,
                  public AnnotationEditor,
-                 public RKRenderAtomSource, public RKRenderBondSource
+                 public RKRenderAtomSource, public RKRenderBondSource, public RKRenderBlockingPocketsSource
 {
 public:
   Structure();
@@ -192,6 +192,7 @@ public:
 
   RepresentationType atomRepresentationType() override {return _atomRepresentationType;}
   RepresentationStyle atomRepresentationStyle() override {return _atomRepresentationStyle;}
+  RKEdgeCueing atomEdgeCueing() const override {return _atomEdgeCueing;}
   QString atomColorSchemeIdentifier() override {return _atomColorSchemeIdentifier;}
   SKColorSet::ColorSchemeOrder colorSchemeOrder() override {return _atomColorSchemeOrder;}
   QString atomForceFieldIdentifier() override {return _atomForceFieldIdentifier;}
@@ -209,6 +210,7 @@ public:
   void setRepresentationType(RepresentationType) override final;
   void setRepresentationStyle(RepresentationStyle style) override;
   void setRepresentationStyle(RepresentationStyle style, const SKColorSets &colorSets) override;
+  void setAtomEdgeCueing(RKEdgeCueing value) override {_atomEdgeCueing = value;}
   void setRepresentationColorSchemeIdentifier(const QString colorSchemeName, const SKColorSets &colorSets) override;
   void setColorSchemeOrder(SKColorSet::ColorSchemeOrder order) override {_atomColorSchemeOrder = order;}
   void setAtomForceFieldIdentifier(QString identifier, ForceFieldSets &forceFieldSets) override;
@@ -368,6 +370,9 @@ public:
 
   virtual std::vector<double3> atomPositions() const {return std::vector<double3>();}
   virtual std::vector<double3> bondPositions() const {return std::vector<double3>();}
+  virtual std::vector<double3> atomUnitCellPositions() const {return std::vector<double3>();}
+  virtual std::vector<int> atomUnitCellElementIdentifiers() const;
+  virtual int3 dimensions() const {return int3(int(_adsorptionSurfaceSize), int(_adsorptionSurfaceSize), int(_adsorptionSurfaceSize));}
 
   virtual std::vector<double2> potentialParameters() const {return std::vector<double2>();}
 
@@ -395,10 +400,116 @@ public:
 
   double2 adsorptionSurfaceProbeParameters() const;
   ProbeMolecule adsorptionSurfaceProbeMolecule() const {return _adsorptionSurfaceProbeMolecule;}
+  void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value);
+  double adsorptionSurfaceProbeEpsilon() const {return _adsorptionSurfaceProbeEpsilon;}
+  void setAdsorptionSurfaceProbeEpsilon(double value);
+  double adsorptionSurfaceProbeSigma() const {return _adsorptionSurfaceProbeSigma;}
+  void setAdsorptionSurfaceProbeSigma(double value);
 
+  QString structureMaterialType() const {return _structureMaterialType;}
+  void setStructureMaterialType(QString value) {_structureMaterialType = value;}
   void recomputeDensityProperties();
   double2 frameworkProbeParameters() const;
+  void setFrameworkProbeMolecule(ProbeMolecule value);
+  double frameworkProbeEpsilon() const {return _frameworkProbeEpsilon;}
+  void setFrameworkProbeEpsilon(double value);
+  double frameworkProbeSigma() const {return _frameworkProbeSigma;}
+  void setFrameworkProbeSigma(double value);
+
   void setStructureNitrogenSurfaceArea(double value);
+  void setStructureWellSurfaceArea(double value);
+  void setStructureGeometricSurfaceArea(double value);
+  void setStructureVanDerWaalsGeometricSurfaceArea(double value);
+
+  double structureVolumetricWellSurfaceArea() const {return _structureVolumetricWellSurfaceArea;}
+  void setStructureVolumetricWellSurfaceArea(double value) {_structureVolumetricWellSurfaceArea = value;}
+  double structureGravimetricWellSurfaceArea() const {return _structureGravimetricWellSurfaceArea;}
+  void setStructureGravimetricWellSurfaceArea(double value) {_structureGravimetricWellSurfaceArea = value;}
+  double structureVolumetricGeometricSurfaceArea() const {return _structureVolumetricGeometricSurfaceArea;}
+  void setStructureVolumetricGeometricSurfaceArea(double value) {_structureVolumetricGeometricSurfaceArea = value;}
+  double structureGravimetricGeometricSurfaceArea() const {return _structureGravimetricGeometricSurfaceArea;}
+  void setStructureGravimetricGeometricSurfaceArea(double value) {_structureGravimetricGeometricSurfaceArea = value;}
+  double structureVolumetricVanDerWaalsGeometricSurfaceArea() const {return _structureVolumetricVanDerWaalsGeometricSurfaceArea;}
+  void setStructureVolumetricVanDerWaalsGeometricSurfaceArea(double value) {_structureVolumetricVanDerWaalsGeometricSurfaceArea = value;}
+  double structureGravimetricVanDerWaalsGeometricSurfaceArea() const {return _structureGravimetricVanDerWaalsGeometricSurfaceArea;}
+  void setStructureGravimetricVanDerWaalsGeometricSurfaceArea(double value) {_structureGravimetricVanDerWaalsGeometricSurfaceArea = value;}
+  int structureNumberOfChannelSystems() const {return _structureNumberOfChannelSystems;}
+  void setStructureNumberOfChannelSystems(int value) {_structureNumberOfChannelSystems = value;}
+  int structureNumberOfInaccessiblePockets() const {return _structureNumberOfInaccessiblePockets;}
+  void setStructureNumberOfInaccessiblePockets(int value) {_structureNumberOfInaccessiblePockets = value;}
+  int structureDimensionalityOfPoreSystem() const {return _structureDimensionalityOfPoreSystem;}
+  void setStructureDimensionalityOfPoreSystem(int value) {_structureDimensionalityOfPoreSystem = value;}
+  double structureLargestCavityDiameter() const {return _structureLargestCavityDiameter;}
+  void setStructureLargestCavityDiameter(double value) {_structureLargestCavityDiameter = value;}
+  double structureRestrictingPoreLimitingDiameter() const {return _structureRestrictingPoreLimitingDiameter;}
+  void setStructureRestrictingPoreLimitingDiameter(double value) {_structureRestrictingPoreLimitingDiameter = value;}
+  double structureLargestCavityDiameterAlongAViablePath() const {return _structureLargestCavityDiameterAlongAViablePath;}
+  void setStructureLargestCavityDiameterAlongAViablePath(double value) {_structureLargestCavityDiameterAlongAViablePath = value;}
+  double structureRestrictingPoreLimitingDiameter2() const {return _structureRestrictingPoreLimitingDiameter2;}
+  void setStructureRestrictingPoreLimitingDiameter2(double value) {_structureRestrictingPoreLimitingDiameter2 = value;}
+  double structureLargestCavityDiameterAlongAViablePath2() const {return _structureLargestCavityDiameterAlongAViablePath2;}
+  void setStructureLargestCavityDiameterAlongAViablePath2(double value) {_structureLargestCavityDiameterAlongAViablePath2 = value;}
+  double2 structureWindow1Size() const {return _structureWindow1Size;}
+  void setStructureWindow1Size(double2 value) {_structureWindow1Size = value;}
+  double2 structureWindow2Size() const {return _structureWindow2Size;}
+  void setStructureWindow2Size(double2 value) {_structureWindow2Size = value;}
+  double2 structureWindow3Size() const {return _structureWindow3Size;}
+  void setStructureWindow3Size(double2 value) {_structureWindow3Size = value;}
+  qint64 structureWindow1RingAtoms() const {return _structureWindow1RingAtoms;}
+  void setStructureWindow1RingAtoms(qint64 value) {_structureWindow1RingAtoms = value;}
+  qint64 structureWindow2RingAtoms() const {return _structureWindow2RingAtoms;}
+  void setStructureWindow2RingAtoms(qint64 value) {_structureWindow2RingAtoms = value;}
+  qint64 structureWindow3RingAtoms() const {return _structureWindow3RingAtoms;}
+  void setStructureWindow3RingAtoms(qint64 value) {_structureWindow3RingAtoms = value;}
+
+  double2 structureWindowSize(int index) const;
+  void setStructureWindowSize(int index, double2 value);
+  qint64 structureWindowRingAtoms(int index) const;
+  void setStructureWindowRingAtoms(int index, qint64 value);
+
+  // Blocking pockets
+  // ===============================================================================================
+  const std::vector<double4> &blockingPockets() const {return _blockingPockets;}
+  void setBlockingPockets(const std::vector<double4> &pockets) {_blockingPockets = pockets;}
+  bool drawBlockingPockets() const override {return _drawBlockingPockets;}
+  void setDrawBlockingPockets(bool value) {_drawBlockingPockets = value;}
+  bool applyBlockingPockets() const {return _applyBlockingPockets;}
+  void setApplyBlockingPockets(bool value) {_applyBlockingPockets = value;}
+  std::vector<double4> appliedBlockingPockets() const {return _applyBlockingPockets ? _blockingPockets : std::vector<double4>();}
+
+  ProbeMolecule blockingPocketProbeMolecule() const {return _blockingPocketProbeMolecule;}
+  void setBlockingPocketProbeMolecule(ProbeMolecule value);
+  double blockingPocketProbeEpsilon() const {return _blockingPocketProbeEpsilon;}
+  void setBlockingPocketProbeEpsilon(double value);
+  double blockingPocketProbeSigma() const {return _blockingPocketProbeSigma;}
+  void setBlockingPocketProbeSigma(double value);
+  double2 blockingPocketProbeParameters() const {return double2(_blockingPocketProbeEpsilon, _blockingPocketProbeSigma);}
+
+  bool blockingPocketFrontSideHDR() const override {return _blockingPocketsFrontSideHDR;}
+  void setBlockingPocketFrontSideHDR(bool value) {_blockingPocketsFrontSideHDR = value;}
+  double blockingPocketFrontSideHDRExposure() const override {return _blockingPocketsFrontSideHDRExposure;}
+  void setBlockingPocketFrontSideHDRExposure(double value) {_blockingPocketsFrontSideHDRExposure = value;}
+  QColor blockingPocketFrontSideAmbientColor() const override {return _blockingPocketsFrontSideAmbientColor;}
+  void setBlockingPocketFrontSideAmbientColor(QColor color) {_blockingPocketsFrontSideAmbientColor = color;}
+  QColor blockingPocketFrontSideDiffuseColor() const override {return _blockingPocketsFrontSideDiffuseColor;}
+  void setBlockingPocketFrontSideDiffuseColor(QColor color) {_blockingPocketsFrontSideDiffuseColor = color;}
+  QColor blockingPocketFrontSideSpecularColor() const override {return _blockingPocketsFrontSideSpecularColor;}
+  void setBlockingPocketFrontSideSpecularColor(QColor color) {_blockingPocketsFrontSideSpecularColor = color;}
+  double blockingPocketFrontSideAmbientIntensity() const override {return _blockingPocketsFrontSideAmbientIntensity;}
+  void setBlockingPocketFrontSideAmbientIntensity(double value) {_blockingPocketsFrontSideAmbientIntensity = value;}
+  double blockingPocketFrontSideDiffuseIntensity() const override {return _blockingPocketsFrontSideDiffuseIntensity;}
+  void setBlockingPocketFrontSideDiffuseIntensity(double value) {_blockingPocketsFrontSideDiffuseIntensity = value;}
+  double blockingPocketFrontSideSpecularIntensity() const override {return _blockingPocketsFrontSideSpecularIntensity;}
+  void setBlockingPocketFrontSideSpecularIntensity(double value) {_blockingPocketsFrontSideSpecularIntensity = value;}
+  double blockingPocketFrontSideShininess() const override {return _blockingPocketsFrontSideShininess;}
+  void setBlockingPocketFrontSideShininess(double value) {_blockingPocketsFrontSideShininess = value;}
+
+  static std::vector<double4> parseBlockingPockets(const QString &contents);
+  std::vector<RKInPerInstanceAttributesAtoms> renderBlockingPockets() const override;
+
+  std::vector<float4> constructWellSurfaceTriangles(const std::vector<float> &wellFieldData) const;
+  std::vector<float4> constructWellFilamentTriangles(const std::vector<float> &wellFieldData) const;
+  std::vector<float4> constructGeometricSurfaceTriangles() const;
 
   SKSpaceGroup& legacySpaceGroup() {return _legacySpaceGroup;}
 
@@ -604,7 +715,12 @@ public:
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<Structure> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<Structure> &);
 protected:
-  qint64 _versionNumber{10};
+  qint64 _versionNumber{22};
+
+  void applyRepresentationType(RepresentationType type, const std::vector<std::shared_ptr<SKAsymmetricAtom>> &atoms);
+  void applyRepresentationDrawRadius(const std::vector<std::shared_ptr<SKAsymmetricAtom>> &atoms);
+  std::optional<ForceFieldType> resolvedForceFieldType(const std::shared_ptr<SKAsymmetricAtom> &atom, const ForceFieldSet &forceFieldSet) const;
+  void assignAluminosilicateOxygenTypes(const std::vector<std::shared_ptr<SKAsymmetricAtom>> &asymmetricAtoms);
 
   std::shared_ptr<SKAtomTreeController> _atomsTreeController;
   std::shared_ptr<SKBondSetController> _bondSetController;
@@ -664,8 +780,9 @@ protected:
 
   RepresentationType _atomRepresentationType = RepresentationType::sticks_and_balls;
   RepresentationStyle _atomRepresentationStyle = RepresentationStyle::defaultStyle;
+  RKEdgeCueing _atomEdgeCueing = RKEdgeCueing::off;
   QString _atomForceFieldIdentifier = QString("Default");
-  ForceFieldSet::ForceFieldSchemeOrder _atomForceFieldOrder = ForceFieldSet::ForceFieldSchemeOrder::elementOnly;
+  ForceFieldSet::ForceFieldSchemeOrder _atomForceFieldOrder = ForceFieldSet::ForceFieldSchemeOrder::forceFieldFirst;
   QString _atomColorSchemeIdentifier = QString("Jmol");
   SKColorSet::ColorSchemeOrder _atomColorSchemeOrder = SKColorSet::ColorSchemeOrder::elementOnly;
 
@@ -760,6 +877,8 @@ protected:
   qint64 _adsorptionSurfaceNumberOfTriangles = 0;
 
   ProbeMolecule _adsorptionSurfaceProbeMolecule = ProbeMolecule::helium;
+  double _adsorptionSurfaceProbeEpsilon = 10.9;
+  double _adsorptionSurfaceProbeSigma = 2.64;
 
   double _adsorptionSurfaceHue = 1.0;
   double _adsorptionSurfaceSaturation = 1.0;
@@ -791,6 +910,8 @@ protected:
 
   StructureType _structureType = StructureType::framework;
   ProbeMolecule _frameworkProbeMolecule = ProbeMolecule::nitrogen;
+  double _frameworkProbeEpsilon = 36.0;
+  double _frameworkProbeSigma = 3.31;
   QString _structureMaterialType = QString("Unspecified");
   double _structureMass = 0.0;
   double _structureDensity = 0.0;
@@ -799,12 +920,42 @@ protected:
   double _structureAccessiblePoreVolume = 0.0;
   double _structureVolumetricNitrogenSurfaceArea = 0.0;
   double _structureGravimetricNitrogenSurfaceArea = 0.0;
+  double _structureVolumetricWellSurfaceArea = 0.0;
+  double _structureGravimetricWellSurfaceArea = 0.0;
+  double _structureVolumetricGeometricSurfaceArea = 0.0;
+  double _structureGravimetricGeometricSurfaceArea = 0.0;
+  double _structureVolumetricVanDerWaalsGeometricSurfaceArea = 0.0;
+  double _structureGravimetricVanDerWaalsGeometricSurfaceArea = 0.0;
   qint64 _structureNumberOfChannelSystems = 0;
   qint64 _structureNumberOfInaccessiblePockets = 0;
   qint64 _structureDimensionalityOfPoreSystem = 0;
   double _structureLargestCavityDiameter = 0.0;
   double _structureRestrictingPoreLimitingDiameter = 0.0;
   double _structureLargestCavityDiameterAlongAViablePath = 0.0;
+  double _structureRestrictingPoreLimitingDiameter2 = 0.0;
+  double _structureLargestCavityDiameterAlongAViablePath2 = 0.0;
+  double2 _structureWindow1Size = double2();
+  double2 _structureWindow2Size = double2();
+  double2 _structureWindow3Size = double2();
+  qint64 _structureWindow1RingAtoms = 0;
+  qint64 _structureWindow2RingAtoms = 0;
+  qint64 _structureWindow3RingAtoms = 0;
+
+  std::vector<double4> _blockingPockets{};
+  ProbeMolecule _blockingPocketProbeMolecule = ProbeMolecule::helium;
+  double _blockingPocketProbeEpsilon = 10.9;
+  double _blockingPocketProbeSigma = 2.64;
+  bool _drawBlockingPockets = false;
+  bool _applyBlockingPockets = false;
+  bool _blockingPocketsFrontSideHDR = true;
+  double _blockingPocketsFrontSideHDRExposure = 1.5;
+  QColor _blockingPocketsFrontSideAmbientColor = QColor(0, 0, 0, 255);
+  QColor _blockingPocketsFrontSideDiffuseColor = QColor::fromRgbF(0.20, 0.65, 0.85, 1.0);
+  QColor _blockingPocketsFrontSideSpecularColor = QColor::fromRgbF(0.92, 0.92, 0.92, 1.0);
+  double _blockingPocketsFrontSideAmbientIntensity = 0.2;
+  double _blockingPocketsFrontSideDiffuseIntensity = 1.0;
+  double _blockingPocketsFrontSideSpecularIntensity = 0.5;
+  double _blockingPocketsFrontSideShininess = 4.0;
 
   // ================================================================
   // remove in future version

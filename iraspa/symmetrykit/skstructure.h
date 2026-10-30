@@ -29,6 +29,7 @@
 #include <optional>
 #include "skasymmetricatom.h"
 #include "skcell.h"
+#include "skseitzintegermatrix.h"
 
 class SKStructure
 {
@@ -48,13 +49,51 @@ public:
     dna = 21, dnaCrystal = 22
   };
 
+  enum class MaterialType: qint64
+  {
+    unspecified = 0,
+    silica = 1,
+    aluminosilicate = 2,
+    aluminophosphate = 3,
+    metallophosphate = 4,
+    silicoaluminophosphate = 5,
+    zeolite = 6,
+    mof = 7,
+    cof = 8,
+    zif = 9,
+    molecule = 10,
+    protein = 11,
+    dnaRna = 12,
+    molecularCrystal = 13,
+    carbon = 14,
+    oxide = 15,
+    hof = 16,
+    paf = 17,
+    pim = 18,
+    polymer = 19,
+    ionicLiquid = 20,
+    clay = 21,
+    perovskite = 22,
+    alloy = 23,
+    glass = 24
+  };
+
+  static QString materialTypeDisplayName(MaterialType type);
+  static std::vector<QString> allMaterialTypeDisplayNames();
+  static std::optional<MaterialType> materialTypeFromDisplayName(const QString &name);
+  static bool usesAluminosilicateForceField(MaterialType type);
+  static MaterialType inferMaterialType(const std::vector<int> &elementIdentifiers, Kind kind, const std::vector<QString> &names = {});
+  void applyInferredMaterialType(const std::vector<QString> &extraNames = {}, std::optional<Kind> kindOverride = std::nullopt);
+
   Kind kind = Kind::crystal;
+  MaterialType materialType = MaterialType::unspecified;
   std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms;
   std::set<QString> unknownAtoms;
 
   std::optional<QString> displayName;
   std::shared_ptr<SKCell> cell;
   std::optional<int> spaceGroupHallNumber;
+  std::optional<std::vector<SKSeitzIntegerMatrix>> cifSymmetryOperations = std::nullopt;
   bool drawUnitCell = false;
   bool periodic = false;
 

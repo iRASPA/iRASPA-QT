@@ -489,6 +489,72 @@
        </property>
       </spacer>
      </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelProbeEpsilon">
+       <property name="text">
+        <string>Probe ε/kB</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="CustomDoubleSpinBox" name="probeEpsilonDoubleSpinBox">
+       <property name="keyboardTracking">
+        <bool>false</bool>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>10000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QLabel" name="labelProbeEpsilonUnit">
+       <property name="text">
+        <string>[K]</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="labelProbeSigma">
+       <property name="text">
+        <string>Probe σ</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="CustomDoubleSpinBox" name="probeSigmaDoubleSpinBox">
+       <property name="keyboardTracking">
+        <bool>false</bool>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QLabel" name="labelProbeSigmaUnit">
+       <property name="text">
+        <string>[Å]</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -591,6 +657,13 @@
             </property>
             <property name="decimals">
              <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="computeChannelPropertiesPushButton">
+            <property name="text">
+             <string>Comp</string>
             </property>
            </widget>
           </item>

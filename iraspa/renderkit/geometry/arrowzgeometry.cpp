@@ -30,12 +30,12 @@ ArrowZGeometry::ArrowZGeometry(double offset, double arrowHeight, double arrowRa
 
   // bottom cap arrow
   size_t ref_cap_1 = _vertices.size();
-  _vertices.push_back(RKPrimitiveVertex(float4(0.0,0.0,offset,0.0), float4(0.0,0.0,1.0,0.0), arrowColor, float2(0.5,0.5)));
+  _vertices.push_back(RKPrimitiveVertex(float4(0.0,0.0,offset,0.0), float4(0.0,0.0,-1.0,0.0), arrowColor, float2(0.5,0.5)));
   for(int i=0;i<sectorCount;i++)
   {
     double sectorAngle = i * sectorStep + 0.25 * M_PI;
-    float4 position = float4(cos(sectorAngle) * arrowRadius, sin(sectorAngle) * arrowRadius / aspectRatio, offset, 0.0);
-    float4 normal = float4(0.0, 0.0, 1.0, 0.0);
+    float4 position = float4(cos(sectorAngle) * arrowRadius / aspectRatio, sin(sectorAngle) * arrowRadius, offset, 0.0);
+    float4 normal = float4(0.0, 0.0, -1.0, 0.0);
     _vertices.push_back(RKPrimitiveVertex(position, normal, arrowColor, float2()));
   }
 
@@ -70,9 +70,12 @@ ArrowZGeometry::ArrowZGeometry(double offset, double arrowHeight, double arrowRa
     }
     else
     {
-      _vertices.push_back(RKPrimitiveVertex(position1, float4(position1.x,position1.y,0.0,0.0), arrowColor, float2()));
-      _vertices.push_back(RKPrimitiveVertex(position2, float4(position2.x,position2.y,0.0,0.0), tipColor,   float2()));
-      _vertices.push_back(RKPrimitiveVertex(position3, float4(position3.x,position3.y,0.0,0.0), tipColor,   float2()));
+      float3 n1 = float3(position1.x, position1.y, 0.0f).normalise();
+      float3 n2 = float3(position2.x, position2.y, 0.0f).normalise();
+      float3 n3 = float3(position3.x, position3.y, 0.0f).normalise();
+      _vertices.push_back(RKPrimitiveVertex(position1, float4(n1.x,n1.y,0.0,0.0), arrowColor, float2()));
+      _vertices.push_back(RKPrimitiveVertex(position2, float4(n2.x,n2.y,0.0,0.0), tipColor,   float2()));
+      _vertices.push_back(RKPrimitiveVertex(position3, float4(n3.x,n3.y,0.0,0.0), tipColor,   float2()));
     }
 
     float4 position4 = float4(arrowRadius * cosTheta2 / aspectRatio,  arrowRadius * sinTheta2, offset + arrowHeight, 0.0);
@@ -91,9 +94,12 @@ ArrowZGeometry::ArrowZGeometry(double offset, double arrowHeight, double arrowRa
     }
     else
     {
-      _vertices.push_back(RKPrimitiveVertex(position4, float4(position4.x,position4.y,0.0,0.0), tipColor,   float2()));
-      _vertices.push_back(RKPrimitiveVertex(position5, float4(position5.x,position5.y,0.0,0.0), arrowColor, float2()));
-      _vertices.push_back(RKPrimitiveVertex(position6, float4(position6.x,position6.y,0.0,0.0), arrowColor, float2()));
+      float3 n4 = float3(position4.x, position4.y, 0.0f).normalise();
+      float3 n5 = float3(position5.x, position5.y, 0.0f).normalise();
+      float3 n6 = float3(position6.x, position6.y, 0.0f).normalise();
+      _vertices.push_back(RKPrimitiveVertex(position4, float4(n4.x,n4.y,0.0,0.0), tipColor,   float2()));
+      _vertices.push_back(RKPrimitiveVertex(position5, float4(n5.x,n5.y,0.0,0.0), arrowColor, float2()));
+      _vertices.push_back(RKPrimitiveVertex(position6, float4(n6.x,n6.y,0.0,0.0), arrowColor, float2()));
     }
   }
 
@@ -131,10 +137,11 @@ ArrowZGeometry::ArrowZGeometry(double offset, double arrowHeight, double arrowRa
     double ny = 0.0;
     double nz = sin(angleY);
 
-    for(int i=0;i<=sectorCount;i++)
+    for(int i=0;i<sectorCount;i++)
     {
       double sectorAngle = (i+1) * sectorStep + 0.25 * M_PI;
       double sectorAngle2 = i * sectorStep + 0.25 * M_PI;
+      double sectorAngleMid = 0.5 * (sectorAngle + sectorAngle2);
 
       float4 position1 = float4(cos(sectorAngle) * tipRadius / aspectRatio, sin(sectorAngle) * tipRadius, offset + arrowHeight, 0.0);
       float4 position2 = float4(0.0, 0.0, offset + arrowHeight + tipHeight, 0.0);
@@ -154,7 +161,7 @@ ArrowZGeometry::ArrowZGeometry(double offset, double arrowHeight, double arrowRa
       else
       {
         normal1 = float3((cos(sectorAngle)*nx - sin(sectorAngle)*ny) / aspectRatio,  sin(sectorAngle)*nx + cos(sectorAngle)*ny, nz).normalise();
-        normal2 = float3((cos(sectorAngle)*nx - sin(sectorAngle)*ny) / aspectRatio,  sin(sectorAngle)*nx + cos(sectorAngle)*ny, nz).normalise();
+        normal2 = float3((cos(sectorAngleMid)*nx - sin(sectorAngleMid)*ny) / aspectRatio, sin(sectorAngleMid)*nx + cos(sectorAngleMid)*ny, nz).normalise();
         normal3 = float3((cos(sectorAngle2)*nx - sin(sectorAngle2)*ny) / aspectRatio,sin(sectorAngle2)*nx + cos(sectorAngle2)*ny, nz).normalise();
       }
 

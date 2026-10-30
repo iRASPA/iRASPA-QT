@@ -53,7 +53,7 @@ AxesSystemDefaultGeometry makeLocalAxesGeometry(RKRenderObject *object, RKRender
                                      false, 1.0, 4);
   case RKLocalAxes::Style::cylinder:
     return AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0, 1.0, 1.0, 1.0), length, width,
-                                     float4(1.0, 0.4, 0.0, 7.0), float4(0.7, 1.0, 0.4, 1.0), float4(0.4, 0.7, 1.0, 1.0), 0.0,
+                                     float4(1.0, 0.4, 0.7, 1.0), float4(0.7, 1.0, 0.4, 1.0), float4(0.4, 0.7, 1.0, 1.0), 0.0,
                                      1.0, float4(1.0, 0.4, 0.7, 1.0), float4(0.7, 1.0, 0.4, 1.0), float4(0.4, 0.7, 1.0, 1.0),
                                      false, 1.0, 41);
   case RKLocalAxes::Style::cylinderRGB:

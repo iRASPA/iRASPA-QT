@@ -33,7 +33,59 @@ Primitive::Primitive(): _atomsTreeController(std::make_shared<SKAtomTreeControll
 
 Primitive::Primitive(const Primitive &primitive): Object(primitive), _atomsTreeController(std::make_shared<SKAtomTreeController>())
 {
+  _drawAtoms = primitive._drawAtoms;
 
+  QByteArray byteArray = QByteArray();
+  QDataStream stream(&byteArray, QIODevice::WriteOnly);
+  stream << primitive._atomsTreeController;
+
+  QDataStream streamRead(&byteArray, QIODevice::ReadOnly);
+  streamRead >> _atomsTreeController;
+
+  _atomsTreeController->setTags();
+
+  _primitiveOrientation  = primitive._primitiveOrientation;
+  _primitiveRotationDelta = primitive._primitiveRotationDelta;
+  _primitiveTransformationMatrix = primitive._primitiveTransformationMatrix;
+
+  _primitiveOpacity = primitive._primitiveOpacity;
+  _primitiveNumberOfSides = primitive._primitiveNumberOfSides;
+  _primitiveIsCapped = primitive._primitiveIsCapped;
+  _primitiveIsFractional = primitive._primitiveIsFractional;
+  _primitiveThickness = primitive._primitiveThickness;
+
+  _primitiveSelectionStyle = primitive._primitiveSelectionStyle;
+  _primitiveSelectionScaling = primitive._primitiveSelectionScaling;
+  _primitiveSelectionIntensity = primitive._primitiveSelectionIntensity;
+
+  _primitiveSelectionStripesDensity = primitive._primitiveSelectionStripesDensity;
+  _primitiveSelectionStripesFrequency = primitive._primitiveSelectionStripesFrequency;
+  _primitiveSelectionWorleyNoise3DFrequency = primitive._primitiveSelectionWorleyNoise3DFrequency;
+  _primitiveSelectionWorleyNoise3DJitter = primitive._primitiveSelectionWorleyNoise3DJitter;
+
+  _primitiveHue = primitive._primitiveHue;
+  _primitiveSaturation = primitive._primitiveSaturation;
+  _primitiveValue = primitive._primitiveValue;
+
+  _primitiveFrontSideHDR = primitive._primitiveFrontSideHDR;
+  _primitiveFrontSideHDRExposure = primitive._primitiveFrontSideHDRExposure;
+  _primitiveFrontSideAmbientIntensity = primitive._primitiveFrontSideAmbientIntensity;
+  _primitiveFrontSideDiffuseIntensity = primitive._primitiveFrontSideDiffuseIntensity;
+  _primitiveFrontSideSpecularIntensity = primitive._primitiveFrontSideSpecularIntensity;
+  _primitiveFrontSideAmbientColor = primitive._primitiveFrontSideAmbientColor;
+  _primitiveFrontSideDiffuseColor = primitive._primitiveFrontSideDiffuseColor;
+  _primitiveFrontSideSpecularColor = primitive._primitiveFrontSideSpecularColor;
+  _primitiveFrontSideShininess = primitive._primitiveFrontSideShininess;
+
+  _primitiveBackSideHDR = primitive._primitiveBackSideHDR;
+  _primitiveBackSideHDRExposure = primitive._primitiveBackSideHDRExposure;
+  _primitiveBackSideAmbientIntensity = primitive._primitiveBackSideAmbientIntensity;
+  _primitiveBackSideDiffuseIntensity = primitive._primitiveBackSideDiffuseIntensity;
+  _primitiveBackSideSpecularIntensity = primitive._primitiveBackSideSpecularIntensity;
+  _primitiveBackSideAmbientColor = primitive._primitiveBackSideAmbientColor;
+  _primitiveBackSideDiffuseColor = primitive._primitiveBackSideDiffuseColor;
+  _primitiveBackSideSpecularColor = primitive._primitiveBackSideSpecularColor;
+  _primitiveBackSideShininess = primitive._primitiveBackSideShininess;
 }
 
 Primitive::Primitive(const std::shared_ptr<Object> object): Object(object), _atomsTreeController(std::make_shared<SKAtomTreeController>())
@@ -50,6 +102,11 @@ Primitive::Primitive(const std::shared_ptr<Object> object): Object(object), _ato
     _atomsTreeController->setTags();
   }
 
+  if (std::shared_ptr<AtomStructureViewer> atomAppearanceViewer = std::dynamic_pointer_cast<AtomStructureViewer>(object))
+  {
+    _drawAtoms = atomAppearanceViewer->drawAtoms();
+  }
+
   if (std::shared_ptr<PrimitiveViewer> primitiveViewer = std::dynamic_pointer_cast<PrimitiveViewer>(object))
   {
     _primitiveOrientation  = primitiveViewer->primitiveOrientation();
@@ -59,6 +116,8 @@ Primitive::Primitive(const std::shared_ptr<Object> object): Object(object), _ato
     _primitiveOpacity = primitiveViewer->primitiveOpacity();
     _primitiveNumberOfSides = primitiveViewer->primitiveNumberOfSides();
     _primitiveIsCapped = primitiveViewer->primitiveIsCapped();
+    _primitiveIsFractional = primitiveViewer->primitiveIsFractional();
+    _primitiveThickness = primitiveViewer->primitiveThickness();
 
     _primitiveSelectionStyle = primitiveViewer->primitiveSelectionStyle();
     _primitiveSelectionScaling = primitiveViewer->primitiveSelectionScaling();

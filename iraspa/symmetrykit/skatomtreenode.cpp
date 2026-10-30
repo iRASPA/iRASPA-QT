@@ -358,7 +358,7 @@ void SKAtomTreeNode::updateFilteredChildren(std::function<bool(std::shared_ptr<S
   for(const std::shared_ptr<SKAtomTreeNode> &child : this->_childNodes)
   {
     child->_matchesFilter = true;
-    child->_matchesFilter = predicate(shared_from_this());
+    child->_matchesFilter = predicate(child);
   }
 
   this->_filteredAndSortedNodes.clear();

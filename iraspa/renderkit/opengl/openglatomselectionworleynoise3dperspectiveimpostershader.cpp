@@ -389,7 +389,7 @@ void main(void)
   vec2 F = cellular3D(frequency*t1, jitter);
   float n = F.y-F.x;
 
-  vec4 color= n * (ambient + diffuse + specular);
+  vec4 color= ambient + diffuse + specular;
 
   if (structureUniforms.atomHDR)
   {
@@ -403,6 +403,7 @@ void main(void)
   hsv.y = hsv.y * structureUniforms.atomSaturation;
   hsv.z = hsv.z * structureUniforms.atomValue;
   float bloomLevel = frameUniforms.bloomLevel * structureUniforms.atomSelectionIntensity;
-  vFragColor = vec4(hsv2rgb(hsv)*bloomLevel,bloomLevel);
+  float alpha = bloomLevel * n;
+  vFragColor = vec4(hsv2rgb(hsv)*alpha,alpha);
 }
 )foo";

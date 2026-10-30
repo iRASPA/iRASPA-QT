@@ -77,8 +77,16 @@ double3 ProteinCatmullRomSpline::evaluate(double t) const
 
 double3 ProteinCatmullRomSpline::evaluateOrientation(double t) const
 {
-  if (t <= 0.0) return double3::normalize(_orientationVectors.front());
-  if (t >= 1.0) return double3::normalize(_orientationVectors.back());
+  if (t <= 0.0)
+  {
+    const double3 &v = _orientationVectors.front();
+    return v.length_squared() > 1.0e-12 ? double3::normalize(v) : double3(0.0, 0.0, 0.0);
+  }
+  if (t >= 1.0)
+  {
+    const double3 &v = _orientationVectors.back();
+    return v.length_squared() > 1.0e-12 ? double3::normalize(v) : double3(0.0, 0.0, 0.0);
+  }
 
   const int segmentCount = static_cast<int>(_controlPoints.size()) - 1;
   const double scaled = t * static_cast<double>(segmentCount);

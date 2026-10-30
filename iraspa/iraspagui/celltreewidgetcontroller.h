@@ -202,6 +202,7 @@ private:
   void reloadStructuralSpecificVolume();
   void reloadStructuralAccessiblePoreVolume();
   void reloadFrameworkProbeMoleculePopupBox();
+  void reloadFrameworkProbeParameters();
   void reloadStructuralVolumetricSurfaceArea();
   void reloadStructuralGravimetricSurfaceArea();
   void reloadStructuralNumberOfChannelSystems();
@@ -211,6 +212,8 @@ private:
   void reloadStructuralRestrictingPoreDiameter();
   void reloadStructuralLargestDiamtereAlongAViablePath();
 
+  void setStructuralMaterialType(const QString &value);
+  std::optional<std::set<QString>> structuralMaterialType();
   std::optional<std::unordered_set<double>> structuralMass();
   std::optional<std::unordered_set<double>> structuralDensity();
   std::optional<std::unordered_set<double>> structureHeliumVoidFraction();
@@ -218,6 +221,10 @@ private:
   std::optional<std::unordered_set<double>> structureAccessiblePoreVolume();
   void setFrameworkProbeMolecule(int value);
   std::optional<std::unordered_set<ProbeMolecule, enum_hash>> frameworkProbeMolecule();
+  void setFrameworkProbeEpsilon(double value);
+  std::optional<std::unordered_set<double>> frameworkProbeEpsilon();
+  void setFrameworkProbeSigma(double value);
+  std::optional<std::unordered_set<double>> frameworkProbeSigma();
   std::optional<std::unordered_set<double>> structureVolumetricNitrogenSurfaceArea();
   std::optional<std::unordered_set<double>> structureGravimetricNitrogenSurfaceArea();
   std::optional<std::unordered_set<int>> structureNumberOfChannelSystems();
@@ -276,6 +283,7 @@ private slots:
 
   void computeHeliumVoidFractionPushButton();
   void computeGravimetricSurfaceAreaPushButton();
+  void computeChannelPropertiesPushButton();
 signals:
   void rendererReloadData();
   void rendererReloadBoundingBoxData();

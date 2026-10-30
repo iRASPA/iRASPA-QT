@@ -45,6 +45,20 @@ Object::Object(const Object &object): _cell(std::make_shared<SKCell>())
   _unitCellScaleFactor = object._unitCellScaleFactor;
   _unitCellDiffuseColor = object._unitCellDiffuseColor;
   _unitCellDiffuseIntensity = object._unitCellDiffuseIntensity;
+
+  _localAxes = object._localAxes;
+
+  _authorFirstName = object._authorFirstName;
+  _authorMiddleName = object._authorMiddleName;
+  _authorLastName = object._authorLastName;
+  _authorOrchidID = object._authorOrchidID;
+  _authorResearcherID = object._authorResearcherID;
+  _authorAffiliationUniversityName = object._authorAffiliationUniversityName;
+  _authorAffiliationFacultyName = object._authorAffiliationFacultyName;
+  _authorAffiliationInstituteName = object._authorAffiliationInstituteName;
+  _authorAffiliationCityName = object._authorAffiliationCityName;
+  _authorAffiliationCountryName = object._authorAffiliationCountryName;
+  _creationDate = object._creationDate;
 }
 
 Object::Object(const std::shared_ptr<const Object> object)
@@ -65,6 +79,20 @@ Object::Object(const std::shared_ptr<const Object> object)
   _unitCellScaleFactor = object->_unitCellScaleFactor;
   _unitCellDiffuseColor = object->_unitCellDiffuseColor;
   _unitCellDiffuseIntensity = object->_unitCellDiffuseIntensity;
+
+  _localAxes = object->_localAxes;
+
+  _authorFirstName = object->_authorFirstName;
+  _authorMiddleName = object->_authorMiddleName;
+  _authorLastName = object->_authorLastName;
+  _authorOrchidID = object->_authorOrchidID;
+  _authorResearcherID = object->_authorResearcherID;
+  _authorAffiliationUniversityName = object->_authorAffiliationUniversityName;
+  _authorAffiliationFacultyName = object->_authorAffiliationFacultyName;
+  _authorAffiliationInstituteName = object->_authorAffiliationInstituteName;
+  _authorAffiliationCityName = object->_authorAffiliationCityName;
+  _authorAffiliationCountryName = object->_authorAffiliationCountryName;
+  _creationDate = object->_creationDate;
 }
 
 

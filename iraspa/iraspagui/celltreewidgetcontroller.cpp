@@ -31,12 +31,14 @@
 #include <mathkit.h>
 #include <renderkit.h>
 #include <symmetrykit.h>
+#include <simulationkit.h>
 #include <foundationkit.h>
 #include "textfield.h"
 #include "celltreewidgetchangestructurecommand.h"
 #include "celltreewidgetappliedcellcontentshiftcommand.h"
 #include "unitcellviewer.h"
 #include "structuralpropertyviewer.h"
+#include "atomstructureviewer.h"
 #include "spacegroupviewer.h"
 
 CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget(parent ),
@@ -364,7 +366,24 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   _cellStructuralForm->probeMoleculeComboBox->insertItem(6, tr("Xenon"));
   _cellStructuralForm->probeMoleculeComboBox->insertItem(7, tr("Krypton"));
   _cellStructuralForm->probeMoleculeComboBox->insertItem(8, tr("Argon"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(9, tr("Custom"));
+  _cellStructuralForm->probeMoleculeComboBox->insertItem(10, tr("Connolly"));
   QObject::connect(_cellStructuralForm->probeMoleculeComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&CellTreeWidgetController::setFrameworkProbeMolecule);
+
+  _cellStructuralForm->probeEpsilonDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->probeEpsilonDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->probeEpsilonDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->probeEpsilonDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->probeEpsilonDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  _cellStructuralForm->probeSigmaDoubleSpinBox->setMinimum(0.0);
+  _cellStructuralForm->probeSigmaDoubleSpinBox->setMaximum(DBL_MAX);
+  _cellStructuralForm->probeSigmaDoubleSpinBox->setDecimals(5);
+  _cellStructuralForm->probeSigmaDoubleSpinBox->setKeyboardTracking(false);
+  _cellStructuralForm->probeSigmaDoubleSpinBox->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+  QObject::connect(_cellStructuralForm->probeEpsilonDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &CellTreeWidgetController::setFrameworkProbeEpsilon);
+  QObject::connect(_cellStructuralForm->probeSigmaDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &CellTreeWidgetController::setFrameworkProbeSigma);
 
   _cellStructuralForm->massDoubleSpinBox->setMinimum(0.0);
   _cellStructuralForm->massDoubleSpinBox->setMaximum(DBL_MAX);
@@ -479,15 +498,15 @@ CellTreeWidgetController::CellTreeWidgetController(QWidget* parent): QTreeWidget
   QObject::connect(_cellStructuralForm->restrictingPoreDiameterDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this, &CellTreeWidgetController::setStructureRestrictingPoreLimitingDiameter);
   QObject::connect(_cellStructuralForm->largestDiameterAlongAViablePathDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this, &CellTreeWidgetController::setStructureLargestCavityDiameterAlongAviablePath);
 
+  _cellStructuralForm->computeChannelPropertiesPushButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+  QObject::connect(_cellStructuralForm->computeChannelPropertiesPushButton, &QPushButton::clicked, this, &CellTreeWidgetController::computeChannelPropertiesPushButton);
 
-  _cellStructuralForm->materialTypeComboBox->insertItem(0,tr("Unspecified"));
-  _cellStructuralForm->materialTypeComboBox->insertItem(1,tr("Silica"));
-  _cellStructuralForm->materialTypeComboBox->insertItem(2,tr("Aluminosilicate"));
-  _cellStructuralForm->materialTypeComboBox->insertItem(3,tr("Metallophosphate"));
-  _cellStructuralForm->materialTypeComboBox->insertItem(4,tr("Silicialinophosphate"));
-  _cellStructuralForm->materialTypeComboBox->insertItem(5,tr("Zeolite"));
-  _cellStructuralForm->materialTypeComboBox->insertItem(6,tr("MOF"));
-  _cellStructuralForm->materialTypeComboBox->insertItem(7,tr("ZIF"));
+  _cellStructuralForm->materialTypeComboBox->clear();
+  for (const QString &name : SKStructure::allMaterialTypeDisplayNames())
+  {
+    _cellStructuralForm->materialTypeComboBox->addItem(name);
+  }
+  QObject::connect(_cellStructuralForm->materialTypeComboBox, &QComboBox::currentTextChanged, this, &CellTreeWidgetController::setStructuralMaterialType);
 
 
   // Symmetry
@@ -3225,6 +3244,7 @@ void CellTreeWidgetController::reloadStructureProperties()
   reloadStructuralSpecificVolume();
   reloadStructuralAccessiblePoreVolume();
   reloadFrameworkProbeMoleculePopupBox();
+  reloadFrameworkProbeParameters();
   reloadStructuralVolumetricSurfaceArea();
   reloadStructuralGravimetricSurfaceArea();
   reloadStructuralNumberOfChannelSystems();
@@ -3243,7 +3263,30 @@ void CellTreeWidgetController::reloadStructuralMaterialType()
   {
     if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
     {
-      _cellStructuralForm->materialTypeComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (std::optional<std::set<QString>> values = structuralMaterialType(); values)
+      {
+        _cellStructuralForm->materialTypeComboBox->setEnabled(_projectTreeNode->isEditable());
+        if (values->size() == 1)
+        {
+          if (int index = _cellStructuralForm->materialTypeComboBox->findText("Mult. Val."); index >= 0)
+          {
+            whileBlocking(_cellStructuralForm->materialTypeComboBox)->removeItem(index);
+          }
+          QString val = *(values->begin());
+          QString canonical = SKStructure::materialTypeFromDisplayName(val)
+              ? SKStructure::materialTypeDisplayName(*(SKStructure::materialTypeFromDisplayName(val)))
+              : SKStructure::materialTypeDisplayName(SKStructure::MaterialType::unspecified);
+          whileBlocking(_cellStructuralForm->materialTypeComboBox)->setCurrentText(canonical);
+        }
+        else
+        {
+          if (int index = _cellStructuralForm->materialTypeComboBox->findText("Mult. Val."); index < 0)
+          {
+            whileBlocking(_cellStructuralForm->materialTypeComboBox)->addItem("Mult. Val.");
+          }
+          whileBlocking(_cellStructuralForm->materialTypeComboBox)->setCurrentText("Mult. Val.");
+        }
+      }
     }
   }
 }
@@ -3420,6 +3463,48 @@ void CellTreeWidgetController::reloadFrameworkProbeMoleculePopupBox()
   }
 }
 
+void CellTreeWidgetController::reloadFrameworkProbeParameters()
+{
+  _cellStructuralForm->probeEpsilonDoubleSpinBox->setDisabled(true);
+  _cellStructuralForm->probeSigmaDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      if (std::optional<std::unordered_set<double>> values = frameworkProbeEpsilon(); values)
+      {
+        _cellStructuralForm->probeEpsilonDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->probeEpsilonDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->probeEpsilonDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->probeEpsilonDoubleSpinBox)->setText("Mult. Val.");
+        }
+      }
+
+      if (std::optional<std::unordered_set<double>> values = frameworkProbeSigma(); values)
+      {
+        _cellStructuralForm->probeSigmaDoubleSpinBox->setEnabled(true);
+        _cellStructuralForm->probeSigmaDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          whileBlocking(_cellStructuralForm->probeSigmaDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_cellStructuralForm->probeSigmaDoubleSpinBox)->setText("Mult. Val.");
+        }
+      }
+    }
+  }
+}
+
 void CellTreeWidgetController::reloadStructuralVolumetricSurfaceArea()
 {
   _cellStructuralForm->volumetricSurfaceAreaDoubleSpinBox->setDisabled(true);
@@ -3531,6 +3616,7 @@ void CellTreeWidgetController::reloadStructuralNumberOfInaccessiblePockets()
 void CellTreeWidgetController::reloadStructuralDimensionalityOfPoreSystem()
 {
   _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setDisabled(true);
+  _cellStructuralForm->computeChannelPropertiesPushButton->setDisabled(true);
 
   if(_projectTreeNode)
   {
@@ -3540,6 +3626,7 @@ void CellTreeWidgetController::reloadStructuralDimensionalityOfPoreSystem()
       {
         _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setEnabled(true);
         _cellStructuralForm->dimensionalityOfPoreSystemSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        _cellStructuralForm->computeChannelPropertiesPushButton->setEnabled(_projectTreeNode->isEditable());
 
         if(values->size()==1)
         {
@@ -3632,6 +3719,57 @@ void CellTreeWidgetController::reloadStructuralLargestDiamtereAlongAViablePath()
   }
 }
 
+
+void CellTreeWidgetController::setStructuralMaterialType(const QString &value)
+{
+  if (value.isEmpty() || value == "Mult. Val.") return;
+  QString suggestedForceField = ForceFieldSets::suggestedDisplayNameForMaterialTypeName(value);
+  for (const std::shared_ptr<iRASPAObject> &iraspa_structure : _iraspa_structures)
+  {
+    if (std::shared_ptr<StructuralPropertyEditor> cellEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+    {
+      cellEditor->setStructureMaterialType(value);
+    }
+    if (std::shared_ptr<AtomStructureEditor> atomEditor = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
+    {
+      if (_mainWindow)
+      {
+        atomEditor->setAtomForceFieldIdentifier(suggestedForceField, _mainWindow->forceFieldSets());
+      }
+    }
+  }
+  reloadStructuralMaterialType();
+  emit invalidateCachedIsoSurfaces({_iraspa_structures});
+  emit rendererReloadData();
+  emit reloadAllViews();
+  if (_mainWindow)
+  {
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<std::set<QString>> CellTreeWidgetController::structuralMaterialType()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::set<QString> set = std::set<QString>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
+    {
+      QString value = cellViewer->structureMaterialType();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
 
 std::optional<std::unordered_set<double>> CellTreeWidgetController::structuralMass()
 {
@@ -3803,6 +3941,80 @@ std::optional<std::unordered_set<ProbeMolecule, enum_hash>> CellTreeWidgetContro
     if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
     {
       ProbeMolecule value = cellViewer->frameworkProbeMolecule();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+void CellTreeWidgetController::setFrameworkProbeEpsilon(double value)
+{
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<StructuralPropertyEditor> cellEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+    {
+      cellEditor->setFrameworkProbeEpsilon(value);
+    }
+  }
+  reloadFrameworkProbeMoleculePopupBox();
+  reloadFrameworkProbeParameters();
+  _mainWindow->documentWasModified();
+}
+
+std::optional<std::unordered_set<double>> CellTreeWidgetController::frameworkProbeEpsilon()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
+    {
+      double value = cellViewer->frameworkProbeEpsilon();
+      set.insert(value);
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+void CellTreeWidgetController::setFrameworkProbeSigma(double value)
+{
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<StructuralPropertyEditor> cellEditor = std::dynamic_pointer_cast<StructuralPropertyEditor>(iraspa_structure->object()))
+    {
+      cellEditor->setFrameworkProbeSigma(value);
+    }
+  }
+  reloadFrameworkProbeMoleculePopupBox();
+  reloadFrameworkProbeParameters();
+  _mainWindow->documentWasModified();
+}
+
+std::optional<std::unordered_set<double>> CellTreeWidgetController::frameworkProbeSigma()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<StructuralPropertyViewer> cellViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(iraspa_structure->object()))
+    {
+      double value = cellViewer->frameworkProbeSigma();
       set.insert(value);
     }
   }
@@ -4919,4 +5131,48 @@ void CellTreeWidgetController::computeGravimetricSurfaceAreaPushButton()
     }
   }
 }
+
+void CellTreeWidgetController::computeChannelPropertiesPushButton()
+{
+  for (const std::shared_ptr<iRASPAObject> &iraspa_structure : _iraspa_structures)
+  {
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      if (!structure->cell()) continue;
+      std::vector<double3> positions = structure->atomUnitCellPositions();
+      std::vector<double2> params = structure->potentialParameters();
+      double3x3 unitCell = structure->cell()->unitCell();
+      bool isPeriodic = structure->isPeriodic();
+      double probeRadius = 0.5 * structure->frameworkProbeParameters().y;
+
+      std::size_t count = std::min(positions.size(), params.size());
+      std::vector<std::pair<double3, double>> atoms;
+      atoms.reserve(count);
+      for (std::size_t i = 0; i < count; ++i)
+      {
+        double3 wrapped = isPeriodic ? SKGeometricSurface::wrappedFractional(positions[i]) : positions[i];
+        double3 cartPos = isPeriodic ? (unitCell * wrapped) : wrapped;
+        double radius = SKGeometricSurface::inflatedRadius(params[i].y, 0.0);
+        atoms.emplace_back(cartPos, radius);
+      }
+
+      SKApolloniusDiagram::ApolloniusNetwork network = SKApolloniusDiagram::computeNetwork(atoms, unitCell, isPeriodic, 16);
+      SKApolloniusPoreAnalysis::PoreTopologyResult result = SKApolloniusPoreAnalysis::analyze(network, unitCell, probeRadius, isPeriodic, atoms);
+
+      structure->setStructureLargestCavityDiameter(result.globalDi);
+      structure->setStructureRestrictingPoreLimitingDiameter(result.globalDf);
+      structure->setStructureLargestCavityDiameterAlongAViablePath(result.globalDif);
+      structure->setStructureDimensionalityOfPoreSystem(result.channelDimensionality);
+      structure->setStructureNumberOfChannelSystems(static_cast<int>(result.channels.size()));
+      structure->setStructureNumberOfInaccessiblePockets(static_cast<int>(result.inaccessiblePockets.size()));
+    }
+  }
+
+  this->reloadStructureProperties();
+  if (_mainWindow)
+  {
+    _mainWindow->documentWasModified();
+  }
+}
+
 

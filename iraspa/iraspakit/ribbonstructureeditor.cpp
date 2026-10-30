@@ -74,6 +74,7 @@ void applyDefaultRibbonAppearance(ProteinRibbonStructureEditor &editor)
   editor.setRibbonSaturation(1.0);
   editor.setRibbonValue(1.0);
   editor.setRibbonAmbientOcclusion(false);
+  editor.setRibbonEdgeCueing(RKEdgeCueing::off);
   editor.setRibbonAmbientColor(QColor(255, 255, 255));
   editor.setRibbonDiffuseColor(QColor(255, 255, 255));
   editor.setRibbonSpecularColor(QColor(255, 255, 255));
@@ -92,6 +93,7 @@ void applyFancyRibbonAppearanceDefault(ProteinRibbonStructureEditor &editor)
   editor.setRibbonSaturation(1.0);
   editor.setRibbonValue(1.0);
   editor.setRibbonAmbientOcclusion(true);
+  editor.setRibbonEdgeCueing(RKEdgeCueing::off);
   editor.setRibbonAmbientColor(QColor(255, 255, 255));
   editor.setRibbonDiffuseColor(QColor(255, 255, 255));
   editor.setRibbonSpecularColor(QColor(255, 255, 255));
@@ -100,6 +102,25 @@ void applyFancyRibbonAppearanceDefault(ProteinRibbonStructureEditor &editor)
   editor.setRibbonSpecularIntensity(1.0);
   editor.setRibbonShininess(4.0);
   editor.setRibbonRepresentationStyle(ProteinRibbonRepresentationStyle::fancy);
+}
+
+void applyIllustrativeRibbonAppearanceDefault(ProteinRibbonStructureEditor &editor)
+{
+  editor.setRibbonHDR(true);
+  editor.setRibbonHDRExposure(2.5);
+  editor.setRibbonHue(1.0);
+  editor.setRibbonSaturation(1.0);
+  editor.setRibbonValue(1.0);
+  editor.setRibbonAmbientOcclusion(true);
+  editor.setRibbonEdgeCueing(RKEdgeCueing::contoursAndHalos);
+  editor.setRibbonAmbientColor(QColor(255, 255, 255));
+  editor.setRibbonDiffuseColor(QColor(255, 255, 255));
+  editor.setRibbonSpecularColor(QColor(255, 255, 255));
+  editor.setRibbonAmbientIntensity(0.2);
+  editor.setRibbonDiffuseIntensity(1.0);
+  editor.setRibbonSpecularIntensity(1.0);
+  editor.setRibbonShininess(4.0);
+  editor.setRibbonRepresentationStyle(ProteinRibbonRepresentationStyle::illustrative);
 }
 
 void applyRibbonRepresentationStyle(ProteinRibbonStructureEditor &editor, ProteinRibbonRepresentationStyle style)
@@ -112,6 +133,9 @@ void applyRibbonRepresentationStyle(ProteinRibbonStructureEditor &editor, Protei
     break;
   case ProteinRibbonRepresentationStyle::fancy:
     applyFancyRibbonAppearanceDefault(editor);
+    break;
+  case ProteinRibbonRepresentationStyle::illustrative:
+    applyIllustrativeRibbonAppearanceDefault(editor);
     break;
   case ProteinRibbonRepresentationStyle::custom:
     break;
@@ -126,6 +150,7 @@ bool matchesDefaultRibbonAppearance(const ProteinRibbonStructureEditor &editor)
       && ribbonFloatEqual(editor.ribbonSaturation(), 1.0)
       && ribbonFloatEqual(editor.ribbonValue(), 1.0)
       && !editor.ribbonAmbientOcclusion()
+      && editor.ribbonEdgeCueing() == RKEdgeCueing::off
       && ribbonColorIsWhite(editor.ribbonAmbientColor())
       && ribbonColorIsWhite(editor.ribbonDiffuseColor())
       && ribbonColorIsWhite(editor.ribbonSpecularColor())
@@ -143,6 +168,25 @@ bool matchesFancyRibbonAppearance(const ProteinRibbonStructureEditor &editor)
       && ribbonFloatEqual(editor.ribbonSaturation(), 1.0)
       && ribbonFloatEqual(editor.ribbonValue(), 1.0)
       && editor.ribbonAmbientOcclusion()
+      && editor.ribbonEdgeCueing() == RKEdgeCueing::off
+      && ribbonColorIsWhite(editor.ribbonAmbientColor())
+      && ribbonColorIsWhite(editor.ribbonDiffuseColor())
+      && ribbonColorIsWhite(editor.ribbonSpecularColor())
+      && ribbonFloatEqual(editor.ribbonAmbientIntensity(), 0.2)
+      && ribbonFloatEqual(editor.ribbonDiffuseIntensity(), 1.0)
+      && ribbonFloatEqual(editor.ribbonSpecularIntensity(), 1.0)
+      && ribbonFloatEqual(editor.ribbonShininess(), 4.0);
+}
+
+bool matchesIllustrativeRibbonAppearance(const ProteinRibbonStructureEditor &editor)
+{
+  return editor.ribbonHDR()
+      && ribbonFloatEqual(editor.ribbonHDRExposure(), 2.5)
+      && ribbonFloatEqual(editor.ribbonHue(), 1.0)
+      && ribbonFloatEqual(editor.ribbonSaturation(), 1.0)
+      && ribbonFloatEqual(editor.ribbonValue(), 1.0)
+      && editor.ribbonAmbientOcclusion()
+      && editor.ribbonEdgeCueing() == RKEdgeCueing::contoursAndHalos
       && ribbonColorIsWhite(editor.ribbonAmbientColor())
       && ribbonColorIsWhite(editor.ribbonDiffuseColor())
       && ribbonColorIsWhite(editor.ribbonSpecularColor())
@@ -161,6 +205,10 @@ void recheckRibbonRepresentationStyle(ProteinRibbonStructureEditor &editor)
   else if (matchesFancyRibbonAppearance(editor))
   {
     editor.setRibbonRepresentationStyle(ProteinRibbonRepresentationStyle::fancy);
+  }
+  else if (matchesIllustrativeRibbonAppearance(editor))
+  {
+    editor.setRibbonRepresentationStyle(ProteinRibbonRepresentationStyle::illustrative);
   }
   else
   {

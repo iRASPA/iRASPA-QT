@@ -738,16 +738,22 @@ real MarchingCubes::get_x_grad( const int i, const int j, const int k ) const
 //-----------------------------------------------------------------------------
 {
   if(i > 0) {
-        if(i < _size_x - 1 ) {
-            return ( get_data(int3{i+1, j, k}) - get_data(int3{i-1, j, k })) / 2 ;
-        }
-        else {
-      return get_data(int3{i, j, k}) - get_data(int3{i-1, j, k}) ;
-        }
-  }
-    else {
-    return get_data(int3{i+1, j, k}) - get_data(int3{i, j, k}) ;
+    if(i < _size_x - 1 ) {
+      return ( get_data(int3{i+1, j, k}) - get_data(int3{i-1, j, k })) / 2 ;
     }
+    else if(_size_x > 2) {
+      return ( get_data(int3{1, j, k}) - get_data(int3{_size_x-2, j, k}) ) / 2 ;
+    }
+    else {
+      return get_data(int3{i, j, k}) - get_data(int3{i-1, j, k}) ;
+    }
+  }
+  else if(_size_x > 2) {
+    return ( get_data(int3{1, j, k}) - get_data(int3{_size_x-2, j, k}) ) / 2 ;
+  }
+  else {
+    return get_data(int3{i+1, j, k}) - get_data(int3{i, j, k}) ;
+  }
 }
 //-----------------------------------------------------------------------------
 
@@ -755,16 +761,22 @@ real MarchingCubes::get_y_grad( const int i, const int j, const int k ) const
 //-----------------------------------------------------------------------------
 {
   if(j > 0) {
-        if (j < _size_y - 1) {
-            return ( get_data(int3{i, j+1, k}) - get_data(int3{i, j-1, k}) ) / 2 ;
-        }
-        else {
-      return get_data(int3{i, j, k}) - get_data(int3{i, j-1, k});
-        }
-  }
-    else {
-    return get_data(int3{i, j+1, k}) - get_data(int3{i, j, k});
+    if (j < _size_y - 1) {
+      return ( get_data(int3{i, j+1, k}) - get_data(int3{i, j-1, k}) ) / 2 ;
     }
+    else if(_size_y > 2) {
+      return ( get_data(int3{i, 1, k}) - get_data(int3{i, _size_y-2, k}) ) / 2 ;
+    }
+    else {
+      return get_data(int3{i, j, k}) - get_data(int3{i, j-1, k});
+    }
+  }
+  else if(_size_y > 2) {
+    return ( get_data(int3{i, 1, k}) - get_data(int3{i, _size_y-2, k}) ) / 2 ;
+  }
+  else {
+    return get_data(int3{i, j+1, k}) - get_data(int3{i, j, k});
+  }
 }
 //-----------------------------------------------------------------------------
 
@@ -772,16 +784,22 @@ real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
 //-----------------------------------------------------------------------------
 {
   if(k > 0) {
-        if(k < _size_z - 1) {
+    if(k < _size_z - 1) {
       return ( get_data(int3{i, j, k+1}) - get_data(int3{i, j, k-1}) ) / 2 ;
-        }
-        else {
-      return get_data(int3{i, j, k}) - get_data(int3{i, j, k-1}) ;
-        }
-  }
-    else {
-    return get_data(int3{i, j, k+1}) - get_data(int3{i, j, k}) ;
     }
+    else if(_size_z > 2) {
+      return ( get_data(int3{i, j, 1}) - get_data(int3{i, j, _size_z-2}) ) / 2 ;
+    }
+    else {
+      return get_data(int3{i, j, k}) - get_data(int3{i, j, k-1}) ;
+    }
+  }
+  else if(_size_z > 2) {
+    return ( get_data(int3{i, j, 1}) - get_data(int3{i, j, _size_z-2}) ) / 2 ;
+  }
+  else {
+    return get_data(int3{i, j, k+1}) - get_data(int3{i, j, k}) ;
+  }
 }
 //_____________________________________________________________________________
 

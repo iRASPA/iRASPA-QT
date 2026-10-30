@@ -17,7 +17,7 @@ void main()
   vec3 L = normalize(inL);
   vec4 color = max(dot(N, L), 0.0) * vec4(1.0, 1.0, 0.0, 1.0);
 
-  vec2 st = vec2(0.5 + 0.5 * atan(modelN.z, modelN.x) / 3.141592653589793, 0.5 - asin(modelN.y) / 3.141592653589793);
+  vec2 st = vec2(0.5 + 0.5 * atan(modelN.z, modelN.x) / 3.141592653589793, 0.5 - asin(clamp(modelN.y, -1.0, 1.0)) / 3.141592653589793);
   float uDensity = structureUniforms.atomSelectionStripesDensity;
   float frequency = structureUniforms.atomSelectionStripesFrequency;
   if (fract(st.x * frequency) >= uDensity && fract(st.y * frequency) >= uDensity)

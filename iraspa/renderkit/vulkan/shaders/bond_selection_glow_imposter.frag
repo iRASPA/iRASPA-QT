@@ -67,7 +67,11 @@ void main()
     color = vLdrColor;
   }
 
+  vec3 hsv = rgb2hsv(color.xyz);
+  hsv.x = hsv.x * structureUniforms.bondHue;
+  hsv.y = hsv.y * structureUniforms.bondSaturation;
+  hsv.z = hsv.z * structureUniforms.bondValue;
   unusedSceneColor = vec4(0.0);
   float bloomLevel = frameUniforms.bloomLevel * structureUniforms.bondSelectionIntensity;
-  vFragColor = vec4(color.xyz * bloomLevel, bloomLevel);
+  vFragColor = vec4(hsv2rgb(hsv) * bloomLevel, bloomLevel);
 }

@@ -45,10 +45,10 @@ void SKXYZParser::startParsing() noexcept(false)
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
   if(scannedLine.isEmpty()) {throw std::runtime_error("Empty file");}
 
-  // scan second line
-  _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw std::runtime_error("XYZ file near empty");}
+  // scan second line (comment line may be empty)
+  _scanner.scanLine(scannedLine);
 
+  bool periodic = false;
   QString simplifiedLine = scannedLine.simplified().toLower();
   if(simplifiedLine.startsWith("lattice=\""))
   {
@@ -98,6 +98,7 @@ void SKXYZParser::startParsing() noexcept(false)
       unitCell.cz = termsScannedLined[8].toDouble(&succes);
       if(!succes) {throw std::runtime_error("Count not parse the cz-cell coordinate");}
 
+      periodic = true;
       _frame->drawUnitCell = false;
       if(!_asMolecule)
       {
@@ -162,5 +163,6 @@ void SKXYZParser::startParsing() noexcept(false)
       _frame->atoms.push_back(atom);
     }
   }
+  _frame->applyInferredMaterialType({}, periodic ? std::make_optional(SKStructure::Kind::crystal) : std::nullopt);
   _movies.push_back({_frame});
 }

@@ -26,6 +26,8 @@
 #include <tuple>
 #include <vector>
 #include <set>
+#include <optional>
+#include <functional>
 #include "forcefieldtype.h"
 #include <iostream>
 
@@ -39,18 +41,42 @@ public:
     elementOnly = 0, forceFieldFirst = 1, forceFieldOnly = 2, multiple_values = 3
   };
 
+  static const QString defaultDisplayName;
+  static const QString aluminosilicateDisplayName;
+  static const QString zeoliteAtlasDisplayName;
+  static const QString aluminosilicateZeoPlusPlusDisplayName;
+  static constexpr double zeoliteAtlasOxygenSigma = 2.7;
+  static const QString bridgingAluminumOxygenIdentifier;
+  static constexpr double oxygenAluminumBondCutoff = 2.1;
+  static const std::set<int> trivalentTAtomAtomicNumbers;
+
   ForceFieldSet();
-  ForceFieldSet(QString name, ForceFieldSet& forcefieldset, bool editable=false);
+  ForceFieldSet(QString name, const ForceFieldSet& forcefieldset, bool editable=false);
   QString displayName() const {return _displayName;}
+  void setDisplayName(QString name) {_displayName = name;}
 
   ForceFieldType* operator[] (const QString name);
+  const ForceFieldType* operator[] (const QString name) const;
   ForceFieldType& operator[] (size_t sortNumber) {return _atomTypeList[sortNumber];}
+  const ForceFieldType& operator[] (size_t sortNumber) const {return _atomTypeList[sortNumber];}
 
   std::vector<ForceFieldType>& atomTypeList() {return _atomTypeList;}
+  const std::vector<ForceFieldType>& atomTypeList() const {return _atomTypeList;}
   void insert(int index, ForceFieldType& forceFieldType) {_atomTypeList.insert(_atomTypeList.begin()+index, forceFieldType);}
   void duplicate(size_t index);
-  bool editable() {return _editable;}
+  bool editable() const {return _editable;}
+  void setEditable(bool editable) {_editable = editable;}
   QString uniqueName(int atomicNumber);
+
+  static bool isDefaultForceFieldType(const QString &uniqueForceFieldName);
+  static std::optional<ForceFieldType> defaultType(const QString &symbol);
+  static bool isAluminosilicateFamily(const QString &displayName);
+  static ForceFieldSet predefined(const QString &name);
+  static ForceFieldSet aluminosilicate();
+  static ForceFieldSet zeoliteAtlas();
+  static ForceFieldSet aluminosilicateZeoPlusPlus();
+  static bool isBridgingAluminumOxygen(double3 oxygenFractional, const std::vector<double3> &tAtomFractionals, double3x3 unitCell);
+  std::optional<ForceFieldType> resolvedType(const QString &forceFieldName, int atomicNumber) const;
 private:
   qint64 _versionNumber{1};
   QString _displayName = "Default";
@@ -58,6 +84,11 @@ private:
   std::vector<ForceFieldType> _atomTypeList{};
 
   static std::vector<ForceFieldType> _defaultForceField;
+  static ForceFieldType cation(const QString &symbol, double charge);
+  static ForceFieldType tAtom(const QString &symbol, int atomicNumber, double charge, double radius, double mass);
+  static std::vector<ForceFieldType> makeAluminosilicateForceField();
+  static std::vector<ForceFieldType> makeAluminosilicateDerivedForceField(const std::function<double2(const QString &, int)> &parameters);
+  static double zeoPlusPlusRadius(const QString &symbol, int atomicNumber);
 
   friend QDataStream &operator<<(QDataStream &, const ForceFieldSet &);
   friend QDataStream &operator>>(QDataStream &, ForceFieldSet &);

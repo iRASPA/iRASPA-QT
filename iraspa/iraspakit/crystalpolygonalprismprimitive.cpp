@@ -40,6 +40,7 @@ CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive()
 
 CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const CrystalPolygonalPrismPrimitive &crystalPolygonalPrismPrimitive): Primitive(crystalPolygonalPrismPrimitive)
 {
+  _spaceGroup = crystalPolygonalPrismPrimitive._spaceGroup;
 }
 
 CrystalPolygonalPrismPrimitive::CrystalPolygonalPrismPrimitive(const std::shared_ptr<Object> object): Primitive(object)

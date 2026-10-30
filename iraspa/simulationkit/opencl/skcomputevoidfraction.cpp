@@ -20,6 +20,9 @@
  ********************************************************************************************************************/
 
 #include "skcomputevoidfraction.h"
+#include <cmath>
+#include <limits>
+#include <algorithm>
 
 SKComputeVoidFraction::SKComputeVoidFraction(): SKOpenCL()
 {
@@ -44,9 +47,47 @@ SKComputeVoidFraction::SKComputeVoidFraction(): SKOpenCL()
   }
 };
 
-double SKComputeVoidFraction::ComputeVoidFraction(std::vector<cl_float> *voxels)
+double SKComputeVoidFraction::ComputeVoidFraction(std::vector<cl_float> *voxels, const std::vector<bool> *blocked)
 {
-  return getInstance().ComputeVoidFractionImpl(voxels);
+  if (!voxels || voxels->empty()) return 0.0;
+  std::vector<cl_float> modifiedVoxels;
+  std::vector<cl_float> *targetVoxels = voxels;
+  if (blocked && !blocked->empty())
+  {
+    modifiedVoxels = *voxels;
+    std::size_t count = std::min(modifiedVoxels.size(), blocked->size());
+    for (std::size_t i = 0; i < count; ++i)
+    {
+      if ((*blocked)[i])
+      {
+        modifiedVoxels[i] = std::numeric_limits<cl_float>::max();
+      }
+    }
+    targetVoxels = &modifiedVoxels;
+  }
+  if (getInstance()._isOpenCLInitialized && getInstance()._isOpenCLReady)
+  {
+    try
+    {
+      return getInstance().ComputeVoidFractionImpl(targetVoxels);
+    }
+    catch (...)
+    {
+      return ComputeVoidFractionCPUImplementation(targetVoxels);
+    }
+  }
+  return ComputeVoidFractionCPUImplementation(targetVoxels);
+}
+
+double SKComputeVoidFraction::ComputeVoidFractionCPUImplementation(std::vector<cl_float> *voxels)
+{
+  if (!voxels || voxels->empty()) return 0.0;
+  double sum = 0.0;
+  for (cl_float v : *voxels)
+  {
+    sum += std::exp(-(1.0 / 298.0) * double(v));
+  }
+  return sum / double(voxels->size());
 }
 
 double SKComputeVoidFraction::ComputeVoidFractionImpl(std::vector<cl_float> *voxels)

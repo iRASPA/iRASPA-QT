@@ -180,6 +180,16 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="labelEdgeCueing">
+         <property name="text">
+          <string>Edge Cueing</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QComboBox" name="atomEdgeCueingComboBox"/>
+       </item>
       </layout>
      </item>
     </layout>

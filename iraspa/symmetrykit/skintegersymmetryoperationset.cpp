@@ -37,6 +37,7 @@ SKIntegerSymmetryOperationSet::SKIntegerSymmetryOperationSet(std::unordered_set<
 SKIntegerSymmetryOperationSet::SKIntegerSymmetryOperationSet(std::vector<SKSeitzIntegerMatrix> operations)
 {
   this->operations = std::unordered_set<SKSeitzIntegerMatrix>(operations.begin(),operations.end());
+  this->centring = Centring::primitive;
 }
 
 SKIntegerSymmetryOperationSet SKIntegerSymmetryOperationSet::fullSeitzMatrices()

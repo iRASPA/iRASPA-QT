@@ -42,6 +42,7 @@ public:
 
   qint64 number() const {return _spaceGroupNumber;}
   qint64 HallNumber() const {return _HallNumber;}
+  qint64 order() const {return _order;}
   QString HallString() const {return _HallString;}
   QString HMString() const {return _HMString;}
   qint64 pointGroupNumber() const {return _pointGroupNumber;}
@@ -49,8 +50,10 @@ public:
   Symmorphicity symmorphicity() const {return _symmorphicity;}
   QString symmorphicityString() const;
   QString centringString() const;
+  bool standard() const {return _standard;}
 
   const std::string encodedGenerators() const {return _encodedGenerators;}
+  const std::string encodedSeitz() const {return _encodedSeitz;}
 
   bool inversionAtOrigin() const {return _inversionAtOrigin;}
   int3 inversionCenter() const {return _inversionCenter;}

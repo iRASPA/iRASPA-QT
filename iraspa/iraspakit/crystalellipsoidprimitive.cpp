@@ -40,6 +40,7 @@ CrystalEllipsoidPrimitive::CrystalEllipsoidPrimitive()
 
 CrystalEllipsoidPrimitive::CrystalEllipsoidPrimitive(const CrystalEllipsoidPrimitive &crystalEllipsoidPrimitive): Primitive(crystalEllipsoidPrimitive)
 {
+  _spaceGroup = crystalEllipsoidPrimitive._spaceGroup;
 }
 
 CrystalEllipsoidPrimitive::CrystalEllipsoidPrimitive(const std::shared_ptr<Object> object): Primitive(object)

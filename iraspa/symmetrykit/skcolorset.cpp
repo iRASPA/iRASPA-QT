@@ -59,6 +59,26 @@ SKColorSet::SKColorSet(ColorScheme scheme)
       _displayName = "Vesta";
       _colors = SKColorSet::vesta;
       break;
+    case ColorScheme::crystal_maker:
+      _displayName = "CrystalMaker";
+      _colors = SKColorSet::crystalMaker;
+      break;
+    case ColorScheme::mercury:
+      _displayName = "Mercury";
+      _colors = SKColorSet::mercury;
+      break;
+    case ColorScheme::pubchem:
+      _displayName = "PubChem";
+      _colors = SKColorSet::pubChem;
+      break;
+    case ColorScheme::pymol:
+      _displayName = "PyMOL";
+      _colors = SKColorSet::pymol;
+      break;
+    case ColorScheme::vmd_cpk:
+      _displayName = "VMD CPK";
+      _colors = SKColorSet::vmdCpk;
+      break;
   default:
     break;
   }
@@ -253,5 +273,175 @@ std::map<QString, QColor> SKColorSet::vesta =
   {QString("Mt"), QColor(0x4C4C4C)}, {QString("Ds"), QColor(0x4C4C4C)}, {QString("Rg"), QColor(0x4C4C4C)}, {QString("Cn"), QColor(0x4C4C4C)},
   {QString("Uut"), QColor(0x4C4C4C)}, {QString("Uuq"), QColor(0x4C4C4C)}, {QString("Uup"), QColor(0x4C4C4C)}, {QString("Uuh"), QColor(0x4C4C4C)},
   {QString("Uus"), QColor(0x4C4C4C)},{QString("Uuo"), QColor(0x4C4C4C)}
+};
+
+std::map<QString, QColor> SKColorSet::crystalMaker =
+{
+  {QString("H"), QColor(0xFFBDBD)},   {QString("He"), QColor(0xFCE9CF)},  {QString("Li"), QColor(0x5288B0)},  {QString("Be"), QColor(0x9DFF9C)},
+  {QString("B"), QColor(0x8888B7)},   {QString("C"), QColor(0x110601)},   {QString("N"), QColor(0x81AFFF)},   {QString("O"), QColor(0xFF0000)},
+  {QString("F"), QColor(0x00CC00)},   {QString("Ne"), QColor(0xFF38B5)},  {QString("Na"), QColor(0xC9C500)},  {QString("Mg"), QColor(0xFFC904)},
+  {QString("Al"), QColor(0x19ADFF)},  {QString("Si"), QColor(0x384AFE)},  {QString("P"), QColor(0x616161)},   {QString("S"), QColor(0xFFFA00)},
+  {QString("Cl"), QColor(0x14FF0E)},  {QString("Ar"), QColor(0xCFFEC5)},  {QString("K"), QColor(0x7500FF)},   {QString("Ca"), QColor(0x5C9DC6)},
+  {QString("Sc"), QColor(0xFC6BFF)},  {QString("Ti"), QColor(0x78CAFF)},  {QString("V"), QColor(0xE61A00)},   {QString("Cr"), QColor(0xFF0099)},
+  {QString("Mn"), QColor(0xFF0099)},  {QString("Fe"), QColor(0xB57200)},  {QString("Co"), QColor(0x0000AF)},  {QString("Ni"), QColor(0xDDDDDD)},
+  {QString("Cu"), QColor(0x0000FF)},  {QString("Zn"), QColor(0x8F9082)},  {QString("Ga"), QColor(0x9FE474)},  {QString("Ge"), QColor(0x7E6FA6)},
+  {QString("As"), QColor(0x492A51)},  {QString("Se"), QColor(0x9AEF10)},  {QString("Br"), QColor(0x7F3103)},  {QString("Kr"), QColor(0xFAC1F3)},
+  {QString("Rb"), QColor(0xFF0099)},  {QString("Sr"), QColor(0x00FF27)},  {QString("Y"), QColor(0x67988E)},   {QString("Zr"), QColor(0x00FF00)},
+  {QString("Nb"), QColor(0x4CB376)},  {QString("Mo"), QColor(0xB486B0)},  {QString("Tc"), QColor(0xCDAFCB)},  {QString("Ru"), QColor(0xCFB8AE)},
+  {QString("Rh"), QColor(0xCED2AB)},  {QString("Pd"), QColor(0xC2C4B9)},  {QString("Ag"), QColor(0xB8BCBE)},  {QString("Cd"), QColor(0x8E81FF)},
+  {QString("In"), QColor(0xD781BB)},  {QString("Sn"), QColor(0x9B8FBA)},  {QString("Sb"), QColor(0xD88350)},  {QString("Te"), QColor(0xADA252)},
+  {QString("I"), QColor(0x560181)},   {QString("Xe"), QColor(0x9BA1F8)},  {QString("Cs"), QColor(0xFF0099)},  {QString("Ba"), QColor(0xBE6574)},
+  {QString("La"), QColor(0x5AC449)},  {QString("Ce"), QColor(0xD1FD06)},  {QString("Pr"), QColor(0xFDE206)},  {QString("Nd"), QColor(0xFC8E07)},
+  {QString("Pm"), QColor(0x808080)},  {QString("Sm"), QColor(0xFD067D)},  {QString("Eu"), QColor(0xFB08D5)},  {QString("Gd"), QColor(0xC004FF)},
+  {QString("Tb"), QColor(0x7104FE)},  {QString("Dy"), QColor(0x3106FD)},  {QString("Ho"), QColor(0x0742FB)},  {QString("Er"), QColor(0x49733B)},
+  {QString("Tm"), QColor(0x29CBFB)},  {QString("Yb"), QColor(0x27FDF4)},  {QString("Lu"), QColor(0x26FDB5)},  {QString("Hf"), QColor(0xB4B459)},
+  {QString("Ta"), QColor(0xB79B56)},  {QString("W"), QColor(0x8E8A80)},   {QString("Re"), QColor(0xB3B18E)},  {QString("Os"), QColor(0xC9B179)},
+  {QString("Ir"), QColor(0xC9CF73)},  {QString("Pt"), QColor(0xC2C2C2)},  {QString("Au"), QColor(0xFEB338)},  {QString("Hg"), QColor(0xD3B8CC)},
+  {QString("Tl"), QColor(0x96896D)},  {QString("Pb"), QColor(0x53535B)},  {QString("Bi"), QColor(0xA16CBC)},  {QString("Po"), QColor(0x808080)},
+  {QString("At"), QColor(0x808080)},  {QString("Rn"), QColor(0x808080)},  {QString("Fr"), QColor(0x808080)},  {QString("Ra"), QColor(0x6EAA59)},
+  {QString("Ac"), QColor(0x649E73)},  {QString("Th"), QColor(0x26FE78)},  {QString("Pa"), QColor(0x29FB35)},  {QString("U"), QColor(0x7AA2AA)},
+  {QString("Np"), QColor(0x547DD0)},  {QString("Pu"), QColor(0x5D5DAD)},  {QString("Am"), QColor(0x808080)},  {QString("Cm"), QColor(0x808080)},
+  {QString("Bk"), QColor(0x808080)},  {QString("Cf"), QColor(0x808080)},  {QString("Es"), QColor(0x808080)},  {QString("Fm"), QColor(0x808080)},
+  {QString("Md"), QColor(0x808080)},  {QString("No"), QColor(0x808080)},  {QString("Lr"), QColor(0x808080)},  {QString("Rf"), QColor(0x808080)},
+  {QString("Db"), QColor(0x808080)},  {QString("Sg"), QColor(0x808080)},  {QString("Bh"), QColor(0x808080)},  {QString("Hs"), QColor(0x808080)},
+  {QString("Mt"), QColor(0x808080)},  {QString("Ds"), QColor(0x808080)},  {QString("Rg"), QColor(0x808080)},  {QString("Cn"), QColor(0x808080)},
+  {QString("Uut"), QColor(0x808080)}, {QString("Uuq"), QColor(0x808080)}, {QString("Uup"), QColor(0x808080)}, {QString("Uuh"), QColor(0x808080)},
+  {QString("Uus"), QColor(0x808080)}, {QString("Uuo"), QColor(0x808080)}
+};
+
+std::map<QString, QColor> SKColorSet::mercury =
+{
+  {QString("H"), QColor(0xFFCCCC)},   {QString("He"), QColor(0xFCE9CF)},  {QString("Li"), QColor(0x86E074)},  {QString("Be"), QColor(0x5FD87B)},
+  {QString("B"), QColor(0x20A20F)},   {QString("C"), QColor(0x814929)},   {QString("N"), QColor(0xB0BAE6)},   {QString("O"), QColor(0xFF0300)},
+  {QString("F"), QColor(0xB0BAE6)},   {QString("Ne"), QColor(0xFF38B5)},  {QString("Na"), QColor(0xFADD3D)},  {QString("Mg"), QColor(0xFC7C16)},
+  {QString("Al"), QColor(0x81B3D6)},  {QString("Si"), QColor(0x1B3BFA)},  {QString("P"), QColor(0xC19CC3)},   {QString("S"), QColor(0xFFFA00)},
+  {QString("Cl"), QColor(0x32FC03)},  {QString("Ar"), QColor(0xCFFEC5)},  {QString("K"), QColor(0xA122F7)},   {QString("Ca"), QColor(0x5B96BE)},
+  {QString("Sc"), QColor(0xB663AC)},  {QString("Ti"), QColor(0x78CAFF)},  {QString("V"), QColor(0xE61A00)},   {QString("Cr"), QColor(0xFF0099)},
+  {QString("Mn"), QColor(0xA9099E)},  {QString("Fe"), QColor(0xB57200)},  {QString("Co"), QColor(0x0000AF)},  {QString("Ni"), QColor(0xB8BCBE)},
+  {QString("Cu"), QColor(0x2247DD)},  {QString("Zn"), QColor(0x8F9082)},  {QString("Ga"), QColor(0x9FE474)},  {QString("Ge"), QColor(0x7E6FA6)},
+  {QString("As"), QColor(0x75D057)},  {QString("Se"), QColor(0x9AEF10)},  {QString("Br"), QColor(0x7F3103)},  {QString("Kr"), QColor(0xFAC1F3)},
+  {QString("Rb"), QColor(0xFF0099)},  {QString("Sr"), QColor(0x00FF27)},  {QString("Y"), QColor(0x67988E)},   {QString("Zr"), QColor(0x00FF00)},
+  {QString("Nb"), QColor(0x4CB376)},  {QString("Mo"), QColor(0xB486B0)},  {QString("Tc"), QColor(0xCDAFCB)},  {QString("Ru"), QColor(0xCFB8AE)},
+  {QString("Rh"), QColor(0xCED2AB)},  {QString("Pd"), QColor(0xC2C4B9)},  {QString("Ag"), QColor(0xB8BCBE)},  {QString("Cd"), QColor(0xF31FDC)},
+  {QString("In"), QColor(0xD781BB)},  {QString("Sn"), QColor(0x9B8FBA)},  {QString("Sb"), QColor(0xD88350)},  {QString("Te"), QColor(0xADA252)},
+  {QString("I"), QColor(0x8F1F8B)},   {QString("Xe"), QColor(0x9BA1F8)},  {QString("Cs"), QColor(0x0FFFB9)},  {QString("Ba"), QColor(0x1EF02D)},
+  {QString("La"), QColor(0x5AC449)},  {QString("Ce"), QColor(0xD1FD06)},  {QString("Pr"), QColor(0xFDE206)},  {QString("Nd"), QColor(0xFC8E07)},
+  {QString("Pm"), QColor(0xC2C4B9)},  {QString("Sm"), QColor(0xFD067D)},  {QString("Eu"), QColor(0xFB08D5)},  {QString("Gd"), QColor(0xC004FF)},
+  {QString("Tb"), QColor(0x7104FE)},  {QString("Dy"), QColor(0x3106FD)},  {QString("Ho"), QColor(0x0742FB)},  {QString("Er"), QColor(0x49733B)},
+  {QString("Tm"), QColor(0x29CBFB)},  {QString("Yb"), QColor(0x27FDF4)},  {QString("Lu"), QColor(0x26FDB5)},  {QString("Hf"), QColor(0xB4B459)},
+  {QString("Ta"), QColor(0xB79B56)},  {QString("W"), QColor(0x8E8A80)},   {QString("Re"), QColor(0xB3B18E)},  {QString("Os"), QColor(0xC9B179)},
+  {QString("Ir"), QColor(0xC9CF73)},  {QString("Pt"), QColor(0xCCC6BF)},  {QString("Au"), QColor(0xFEB338)},  {QString("Hg"), QColor(0xD3B8CC)},
+  {QString("Tl"), QColor(0x96896D)},  {QString("Pb"), QColor(0x53535B)},  {QString("Bi"), QColor(0xD230F8)},  {QString("Po"), QColor(0xC2C4B9)},
+  {QString("At"), QColor(0x808080)},  {QString("Rn"), QColor(0x808080)},  {QString("Fr"), QColor(0x808080)},  {QString("Ra"), QColor(0x6EAA59)},
+  {QString("Ac"), QColor(0x649E73)},  {QString("Th"), QColor(0x26FE78)},  {QString("Pa"), QColor(0x29FB35)},  {QString("U"), QColor(0x7AA2AA)},
+  {QString("Np"), QColor(0x547DD0)},  {QString("Pu"), QColor(0x5D5DAD)},  {QString("Am"), QColor(0x808080)},  {QString("Cm"), QColor(0x808080)},
+  {QString("Bk"), QColor(0x808080)},  {QString("Cf"), QColor(0x808080)},  {QString("Es"), QColor(0x808080)},  {QString("Fm"), QColor(0x808080)},
+  {QString("Md"), QColor(0x808080)},  {QString("No"), QColor(0x808080)},  {QString("Lr"), QColor(0x808080)},  {QString("Rf"), QColor(0x808080)},
+  {QString("Db"), QColor(0x808080)},  {QString("Sg"), QColor(0x808080)},  {QString("Bh"), QColor(0x808080)},  {QString("Hs"), QColor(0x808080)},
+  {QString("Mt"), QColor(0x808080)},  {QString("Ds"), QColor(0x808080)},  {QString("Rg"), QColor(0x808080)},  {QString("Cn"), QColor(0x808080)},
+  {QString("Uut"), QColor(0x808080)}, {QString("Uuq"), QColor(0x808080)}, {QString("Uup"), QColor(0x808080)}, {QString("Uuh"), QColor(0x808080)},
+  {QString("Uus"), QColor(0x808080)}, {QString("Uuo"), QColor(0x808080)}
+};
+
+std::map<QString, QColor> SKColorSet::pubChem =
+{
+  {QString("H"), QColor(0xFFFFFF)},   {QString("He"), QColor(0xD9FFFF)},  {QString("Li"), QColor(0xCC80FF)},  {QString("Be"), QColor(0xC2FF00)},
+  {QString("B"), QColor(0xFFB5B5)},   {QString("C"), QColor(0x909090)},   {QString("N"), QColor(0x3050F8)},   {QString("O"), QColor(0xFF0D0D)},
+  {QString("F"), QColor(0x90E050)},   {QString("Ne"), QColor(0xB3E3F5)},  {QString("Na"), QColor(0xAB5CF2)},  {QString("Mg"), QColor(0x8AFF00)},
+  {QString("Al"), QColor(0xBFA6A6)},  {QString("Si"), QColor(0xF0C8A0)},  {QString("P"), QColor(0xFF8000)},   {QString("S"), QColor(0xFFFF30)},
+  {QString("Cl"), QColor(0x1FF01F)},  {QString("Ar"), QColor(0x80D1E3)},  {QString("K"), QColor(0x8F40D4)},   {QString("Ca"), QColor(0x3DFF00)},
+  {QString("Sc"), QColor(0xE6E6E6)},  {QString("Ti"), QColor(0xBFC2C7)},  {QString("V"), QColor(0xA6A6AB)},   {QString("Cr"), QColor(0x8A99C7)},
+  {QString("Mn"), QColor(0x9C7AC7)},  {QString("Fe"), QColor(0xE06633)},  {QString("Co"), QColor(0xF090A0)},  {QString("Ni"), QColor(0x50D050)},
+  {QString("Cu"), QColor(0xC88033)},  {QString("Zn"), QColor(0x7D80B0)},  {QString("Ga"), QColor(0xC28F8F)},  {QString("Ge"), QColor(0x668F8F)},
+  {QString("As"), QColor(0xBD80E3)},  {QString("Se"), QColor(0xFFA100)},  {QString("Br"), QColor(0xA62929)},  {QString("Kr"), QColor(0x5CB8D1)},
+  {QString("Rb"), QColor(0x702EB0)},  {QString("Sr"), QColor(0x00FF00)},  {QString("Y"), QColor(0x94FFFF)},   {QString("Zr"), QColor(0x94E0E0)},
+  {QString("Nb"), QColor(0x73C2C9)},  {QString("Mo"), QColor(0x54B5B5)},  {QString("Tc"), QColor(0x3B9E9E)},  {QString("Ru"), QColor(0x248F8F)},
+  {QString("Rh"), QColor(0x0A7D8C)},  {QString("Pd"), QColor(0x006985)},  {QString("Ag"), QColor(0xC0C0C0)},  {QString("Cd"), QColor(0xFFD98F)},
+  {QString("In"), QColor(0xA67573)},  {QString("Sn"), QColor(0x668080)},  {QString("Sb"), QColor(0x9E63B5)},  {QString("Te"), QColor(0xD47A00)},
+  {QString("I"), QColor(0x940094)},   {QString("Xe"), QColor(0x429EB0)},  {QString("Cs"), QColor(0x57178F)},  {QString("Ba"), QColor(0x00C900)},
+  {QString("La"), QColor(0x70D4FF)},  {QString("Ce"), QColor(0xFFFFC7)},  {QString("Pr"), QColor(0xD9FFC7)},  {QString("Nd"), QColor(0xC7FFC7)},
+  {QString("Pm"), QColor(0xA3FFC7)},  {QString("Sm"), QColor(0x8FFFC7)},  {QString("Eu"), QColor(0x61FFC7)},  {QString("Gd"), QColor(0x45FFC7)},
+  {QString("Tb"), QColor(0x30FFC7)},  {QString("Dy"), QColor(0x1FFFC7)},  {QString("Ho"), QColor(0x00FF9C)},  {QString("Er"), QColor(0x00E675)},
+  {QString("Tm"), QColor(0x00D452)},  {QString("Yb"), QColor(0x00BF38)},  {QString("Lu"), QColor(0x00AB24)},  {QString("Hf"), QColor(0x4DC2FF)},
+  {QString("Ta"), QColor(0x4DA6FF)},  {QString("W"), QColor(0x2194D6)},   {QString("Re"), QColor(0x267DAB)},  {QString("Os"), QColor(0x266696)},
+  {QString("Ir"), QColor(0x175487)},  {QString("Pt"), QColor(0xD0D0E0)},  {QString("Au"), QColor(0xFFD123)},  {QString("Hg"), QColor(0xB8B8D0)},
+  {QString("Tl"), QColor(0xA6544D)},  {QString("Pb"), QColor(0x575961)},  {QString("Bi"), QColor(0x9E4FB5)},  {QString("Po"), QColor(0xAB5C00)},
+  {QString("At"), QColor(0x754F45)},  {QString("Rn"), QColor(0x428296)},  {QString("Fr"), QColor(0x420066)},  {QString("Ra"), QColor(0x007D00)},
+  {QString("Ac"), QColor(0x70ABFA)},  {QString("Th"), QColor(0x00BAFF)},  {QString("Pa"), QColor(0x00A1FF)},  {QString("U"), QColor(0x008FFF)},
+  {QString("Np"), QColor(0x0080FF)},  {QString("Pu"), QColor(0x006BFF)},  {QString("Am"), QColor(0x545CF2)},  {QString("Cm"), QColor(0x785CE3)},
+  {QString("Bk"), QColor(0x8A4FE3)},  {QString("Cf"), QColor(0xA136D4)},  {QString("Es"), QColor(0xB31FD4)},  {QString("Fm"), QColor(0xB31FBA)},
+  {QString("Md"), QColor(0xB30DA6)},  {QString("No"), QColor(0xBD0D87)},  {QString("Lr"), QColor(0xC70066)},  {QString("Rf"), QColor(0xCC0059)},
+  {QString("Db"), QColor(0xD1004F)},  {QString("Sg"), QColor(0xD90045)},  {QString("Bh"), QColor(0xE00038)},  {QString("Hs"), QColor(0xE6002E)},
+  {QString("Mt"), QColor(0xEB0026)},  {QString("Ds"), QColor(0xEB0026)},  {QString("Rg"), QColor(0xEB0026)},  {QString("Cn"), QColor(0xEB0026)},
+  {QString("Uut"), QColor(0xEB0026)}, {QString("Uuq"), QColor(0xEB0026)}, {QString("Uup"), QColor(0xEB0026)}, {QString("Uuh"), QColor(0xEB0026)},
+  {QString("Uus"), QColor(0xEB0026)}, {QString("Uuo"), QColor(0xEB0026)}
+};
+
+std::map<QString, QColor> SKColorSet::pymol =
+{
+  {QString("H"), QColor(0xE6E6E6)},   {QString("He"), QColor(0xD9FFFF)},  {QString("Li"), QColor(0xCC80FF)},  {QString("Be"), QColor(0xC2FF00)},
+  {QString("B"), QColor(0xFFB5B5)},   {QString("C"), QColor(0x33FF33)},   {QString("N"), QColor(0x3333FF)},   {QString("O"), QColor(0xFF4D4D)},
+  {QString("F"), QColor(0x90E050)},   {QString("Ne"), QColor(0xB3E3F5)},  {QString("Na"), QColor(0xAB5CF2)},  {QString("Mg"), QColor(0x8AFF00)},
+  {QString("Al"), QColor(0xBFA6A6)},  {QString("Si"), QColor(0xF0C8A0)},  {QString("P"), QColor(0xFF8000)},   {QString("S"), QColor(0xE6C640)},
+  {QString("Cl"), QColor(0x1FF01F)},  {QString("Ar"), QColor(0x80D1E3)},  {QString("K"), QColor(0x8F40D4)},   {QString("Ca"), QColor(0x3DFF00)},
+  {QString("Sc"), QColor(0xE6E6E6)},  {QString("Ti"), QColor(0xBFC2C7)},  {QString("V"), QColor(0xA6A6AB)},   {QString("Cr"), QColor(0x8A99C7)},
+  {QString("Mn"), QColor(0x9C7AC7)},  {QString("Fe"), QColor(0xE06633)},  {QString("Co"), QColor(0xF090A0)},  {QString("Ni"), QColor(0x50D050)},
+  {QString("Cu"), QColor(0xC88033)},  {QString("Zn"), QColor(0x7D80B0)},  {QString("Ga"), QColor(0xC28F8F)},  {QString("Ge"), QColor(0x668F8F)},
+  {QString("As"), QColor(0xBD80E3)},  {QString("Se"), QColor(0xFFA100)},  {QString("Br"), QColor(0xA62929)},  {QString("Kr"), QColor(0x5CB8D1)},
+  {QString("Rb"), QColor(0x702EB0)},  {QString("Sr"), QColor(0x00FF00)},  {QString("Y"), QColor(0x94FFFF)},   {QString("Zr"), QColor(0x94E0E0)},
+  {QString("Nb"), QColor(0x73C2C9)},  {QString("Mo"), QColor(0x54B5B5)},  {QString("Tc"), QColor(0x3B9E9E)},  {QString("Ru"), QColor(0x248F8F)},
+  {QString("Rh"), QColor(0x0A7D8C)},  {QString("Pd"), QColor(0x006985)},  {QString("Ag"), QColor(0xC0C0C0)},  {QString("Cd"), QColor(0xFFD98F)},
+  {QString("In"), QColor(0xA67573)},  {QString("Sn"), QColor(0x668080)},  {QString("Sb"), QColor(0x9E63B5)},  {QString("Te"), QColor(0xD47A00)},
+  {QString("I"), QColor(0x940094)},   {QString("Xe"), QColor(0x429EB0)},  {QString("Cs"), QColor(0x57178F)},  {QString("Ba"), QColor(0x00C900)},
+  {QString("La"), QColor(0x70D4FF)},  {QString("Ce"), QColor(0xFFFFC7)},  {QString("Pr"), QColor(0xD9FFC7)},  {QString("Nd"), QColor(0xC7FFC7)},
+  {QString("Pm"), QColor(0xA3FFC7)},  {QString("Sm"), QColor(0x8FFFC7)},  {QString("Eu"), QColor(0x61FFC7)},  {QString("Gd"), QColor(0x45FFC7)},
+  {QString("Tb"), QColor(0x30FFC7)},  {QString("Dy"), QColor(0x1FFFC7)},  {QString("Ho"), QColor(0x00FF9C)},  {QString("Er"), QColor(0x00E675)},
+  {QString("Tm"), QColor(0x00D452)},  {QString("Yb"), QColor(0x00BF38)},  {QString("Lu"), QColor(0x00AB24)},  {QString("Hf"), QColor(0x4DC2FF)},
+  {QString("Ta"), QColor(0x4DA6FF)},  {QString("W"), QColor(0x2194D6)},   {QString("Re"), QColor(0x267DAB)},  {QString("Os"), QColor(0x266696)},
+  {QString("Ir"), QColor(0x175487)},  {QString("Pt"), QColor(0xD0D0E0)},  {QString("Au"), QColor(0xFFD123)},  {QString("Hg"), QColor(0xB8B8D0)},
+  {QString("Tl"), QColor(0xA6544D)},  {QString("Pb"), QColor(0x575961)},  {QString("Bi"), QColor(0x9E4FB5)},  {QString("Po"), QColor(0xAB5C00)},
+  {QString("At"), QColor(0x754F45)},  {QString("Rn"), QColor(0x428296)},  {QString("Fr"), QColor(0x420066)},  {QString("Ra"), QColor(0x007D00)},
+  {QString("Ac"), QColor(0x70ABFA)},  {QString("Th"), QColor(0x00BAFF)},  {QString("Pa"), QColor(0x00A1FF)},  {QString("U"), QColor(0x008FFF)},
+  {QString("Np"), QColor(0x0080FF)},  {QString("Pu"), QColor(0x006BFF)},  {QString("Am"), QColor(0x545CF2)},  {QString("Cm"), QColor(0x785CE3)},
+  {QString("Bk"), QColor(0x8A4FE3)},  {QString("Cf"), QColor(0xA136D4)},  {QString("Es"), QColor(0xB31FD4)},  {QString("Fm"), QColor(0xB31FBA)},
+  {QString("Md"), QColor(0xB30DA6)},  {QString("No"), QColor(0xBD0D87)},  {QString("Lr"), QColor(0xC70066)},  {QString("Rf"), QColor(0xCC0059)},
+  {QString("Db"), QColor(0xD1004F)},  {QString("Sg"), QColor(0xD90045)},  {QString("Bh"), QColor(0xE00038)},  {QString("Hs"), QColor(0xE6002E)},
+  {QString("Mt"), QColor(0xEB0026)},  {QString("Ds"), QColor(0xEB0026)},  {QString("Rg"), QColor(0xEB0026)},  {QString("Cn"), QColor(0xEB0026)},
+  {QString("Uut"), QColor(0xEB0026)}, {QString("Uuq"), QColor(0xEB0026)}, {QString("Uup"), QColor(0xEB0026)}, {QString("Uuh"), QColor(0xEB0026)},
+  {QString("Uus"), QColor(0xEB0026)}, {QString("Uuo"), QColor(0xEB0026)}
+};
+
+std::map<QString, QColor> SKColorSet::vmdCpk =
+{
+  {QString("H"), QColor(0xFFFFFF)},   {QString("He"), QColor(0x804D00)},  {QString("Li"), QColor(0x804D00)},  {QString("Be"), QColor(0x804D00)},
+  {QString("B"), QColor(0x804D00)},   {QString("C"), QColor(0x40BFBF)},   {QString("N"), QColor(0x0000FF)},   {QString("O"), QColor(0xFF0000)},
+  {QString("F"), QColor(0x804D00)},   {QString("Ne"), QColor(0x804D00)},  {QString("Na"), QColor(0x804D00)},  {QString("Mg"), QColor(0x804D00)},
+  {QString("Al"), QColor(0x804D00)},  {QString("Si"), QColor(0x804D00)},  {QString("P"), QColor(0x808033)},   {QString("S"), QColor(0xFFFF00)},
+  {QString("Cl"), QColor(0x804D00)},  {QString("Ar"), QColor(0x804D00)},  {QString("K"), QColor(0x804D00)},   {QString("Ca"), QColor(0x804D00)},
+  {QString("Sc"), QColor(0x804D00)},  {QString("Ti"), QColor(0x804D00)},  {QString("V"), QColor(0x804D00)},   {QString("Cr"), QColor(0x804D00)},
+  {QString("Mn"), QColor(0x804D00)},  {QString("Fe"), QColor(0x804D00)},  {QString("Co"), QColor(0x804D00)},  {QString("Ni"), QColor(0x804D00)},
+  {QString("Cu"), QColor(0x804D00)},  {QString("Zn"), QColor(0x999999)},  {QString("Ga"), QColor(0x804D00)},  {QString("Ge"), QColor(0x804D00)},
+  {QString("As"), QColor(0x804D00)},  {QString("Se"), QColor(0x804D00)},  {QString("Br"), QColor(0x804D00)},  {QString("Kr"), QColor(0x804D00)},
+  {QString("Rb"), QColor(0x804D00)},  {QString("Sr"), QColor(0x804D00)},  {QString("Y"), QColor(0x804D00)},   {QString("Zr"), QColor(0x804D00)},
+  {QString("Nb"), QColor(0x804D00)},  {QString("Mo"), QColor(0x804D00)},  {QString("Tc"), QColor(0x804D00)},  {QString("Ru"), QColor(0x804D00)},
+  {QString("Rh"), QColor(0x804D00)},  {QString("Pd"), QColor(0x804D00)},  {QString("Ag"), QColor(0x804D00)},  {QString("Cd"), QColor(0x804D00)},
+  {QString("In"), QColor(0x804D00)},  {QString("Sn"), QColor(0x804D00)},  {QString("Sb"), QColor(0x804D00)},  {QString("Te"), QColor(0x804D00)},
+  {QString("I"), QColor(0x804D00)},   {QString("Xe"), QColor(0x804D00)},  {QString("Cs"), QColor(0x804D00)},  {QString("Ba"), QColor(0x804D00)},
+  {QString("La"), QColor(0x804D00)},  {QString("Ce"), QColor(0x804D00)},  {QString("Pr"), QColor(0x804D00)},  {QString("Nd"), QColor(0x804D00)},
+  {QString("Pm"), QColor(0x804D00)},  {QString("Sm"), QColor(0x804D00)},  {QString("Eu"), QColor(0x804D00)},  {QString("Gd"), QColor(0x804D00)},
+  {QString("Tb"), QColor(0x804D00)},  {QString("Dy"), QColor(0x804D00)},  {QString("Ho"), QColor(0x804D00)},  {QString("Er"), QColor(0x804D00)},
+  {QString("Tm"), QColor(0x804D00)},  {QString("Yb"), QColor(0x804D00)},  {QString("Lu"), QColor(0x804D00)},  {QString("Hf"), QColor(0x804D00)},
+  {QString("Ta"), QColor(0x804D00)},  {QString("W"), QColor(0x804D00)},   {QString("Re"), QColor(0x804D00)},  {QString("Os"), QColor(0x804D00)},
+  {QString("Ir"), QColor(0x804D00)},  {QString("Pt"), QColor(0x804D00)},  {QString("Au"), QColor(0x804D00)},  {QString("Hg"), QColor(0x804D00)},
+  {QString("Tl"), QColor(0x804D00)},  {QString("Pb"), QColor(0x804D00)},  {QString("Bi"), QColor(0x804D00)},  {QString("Po"), QColor(0x804D00)},
+  {QString("At"), QColor(0x804D00)},  {QString("Rn"), QColor(0x804D00)},  {QString("Fr"), QColor(0x804D00)},  {QString("Ra"), QColor(0x804D00)},
+  {QString("Ac"), QColor(0x804D00)},  {QString("Th"), QColor(0x804D00)},  {QString("Pa"), QColor(0x804D00)},  {QString("U"), QColor(0x804D00)},
+  {QString("Np"), QColor(0x804D00)},  {QString("Pu"), QColor(0x804D00)},  {QString("Am"), QColor(0x804D00)},  {QString("Cm"), QColor(0x804D00)},
+  {QString("Bk"), QColor(0x804D00)},  {QString("Cf"), QColor(0x804D00)},  {QString("Es"), QColor(0x804D00)},  {QString("Fm"), QColor(0x804D00)},
+  {QString("Md"), QColor(0x804D00)},  {QString("No"), QColor(0x804D00)},  {QString("Lr"), QColor(0x804D00)},  {QString("Rf"), QColor(0x804D00)},
+  {QString("Db"), QColor(0x804D00)},  {QString("Sg"), QColor(0x804D00)},  {QString("Bh"), QColor(0x804D00)},  {QString("Hs"), QColor(0x804D00)},
+  {QString("Mt"), QColor(0x804D00)},  {QString("Ds"), QColor(0x804D00)},  {QString("Rg"), QColor(0x804D00)},  {QString("Cn"), QColor(0x804D00)},
+  {QString("Uut"), QColor(0x804D00)}, {QString("Uuq"), QColor(0x804D00)}, {QString("Uup"), QColor(0x804D00)}, {QString("Uuh"), QColor(0x804D00)},
+  {QString("Uus"), QColor(0x804D00)}, {QString("Uuo"), QColor(0x804D00)}
 };
 

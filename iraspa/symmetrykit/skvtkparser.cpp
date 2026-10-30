@@ -37,15 +37,21 @@ template <typename T> static QByteArray readData(QTextStream &stream, size_t num
   std::vector<T> dataPoints;
   dataPoints.reserve(numberOfElements);
 
-  for (size_t i=0; i<numberOfElements; i++)
+  while (dataPoints.size() < numberOfElements && !stream.atEnd())
   {
-    T dataPoint;
     QString line;
-    stream.readLineInto(&line);
+    if (!stream.readLineInto(&line))
+    {
+      break;
+    }
     std::stringstream ss(line.toStdString());
-    ss >> dataPoint;
-    dataPoints.push_back(dataPoint);
+    T dataPoint;
+    while (ss >> dataPoint && dataPoints.size() < numberOfElements)
+    {
+      dataPoints.push_back(dataPoint);
+    }
   }
+  dataPoints.resize(numberOfElements, T{});
   return QByteArray(reinterpret_cast<char*>(dataPoints.data()), dataPoints.size() * sizeof(T));
 }
 
@@ -188,7 +194,7 @@ void SKVTKParser::startParsing() noexcept(false)
 
             if(strSplited.size()>=4)
             {
-              _numberOfScalarsPerPoint = strSplited[4].toInt();
+              _numberOfScalarsPerPoint = strSplited[3].toInt();
             }
           }
         }

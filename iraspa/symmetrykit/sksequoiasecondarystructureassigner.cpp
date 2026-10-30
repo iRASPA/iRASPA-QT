@@ -108,16 +108,24 @@ std::vector<NeighborEntry> nearestNeighbors(int index, const std::vector<double3
 std::optional<double> neighborPseudoDihedralCosine(const std::vector<double3> &positions, int sourceIndex, int partnerIndex)
 {
   const std::vector<NeighborEntry> sortedBySource = nearestNeighbors(sourceIndex, positions);
-  if (sortedBySource.size() < 2)
+  int sourcePrimeIndex = -1;
+  for (const NeighborEntry &entry : sortedBySource)
+  {
+    if (entry.partner != sourceIndex && entry.partner != partnerIndex)
+    {
+      sourcePrimeIndex = entry.partner;
+      break;
+    }
+  }
+  if (sourcePrimeIndex < 0)
   {
     return std::nullopt;
   }
-  const int sourcePrimeIndex = sortedBySource[1].partner;
   const std::vector<NeighborEntry> sortedByPartner = nearestNeighbors(partnerIndex, positions);
   int partnerPrimeIndex = -1;
   for (const NeighborEntry &entry : sortedByPartner)
   {
-    if (entry.partner != sourceIndex && entry.partner != sourcePrimeIndex)
+    if (entry.partner != partnerIndex && entry.partner != sourceIndex && entry.partner != sourcePrimeIndex)
     {
       partnerPrimeIndex = entry.partner;
       break;

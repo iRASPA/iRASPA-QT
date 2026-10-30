@@ -486,7 +486,7 @@ std::vector<SKSecondaryStructureType> SKStrideSecondaryStructureAssigner::assign
   }
   if (residues.size() < 2)
   {
-    return {};
+    return std::vector<SKSecondaryStructureType>(residues.size(), SKSecondaryStructureType::coil);
   }
   std::vector<BackboneResidueState> states = buildStates(residues);
   computeBackboneAngles(states);

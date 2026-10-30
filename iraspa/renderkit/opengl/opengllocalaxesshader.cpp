@@ -164,7 +164,7 @@ void OpenGLLocalAxesShader::initializeVertexArrayObject()
             break;
           case RKLocalAxes::Style::cylinder:
             axesGeometry = AxesSystemDefaultGeometry(RKGlobalAxes::CenterType::cube, width, float4(1.0,1.0,1.0,1.0),
-                                          length, width, float4(1.0,0.4,0.0,7.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
+                                          length, width, float4(1.0,0.4,0.7,1.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
                                           0.0, 1.0, float4(1.0,0.4,0.7,1.0), float4(0.7,1.0,0.4,1.0), float4(0.4,0.7,1.0,1.0),
                                           false, 1.0, 41);
             break;

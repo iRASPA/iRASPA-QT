@@ -192,19 +192,23 @@ out VS_OUT
 {
   smooth vec4 eye_position;
   smooth vec2 texcoords;
+  flat vec4 instancePosition;
   smooth vec3 frag_pos;
   flat vec3 frag_center;
   flat vec4 sphere_radius;
   flat int instanceId;
+  flat mat4x4 ambientOcclusionTransformMatrix;
 } vs_out;
 
 
 void main(void)
 {
   vs_out.instanceId = instanceTag;
+  vs_out.instancePosition = instancePosition;
   vec4 scale = structureUniforms.atomScaleFactor * instanceScale;
 
   vs_out.eye_position = frameUniforms.viewMatrix * structureUniforms.modelMatrix * instancePosition;
+  vs_out.ambientOcclusionTransformMatrix = transpose(frameUniforms.normalMatrix * structureUniforms.modelMatrix);
 
   vs_out.texcoords = vertexPosition.xy;
   vs_out.sphere_radius = scale;
@@ -227,10 +231,12 @@ in VS_OUT
 {
   smooth vec4 eye_position;
   smooth vec2 texcoords;
+  flat vec4 instancePosition;
   smooth vec3 frag_pos;
   flat vec3 frag_center;
   flat vec4 sphere_radius;
   flat int instanceId;
+  flat mat4x4 ambientOcclusionTransformMatrix;
 } fs_in;
 
 out uvec4 vFragColor;
@@ -247,6 +253,19 @@ void main(void)
   float z = sqrt(zz);
   vec4 pos = fs_in.eye_position;
   pos.z += fs_in.sphere_radius.z*z;
+
+  if(structureUniforms.clipAtomsAtUnitCell)
+  {
+    vec3 vertexPosition = (fs_in.ambientOcclusionTransformMatrix * (fs_in.sphere_radius * vec4(x,y,z,1.0))).xyz;
+    vec4 position = vec4(fs_in.instancePosition.xyz + vertexPosition.xyz,1.0);
+    if (dot(structureUniforms.clipPlaneLeft,position)< 0.0) discard;
+    if (dot(structureUniforms.clipPlaneRight,position)< 0.0) discard;
+    if (dot(structureUniforms.clipPlaneTop,position)< 0.0) discard;
+    if (dot(structureUniforms.clipPlaneBottom,position)< 0.0) discard;
+    if (dot(structureUniforms.clipPlaneFront,position)< 0.0) discard;
+    if (dot(structureUniforms.clipPlaneBack,position)< 0.0) discard;
+  }
+
   pos = frameUniforms.projectionMatrix * pos;
   gl_FragDepth = 0.5*(pos.z / pos.w)+0.5;
 

@@ -33,9 +33,130 @@ GridVolume::GridVolume(): Object()
 
 }
 
+GridVolume::GridVolume(const GridVolume &gridVolume): Object(gridVolume)
+{
+  _dimensions = gridVolume._dimensions;
+  _spacing = gridVolume._spacing;
+  _aspectRatio = gridVolume._aspectRatio;
+  _range = gridVolume._range;
+  _data = gridVolume._data;
+  _average = gridVolume._average;
+  _variance = gridVolume._variance;
+
+  _drawAdsorptionSurface = gridVolume._drawAdsorptionSurface;
+
+  _adsorptionSurfaceRenderingMethod = gridVolume._adsorptionSurfaceRenderingMethod;
+  _adsorptionVolumeTransferFunction = gridVolume._adsorptionVolumeTransferFunction;
+  _adsorptionVolumeStepLength = gridVolume._adsorptionVolumeStepLength;
+
+  _adsorptionSurfaceOpacity = gridVolume._adsorptionSurfaceOpacity;
+  _adsorptionTransparencyThreshold = gridVolume._adsorptionTransparencyThreshold;
+  _adsorptionSurfaceIsoValue = gridVolume._adsorptionSurfaceIsoValue;
+  _encompassingPowerOfTwoCubicGridSize = gridVolume._encompassingPowerOfTwoCubicGridSize;
+
+  _adsorptionSurfaceProbeMolecule = gridVolume._adsorptionSurfaceProbeMolecule;
+  _adsorptionSurfaceProbeEpsilon = gridVolume._adsorptionSurfaceProbeEpsilon;
+  _adsorptionSurfaceProbeSigma = gridVolume._adsorptionSurfaceProbeSigma;
+
+  _adsorptionSurfaceNumberOfTriangles = gridVolume._adsorptionSurfaceNumberOfTriangles;
+
+  _adsorptionSurfaceHue = gridVolume._adsorptionSurfaceHue;
+  _adsorptionSurfaceSaturation = gridVolume._adsorptionSurfaceSaturation;
+  _adsorptionSurfaceValue = gridVolume._adsorptionSurfaceValue;
+
+  _adsorptionSurfaceFrontSideHDR = gridVolume._adsorptionSurfaceFrontSideHDR;
+  _adsorptionSurfaceFrontSideHDRExposure = gridVolume._adsorptionSurfaceFrontSideHDRExposure;
+  _adsorptionSurfaceFrontSideAmbientColor = gridVolume._adsorptionSurfaceFrontSideAmbientColor;
+  _adsorptionSurfaceFrontSideDiffuseColor = gridVolume._adsorptionSurfaceFrontSideDiffuseColor;
+  _adsorptionSurfaceFrontSideSpecularColor = gridVolume._adsorptionSurfaceFrontSideSpecularColor;
+  _adsorptionSurfaceFrontSideDiffuseIntensity = gridVolume._adsorptionSurfaceFrontSideDiffuseIntensity;
+  _adsorptionSurfaceFrontSideAmbientIntensity = gridVolume._adsorptionSurfaceFrontSideAmbientIntensity;
+  _adsorptionSurfaceFrontSideSpecularIntensity = gridVolume._adsorptionSurfaceFrontSideSpecularIntensity;
+  _adsorptionSurfaceFrontSideShininess = gridVolume._adsorptionSurfaceFrontSideShininess;
+
+  _adsorptionSurfaceBackSideHDR = gridVolume._adsorptionSurfaceBackSideHDR;
+  _adsorptionSurfaceBackSideHDRExposure = gridVolume._adsorptionSurfaceBackSideHDRExposure;
+  _adsorptionSurfaceBackSideAmbientColor = gridVolume._adsorptionSurfaceBackSideAmbientColor;
+  _adsorptionSurfaceBackSideDiffuseColor = gridVolume._adsorptionSurfaceBackSideDiffuseColor;
+  _adsorptionSurfaceBackSideSpecularColor = gridVolume._adsorptionSurfaceBackSideSpecularColor;
+  _adsorptionSurfaceBackSideDiffuseIntensity = gridVolume._adsorptionSurfaceBackSideDiffuseIntensity;
+  _adsorptionSurfaceBackSideAmbientIntensity = gridVolume._adsorptionSurfaceBackSideAmbientIntensity;
+  _adsorptionSurfaceBackSideSpecularIntensity = gridVolume._adsorptionSurfaceBackSideSpecularIntensity;
+  _adsorptionSurfaceBackSideShininess = gridVolume._adsorptionSurfaceBackSideShininess;
+}
+
 GridVolume::GridVolume(const std::shared_ptr<Object> object): Object(object)
 {
+  if (std::shared_ptr<VolumetricDataViewer> volumetricDataViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(object))
+  {
+    _dimensions = volumetricDataViewer->dimensions();
+    _spacing = volumetricDataViewer->spacing();
+    _range = volumetricDataViewer->range();
+    _data = volumetricDataViewer->data();
+    _average = volumetricDataViewer->average();
+    _variance = volumetricDataViewer->variance();
 
+    _drawAdsorptionSurface = volumetricDataViewer->drawAdsorptionSurface();
+
+    _adsorptionSurfaceRenderingMethod = volumetricDataViewer->adsorptionSurfaceRenderingMethod();
+    _adsorptionVolumeTransferFunction = volumetricDataViewer->adsorptionVolumeTransferFunction();
+    _adsorptionVolumeStepLength = volumetricDataViewer->adsorptionVolumeStepLength();
+
+    _adsorptionSurfaceOpacity = volumetricDataViewer->adsorptionSurfaceOpacity();
+    _adsorptionTransparencyThreshold = volumetricDataViewer->adsorptionTransparencyThreshold();
+    _adsorptionSurfaceIsoValue = volumetricDataViewer->adsorptionSurfaceIsoValue();
+    _encompassingPowerOfTwoCubicGridSize = volumetricDataViewer->encompassingPowerOfTwoCubicGridSize();
+
+    _adsorptionSurfaceProbeMolecule = volumetricDataViewer->adsorptionSurfaceProbeMolecule();
+    _adsorptionSurfaceProbeEpsilon = volumetricDataViewer->adsorptionSurfaceProbeEpsilon();
+    _adsorptionSurfaceProbeSigma = volumetricDataViewer->adsorptionSurfaceProbeSigma();
+
+    _adsorptionSurfaceHue = volumetricDataViewer->adsorptionSurfaceHue();
+    _adsorptionSurfaceSaturation = volumetricDataViewer->adsorptionSurfaceSaturation();
+    _adsorptionSurfaceValue = volumetricDataViewer->adsorptionSurfaceValue();
+
+    _adsorptionSurfaceFrontSideHDR = volumetricDataViewer->adsorptionSurfaceFrontSideHDR();
+    _adsorptionSurfaceFrontSideHDRExposure = volumetricDataViewer->adsorptionSurfaceFrontSideHDRExposure();
+    _adsorptionSurfaceFrontSideAmbientColor = volumetricDataViewer->adsorptionSurfaceFrontSideAmbientColor();
+    _adsorptionSurfaceFrontSideDiffuseColor = volumetricDataViewer->adsorptionSurfaceFrontSideDiffuseColor();
+    _adsorptionSurfaceFrontSideSpecularColor = volumetricDataViewer->adsorptionSurfaceFrontSideSpecularColor();
+    _adsorptionSurfaceFrontSideDiffuseIntensity = volumetricDataViewer->adsorptionSurfaceFrontSideDiffuseIntensity();
+    _adsorptionSurfaceFrontSideAmbientIntensity = volumetricDataViewer->adsorptionSurfaceFrontSideAmbientIntensity();
+    _adsorptionSurfaceFrontSideSpecularIntensity = volumetricDataViewer->adsorptionSurfaceFrontSideSpecularIntensity();
+    _adsorptionSurfaceFrontSideShininess = volumetricDataViewer->adsorptionSurfaceFrontSideShininess();
+
+    _adsorptionSurfaceBackSideHDR = volumetricDataViewer->adsorptionSurfaceBackSideHDR();
+    _adsorptionSurfaceBackSideHDRExposure = volumetricDataViewer->adsorptionSurfaceBackSideHDRExposure();
+    _adsorptionSurfaceBackSideAmbientColor = volumetricDataViewer->adsorptionSurfaceBackSideAmbientColor();
+    _adsorptionSurfaceBackSideDiffuseColor = volumetricDataViewer->adsorptionSurfaceBackSideDiffuseColor();
+    _adsorptionSurfaceBackSideSpecularColor = volumetricDataViewer->adsorptionSurfaceBackSideSpecularColor();
+    _adsorptionSurfaceBackSideDiffuseIntensity = volumetricDataViewer->adsorptionSurfaceBackSideDiffuseIntensity();
+    _adsorptionSurfaceBackSideAmbientIntensity = volumetricDataViewer->adsorptionSurfaceBackSideAmbientIntensity();
+    _adsorptionSurfaceBackSideSpecularIntensity = volumetricDataViewer->adsorptionSurfaceBackSideSpecularIntensity();
+    _adsorptionSurfaceBackSideShininess = volumetricDataViewer->adsorptionSurfaceBackSideShininess();
+  }
+}
+
+void GridVolume::setAdsorptionSurfaceProbeMolecule(ProbeMolecule value)
+{
+  _adsorptionSurfaceProbeMolecule = value;
+  if(std::optional<double2> params = probeNamedParameters(value))
+  {
+    _adsorptionSurfaceProbeEpsilon = params->x;
+    _adsorptionSurfaceProbeSigma = params->y;
+  }
+}
+
+void GridVolume::setAdsorptionSurfaceProbeEpsilon(double value)
+{
+  _adsorptionSurfaceProbeEpsilon = value;
+  _adsorptionSurfaceProbeMolecule = matchingProbeMolecule(double2(_adsorptionSurfaceProbeEpsilon, _adsorptionSurfaceProbeSigma), true);
+}
+
+void GridVolume::setAdsorptionSurfaceProbeSigma(double value)
+{
+  _adsorptionSurfaceProbeSigma = value;
+  _adsorptionSurfaceProbeMolecule = matchingProbeMolecule(double2(_adsorptionSurfaceProbeEpsilon, _adsorptionSurfaceProbeSigma), true);
 }
 
 std::shared_ptr<Object> GridVolume::shallowClone()
@@ -322,6 +443,9 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<GridVolume> &
   stream << volume->_adsorptionSurfaceBackSideSpecularIntensity;
   stream << volume->_adsorptionSurfaceBackSideShininess;
 
+  stream << volume->_adsorptionSurfaceProbeEpsilon;
+  stream << volume->_adsorptionSurfaceProbeSigma;
+
   stream << qint64(0x6f6b6195);
 
   // handle super class
@@ -396,6 +520,18 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<GridVolume> &volume
     stream >> volume->_adsorptionSurfaceBackSideDiffuseIntensity;
     stream >> volume->_adsorptionSurfaceBackSideSpecularIntensity;
     stream >> volume->_adsorptionSurfaceBackSideShininess;
+  }
+
+  if(versionNumber >= 3)
+  {
+    stream >> volume->_adsorptionSurfaceProbeEpsilon;
+    stream >> volume->_adsorptionSurfaceProbeSigma;
+  }
+  else
+  {
+    double2 params = probeNamedParameters(volume->_adsorptionSurfaceProbeMolecule).value_or(double2(10.9, 2.64));
+    volume->_adsorptionSurfaceProbeEpsilon = params.x;
+    volume->_adsorptionSurfaceProbeSigma = params.y;
   }
 
   qint64 magicNumber;

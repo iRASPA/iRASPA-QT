@@ -348,7 +348,7 @@ void main(void)
 
   vec3 t1 = (fs_in.ambientOcclusionTransformMatrix * vec4(N,1.0)).xyz;
 
-  vec2  st = vec2(0.5 + 0.5 * atan(t1.z, t1.x)/3.141592653589793, 0.5 - asin(t1.y)/3.141592653589793);
+  vec2  st = vec2(0.5 + 0.5 * atan(t1.z, t1.x)/3.141592653589793, 0.5 - asin(clamp(t1.y, -1.0, 1.0))/3.141592653589793);
   float uDensity = structureUniforms.atomSelectionStripesDensity;
   float frequency = structureUniforms.atomSelectionStripesFrequency;
   if (fract(st.x*frequency) >= uDensity && fract(st.y*frequency) >= uDensity)

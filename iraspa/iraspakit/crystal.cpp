@@ -65,7 +65,7 @@ Crystal::Crystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 
 Crystal::Crystal(const Crystal &crystal): Structure(crystal)
 {
-
+  _spaceGroup = crystal._spaceGroup;
 }
 
 
@@ -87,25 +87,6 @@ Crystal::Crystal(const std::shared_ptr<Object> object): Structure(object)
     _atomsTreeController->setTags();
     reComputeBoundingBox();
     computeBonds();
-  }
-
-  if (std::shared_ptr<StructuralPropertyViewer> structuralPropertyViewer = std::dynamic_pointer_cast<StructuralPropertyViewer>(object))
-  {
-    _structureMaterialType = structuralPropertyViewer->structureMaterialType();
-    _frameworkProbeMolecule = structuralPropertyViewer->frameworkProbeMolecule();
-    _structureMass = structuralPropertyViewer->structureMass();
-    _structureDensity = structuralPropertyViewer->structureDensity();
-    _structureHeliumVoidFraction = structuralPropertyViewer->structureHeliumVoidFraction();
-    _structureSpecificVolume = structuralPropertyViewer->structureSpecificVolume();
-    _structureAccessiblePoreVolume = structuralPropertyViewer->structureAccessiblePoreVolume();
-    _structureVolumetricNitrogenSurfaceArea = structuralPropertyViewer->structureVolumetricNitrogenSurfaceArea();
-    _structureGravimetricNitrogenSurfaceArea = structuralPropertyViewer->structureGravimetricNitrogenSurfaceArea();
-    _structureNumberOfChannelSystems = structuralPropertyViewer->structureNumberOfChannelSystems();
-    _structureNumberOfInaccessiblePockets = structuralPropertyViewer->structureNumberOfInaccessiblePockets();
-    _structureDimensionalityOfPoreSystem = structuralPropertyViewer->structureDimensionalityOfPoreSystem();
-    _structureLargestCavityDiameter = structuralPropertyViewer->structureLargestCavityDiameter();
-    _structureRestrictingPoreLimitingDiameter = structuralPropertyViewer->structureRestrictingPoreLimitingDiameter();
-    _structureLargestCavityDiameterAlongAViablePath = structuralPropertyViewer->structureLargestCavityDiameterAlongAViablePath();
   }
 }
 
@@ -1618,7 +1599,8 @@ double3 Crystal::centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_
     {
       if(copy->type() == SKAtomCopy::AtomCopyType::copy)
       {
-        double3 pos = copy->position() * 2.0 * M_PI;
+        double3 copyPosition = double3::flip(copy->position(), _cell->contentFlip(), double3(1.0,1.0,1.0));
+        double3 pos = copyPosition * 2.0 * M_PI;
         double3 cosTheta = double3(cos(pos.x), cos(pos.y), cos(pos.z));
         double3 sinTheta = double3(sin(pos.x), sin(pos.y), sin(pos.z));
         centerOfMassCosTheta = centerOfMassCosTheta + mass * cosTheta;
@@ -1766,7 +1748,7 @@ std::vector<float> Crystal::gridData()
     _adsorptionVolumeStepLength = 0.25 / double(size);
 
     const auto [min, max] = std::minmax_element(begin(gridData), end(gridData));
-    _range = std::pair(double(*min),0.0);
+    _range = std::pair(double(*min), double(*max));
     return gridData;
   }
   catch (std::exception const& e)

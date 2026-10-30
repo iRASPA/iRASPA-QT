@@ -44,4 +44,5 @@ private:
   std::vector<std::vector<std::shared_ptr<RKRenderObject>>> _renderStructures;
   std::vector<std::vector<StructureBuffers>> _structureBuffers;
   std::unordered_map<RKRenderObject *, std::shared_ptr<std::vector<float>>> _gridCache;
+  std::unordered_map<RKRenderObject *, std::shared_ptr<std::vector<float>>> _wellCache;
 };

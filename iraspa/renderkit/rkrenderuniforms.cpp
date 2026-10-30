@@ -89,6 +89,21 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
     this->boxMatrix[3][1] = float(shift.y);
     this->boxMatrix[3][2] = float(shift.z);
 
+    double3x3 unitCell = renderStructure->cell()->unitCell();
+    double3 corner = unitCell * double3(double(renderStructure->cell()->minimumReplicas().x), double(renderStructure->cell()->minimumReplicas().y), double(renderStructure->cell()->minimumReplicas().z));
+    double3 corner2 = unitCell * double3(double(renderStructure->cell()->maximumReplicas().x)+1.0, double(renderStructure->cell()->maximumReplicas().y)+1.0, double(renderStructure->cell()->maximumReplicas().z)+1.0);
+
+    // clipping planes are in object space
+    double3 u_plane0 = double3::normalize(double3::cross(box[0],box[1]));
+    double3 u_plane1 = double3::normalize(double3::cross(box[2],box[0]));
+    double3 u_plane2 = double3::normalize(double3::cross(box[1],box[2]));
+    this->clipPlaneBack = float4(u_plane0.x, u_plane0.y, u_plane0.z, -double3::dot(u_plane0,corner));
+    this->clipPlaneBottom = float4(u_plane1.x, u_plane1.y, u_plane1.z, -double3::dot(u_plane1,corner));
+    this->clipPlaneLeft = float4(u_plane2.x, u_plane2.y, u_plane2.z, -double3::dot(u_plane2,corner));
+    this->clipPlaneFront = float4(-u_plane0.x, -u_plane0.y, -u_plane0.z, double3::dot(u_plane0,corner2));
+    this->clipPlaneTop = float4(-u_plane1.x, -u_plane1.y, -u_plane1.z, double3::dot(u_plane1,corner2));
+    this->clipPlaneRight = float4(-u_plane2.x, -u_plane2.y, -u_plane2.z, double3::dot(u_plane2,corner2));
+
     if (RKRenderLocalAxesSource* renderStructure = dynamic_cast<RKRenderLocalAxesSource*>(structure.get()))
     {
       double3 offset = renderStructure->renderLocalAxes().offset();
@@ -194,29 +209,6 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       this->bondSelectionWorleyNoise3DJitter = float(source->bondSelectionWorleyNoise3DJitter());
       this->bondSelectionIntensity = float(source->bondSelectionIntensity());
       this->bondSelectionScaling = float(std::max(1.001,source->bondSelectionScaling())); // avoid artifacts
-
-      double3x3 unitCell = renderStructure->cell()->unitCell();
-      double3 corner = unitCell * double3(double(renderStructure->cell()->minimumReplicas().x), double(renderStructure->cell()->minimumReplicas().y), double(renderStructure->cell()->minimumReplicas().z));
-      double3 corner2 = unitCell * double3(double(renderStructure->cell()->maximumReplicas().x)+1.0, double(renderStructure->cell()->maximumReplicas().y)+1.0, double(renderStructure->cell()->maximumReplicas().z)+1.0);
-
-      //this->boxMatrix = float4x4(box);
-      //double3 shift = renderStructure->cell()->unitCell() * double3(renderStructure->cell()->minimumReplicas());
-      //this->boxMatrix[3][0] = float(shift.x);
-      //this->boxMatrix[3][1] = float(shift.y);
-      //this->boxMatrix[3][2] = float(shift.z);
-
-
-
-      // clipping planes are in object space
-      double3 u_plane0 = double3::normalize(double3::cross(box[0],box[1]));
-      double3 u_plane1 = double3::normalize(double3::cross(box[2],box[0]));
-      double3 u_plane2 = double3::normalize(double3::cross(box[1],box[2]));
-      this->clipPlaneBack = float4(u_plane0.x, u_plane0.y, u_plane0.z, -double3::dot(u_plane0,corner));
-      this->clipPlaneBottom = float4(u_plane1.x, u_plane1.y, u_plane1.z, -double3::dot(u_plane1,corner));
-      this->clipPlaneLeft = float4(u_plane2.x, u_plane2.y, u_plane2.z, -double3::dot(u_plane2,corner));
-      this->clipPlaneFront = float4(-u_plane0.x, -u_plane0.y, -u_plane0.z, double3::dot(u_plane0,corner2));
-      this->clipPlaneTop = float4(-u_plane1.x, -u_plane1.y, -u_plane1.z, double3::dot(u_plane1,corner2));
-      this->clipPlaneRight = float4(-u_plane2.x, -u_plane2.y, -u_plane2.z, double3::dot(u_plane2,corner2));
     }
 
     if(RKRenderPrimitiveObjectsSource *source = dynamic_cast<RKRenderPrimitiveObjectsSource*>(structure.get()))
@@ -305,13 +297,13 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       // difference
       double4x4 modelMatrix2 = inverseModelMatrix * double4x4::AffinityMatrixToTransformationAroundArbitraryPointWithTranslation(double4x4(renderStructure->orientation()),centerOfRotation, renderStructure->origin());
       this->modelMatrix = float4x4(modelMatrix2);
+      this->inverseModelMatrix = float4x4(double4x4::inverse(modelMatrix2));
 
       this->sceneIdentifier = int32_t(sceneIdentifier);
       this->MovieIdentifier = int32_t(movieIdentifier);
 
       this->colorAtomsWithBondColor = source->colorAtomsWithBondColor();
       this->atomScaleFactor = float(source->atomScaleFactor());
-      this->modelMatrix = float4x4(modelMatrix);
       this->atomHue = source->atomHue();
       this->atomSaturation = source->atomSaturation();
       this->atomValue = source->atomValue();
@@ -343,6 +335,7 @@ RKStructureUniforms::RKStructureUniforms(size_t sceneIdentifier, size_t movieIde
       double3 corner2 = unitCell * double3(double(renderStructure->cell()->maximumReplicas().x)+1.0, double(renderStructure->cell()->maximumReplicas().y)+1.0, double(renderStructure->cell()->maximumReplicas().z)+1.0);
 
       this->boxMatrix = float4x4(box);
+      this->inverseBoxMatrix = float4x4(double4x4::inverse(box));
       double3 shift = renderStructure->cell()->unitCell() * double3(renderStructure->cell()->minimumReplicas());
       this->boxMatrix[3][0] = float(shift.x);
       this->boxMatrix[3][1] = float(shift.y);
@@ -505,6 +498,9 @@ RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderObject> struc
                                                                                                     source->adsorptionSurfaceBackSideSpecularColor().greenF(),
                                                                                                     source->adsorptionSurfaceBackSideSpecularColor().blueF(),
                                                                                                     source->adsorptionSurfaceOpacity());
+      this->ambientBackSide.w = float(source->adsorptionSurfaceOpacity());
+      this->diffuseBackSide.w = float(source->adsorptionSurfaceOpacity());
+      this->specularBackSide.w = float(source->adsorptionSurfaceOpacity());
       this->shininessBackSide = float(source->adsorptionSurfaceBackSideShininess());
 
       this->backHDR = source->adsorptionSurfaceBackSideHDR() ? 1 : 0;
@@ -521,6 +517,9 @@ RKIsosurfaceUniforms::RKIsosurfaceUniforms(std::shared_ptr<RKRenderObject> struc
                                                                                                       source->adsorptionSurfaceFrontSideSpecularColor().greenF(),
                                                                                                       source->adsorptionSurfaceFrontSideSpecularColor().blueF(),
                                                                                                       source->adsorptionSurfaceOpacity());
+      this->ambientFrontSide.w = float(source->adsorptionSurfaceOpacity());
+      this->diffuseFrontSide.w = float(source->adsorptionSurfaceOpacity());
+      this->specularFrontSide.w = float(source->adsorptionSurfaceOpacity());
       this->shininessFrontSide = float(source->adsorptionSurfaceFrontSideShininess());
     }
   }
@@ -601,5 +600,61 @@ RKGlobalAxesUniforms::RKGlobalAxesUniforms(std::shared_ptr<RKRenderDataSource> p
                        project->axes()->textScale().y,
                        project->axes()->textScale().z,
                        1.0);
+  }
+}
+
+RKBlockingPocketUniforms::RKBlockingPocketUniforms(std::shared_ptr<RKRenderObject> structure)
+{
+  if (RKRenderBlockingPocketsSource* source = dynamic_cast<RKRenderBlockingPocketsSource*>(structure.get()))
+  {
+    this->opacity = float(source->blockingPocketOpacity());
+    this->selectionStripesDensity = float(source->blockingPocketSelectionStripesDensity());
+    this->selectionStripesFrequency = float(source->blockingPocketSelectionStripesFrequency());
+    this->selectionWorleyNoise3DFrequency = float(source->blockingPocketSelectionWorleyNoise3DFrequency());
+    this->selectionWorleyNoise3DJitter = float(source->blockingPocketSelectionWorleyNoise3DJitter());
+    this->selectionIntensity = float(source->blockingPocketSelectionIntensity());
+    this->selectionScaling = float(std::max(1.001, source->blockingPocketSelectionScaling()));
+
+    this->hue = float(source->blockingPocketHue());
+    this->saturation = float(source->blockingPocketSaturation());
+    this->value = float(source->blockingPocketValue());
+
+    this->frontSideHDR = source->blockingPocketFrontSideHDR() ? 1 : 0;
+    this->frontSideHDRExposure = float(source->blockingPocketFrontSideHDRExposure());
+    this->ambientFrontSide = float(source->blockingPocketFrontSideAmbientIntensity()) * float4(source->blockingPocketFrontSideAmbientColor().redF(),
+                                                                                               source->blockingPocketFrontSideAmbientColor().greenF(),
+                                                                                               source->blockingPocketFrontSideAmbientColor().blueF(),
+                                                                                               source->blockingPocketOpacity());
+    this->diffuseFrontSide = float(source->blockingPocketFrontSideDiffuseIntensity()) * float4(source->blockingPocketFrontSideDiffuseColor().redF(),
+                                                                                               source->blockingPocketFrontSideDiffuseColor().greenF(),
+                                                                                               source->blockingPocketFrontSideDiffuseColor().blueF(),
+                                                                                               source->blockingPocketOpacity());
+    this->specularFrontSide = float(source->blockingPocketFrontSideSpecularIntensity()) * float4(source->blockingPocketFrontSideSpecularColor().redF(),
+                                                                                                 source->blockingPocketFrontSideSpecularColor().greenF(),
+                                                                                                 source->blockingPocketFrontSideSpecularColor().blueF(),
+                                                                                                 source->blockingPocketOpacity());
+    this->ambientFrontSide.w = float(source->blockingPocketOpacity());
+    this->diffuseFrontSide.w = float(source->blockingPocketOpacity());
+    this->specularFrontSide.w = float(source->blockingPocketOpacity());
+    this->shininessFrontSide = float(source->blockingPocketFrontSideShininess());
+
+    this->backSideHDR = source->blockingPocketBackSideHDR() ? 1 : 0;
+    this->backSideHDRExposure = float(source->blockingPocketBackSideHDRExposure());
+    this->ambientBackSide = float(source->blockingPocketBackSideAmbientIntensity()) * float4(source->blockingPocketBackSideAmbientColor().redF(),
+                                                                                             source->blockingPocketBackSideAmbientColor().greenF(),
+                                                                                             source->blockingPocketBackSideAmbientColor().blueF(),
+                                                                                             source->blockingPocketOpacity());
+    this->diffuseBackSide = float(source->blockingPocketBackSideDiffuseIntensity()) * float4(source->blockingPocketBackSideDiffuseColor().redF(),
+                                                                                             source->blockingPocketBackSideDiffuseColor().greenF(),
+                                                                                             source->blockingPocketBackSideDiffuseColor().blueF(),
+                                                                                             source->blockingPocketOpacity());
+    this->specularBackSide = float(source->blockingPocketBackSideSpecularIntensity()) * float4(source->blockingPocketBackSideSpecularColor().redF(),
+                                                                                               source->blockingPocketBackSideSpecularColor().greenF(),
+                                                                                               source->blockingPocketBackSideSpecularColor().blueF(),
+                                                                                               source->blockingPocketOpacity());
+    this->ambientBackSide.w = float(source->blockingPocketOpacity());
+    this->diffuseBackSide.w = float(source->blockingPocketOpacity());
+    this->specularBackSide.w = float(source->blockingPocketOpacity());
+    this->shininessBackSide = float(source->blockingPocketBackSideShininess());
   }
 }

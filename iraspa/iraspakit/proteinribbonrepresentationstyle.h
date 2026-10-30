@@ -14,6 +14,7 @@ enum class ProteinRibbonRepresentationStyle
 {
   defaultStyle,
   fancy,
+  illustrative,
   custom
 };
 
@@ -23,6 +24,7 @@ inline QString proteinRibbonRepresentationStyleDisplayName(ProteinRibbonRepresen
   {
   case ProteinRibbonRepresentationStyle::defaultStyle: return QString("Default");
   case ProteinRibbonRepresentationStyle::fancy: return QString("Fancy");
+  case ProteinRibbonRepresentationStyle::illustrative: return QString("Illustrative");
   case ProteinRibbonRepresentationStyle::custom: return QString("Custom");
   }
   return QString();
@@ -31,6 +33,7 @@ inline QString proteinRibbonRepresentationStyleDisplayName(ProteinRibbonRepresen
 inline ProteinRibbonRepresentationStyle proteinRibbonRepresentationStyleFromRawValue(const QString &value)
 {
   if (value == QStringLiteral("Fancy")) return ProteinRibbonRepresentationStyle::fancy;
+  if (value == QStringLiteral("Illustrative")) return ProteinRibbonRepresentationStyle::illustrative;
   if (value == QStringLiteral("Custom")) return ProteinRibbonRepresentationStyle::custom;
   return ProteinRibbonRepresentationStyle::defaultStyle;
 }
@@ -42,5 +45,5 @@ inline QString proteinRibbonRepresentationStyleRawValue(ProteinRibbonRepresentat
 
 inline std::vector<ProteinRibbonRepresentationStyle> proteinRibbonRepresentationSelectableCases()
 {
-  return {ProteinRibbonRepresentationStyle::defaultStyle, ProteinRibbonRepresentationStyle::fancy};
+  return {ProteinRibbonRepresentationStyle::defaultStyle, ProteinRibbonRepresentationStyle::fancy, ProteinRibbonRepresentationStyle::illustrative};
 }

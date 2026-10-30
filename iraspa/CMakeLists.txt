@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 # Must be set before project() so that the compiler checks use the same target.
 if(APPLE AND NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS version")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0" CACHE STRING "Minimum macOS version")
 endif()
 
 # bump_version.py rewrites the literal below. It is deliberately not a cache
@@ -10,7 +10,7 @@ endif()
 # -DIRASPA_VERSION= still wins, which is how the release workflow stamps the
 # packages with the tag it is releasing.
 if(NOT DEFINED IRASPA_VERSION)
-  set(IRASPA_VERSION "2.3.7")
+  set(IRASPA_VERSION "2.3.14")
 endif()
 
 project(iRASPA

@@ -23,6 +23,7 @@
 
 SKAtomCopy::SKAtomCopy(const SKAtomCopy &atomCopy)
 {
+  this->_parent = atomCopy._parent;
   this->_position = atomCopy._position;
   this->_type = atomCopy._type;
   this->_tag = atomCopy._tag;

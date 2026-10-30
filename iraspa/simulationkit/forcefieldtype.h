@@ -32,27 +32,36 @@ public:
   ForceFieldType(const ForceFieldType& forceFieldType);
   ForceFieldType& operator=(const ForceFieldType& rhs) = default;
   ForceFieldType(QString forceFieldStringIdentifier, qint64 atomicNumber, double2 potentialParameters, double mass, double userDefinedRadius, bool editable);
+  ForceFieldType(QString forceFieldStringIdentifier, qint64 atomicNumber, qint64 sortIndex, double2 potentialParameters, double mass, double userDefinedRadius, bool editable, double charge = 0.0);
   QString forceFieldStringIdentifier() const {return _forceFieldStringIdentifier;}
   void setForceFieldStringIdentifier(QString forceFieldStringIdentifier) {_forceFieldStringIdentifier = forceFieldStringIdentifier;}
-  double2 potentialParameters() {return _potentialParameters;}
-  qint64 atomicNumber() {return _atomicNumber;}
+  double2 potentialParameters() const {return _potentialParameters;}
+  qint64 atomicNumber() const {return _atomicNumber;}
   void setAtomicNumber(int atomicNumber) {_atomicNumber = atomicNumber;}
-  double userDefinedRadius() {return _userDefinedRadius;}
-  double mass() {return _mass;}
+  qint64 sortIndex() const {return _sortIndex;}
+  void setSortIndex(qint64 sortIndex) {_sortIndex = sortIndex;}
+  double userDefinedRadius() const {return _userDefinedRadius;}
+  double mass() const {return _mass;}
+  double charge() const {return _charge;}
+  void setCharge(double charge) {_charge = charge;}
   void setEpsilonPotentialParameter(double epsilon)  {_potentialParameters = double2(epsilon,_potentialParameters.y);}
   void setSigmaPotentialParameter(double sigma)  {_potentialParameters = double2(_potentialParameters.x, sigma);}
   void setMass(double mass) {_mass = mass;}
   void setUserDefinedRadius(double radius) {_userDefinedRadius = radius;}
-  bool editable() {return _editable;}
+  bool editable() const {return _editable;}
   void setEditable(bool value) {_editable = value;}
+  bool isVisible() const {return _isVisible;}
+  void setIsVisible(bool value) {_isVisible = value;}
 private:
-  qint64 _versionNumber{2};
+  qint64 _versionNumber{4};
   bool _editable = false;
   qint64 _atomicNumber{6};
+  qint64 _sortIndex{6};
   QString _forceFieldStringIdentifier;
   double2 _potentialParameters = double2(0.0,0.0);
   double _mass = 0.0;
   double _userDefinedRadius = 0.0;
+  double _charge = 0.0;
   bool _isVisible = true;
 
   friend QDataStream &operator<<(QDataStream &, const ForceFieldType &);

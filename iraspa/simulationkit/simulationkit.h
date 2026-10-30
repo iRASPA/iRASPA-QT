@@ -29,5 +29,11 @@
 #include <skcomputeenergygrid.h>
 #include <skcomputeisosurface.h>
 #include <skcomputevoidfraction.h>
+#include <skcomputewellsurface.h>
+#include <skspheresweep.h>
+#include <skgeometricsurface.h>
+#include <skvoronoi.h>
+#include <skapolloniusdiagram.h>
+#include <skapolloniusporeanalysis.h>
 
 

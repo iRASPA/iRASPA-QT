@@ -36,6 +36,8 @@
 #include "skatomtreenode.h"
 #include "skatomtreecontroller.h"
 #include "skstructure.h"
+#include "skseitzintegermatrix.h"
+#include "skcifsymmetryoperationparser.h"
 
 class SKCIFParser: public SKParser
 {
@@ -69,6 +71,15 @@ private:
     double3 carbonyl = double3(0.0, 0.0, 0.0);
   };
 
+  enum class SpaceGroupStatus: int
+  {
+    notFound = 0,
+    HallSymbolFound = 1,
+    HMSymbolFound = 2,
+    NumberFound = 3,
+    CIFSymmetryOperationsFound = 4
+  };
+
   Scanner _scanner;
   bool _proteinOnlyAsymmetricUnitCell;
   bool _asMolecule;
@@ -76,7 +87,25 @@ private:
   // shares the scanner buffer, needed to scan quoted values and multi-line text-fields by character
   QString _content;
   QString::const_iterator _previousScanLocation;
+  SpaceGroupStatus _spaceGroupFound = SpaceGroupStatus::notFound;
   std::optional<int> _spaceGroupHallNumber;
+  int _spaceGroupITNumber = 0;
+  std::vector<QString> _cifSymmetryOperationStrings{};
+  std::vector<SKSeitzIntegerMatrix> _cifSymmetryOperations{};
+  std::optional<QString> _creationDate;
+  std::optional<QString> _creationMethod;
+  std::optional<QString> _chemicalFormulaStructural;
+  std::optional<QString> _chemicalFormulaSum;
+  std::optional<QString> _chemicalNameCommon;
+  std::optional<QString> _chemicalNameSystematic;
+  std::optional<QString> _chemicalNameStructureType;
+  std::optional<int> _cellFormulaUnitsZ;
+  std::optional<int> _numberOfChannels;
+  std::optional<int> _numberOfPockets;
+  std::optional<int> _dimensionality;
+  std::optional<double> _Di;
+  std::optional<double> _Df;
+  std::optional<double> _Dif;
   int _numberOfAtoms = 0;
   int _numberOfAminoAcidAtoms = 0;
   int _numberOfNucleicAcidAtoms = 0;
@@ -104,6 +133,8 @@ private:
   void parseChemical(QString& string);
   void parseCell(QString& string);
   void parseSymmetry(QString& string);
+  void parseSymmetryEquivPos(const QString &xyz);
+  void resolveSpaceGroupFromCIFSymmetryOperations();
   void parseName(QString& string);
   void parseModResidue(QString& string);
   void parseLoop(QString& string);

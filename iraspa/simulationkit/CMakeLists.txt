@@ -6,6 +6,12 @@ target_sources(iraspa PRIVATE
   forcefieldsets.cpp
   forcefieldtype.cpp
   marchingcubes.cpp
+  skapolloniusdiagram.cpp
+  skapolloniusporeanalysis.cpp
+  skcomputewellsurface.cpp
+  skgeometricsurface.cpp
+  skspheresweep.cpp
+  skvoronoi.cpp
 )
 
 # The compute backends provide the same classes, so exactly one of them is

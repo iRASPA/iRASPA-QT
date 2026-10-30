@@ -36,17 +36,22 @@ struct SKSeitzIntegerMatrix
 
   SKSeitzIntegerMatrix();
   SKSeitzIntegerMatrix(SKRotationMatrix rotation, int3 translation);
+  SKSeitzIntegerMatrix(SKRotationMatrix rotation, double3 translation);
   SKSeitzIntegerMatrix(char xvalue, char yvalue, char zvalue);
   static std::vector<SKSeitzIntegerMatrix> SeitzMatrices(std::string encoding);
+  static std::vector<SKSeitzIntegerMatrix> SeitzMatricesFromGeneratorEncoding(std::string encoding);
 
-  int3 normalizedTranslation() const {return int3(translation.x%24, translation.y%24, translation.z%24);}
+  int3 normalizedTranslation() const
+  {
+    return int3(((translation.x % 24) + 24) % 24,
+                ((translation.y % 24) + 24) % 24,
+                ((translation.z % 24) + 24) % 24);
+  }
 
   bool operator==(SKSeitzIntegerMatrix const& rhs) const
   {
       return (this->rotation == rhs.rotation) &&
-             ((this->translation.x%24) == (rhs.translation.x%24)) &&
-             ((this->translation.y%24) == (rhs.translation.y%24)) &&
-             ((this->translation.z%24) == (rhs.translation.z%24));
+             (this->normalizedTranslation() == rhs.normalizedTranslation());
   }
 
   static std::vector<SKOneThirdSeitzMatrix> SeitzData;
@@ -74,7 +79,7 @@ namespace std
     {
       std::size_t h=0;
       hash_combine(h, k.rotation);
-      hash_combine(h, k.translation);
+      hash_combine(h, k.normalizedTranslation());
       return h;
     }
   };

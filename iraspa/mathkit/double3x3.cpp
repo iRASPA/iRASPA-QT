@@ -70,7 +70,7 @@ double3x3::double3x3(int3x3 m)
   m12=m.m12; m22=m.m22; m32=m.m32;
   m13=m.m13; m23=m.m23; m33=m.m33;
 }
-double double3x3::determinant(void)
+double double3x3::determinant(void) const
 {
   double determinant =
    + m11 * (m22 * m33 - m23 * m32)
@@ -93,12 +93,12 @@ double3x3 double3x3::identity()
 }
 
 
-double double3x3::trace(void)
+double double3x3::trace(void) const
 {
   return m11+m22+m33;
 }
 
-double3x3 const double3x3::inverse()
+double3x3 const double3x3::inverse() const
 {
    double determinant =
    + m11 * (m22 * m33 - m23 * m32)
@@ -369,13 +369,13 @@ void double3x3::EigenSystemSymmetric(double3 &eigenvalues, double3x3 &eigenvecto
 
   eigenvalues = double3(e[2],e[1],e[0]);
   double3 v1,v2,v3;
-  v1 = double3(matrix[0],matrix[1],matrix[2]);
-  v2 = double3(matrix[3],matrix[4],matrix[5]);
-  v3 = double3(matrix[6],matrix[7],matrix[8]);
+  v1 = double3::normalize(double3(matrix[6],matrix[7],matrix[8]));
+  v2 = double3::normalize(double3(matrix[3],matrix[4],matrix[5]));
+  v3 = double3::normalize(double3(matrix[0],matrix[1],matrix[2]));
   eigenvectors = double3x3(v1,v2,v3);
   if(eigenvectors.determinant()<0)
   {
-    eigenvectors = double3x3(v1,v3,v2);
+    eigenvectors = double3x3(v1,v2,-v3);
   }
 }
 
@@ -428,7 +428,7 @@ void double3x3::EigenSystemSymmetric(double3 &eigenvalues, double3x3 &eigenvecto
   eigenvectors = double3x3(v1,v2,v3);
   if(eigenvectors.determinant()<0)
   {
-    eigenvectors = double3x3(v1,v3,v2);
+    eigenvectors = double3x3(v1,v2,-v3);
   }
 }
 #endif

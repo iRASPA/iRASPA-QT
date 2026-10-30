@@ -21,22 +21,32 @@
 
 #include "forcefieldset.h"
 #include <symmetrykit.h>
+#include <cmath>
+#include <algorithm>
 
+const QString ForceFieldSet::defaultDisplayName = QString("Default");
+const QString ForceFieldSet::aluminosilicateDisplayName = QString("Aluminosilicate Zeo-TraPPE");
+const QString ForceFieldSet::zeoliteAtlasDisplayName = QString("Aluminosilicate Zeo-Atlas");
+const QString ForceFieldSet::aluminosilicateZeoPlusPlusDisplayName = QString("Aluminosilicate Zeo++");
+const QString ForceFieldSet::bridgingAluminumOxygenIdentifier = QString("Oa");
+const std::set<int> ForceFieldSet::trivalentTAtomAtomicNumbers = {5, 13, 31};
 
 ForceFieldSet::ForceFieldSet()
 {
-  this->_displayName = "Default";
+  this->_displayName = defaultDisplayName;
   this->_editable = false;
 
-  this->_atomTypeList.clear();   // = forcefieldset._atomTypes;
-  for(const auto &forceFieldType : _defaultForceField)
+  this->_atomTypeList.clear();
+  for(size_t i = 0; i < _defaultForceField.size(); ++i)
   {
+    ForceFieldType forceFieldType = _defaultForceField[i];
+    forceFieldType.setSortIndex(static_cast<qint64>(i));
     _atomTypeList.push_back(forceFieldType);
   }
 }
 
 
-ForceFieldSet::ForceFieldSet(QString name, ForceFieldSet& forcefieldset, bool editable)
+ForceFieldSet::ForceFieldSet(QString name, const ForceFieldSet& forcefieldset, bool editable)
 {
   this->_displayName = name;
   this->_editable = editable;
@@ -44,8 +54,6 @@ ForceFieldSet::ForceFieldSet(QString name, ForceFieldSet& forcefieldset, bool ed
   this->_atomTypeList.clear();
   for(const ForceFieldType &forceFieldType : forcefieldset._atomTypeList)
   {
-   // std::shared_ptr<ForceFieldType> newForceFieldType = std::make_shared<ForceFieldType>(forceFieldType->forceFieldStringIdentifier(), forceFieldType->atomicNumber(), forceFieldType->potentialParameters(),
-   //                                                                                      forceFieldType->mass(), forceFieldType->userDefinedRadius(), forceFieldType->editable());
     _atomTypeList.push_back(forceFieldType);
   }
 }
@@ -58,6 +66,19 @@ void ForceFieldSet::duplicate(size_t index)
 ForceFieldType* ForceFieldSet::operator[] (const QString name)
 {
   for(ForceFieldType& atomType: _atomTypeList)
+  {
+    if(QString::compare(atomType.forceFieldStringIdentifier(), name, Qt::CaseInsensitive) == 0)
+    {
+      return &atomType;
+    }
+  }
+
+  return nullptr;
+}
+
+const ForceFieldType* ForceFieldSet::operator[] (const QString name) const
+{
+  for(const ForceFieldType& atomType: _atomTypeList)
   {
     if(QString::compare(atomType.forceFieldStringIdentifier(), name, Qt::CaseInsensitive) == 0)
     {
@@ -82,6 +103,239 @@ QString ForceFieldSet::uniqueName(int atomicNumber)
     }
   }
   return "new";
+}
+
+bool ForceFieldSet::isDefaultForceFieldType(const QString &uniqueForceFieldName)
+{
+  if(QString::compare(uniqueForceFieldName, bridgingAluminumOxygenIdentifier, Qt::CaseInsensitive) == 0)
+  {
+    return true;
+  }
+  return std::any_of(_defaultForceField.begin(), _defaultForceField.end(),
+                     [&uniqueForceFieldName](const ForceFieldType &x) {
+                       return QString::compare(x.forceFieldStringIdentifier(), uniqueForceFieldName, Qt::CaseInsensitive) == 0;
+                     });
+}
+
+std::optional<ForceFieldType> ForceFieldSet::defaultType(const QString &symbol)
+{
+  for(size_t i = 0; i < _defaultForceField.size(); ++i)
+  {
+    if(QString::compare(_defaultForceField[i].forceFieldStringIdentifier(), symbol, Qt::CaseInsensitive) == 0)
+    {
+      ForceFieldType ft = _defaultForceField[i];
+      ft.setSortIndex(static_cast<qint64>(i));
+      return ft;
+    }
+  }
+  return std::nullopt;
+}
+
+bool ForceFieldSet::isAluminosilicateFamily(const QString &displayName)
+{
+  return QString::compare(displayName, aluminosilicateDisplayName, Qt::CaseInsensitive) == 0 ||
+         QString::compare(displayName, zeoliteAtlasDisplayName, Qt::CaseInsensitive) == 0 ||
+         QString::compare(displayName, aluminosilicateZeoPlusPlusDisplayName, Qt::CaseInsensitive) == 0;
+}
+
+ForceFieldSet ForceFieldSet::predefined(const QString &name)
+{
+  if(QString::compare(name, aluminosilicateDisplayName, Qt::CaseInsensitive) == 0)
+  {
+    return aluminosilicate();
+  }
+  if(QString::compare(name, zeoliteAtlasDisplayName, Qt::CaseInsensitive) == 0)
+  {
+    return zeoliteAtlas();
+  }
+  if(QString::compare(name, aluminosilicateZeoPlusPlusDisplayName, Qt::CaseInsensitive) == 0)
+  {
+    return aluminosilicateZeoPlusPlus();
+  }
+  return ForceFieldSet();
+}
+
+ForceFieldSet ForceFieldSet::aluminosilicate()
+{
+  ForceFieldSet set;
+  set._displayName = aluminosilicateDisplayName;
+  set._editable = false;
+  set._atomTypeList = makeAluminosilicateForceField();
+  return set;
+}
+
+ForceFieldSet ForceFieldSet::zeoliteAtlas()
+{
+  ForceFieldSet set;
+  set._displayName = zeoliteAtlasDisplayName;
+  set._editable = false;
+  set._atomTypeList = makeAluminosilicateDerivedForceField([](const QString &identifier, int) {
+    bool isOxygen = (identifier == QString("O") || identifier == bridgingAluminumOxygenIdentifier);
+    return double2(0.0, isOxygen ? zeoliteAtlasOxygenSigma : 0.0);
+  });
+  return set;
+}
+
+ForceFieldSet ForceFieldSet::aluminosilicateZeoPlusPlus()
+{
+  ForceFieldSet set;
+  set._displayName = aluminosilicateZeoPlusPlusDisplayName;
+  set._editable = false;
+  set._atomTypeList = makeAluminosilicateDerivedForceField([](const QString &identifier, int atomicNumber) {
+    QString symbol = (identifier == bridgingAluminumOxygenIdentifier) ? QString("O") : identifier;
+    double radius = zeoPlusPlusRadius(symbol, atomicNumber);
+    return double2(0.0, 2.0 * radius);
+  });
+  return set;
+}
+
+bool ForceFieldSet::isBridgingAluminumOxygen(double3 oxygenFractional, const std::vector<double3> &tAtomFractionals, double3x3 unitCell)
+{
+  const double cutoffSquared = oxygenAluminumBondCutoff * oxygenAluminumBondCutoff;
+  for(const double3 &tPosition : tAtomFractionals)
+  {
+    double3 ds = oxygenFractional - tPosition;
+    ds.x -= std::round(ds.x);
+    ds.y -= std::round(ds.y);
+    ds.z -= std::round(ds.z);
+    double3 dr = unitCell * ds;
+    if(double3::dot(dr, dr) < cutoffSquared)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::optional<ForceFieldType> ForceFieldSet::resolvedType(const QString &forceFieldName, int atomicNumber) const
+{
+  if(const ForceFieldType *ft = (*this)[forceFieldName])
+  {
+    return *ft;
+  }
+  if(atomicNumber >= 0 && static_cast<size_t>(atomicNumber) < PredefinedElements::predefinedElements.size())
+  {
+    const QString &symbol = PredefinedElements::predefinedElements[atomicNumber]._chemicalSymbol;
+    if(const ForceFieldType *ft = (*this)[symbol])
+    {
+      return *ft;
+    }
+    return defaultType(symbol);
+  }
+  return std::nullopt;
+}
+
+ForceFieldType ForceFieldSet::cation(const QString &symbol, double charge)
+{
+  ForceFieldType base = defaultType(symbol).value_or(ForceFieldType());
+  return ForceFieldType(symbol, base.atomicNumber(), base.sortIndex(), base.potentialParameters(), base.mass(), base.userDefinedRadius(), false, charge);
+}
+
+ForceFieldType ForceFieldSet::tAtom(const QString &symbol, int atomicNumber, double charge, double radius, double mass)
+{
+  return ForceFieldType(symbol, atomicNumber, atomicNumber, double2(22.0, 2.30), mass, radius, false, charge);
+}
+
+std::vector<ForceFieldType> ForceFieldSet::makeAluminosilicateDerivedForceField(const std::function<double2(const QString &, int)> &parameters)
+{
+  std::vector<ForceFieldType> base = makeAluminosilicateForceField();
+  std::vector<ForceFieldType> result;
+  result.reserve(base.size());
+  for(const ForceFieldType &type : base)
+  {
+    result.emplace_back(type.forceFieldStringIdentifier(),
+                        type.atomicNumber(),
+                        type.sortIndex(),
+                        parameters(type.forceFieldStringIdentifier(), static_cast<int>(type.atomicNumber())),
+                        type.mass(),
+                        type.userDefinedRadius(),
+                        false,
+                        type.charge());
+  }
+  return result;
+}
+
+double ForceFieldSet::zeoPlusPlusRadius(const QString &symbol, int atomicNumber)
+{
+  static const std::map<QString, double> zeoPlusPlusRadii = {
+    {QString("H"), 1.09}, {QString("He"), 1.40}, {QString("Li"), 1.82}, {QString("Be"), 2.00},
+    {QString("B"), 2.00}, {QString("C"), 1.70}, {QString("N"), 1.55}, {QString("O"), 1.52},
+    {QString("F"), 1.47}, {QString("Ne"), 1.54}, {QString("Na"), 2.27}, {QString("Mg"), 1.73},
+    {QString("Al"), 2.00}, {QString("Si"), 2.10}, {QString("P"), 1.80}, {QString("S"), 1.80},
+    {QString("Cl"), 1.75}, {QString("Ar"), 1.88}, {QString("K"), 2.75}, {QString("Ca"), 2.00},
+    {QString("Sc"), 2.00}, {QString("Ti"), 2.00}, {QString("V"), 2.00}, {QString("Cr"), 2.00},
+    {QString("Mn"), 2.00}, {QString("Fe"), 2.00}, {QString("Co"), 2.00}, {QString("Ni"), 1.63},
+    {QString("Cu"), 1.40}, {QString("Zn"), 1.39}, {QString("Ga"), 1.87}, {QString("Ge"), 2.00},
+    {QString("As"), 1.85}, {QString("Se"), 1.90}, {QString("Br"), 1.85}, {QString("Kr"), 2.02},
+    {QString("Rb"), 2.00}, {QString("Sr"), 2.00}, {QString("Y"), 2.00}, {QString("Zr"), 2.00},
+    {QString("Nb"), 2.00}, {QString("Mo"), 2.00}, {QString("Tc"), 2.00}, {QString("Ru"), 2.00},
+    {QString("Rh"), 2.00}, {QString("Pd"), 1.63}, {QString("Ag"), 1.72}, {QString("Cd"), 1.58},
+    {QString("In"), 1.93}, {QString("Sn"), 2.17}, {QString("Sb"), 2.00}, {QString("Te"), 2.06},
+    {QString("I"), 1.98}, {QString("Xe"), 2.16}, {QString("Cs"), 2.00}, {QString("Ba"), 2.00},
+    {QString("La"), 2.00}, {QString("Ce"), 2.00}, {QString("Pr"), 2.00}, {QString("Nd"), 2.00},
+    {QString("Pm"), 2.00}, {QString("Sm"), 2.00}, {QString("Eu"), 2.00}, {QString("Gd"), 2.00},
+    {QString("Tb"), 2.00}, {QString("Dy"), 2.00}, {QString("Ho"), 2.00}, {QString("Er"), 2.00},
+    {QString("Tm"), 2.00}, {QString("Yb"), 2.00}, {QString("Lu"), 2.00}, {QString("Hf"), 2.00},
+    {QString("Ta"), 2.00}, {QString("W"), 2.00}, {QString("Re"), 2.00}, {QString("Os"), 2.00},
+    {QString("Ir"), 2.00}, {QString("Pt"), 1.72}, {QString("Au"), 1.66}, {QString("Hg"), 1.55},
+    {QString("Tl"), 1.96}, {QString("Pb"), 2.02}, {QString("Bi"), 2.00}, {QString("Po"), 2.00},
+    {QString("At"), 2.00}, {QString("Rn"), 2.00}, {QString("Fr"), 2.00}, {QString("Ra"), 2.00},
+    {QString("Ac"), 2.00}, {QString("Th"), 2.00}, {QString("Pa"), 2.00}, {QString("U"), 1.86},
+    {QString("Np"), 2.00}, {QString("Pu"), 2.00}, {QString("Am"), 2.00}, {QString("Cm"), 2.00},
+    {QString("Bk"), 2.00}, {QString("Cf"), 2.00}, {QString("Es"), 2.00}, {QString("Fm"), 2.00},
+    {QString("Md"), 2.00}, {QString("No"), 2.00}, {QString("Lr"), 2.00}, {QString("Rf"), 2.00},
+    {QString("Db"), 2.00}, {QString("Sg"), 2.00}, {QString("Bh"), 2.00}, {QString("Hs"), 2.00},
+    {QString("Mt"), 2.00}, {QString("Ds"), 2.00}
+  };
+  auto it = zeoPlusPlusRadii.find(symbol);
+  if(it != zeoPlusPlusRadii.end())
+  {
+    return it->second;
+  }
+  if(atomicNumber >= 0 && static_cast<size_t>(atomicNumber) < PredefinedElements::predefinedElements.size())
+  {
+    const QString &element = PredefinedElements::predefinedElements[atomicNumber]._chemicalSymbol;
+    auto it2 = zeoPlusPlusRadii.find(element);
+    if(it2 != zeoPlusPlusRadii.end())
+    {
+      return it2->second;
+    }
+  }
+  return 2.0;
+}
+
+std::vector<ForceFieldType> ForceFieldSet::makeAluminosilicateForceField()
+{
+  return {
+    ForceFieldType(QString("O"),  8, 0, double2(53.0, 3.30), 15.9994, 0.66, false, -1.025),
+    ForceFieldType(QString("Oa"), 8, 1, double2(53.0, 3.30), 15.9994, 0.66, false, -1.2),
+    tAtom(QString("Si"), 14, 2.05, 1.11, 28.0855),
+    tAtom(QString("Al"), 13, 1.75, 1.21, 26.9815386),
+    tAtom(QString("P"),  15, 2.35, 1.07, 30.973762),
+    tAtom(QString("B"),   5, 1.75, 0.84, 10.881),
+    tAtom(QString("Ga"), 31, 1.75, 1.22, 69.723),
+    tAtom(QString("Ge"), 32, 2.05, 1.20, 72.64),
+    cation(QString("Li"), 1.0),
+    cation(QString("Na"), 1.0),
+    cation(QString("K"),  1.0),
+    cation(QString("Rb"), 1.0),
+    cation(QString("Cs"), 1.0),
+    cation(QString("Ag"), 1.0),
+    cation(QString("Mg"), 2.0),
+    cation(QString("Ca"), 2.0),
+    cation(QString("Sr"), 2.0),
+    cation(QString("Ba"), 2.0),
+    cation(QString("Mn"), 2.0),
+    cation(QString("Fe"), 2.0),
+    cation(QString("Co"), 2.0),
+    cation(QString("Ni"), 2.0),
+    cation(QString("Cu"), 2.0),
+    cation(QString("Zn"), 2.0),
+    cation(QString("Cd"), 2.0),
+    cation(QString("Y"),  3.0),
+    cation(QString("La"), 3.0),
+    cation(QString("Ce"), 3.0)
+  };
 }
 
 QDataStream &operator<<(QDataStream& stream, const std::vector<ForceFieldType>& val)
@@ -132,6 +386,17 @@ QDataStream &operator>>(QDataStream &stream, ForceFieldSet &forcefieldType)
   stream >> forcefieldType._editable;
   stream >> forcefieldType._atomTypeList;
 
+  bool allEqualAtomicNumber = !forcefieldType._atomTypeList.empty() &&
+    std::all_of(forcefieldType._atomTypeList.begin(), forcefieldType._atomTypeList.end(),
+                [](const ForceFieldType &t) { return t.sortIndex() == t.atomicNumber(); });
+  if(allEqualAtomicNumber)
+  {
+    for(size_t i = 0; i < forcefieldType._atomTypeList.size(); ++i)
+    {
+      forcefieldType._atomTypeList[i].setSortIndex(static_cast<qint64>(i));
+    }
+  }
+
   return stream;
 }
 
@@ -145,13 +410,13 @@ std::vector<ForceFieldType> ForceFieldSet::_defaultForceField  =
   {ForceFieldType(QString("B")   ,  5,  double2(47.8058,3.58141),  10.881,  0.84, false)}, // DREIDING
   {ForceFieldType(QString("C")   ,  6,  double2(47.8562, 3.47299),  12.0107,  0.76, false)}, // DREIDING
   {ForceFieldType(QString("N")   ,  7,  double2(38.9492,3.26256),  14.0067,  0.71, false)}, // DREIDING
-  {ForceFieldType(QString("O")   ,  8,  double2(53.0, 3.30),  15.9994,  0.66, false)}, // TraPPE-ZEO
+  {ForceFieldType(QString("O")   ,  8,  double2(48.1581, 3.03315),  15.9994,  0.66, false)}, // DREIDING
   {ForceFieldType(QString("F")   ,  9,  double2(36.4834,3.0932),  18.9984032,  0.57, false)}, // DREIDING
   {ForceFieldType(QString("Ne")  ,  10, double2(21.1350972,2.889184543),  20.1797,  0.58, false)}, // UFF
   {ForceFieldType(QString("Na")  ,  11, double2(15.096498,2.657550876),  22.98976928,  1.66, false)}, // UFF
   {ForceFieldType(QString("Mg")  ,  12, double2(55.8570426,2.691405028),  24.305,  1.41, false)}, // UFF
-  {ForceFieldType(QString("Al")  ,  13, double2(22.6183,2.30),  26.9815386,  1.21, false)}, // chosen same as Si from TraPPE-ZEO but with epsilon ratio from DREIDING (4.39/4.27)*22.0 = 22.6183
-  {ForceFieldType(QString("Si")  ,  14, double2(22.0,2.30),  28.0855,  1.11, false)}, // TraPPE-ZEO
+  {ForceFieldType(QString("Al")  ,  13, double2(155.998, 3.91105),  26.9815386,  1.21, false)}, // DREIDING
+  {ForceFieldType(QString("Si")  ,  14, double2(155.998, 3.80414),  28.0855,  1.11, false)}, // DREIDING
   {ForceFieldType(QString("P")   ,  15, double2(161.03, 3.69723),  30.973762,  1.07, false)}, // DREIDING
   {ForceFieldType(QString("S")   ,  16, double2(173.107,3.59032),  32.065,  1.05, false)}, // DREIDING
   {ForceFieldType(QString("Cl")  ,  17, double2(142.562, 3.51932),  35.453,  1.02, false)}, // DREIDING

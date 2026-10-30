@@ -85,7 +85,7 @@ protected:
   double3 ribbonContentShift() const override { return _cell->contentShift(); }
 
 private:
-  qint64 _versionNumber{4};
+  qint64 _versionNumber{3};
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<DNA> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<DNA> &);
 };

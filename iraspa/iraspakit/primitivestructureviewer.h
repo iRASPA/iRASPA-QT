@@ -38,6 +38,8 @@ public:
   virtual double primitiveOpacity() const = 0;
   virtual int primitiveNumberOfSides() const = 0;
   virtual bool primitiveIsCapped() const = 0;
+  virtual bool primitiveIsFractional() const = 0;
+  virtual double primitiveThickness() const = 0;
 
   virtual RKSelectionStyle primitiveSelectionStyle() const = 0;
   virtual double primitiveSelectionScaling() const = 0;

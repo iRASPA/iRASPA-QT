@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <limits>
 #include <stdexcept>
 
 #include <QDebug>
@@ -145,23 +146,86 @@ SKComputeEnergyGrid::~SKComputeEnergyGrid()
   }
 }
 
+std::vector<bool> SKComputeEnergyGrid::blockedGridPoints(int3 size, double3x3 unitCell, const std::vector<double4> &blockingPockets) noexcept
+{
+  int nx = size.x;
+  int ny = size.y;
+  int nz = size.z;
+  int total = nx * ny * nz;
+  std::vector<bool> blocked(static_cast<std::size_t>(total), false);
+  if (blockingPockets.empty()) return blocked;
+
+  for (const auto &pocket : blockingPockets)
+  {
+    double radius = pocket.w;
+    if (radius <= 0.0) continue;
+    double rSq = radius * radius;
+    double3 pFrac(pocket.x, pocket.y, pocket.z);
+
+    for (int iz = 0; iz < nz; ++iz)
+    {
+      double sz = double(iz) / double(nz);
+      for (int iy = 0; iy < ny; ++iy)
+      {
+        double sy = double(iy) / double(ny);
+        int baseIdx = (iz * ny + iy) * nx;
+        for (int ix = 0; ix < nx; ++ix)
+        {
+          std::size_t idx = static_cast<std::size_t>(baseIdx + ix);
+          if (blocked[idx]) continue;
+          double sx = double(ix) / double(nx);
+          double3 df(sx - pFrac.x, sy - pFrac.y, sz - pFrac.z);
+          df = df - double3::rint(df);
+          double3 dr = unitCell * df;
+          if (double3::dot(dr, dr) <= rSq)
+          {
+            blocked[idx] = true;
+          }
+        }
+      }
+    }
+  }
+  return blocked;
+}
+
 std::vector<float> SKComputeEnergyGrid::computeEnergyGrid(int3 size, double2 probeParameter,
                                                           std::vector<double3> positions, std::vector<double2> potentialParameters,
-                                                          double3x3 unitCell, int3 numberOfReplicas) noexcept(false)
+                                                          double3x3 unitCell, int3 numberOfReplicas,
+                                                          const std::vector<double4> &blockingPockets) noexcept(false)
 {
+  std::vector<float> grid;
+  bool computedOnGPU = false;
   if (getInstance()._ready)
   {
     try
     {
-      return getInstance().computeEnergyGridGPUImplementation(size, probeParameter, positions, potentialParameters,
+      grid = getInstance().computeEnergyGridGPUImplementation(size, probeParameter, positions, potentialParameters,
                                                               unitCell, numberOfReplicas);
+      computedOnGPU = true;
     }
     catch (const std::exception &error)
     {
       qDebug() << "SKComputeEnergyGrid: GPU path failed, using CPU:" << error.what();
     }
   }
-  return computeEnergyGridCPUImplementation(size, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
+  if (!computedOnGPU)
+  {
+    grid = computeEnergyGridCPUImplementation(size, probeParameter, positions, potentialParameters, unitCell, numberOfReplicas);
+  }
+
+  if (!blockingPockets.empty())
+  {
+    std::vector<bool> blocked = blockedGridPoints(size, unitCell, blockingPockets);
+    std::size_t count = std::min(grid.size(), blocked.size());
+    for (std::size_t i = 0; i < count; ++i)
+    {
+      if (blocked[i])
+      {
+        grid[i] = std::numeric_limits<float>::max();
+      }
+    }
+  }
+  return grid;
 }
 
 std::vector<float> SKComputeEnergyGrid::computeEnergyGridGPUImplementation(int3 size, double2 probeParameter,
@@ -203,8 +267,8 @@ std::vector<float> SKComputeEnergyGrid::computeEnergyGridGPUImplementation(int3 
     {
       for (int i = 0; i < size.x; ++i)
       {
-        const double3 position = correction * double3(double(i) / double(size.x - 1), double(j) / double(size.y - 1),
-                                                      double(k) / double(size.z - 1));
+        const double3 position = correction * double3(double(i) / double(size.x), double(j) / double(size.y),
+                                                      double(k) / double(size.z));
         gridPositions[static_cast<size_t>(index)] = float4(float(position.x), float(position.y), float(position.z), 0.0f);
         ++index;
       }
@@ -349,8 +413,8 @@ std::vector<float> SKComputeEnergyGrid::computeEnergyGridCPUImplementation(int3 
     {
       for (int x = 0; x < size.x; ++x)
       {
-        const double3 gridPosition = correction * double3(double(x) / double(size.x - 1), double(y) / double(size.y - 1),
-                                                          double(z) / double(size.z - 1));
+        const double3 gridPosition = correction * double3(double(x) / double(size.x), double(y) / double(size.y),
+                                                          double(z) / double(size.z));
         double value = 0.0;
         for (size_t i = 0; i < numberOfAtoms; ++i)
         {

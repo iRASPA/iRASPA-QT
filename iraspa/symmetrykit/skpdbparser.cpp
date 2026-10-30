@@ -266,7 +266,7 @@ SKStructure::Kind SKPDBParser::kindOfCurrentPart()
 
 void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
 {
-  if (currentMovie >= _movies.size())
+  while (currentMovie >= _movies.size())
   {
     std::vector<std::shared_ptr<SKStructure>> movie = std::vector<std::shared_ptr<SKStructure>>();
     _movies.push_back(movie);
@@ -274,6 +274,11 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
 
   if (currentFrame >= _movies[currentMovie].size())
   {
+    while (currentFrame > _movies[currentMovie].size())
+    {
+      _movies[currentMovie].push_back(std::make_shared<SKStructure>());
+    }
+
     if(_cell)
     {
       _frame->cell = std::make_shared<SKCell>(*_cell);
@@ -303,6 +308,7 @@ void SKPDBParser::addFrameToStructure(size_t currentMovie, size_t currentFrame)
       break;
     }
 
+    _frame->applyInferredMaterialType();
     _movies[currentMovie].push_back(_frame);
 
     _frame = std::make_shared<SKStructure>();
@@ -467,6 +473,29 @@ void SKPDBParser::parseAndAppendAtomRecord(const QString &line, bool isHetatm)
     if(const std::optional<int> atomicNumber = atomicNumberForSymbol(pdbViewField(line, 76, 2)))
     {
       atom->setElementIdentifier(*atomicNumber);
+    }
+  }
+
+  if(line.size() >= 79)
+  {
+    const QString chargeToken = pdbViewField(line, 78, 2).trimmed();
+    success = false;
+    const double chargeValue = chargeToken.toDouble(&success);
+    if(success)
+    {
+      atom->setCharge(chargeValue);
+    }
+    else if(chargeToken.endsWith(QLatin1Char('+')))
+    {
+      bool magSuccess = false;
+      const double magnitude = chargeToken.left(chargeToken.size() - 1).toDouble(&magSuccess);
+      atom->setCharge(magSuccess ? magnitude : 1.0);
+    }
+    else if(chargeToken.endsWith(QLatin1Char('-')))
+    {
+      bool magSuccess = false;
+      const double magnitude = chargeToken.left(chargeToken.size() - 1).toDouble(&magSuccess);
+      atom->setCharge(-(magSuccess ? magnitude : 1.0));
     }
   }
 

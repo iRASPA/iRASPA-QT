@@ -38,6 +38,8 @@ void OpenGLExternalBondSelectionStripesShader::setRenderStructures(std::vector<s
 
 void OpenGLExternalBondSelectionStripesShader::paintGL(GLuint structureUniformBuffer)
 {
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   glDepthMask(GL_FALSE);
   glUseProgram(_program);
   check_gl_error();
@@ -84,6 +86,7 @@ void OpenGLExternalBondSelectionStripesShader::paintGL(GLuint structureUniformBu
   }
   glEnable(GL_CULL_FACE);
   glUseProgram(0);
+  glDisable(GL_BLEND);
   glDepthMask(GL_TRUE);
 }
 
@@ -268,9 +271,9 @@ void main(void)
   }
 
   vec3 hsv = rgb2hsv(color.xyz);
-  hsv.x = hsv.x * structureUniforms.atomHue;
-  hsv.y = hsv.y * structureUniforms.atomSaturation;
-  hsv.z = hsv.z * structureUniforms.atomValue;
+  hsv.x = hsv.x * structureUniforms.bondHue;
+  hsv.y = hsv.y * structureUniforms.bondSaturation;
+  hsv.z = hsv.z * structureUniforms.bondValue;
   float bloomLevel = frameUniforms.bloomLevel * structureUniforms.bondSelectionIntensity;
   vFragColor = bloomLevel * vec4(hsv2rgb(hsv), 1.0);
 }

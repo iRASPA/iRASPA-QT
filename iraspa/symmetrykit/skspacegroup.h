@@ -60,9 +60,15 @@ public:
      std::vector<std::tuple<double3, int, double>> atoms;
   };
 
-  SKSpaceGroup(int HallNumber);
+  SKSpaceGroup(int HallNumber, std::optional<std::vector<SKSeitzIntegerMatrix>> cifSymmetryOperations = std::nullopt);
   std::vector<double3> listOfSymmetricPositions(double3 pos);
   const SKSpaceGroupSetting &spaceGroupSetting() const {return _spaceGroupSetting;}
+  const std::optional<std::vector<SKSeitzIntegerMatrix>> &cifSymmetryOperations() const {return _cifSymmetryOperations;}
+  void setCifSymmetryOperations(const std::optional<std::vector<SKSeitzIntegerMatrix>> &operations) {_cifSymmetryOperations = operations;}
+
+  static bool symmetryOperationsMatch(const std::vector<SKSeitzIntegerMatrix> &lhs, const std::vector<SKSeitzIntegerMatrix> &rhs);
+  static std::optional<int> identifyHallNumber(const std::vector<SKSeitzIntegerMatrix> &operations, const std::vector<int> &candidateHallNumbers);
+  static std::vector<int> candidateHallNumbers(int spaceGroupITNumber, std::optional<int> declaredHallNumber = std::nullopt, std::optional<QString> declaredHMSymbol = std::nullopt);
 
   static std::vector<QString> latticeTranslationStrings(int HallNumber);
   static QString inversionCenterString(int HallNumber);
@@ -78,6 +84,7 @@ public:
   static std::optional<double3> getOriginShift(int HallNumber, Centring centering, SKRotationalChangeOfBasis changeOfBasis, std::vector<SKSeitzMatrix> seitzMatrices, double symmetryPrecision);
 private:
   SKSpaceGroupSetting _spaceGroupSetting = SKSpaceGroupDataBase::spaceGroupData[1];
+  std::optional<std::vector<SKSeitzIntegerMatrix>> _cifSymmetryOperations = std::nullopt;
   
   static bool matchSpacegroup(QString spaceSearchGroupString, QString storedSpaceGroupString);
 

@@ -150,7 +150,7 @@ std::pair<double, std::optional<double>> measurementBend(const ProjectStructure:
 double dihedralFromPositions(const double3 &a, const double3 &b, const double3 &c, const double3 &d)
 {
   const double3 Dab = a - b;
-  const double3 Dbc = c - b;
+  const double3 Dbc = double3::normalize(c - b);
   const double3 Dcd = d - c;
   const double3 dr = double3::normalize(Dab - double3::dot(Dab, Dbc) * Dbc);
   const double3 ds = double3::normalize(Dcd - double3::dot(Dcd, Dbc) * Dbc);
@@ -177,12 +177,12 @@ std::pair<double, std::optional<double>> measurementDihedral(const ProjectStruct
   }
 
   std::optional<double> periodicAngle;
-  if (a.structure.get() == b.structure.get() && b.structure.get() == c.structure.get() && isPeriodicObject(a.structure))
+  if (a.structure.get() == b.structure.get() && b.structure.get() == c.structure.get() && c.structure.get() == d.structure.get() && isPeriodicObject(a.structure))
   {
     const double3 Dab = a.structure->cell()->applyFullCellBoundaryCondition(*modelA - *modelB);
     const double3 Dbc = a.structure->cell()->applyFullCellBoundaryCondition(*modelC - *modelB);
     const double3 Dcd = a.structure->cell()->applyFullCellBoundaryCondition(*modelD - *modelC);
-    periodicAngle = dihedralFromPositions(Dab + *modelB, *modelB, Dbc + *modelB, Dcd + *modelC);
+    periodicAngle = dihedralFromPositions(Dab + *modelB, *modelB, Dbc + *modelB, Dcd + Dbc + *modelB);
   }
 
   const double sceneAngle = dihedralFromPositions(measurementScenePosition(a, *modelA),

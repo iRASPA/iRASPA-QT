@@ -210,11 +210,7 @@ void main(void)
   scale.z = 1.0;
 
   dr = normalize(dr);
-  if ((dr.z !=0 ) && (-dr.x != dr.y ))
-    v1=normalize(vec3(-dr.y-dr.z,dr.x,dr.x));
-  else
-    v1=normalize(vec3(dr.z,dr.z,-dr.x-dr.y));
-
+  v1 = normalize(abs(dr.x) > abs(dr.z) ? vec3(-dr.y, dr.x, 0.0) : vec3(0.0, -dr.z, dr.y));
   v2=normalize(cross(dr,v1));
 
   mat4 orientationMatrix=mat4(vec4(-v1.x,-v1.y,-v1.z,0),

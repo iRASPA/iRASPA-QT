@@ -56,6 +56,11 @@ RKRenderVolumetricDataSource::~RKRenderVolumetricDataSource()
   // Compulsory virtual destructor definition
 }
 
+RKRenderBlockingPocketsSource::~RKRenderBlockingPocketsSource()
+{
+  // Compulsory virtual destructor definition
+}
+
 RKRenderPrimitiveObjectsSource::~RKRenderPrimitiveObjectsSource()
 {
   // Compulsory virtual destructor definition

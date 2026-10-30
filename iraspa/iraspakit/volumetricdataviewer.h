@@ -24,11 +24,58 @@
 #include <mathkit.h>
 #include "rkrenderkitprotocols.h"
 #include <QByteArray>
+#include <optional>
+#include <cmath>
 
 enum class ProbeMolecule: qint64
 {
-  helium = 0, methane = 1, nitrogen = 2, hydrogen = 3, water = 4, co2 = 5, xenon = 6, krypton = 7, argon = 8, multiple_values = 9
+  helium = 0, methane = 1, nitrogen = 2, hydrogen = 3, water = 4, co2 = 5, xenon = 6, krypton = 7, argon = 8, custom = 9, connolly = 10, multiple_values = 11
 };
+
+inline std::optional<double2> probeNamedParameters(ProbeMolecule probe)
+{
+  switch(probe)
+  {
+    case ProbeMolecule::helium: return double2(10.9, 2.64);
+    case ProbeMolecule::methane: return double2(158.5, 3.72);
+    case ProbeMolecule::nitrogen: return double2(36.0, 3.31);
+    case ProbeMolecule::hydrogen: return double2(36.7, 2.958);
+    case ProbeMolecule::water: return double2(89.633, 3.097);
+    case ProbeMolecule::co2: return double2(236.1, 3.72);
+    case ProbeMolecule::xenon: return double2(226.14, 3.949);
+    case ProbeMolecule::krypton: return double2(162.58, 3.6274);
+    case ProbeMolecule::argon: return double2(119.8, 3.34);
+    case ProbeMolecule::connolly: return double2(0.0, 0.0);
+    case ProbeMolecule::custom:
+    case ProbeMolecule::multiple_values:
+      return std::nullopt;
+  }
+  return std::nullopt;
+}
+
+inline ProbeMolecule matchingProbeMolecule(double2 parameters, bool includeConnolly = true)
+{
+  const ProbeMolecule candidates[] = {
+    ProbeMolecule::helium, ProbeMolecule::methane, ProbeMolecule::nitrogen,
+    ProbeMolecule::hydrogen, ProbeMolecule::water, ProbeMolecule::co2,
+    ProbeMolecule::xenon, ProbeMolecule::krypton, ProbeMolecule::argon
+  };
+  for(ProbeMolecule candidate : candidates)
+  {
+    if(std::optional<double2> p = probeNamedParameters(candidate))
+    {
+      if(std::abs(p->x - parameters.x) < 1e-6 && std::abs(p->y - parameters.y) < 1e-6)
+      {
+        return candidate;
+      }
+    }
+  }
+  if(includeConnolly && std::abs(parameters.x) < 1e-6 && std::abs(parameters.y) < 1e-6)
+  {
+    return ProbeMolecule::connolly;
+  }
+  return ProbeMolecule::custom;
+}
 
 
 class VolumetricDataViewer
@@ -56,6 +103,11 @@ public:
   virtual void setAdsorptionSurfaceIsoValue(double value) = 0;
   virtual ProbeMolecule adsorptionSurfaceProbeMolecule() const = 0;
   virtual void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) = 0;
+  virtual double adsorptionSurfaceProbeEpsilon() const = 0;
+  virtual void setAdsorptionSurfaceProbeEpsilon(double value) = 0;
+  virtual double adsorptionSurfaceProbeSigma() const = 0;
+  virtual void setAdsorptionSurfaceProbeSigma(double value) = 0;
+  virtual double2 adsorptionSurfaceProbeParameters() const = 0;
 
   virtual RKEnergySurfaceType adsorptionSurfaceRenderingMethod() const = 0;
   virtual void setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType type) = 0;

@@ -38,6 +38,8 @@ void OpenGLInternalBondSelectionWorleyNoise3DShader::setRenderStructures(std::ve
 
 void OpenGLInternalBondSelectionWorleyNoise3DShader::paintGL(GLuint structureUniformBuffer)
 {
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   glDepthMask(GL_FALSE);
   glUseProgram(_program);
   check_gl_error();
@@ -84,6 +86,7 @@ void OpenGLInternalBondSelectionWorleyNoise3DShader::paintGL(GLuint structureUni
   }
   glEnable(GL_CULL_FACE);
   glUseProgram(0);
+  glDisable(GL_BLEND);
   glDepthMask(GL_TRUE);
 }
 
@@ -267,7 +270,7 @@ void main(void)
   vec2 F = cellular3D(frequency * vec3(t1.x, 2.0 * t1.y, t1.z), jitter);
   float n = F.y - F.x;
 
-  vec4 color = n * (ambient + diffuse + specular);
+  vec4 color = ambient + diffuse + specular;
   if (structureUniforms.bondHDR)
   {
     vec4 vLdrColor = 1.0 - exp2(-color * structureUniforms.bondHDRExposure);
@@ -276,10 +279,11 @@ void main(void)
   }
 
   vec3 hsv = rgb2hsv(color.xyz);
-  hsv.x = hsv.x * structureUniforms.atomHue;
-  hsv.y = hsv.y * structureUniforms.atomSaturation;
-  hsv.z = hsv.z * structureUniforms.atomValue;
+  hsv.x = hsv.x * structureUniforms.bondHue;
+  hsv.y = hsv.y * structureUniforms.bondSaturation;
+  hsv.z = hsv.z * structureUniforms.bondValue;
   float bloomLevel = frameUniforms.bloomLevel * structureUniforms.bondSelectionIntensity;
-  vFragColor = bloomLevel * vec4(hsv2rgb(hsv), 1.0);
+  float alpha = bloomLevel * n;
+  vFragColor = vec4(hsv2rgb(hsv) * alpha, alpha);
 }
 )foo";

@@ -44,7 +44,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<int8_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float(float(p[i]-std::numeric_limits<int8_t>::lowest())/float(std::numeric_limits<int8_t>::max()));
+        dataGrid[i] = float((float(p[i])-float(std::numeric_limits<int8_t>::lowest()))/float(std::numeric_limits<uint8_t>::max()));
       }
     }
     break;
@@ -62,7 +62,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<int16_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float(float(p[i]-std::numeric_limits<int16_t>::lowest())/float(std::numeric_limits<int16_t>::max()));
+        dataGrid[i] = float((float(p[i])-float(std::numeric_limits<int16_t>::lowest()))/float(std::numeric_limits<uint16_t>::max()));
       }
     }
     break;
@@ -80,7 +80,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<int32_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float(float(p[i]-std::numeric_limits<int32_t>::lowest())/float(std::numeric_limits<int32_t>::max()));
+        dataGrid[i] = float((float(p[i])-float(std::numeric_limits<int32_t>::lowest()))/float(std::numeric_limits<uint32_t>::max()));
       }
     }
     break;
@@ -89,7 +89,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<uint64_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float(float(p[i])/float(std::numeric_limits<uint16_t>::max()));
+        dataGrid[i] = float(float(p[i])/float(std::numeric_limits<uint64_t>::max()));
       }
     }
     break;
@@ -98,7 +98,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
       auto *p = reinterpret_cast<int64_t*>(frame->byteData.data());
       for(int i=0;i<_dimensions.x * _dimensions.y * _dimensions.z; i++)
       {
-        dataGrid[i] = float(float(p[i]-std::numeric_limits<int64_t>::lowest())/float(std::numeric_limits<int64_t>::max()));
+        dataGrid[i] = float((float(p[i])-float(std::numeric_limits<int64_t>::lowest()))/float(std::numeric_limits<uint64_t>::max()));
       }
     }
     break;
@@ -146,7 +146,7 @@ VTKDensityVolume::VTKDensityVolume(std::shared_ptr<SKStructure> frame): GridVolu
   }
 
   _average = sum / (numberOfElements);
-  _variance = sumSquared / (numberOfElements - 1);
+  _variance = (sumSquared - (sum * sum) / double(numberOfElements)) / double(numberOfElements - 1);
 
   _range = std::pair<double,double>(minimumValue, maximumValue);
   _adsorptionSurfaceIsoValue = _average;

@@ -40,6 +40,15 @@ GaussianCubeVolume::GaussianCubeVolume(std::shared_ptr<SKStructure> frame): Stru
 
 GaussianCubeVolume::GaussianCubeVolume(const std::shared_ptr<Object> object): Structure(object)
 {
+  if (std::shared_ptr<VolumetricDataViewer> volumetricDataViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(object))
+  {
+    _dimensions = volumetricDataViewer->dimensions();
+    _spacing = volumetricDataViewer->spacing();
+    _range = volumetricDataViewer->range();
+    _data = volumetricDataViewer->data();
+    _average = volumetricDataViewer->average();
+    _variance = volumetricDataViewer->variance();
+  }
   if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
   {
     if(!atomViewer->isFractional())

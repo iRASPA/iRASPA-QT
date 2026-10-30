@@ -83,6 +83,7 @@ void AppearanceTreeWidgetController::reloadRibbonProperties()
   reloadRibbonDiffuseLight();
   reloadRibbonSpecularLight();
   reloadRibbonShininess();
+  reloadRibbonEdgeCueing();
 }
 
 void AppearanceTreeWidgetController::reloadDrawRibbonsCheckBox()
@@ -1615,4 +1616,71 @@ std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::ribbon
   }
   return set.empty() ? std::nullopt : std::optional<std::unordered_set<double>>(set);
 }
+
+void AppearanceTreeWidgetController::reloadRibbonEdgeCueing()
+{
+  _appearanceRibbonsForm->ribbonEdgeCueingComboBox->setDisabled(true);
+
+  if (_projectTreeNode && hasRibbonStructure(_iraspa_structures))
+  {
+    if (std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> values = ribbonEdgeCueing(); values)
+    {
+      _appearanceRibbonsForm->ribbonEdgeCueingComboBox->setEnabled(_projectTreeNode->isEditable());
+      if (values->size() == 1)
+      {
+        if (int index = _appearanceRibbonsForm->ribbonEdgeCueingComboBox->findText("Multiple values"); index >= 0)
+        {
+          whileBlocking(_appearanceRibbonsForm->ribbonEdgeCueingComboBox)->removeItem(index);
+        }
+        whileBlocking(_appearanceRibbonsForm->ribbonEdgeCueingComboBox)->setCurrentIndex(static_cast<int>(*(values->begin())));
+      }
+      else
+      {
+        if (int index = _appearanceRibbonsForm->ribbonEdgeCueingComboBox->findText("Multiple values"); index < 0)
+        {
+          whileBlocking(_appearanceRibbonsForm->ribbonEdgeCueingComboBox)->addItem("Multiple values");
+        }
+        whileBlocking(_appearanceRibbonsForm->ribbonEdgeCueingComboBox)->setCurrentText("Multiple values");
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::setRibbonEdgeCueing(int value)
+{
+  if (value >= 0 && value < static_cast<int>(RKEdgeCueing::multiple_values))
+  {
+    for (const std::shared_ptr<iRASPAObject> &iraspaStructure : _iraspa_structures)
+    {
+      if (!objectIsProteinRibbon(iraspaStructure)) { continue; }
+      if (std::shared_ptr<ProteinRibbonStructureEditor> editor = std::dynamic_pointer_cast<ProteinRibbonStructureEditor>(iraspaStructure->object()))
+      {
+        editor->setRibbonEdgeCueing(static_cast<RKEdgeCueing>(value));
+        editor->recheckRibbonRepresentationStyle();
+      }
+    }
+    reloadRibbonEdgeCueing();
+    reloadRibbonRepresentationStyle();
+    emit rendererReloadStructureUniforms();
+    emit rendererReloadData();
+    emit redrawRenderer();
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> AppearanceTreeWidgetController::ribbonEdgeCueing()
+{
+  if (_iraspa_structures.empty()) return std::nullopt;
+  std::unordered_set<RKEdgeCueing, enum_hash> set;
+  for (const std::shared_ptr<iRASPAObject> &iraspaStructure : _iraspa_structures)
+  {
+    if (!objectIsProteinRibbon(iraspaStructure)) { continue; }
+    if (std::shared_ptr<ProteinRibbonStructureEditor> editor = std::dynamic_pointer_cast<ProteinRibbonStructureEditor>(iraspaStructure->object()))
+    {
+      set.insert(editor->ribbonEdgeCueing());
+    }
+  }
+  return set.empty() ? std::nullopt : std::optional<std::unordered_set<RKEdgeCueing, enum_hash>>(set);
+}
+
 

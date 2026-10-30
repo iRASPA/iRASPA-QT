@@ -258,6 +258,7 @@ private:
   void reloadRibbonDiffuseLight();
   void reloadRibbonSpecularLight();
   void reloadRibbonShininess();
+  void reloadRibbonEdgeCueing();
 
   void setDrawRibbons(int state);
   std::optional<std::unordered_set<bool>> ribbonDrawRibbons();
@@ -312,6 +313,8 @@ private:
   std::optional<QColor> ribbonSpecularLightColor();
   void setRibbonShininess(double value);
   std::optional<std::unordered_set<double>> ribbonShininess();
+  void setRibbonEdgeCueing(int value);
+  std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> ribbonEdgeCueing();
 
   // DNA ribbon properties
   void reloadDNADrawRibbonsCheckBox();
@@ -339,6 +342,7 @@ private:
   void reloadDNARibbonDiffuseLight();
   void reloadDNARibbonSpecularLight();
   void reloadDNARibbonShininess();
+  void reloadDNARibbonEdgeCueing();
 
   void setDrawDNARibbons(int state);
   std::optional<std::unordered_set<bool>> dnaRibbonDrawRibbons();
@@ -401,6 +405,8 @@ private:
   std::optional<QColor> dnaRibbonSpecularLightColor();
   void setDNARibbonShininess(double value);
   std::optional<std::unordered_set<double>> dnaRibbonShininess();
+  void setDNARibbonEdgeCueing(int value);
+  std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> dnaRibbonEdgeCueing();
 
   // atom properties
 
@@ -426,6 +432,7 @@ private:
   void reloadAtomDiffuseLight();
   void reloadAtomSpecularLight();
   void reloadAtomShininess();
+  void reloadAtomEdgeCueing();
 
   void setRepresentationType(int value);
   std::optional<std::unordered_set<AtomStructureViewer::RepresentationType, enum_hash> > representationType();
@@ -482,6 +489,8 @@ private:
   std::optional<std::unordered_set<QColor> > atomSpecularLightColor();
   void setAtomShininess(double value);
   std::optional<std::unordered_set<double> > atomShininess();
+  void setAtomEdgeCueing(int value);
+  std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> atomEdgeCueing();
 
   // bond properties
 
@@ -593,6 +602,7 @@ private:
   void reloadDrawAdsorptionSurfaceCheckBox();
   void reloadAdsorptionSurfaceRenderingMethod();
   void reloadAdsorptionSurfaceProbeMolecule();
+  void reloadAdsorptionSurfaceProbeParameters();
   void reloadAdsorptionVolumeTransferFunction();
   void reloadAdsorptionVolumeStepLength();
   void reloadAdsorptionSurfaceIsovalue();
@@ -626,6 +636,10 @@ private:
   std::optional<std::unordered_set<bool>> drawAdsorptionSurface();
   void setAdsorptionSurfaceProbeMolecule(int value);
   std::optional<std::unordered_set<ProbeMolecule, enum_hash> > adsorptionSurfaceProbeMolecule();
+  void setAdsorptionSurfaceProbeEpsilon(double value);
+  std::optional<std::unordered_set<double>> adsorptionSurfaceProbeEpsilon();
+  void setAdsorptionSurfaceProbeSigma(double value);
+  std::optional<std::unordered_set<double>> adsorptionSurfaceProbeSigma();
   void setAdsorptionSurfaceIsovalue(double value);
   std::optional<std::set<double>> adsorptionSurfaceIsovalue();
   double adsorptionSurfaceMinimumValue();

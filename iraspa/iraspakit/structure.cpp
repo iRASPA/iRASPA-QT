@@ -30,6 +30,7 @@
 #include <symmetrykit.h>
 #include <simulationkit.h>
 #include <QFontInfo>
+#include <QRegularExpression>
 #include "skatomtreecontroller.h"
 #include "skbondsetcontroller.h"
 #include "gridvolume.h"
@@ -393,6 +394,7 @@ Structure::Structure(const std::shared_ptr<Object> object): Object(object), _ato
   {
     _atomRepresentationType = atomStructureViewer->atomRepresentationType();
     _atomRepresentationStyle = atomStructureViewer->atomRepresentationStyle();
+    _atomEdgeCueing = atomStructureViewer->atomEdgeCueing();
     _atomColorSchemeIdentifier = atomStructureViewer->atomColorSchemeIdentifier();
     _atomColorSchemeOrder = atomStructureViewer->colorSchemeOrder();
     _atomForceFieldIdentifier = atomStructureViewer->atomForceFieldIdentifier();
@@ -420,6 +422,39 @@ Structure::Structure(const std::shared_ptr<Object> object): Object(object), _ato
     _atomSelectionStyle = atomStructureViewer->atomSelectionStyle();
     _atomSelectionIntensity = atomStructureViewer->atomSelectionIntensity();
     _atomSelectionScaling = atomStructureViewer->atomSelectionScaling();
+  }
+
+  if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(object))
+  {
+    _atomEdgeCueing = structure->_atomEdgeCueing;
+    _atomForceFieldIdentifier = structure->_atomForceFieldIdentifier;
+    _atomForceFieldOrder = structure->_atomForceFieldOrder;
+    _atomColorSchemeIdentifier = structure->_atomColorSchemeIdentifier;
+    _atomColorSchemeOrder = structure->_atomColorSchemeOrder;
+    _atomSelectionStripesDensity = structure->_atomSelectionStripesDensity;
+    _atomSelectionStripesFrequency = structure->_atomSelectionStripesFrequency;
+    _atomSelectionWorleyNoise3DFrequency = structure->_atomSelectionWorleyNoise3DFrequency;
+    _atomSelectionWorleyNoise3DJitter = structure->_atomSelectionWorleyNoise3DJitter;
+    _bondSelectionStripesDensity = structure->_bondSelectionStripesDensity;
+    _bondSelectionStripesFrequency = structure->_bondSelectionStripesFrequency;
+    _bondSelectionWorleyNoise3DFrequency = structure->_bondSelectionWorleyNoise3DFrequency;
+    _bondSelectionWorleyNoise3DJitter = structure->_bondSelectionWorleyNoise3DJitter;
+
+    _blockingPockets = structure->_blockingPockets;
+    _blockingPocketProbeMolecule = structure->_blockingPocketProbeMolecule;
+    _blockingPocketProbeEpsilon = structure->_blockingPocketProbeEpsilon;
+    _blockingPocketProbeSigma = structure->_blockingPocketProbeSigma;
+    _drawBlockingPockets = structure->_drawBlockingPockets;
+    _applyBlockingPockets = structure->_applyBlockingPockets;
+    _blockingPocketsFrontSideHDR = structure->_blockingPocketsFrontSideHDR;
+    _blockingPocketsFrontSideHDRExposure = structure->_blockingPocketsFrontSideHDRExposure;
+    _blockingPocketsFrontSideAmbientColor = structure->_blockingPocketsFrontSideAmbientColor;
+    _blockingPocketsFrontSideDiffuseColor = structure->_blockingPocketsFrontSideDiffuseColor;
+    _blockingPocketsFrontSideSpecularColor = structure->_blockingPocketsFrontSideSpecularColor;
+    _blockingPocketsFrontSideAmbientIntensity = structure->_blockingPocketsFrontSideAmbientIntensity;
+    _blockingPocketsFrontSideDiffuseIntensity = structure->_blockingPocketsFrontSideDiffuseIntensity;
+    _blockingPocketsFrontSideSpecularIntensity = structure->_blockingPocketsFrontSideSpecularIntensity;
+    _blockingPocketsFrontSideShininess = structure->_blockingPocketsFrontSideShininess;
   }
 
   if (std::shared_ptr<BondStructureViewer> bondStructureViewer = std::dynamic_pointer_cast<BondStructureViewer>(object))
@@ -551,12 +586,42 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
   _structureAccessiblePoreVolume = structure._structureAccessiblePoreVolume;
   _structureVolumetricNitrogenSurfaceArea = structure._structureVolumetricNitrogenSurfaceArea;
   _structureGravimetricNitrogenSurfaceArea = structure._structureGravimetricNitrogenSurfaceArea;
+  _structureVolumetricWellSurfaceArea = structure._structureVolumetricWellSurfaceArea;
+  _structureGravimetricWellSurfaceArea = structure._structureGravimetricWellSurfaceArea;
+  _structureVolumetricGeometricSurfaceArea = structure._structureVolumetricGeometricSurfaceArea;
+  _structureGravimetricGeometricSurfaceArea = structure._structureGravimetricGeometricSurfaceArea;
+  _structureVolumetricVanDerWaalsGeometricSurfaceArea = structure._structureVolumetricVanDerWaalsGeometricSurfaceArea;
+  _structureGravimetricVanDerWaalsGeometricSurfaceArea = structure._structureGravimetricVanDerWaalsGeometricSurfaceArea;
   _structureNumberOfChannelSystems = structure._structureNumberOfChannelSystems;
   _structureNumberOfInaccessiblePockets = structure._structureNumberOfInaccessiblePockets;
   _structureDimensionalityOfPoreSystem = structure._structureDimensionalityOfPoreSystem;
   _structureLargestCavityDiameter = structure._structureLargestCavityDiameter;
   _structureRestrictingPoreLimitingDiameter = structure._structureRestrictingPoreLimitingDiameter;
   _structureLargestCavityDiameterAlongAViablePath = structure._structureLargestCavityDiameterAlongAViablePath;
+  _structureRestrictingPoreLimitingDiameter2 = structure._structureRestrictingPoreLimitingDiameter2;
+  _structureLargestCavityDiameterAlongAViablePath2 = structure._structureLargestCavityDiameterAlongAViablePath2;
+  _structureWindow1Size = structure._structureWindow1Size;
+  _structureWindow2Size = structure._structureWindow2Size;
+  _structureWindow3Size = structure._structureWindow3Size;
+  _structureWindow1RingAtoms = structure._structureWindow1RingAtoms;
+  _structureWindow2RingAtoms = structure._structureWindow2RingAtoms;
+  _structureWindow3RingAtoms = structure._structureWindow3RingAtoms;
+
+  _blockingPockets = structure._blockingPockets;
+  _blockingPocketProbeMolecule = structure._blockingPocketProbeMolecule;
+  _blockingPocketProbeEpsilon = structure._blockingPocketProbeEpsilon;
+  _blockingPocketProbeSigma = structure._blockingPocketProbeSigma;
+  _drawBlockingPockets = structure._drawBlockingPockets;
+  _applyBlockingPockets = structure._applyBlockingPockets;
+  _blockingPocketsFrontSideHDR = structure._blockingPocketsFrontSideHDR;
+  _blockingPocketsFrontSideHDRExposure = structure._blockingPocketsFrontSideHDRExposure;
+  _blockingPocketsFrontSideAmbientColor = structure._blockingPocketsFrontSideAmbientColor;
+  _blockingPocketsFrontSideDiffuseColor = structure._blockingPocketsFrontSideDiffuseColor;
+  _blockingPocketsFrontSideSpecularColor = structure._blockingPocketsFrontSideSpecularColor;
+  _blockingPocketsFrontSideAmbientIntensity = structure._blockingPocketsFrontSideAmbientIntensity;
+  _blockingPocketsFrontSideDiffuseIntensity = structure._blockingPocketsFrontSideDiffuseIntensity;
+  _blockingPocketsFrontSideSpecularIntensity = structure._blockingPocketsFrontSideSpecularIntensity;
+  _blockingPocketsFrontSideShininess = structure._blockingPocketsFrontSideShininess;
 
   _authorFirstName = structure._authorFirstName;
   _authorMiddleName = structure._authorMiddleName;
@@ -605,6 +670,7 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
 
   _atomRepresentationType = structure._atomRepresentationType;
   _atomRepresentationStyle = structure._atomRepresentationStyle;
+  _atomEdgeCueing = structure._atomEdgeCueing;
   _atomForceFieldIdentifier = structure._atomForceFieldIdentifier;
   _atomForceFieldOrder = structure._atomForceFieldOrder;
   _atomColorSchemeIdentifier = structure._atomColorSchemeIdentifier;
@@ -657,6 +723,12 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
 
   _bondHDR = structure._bondHDR;
   _bondHDRExposure = structure._bondHDRExposure;
+  _bondSelectionStyle = structure._bondSelectionStyle;
+  _bondSelectionStripesDensity = structure._bondSelectionStripesDensity;
+  _bondSelectionStripesFrequency = structure._bondSelectionStripesFrequency;
+  _bondSelectionWorleyNoise3DFrequency = structure._bondSelectionWorleyNoise3DFrequency;
+  _bondSelectionWorleyNoise3DJitter = structure._bondSelectionWorleyNoise3DJitter;
+  _bondSelectionScaling = structure._bondSelectionScaling;
   _bondSelectionIntensity = structure._bondSelectionIntensity;
 
   _bondHue = structure._bondHue;
@@ -678,10 +750,14 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
 
   // adsorption surface
   _frameworkProbeMolecule = structure._frameworkProbeMolecule;
+  _frameworkProbeEpsilon = structure._frameworkProbeEpsilon;
+  _frameworkProbeSigma = structure._frameworkProbeSigma;
 
   _drawAdsorptionSurface = structure._drawAdsorptionSurface;
   _adsorptionSurfaceOpacity = structure._adsorptionSurfaceOpacity;
+  _adsorptionTransparencyThreshold = structure._adsorptionTransparencyThreshold;
   _adsorptionSurfaceIsoValue = structure._adsorptionSurfaceIsoValue;
+  _encompassingPowerOfTwoCubicGridSize = structure._encompassingPowerOfTwoCubicGridSize;
 
   _adsorptionSurfaceRenderingMethod = structure._adsorptionSurfaceRenderingMethod;
   _adsorptionVolumeTransferFunction = structure._adsorptionVolumeTransferFunction;
@@ -691,6 +767,8 @@ Structure::Structure(const Structure &structure): Object(structure),  _atomsTree
   _adsorptionSurfaceNumberOfTriangles = structure._adsorptionSurfaceNumberOfTriangles;
 
   _adsorptionSurfaceProbeMolecule = structure._adsorptionSurfaceProbeMolecule;
+  _adsorptionSurfaceProbeEpsilon = structure._adsorptionSurfaceProbeEpsilon;
+  _adsorptionSurfaceProbeSigma = structure._adsorptionSurfaceProbeSigma;
 
   _adsorptionSurfaceHue = structure._adsorptionSurfaceHue;
   _adsorptionSurfaceSaturation = structure._adsorptionSurfaceSaturation;
@@ -1051,276 +1129,680 @@ void Structure::setBondScaleFactor(double value)
 
 double2 Structure::adsorptionSurfaceProbeParameters() const
 {
-  switch(_adsorptionSurfaceProbeMolecule)
+  return double2(_adsorptionSurfaceProbeEpsilon, _adsorptionSurfaceProbeSigma);
+}
+
+void Structure::setAdsorptionSurfaceProbeMolecule(ProbeMolecule value)
+{
+  _adsorptionSurfaceProbeMolecule = value;
+  if (std::optional<double2> params = probeNamedParameters(value))
   {
-    case ProbeMolecule::helium:
-      return double2(10.9, 2.64);
-    case ProbeMolecule::nitrogen:
-      return double2(36.0,3.31);
-    case ProbeMolecule::methane:
-      return double2(158.5,3.72);
-    case ProbeMolecule::hydrogen:
-      return double2(36.7,2.958);
-    case ProbeMolecule::water:
-      return double2(89.633,3.097);
-    case ProbeMolecule::co2:
-      // Y. Iwai, H. Higashi, H. Uchida, Y. Arai, Fluid Phase Equilibria 127 (1997) 251-261.
-      return double2(236.1,3.72);
-    case ProbeMolecule::xenon:
-      // Gábor Rutkai, Monika Thol, Roland Span & Jadran Vrabec (2017), Molecular Physics, 115:9-12, 1104-1121
-      return double2(226.14,3.949);
-    case ProbeMolecule::krypton:
-      // Gábor Rutkai, Monika Thol, Roland Span & Jadran Vrabec (2017), Molecular Physics, 115:9-12, 1104-1121
-      return double2(162.58,3.6274);
-    case ProbeMolecule::argon:
-      return double2(119.8, 3.34);
-    case ProbeMolecule::multiple_values:
-      return double2();
+    _adsorptionSurfaceProbeEpsilon = params->x;
+    _adsorptionSurfaceProbeSigma = params->y;
   }
-  return double2();
+}
+
+void Structure::setAdsorptionSurfaceProbeEpsilon(double value)
+{
+  _adsorptionSurfaceProbeEpsilon = value;
+  _adsorptionSurfaceProbeMolecule = matchingProbeMolecule(double2(_adsorptionSurfaceProbeEpsilon, _adsorptionSurfaceProbeSigma), true);
+}
+
+void Structure::setAdsorptionSurfaceProbeSigma(double value)
+{
+  _adsorptionSurfaceProbeSigma = value;
+  _adsorptionSurfaceProbeMolecule = matchingProbeMolecule(double2(_adsorptionSurfaceProbeEpsilon, _adsorptionSurfaceProbeSigma), true);
 }
 
 double2 Structure::frameworkProbeParameters() const
 {
-  switch(_frameworkProbeMolecule)
+  return double2(_frameworkProbeEpsilon, _frameworkProbeSigma);
+}
+
+void Structure::setFrameworkProbeMolecule(ProbeMolecule value)
+{
+  _frameworkProbeMolecule = value;
+  if (std::optional<double2> params = probeNamedParameters(value))
   {
-    case ProbeMolecule::helium:
-      return double2(10.9, 2.64);
-    case ProbeMolecule::nitrogen:
-      return double2(36.0,3.31);
-    case ProbeMolecule::methane:
-      return double2(158.5,3.72);
-    case ProbeMolecule::hydrogen:
-      return double2(36.7,2.958);
-    case ProbeMolecule::water:
-      return double2(89.633,3.097);
-    case ProbeMolecule::co2:
-      // Y. Iwai, H. Higashi, H. Uchida, Y. Arai, Fluid Phase Equilibria 127 (1997) 251-261.
-      return double2(236.1,3.72);
-    case ProbeMolecule::xenon:
-      // Gábor Rutkai, Monika Thol, Roland Span & Jadran Vrabec (2017), Molecular Physics, 115:9-12, 1104-1121
-      return double2(226.14,3.949);
-    case ProbeMolecule::krypton:
-      // Gábor Rutkai, Monika Thol, Roland Span & Jadran Vrabec (2017), Molecular Physics, 115:9-12, 1104-1121
-      return double2(162.58,3.6274);
-    case ProbeMolecule::argon:
-      return double2(119.8, 3.34);
-    case ProbeMolecule::multiple_values:
-      return double2();
+    _frameworkProbeEpsilon = params->x;
+    _frameworkProbeSigma = params->y;
   }
-  return double2();
+}
+
+void Structure::setFrameworkProbeEpsilon(double value)
+{
+  _frameworkProbeEpsilon = value;
+  _frameworkProbeMolecule = matchingProbeMolecule(double2(_frameworkProbeEpsilon, _frameworkProbeSigma), false);
+}
+
+void Structure::setFrameworkProbeSigma(double value)
+{
+  _frameworkProbeSigma = value;
+  _frameworkProbeMolecule = matchingProbeMolecule(double2(_frameworkProbeEpsilon, _frameworkProbeSigma), false);
+}
+
+void Structure::setBlockingPocketProbeMolecule(ProbeMolecule value)
+{
+  _blockingPocketProbeMolecule = value;
+  if (std::optional<double2> params = probeNamedParameters(value))
+  {
+    _blockingPocketProbeEpsilon = params->x;
+    _blockingPocketProbeSigma = params->y;
+  }
+}
+
+void Structure::setBlockingPocketProbeEpsilon(double value)
+{
+  _blockingPocketProbeEpsilon = value;
+  _blockingPocketProbeMolecule = matchingProbeMolecule(double2(_blockingPocketProbeEpsilon, _blockingPocketProbeSigma), true);
+}
+
+void Structure::setBlockingPocketProbeSigma(double value)
+{
+  _blockingPocketProbeSigma = value;
+  _blockingPocketProbeMolecule = matchingProbeMolecule(double2(_blockingPocketProbeEpsilon, _blockingPocketProbeSigma), true);
+}
+
+std::vector<int> Structure::atomUnitCellElementIdentifiers() const
+{
+  std::vector<int> result;
+  std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
+  {
+    if (const std::shared_ptr<SKAsymmetricAtom> &atom = node->representedObject())
+    {
+      for (const std::shared_ptr<SKAtomCopy> &copy : atom->copies())
+      {
+        if (copy->type() == SKAtomCopy::AtomCopyType::copy)
+        {
+          result.push_back(atom->elementIdentifier());
+        }
+      }
+    }
+  }
+  return result;
+}
+
+std::vector<float4> Structure::constructWellSurfaceTriangles(const std::vector<float> &wellData) const
+{
+  int3 dims = dimensions();
+  std::vector<float4> vertices = SKComputeWellSurface::constructWellSurfaceVertexBuffer(wellData, _adsorptionSurfaceIsoValue, dims);
+  if (!vertices.empty() && _cell)
+  {
+    float iso = SKComputeWellSurface::effectiveTrimIsovalue(wellData, _adsorptionSurfaceIsoValue, dims);
+    SKComputeWellSurface::refineWellSurfaceVertices(vertices,
+                                                    adsorptionSurfaceProbeParameters(),
+                                                    atomUnitCellPositions(),
+                                                    potentialParameters(),
+                                                    _cell->unitCell(),
+                                                    _cell->minimumReplicas(),
+                                                    iso,
+                                                    appliedBlockingPockets());
+  }
+  return vertices;
+}
+
+std::vector<float4> Structure::constructWellFilamentTriangles(const std::vector<float> &wellData) const
+{
+  if (!_cell) return {};
+  return SKComputeWellSurface::constructWellFilamentVertexBuffer(wellData, _adsorptionSurfaceIsoValue, dimensions(), _cell->unitCell());
+}
+
+namespace
+{
+struct SubdividedSphereMesh
+{
+  std::vector<double3> vertices;
+  std::vector<int3> triangles;
+};
+
+const SubdividedSphereMesh &unitSphereMesh()
+{
+  static const SubdividedSphereMesh mesh = []()
+  {
+    SubdividedSphereMesh m;
+    const double t = (1.0 + std::sqrt(5.0)) / 2.0;
+    const double3 rawVerts[12] = {
+      {-1,  t,  0}, { 1,  t,  0}, {-1, -t,  0}, { 1, -t,  0},
+      { 0, -1,  t}, { 0,  1,  t}, { 0, -1, -t}, { 0,  1, -t},
+      { t,  0, -1}, { t,  0,  1}, {-t,  0, -1}, {-t,  0,  1}
+    };
+    for (const double3 &v : rawVerts)
+    {
+      double3 n = v;
+      n.normalise();
+      m.vertices.push_back(n);
+    }
+    m.triangles = {
+      {0, 11, 5}, {0, 5, 1}, {0, 1, 7}, {0, 7, 10}, {0, 10, 11},
+      {1, 5, 9}, {5, 11, 4}, {11, 10, 2}, {10, 7, 6}, {7, 1, 8},
+      {3, 9, 4}, {3, 4, 2}, {3, 2, 6}, {3, 6, 8}, {3, 8, 9},
+      {4, 9, 5}, {2, 4, 11}, {6, 2, 10}, {8, 6, 7}, {9, 8, 1}
+    };
+    for (int level = 0; level < 3; ++level)
+    {
+      std::map<std::pair<int, int>, int> midpointCache;
+      auto midpoint = [&](int a, int b) -> int
+      {
+        std::pair<int, int> key = std::minmax(a, b);
+        auto it = midpointCache.find(key);
+        if (it != midpointCache.end()) return it->second;
+        double3 mid = m.vertices[std::size_t(a)] + m.vertices[std::size_t(b)];
+        mid.normalise();
+        int idx = static_cast<int>(m.vertices.size());
+        m.vertices.push_back(mid);
+        midpointCache[key] = idx;
+        return idx;
+      };
+      std::vector<int3> nextTris;
+      nextTris.reserve(m.triangles.size() * 4);
+      for (const int3 &tri : m.triangles)
+      {
+        int ab = midpoint(tri.x, tri.y);
+        int bc = midpoint(tri.y, tri.z);
+        int ca = midpoint(tri.z, tri.x);
+        nextTris.push_back({tri.x, ab, ca});
+        nextTris.push_back({tri.y, bc, ab});
+        nextTris.push_back({tri.z, ca, bc});
+        nextTris.push_back({ab, bc, ca});
+      }
+      m.triangles.swap(nextTris);
+    }
+    return m;
+  }();
+  return mesh;
+}
+} // namespace
+
+std::vector<float4> Structure::constructGeometricSurfaceTriangles() const
+{
+  if (!_cell) return {};
+  std::vector<double3> positions = atomUnitCellPositions();
+  if (positions.empty()) return {};
+
+  double probeSigma = adsorptionSurfaceProbeParameters().y;
+  SKGeometricSurface surface;
+  if (_adsorptionSurfaceRenderingMethod == RKEnergySurfaceType::vdwGeometricSurface)
+  {
+    std::vector<int> elementIds = atomUnitCellElementIdentifiers();
+    if (elementIds.empty()) return {};
+    surface = SKGeometricSurface::buildVanDerWaals(positions, elementIds, probeSigma, _cell, appliedBlockingPockets());
+  }
+  else
+  {
+    std::vector<double2> params = potentialParameters();
+    if (params.empty()) return {};
+    surface = SKGeometricSurface::build(positions, params, probeSigma, _cell, appliedBlockingPockets());
+  }
+
+  if (surface.patches.empty()) return {};
+
+  const SubdividedSphereMesh &sphere = unitSphereMesh();
+  double3x3 unitCell = _cell->unitCell();
+  double3x3 inverseUnitCell = _cell->inverseUnitCell();
+  double3x3 unitCellTranspose = double3x3::transpose(unitCell);
+  bool wrapIntoCell = _periodic;
+
+  struct SphereClipPlane
+  {
+    double3 axis;
+    double cosAlpha;
+  };
+
+  std::vector<float4> triangleData;
+  for (const SKGeometricSurfacePatch &patch : surface.patches)
+  {
+    if (patch.radius <= 0.0) continue;
+    std::vector<SKGeometricSurfacePatchCopy> copies = wrapIntoCell
+        ? patch.copiesInsideUnitCell(_cell)
+        : std::vector<SKGeometricSurfacePatchCopy>{SKGeometricSurfacePatchCopy(patch.center, patch.clips, double3(0.0, 0.0, 0.0))};
+
+    for (const SKGeometricSurfacePatchCopy &copy : copies)
+    {
+      std::vector<SphereClipPlane> planes;
+      planes.reserve(copy.clips.size());
+      bool buried = false;
+      for (const SKGeometricSurfaceClip &clip : copy.clips)
+      {
+        double3 delta = clip.center - copy.center;
+        double d = delta.length();
+        if (d < 1.0e-12)
+        {
+          if (clip.radius >= patch.radius) { buried = true; break; }
+          continue;
+        }
+        double cosAlpha = (patch.radius * patch.radius + d * d - clip.radius * clip.radius) / (2.0 * patch.radius * d);
+        if (cosAlpha >= 1.0) continue;
+        if (cosAlpha <= -1.0) { buried = true; break; }
+        planes.push_back({delta / d, cosAlpha});
+      }
+      if (buried) continue;
+
+      std::vector<double3> poly;
+      std::vector<double3> nextPoly;
+      poly.reserve(16);
+      nextPoly.reserve(16);
+
+      for (const int3 &tri : sphere.triangles)
+      {
+        poly.clear();
+        poly.push_back(sphere.vertices[std::size_t(tri.x)]);
+        poly.push_back(sphere.vertices[std::size_t(tri.y)]);
+        poly.push_back(sphere.vertices[std::size_t(tri.z)]);
+
+        for (const SphereClipPlane &pl : planes)
+        {
+          bool allIn = true;
+          bool allOut = true;
+          for (const double3 &u : poly)
+          {
+            double dist = pl.cosAlpha - double3::dot(u, pl.axis);
+            if (dist < 0.0) allIn = false;
+            if (dist >= -1.0e-6) allOut = false;
+          }
+          if (allOut)
+          {
+            poly.clear();
+            break;
+          }
+          if (allIn) continue;
+
+          nextPoly.clear();
+          std::size_t n = poly.size();
+          for (std::size_t k = 0; k < n; ++k)
+          {
+            const double3 &curr = poly[k];
+            const double3 &prev = poly[(k + n - 1) % n];
+            double dCurr = pl.cosAlpha - double3::dot(curr, pl.axis);
+            double dPrev = pl.cosAlpha - double3::dot(prev, pl.axis);
+            if (dCurr >= 0.0)
+            {
+              if (dPrev < 0.0)
+              {
+                double t = dPrev / (dPrev - dCurr);
+                double3 inter = prev + t * (curr - prev);
+                double len = inter.length();
+                if (len > 1.0e-12) inter = inter / len;
+                nextPoly.push_back(inter);
+              }
+              nextPoly.push_back(curr);
+            }
+            else if (dPrev >= 0.0)
+            {
+              double t = dPrev / (dPrev - dCurr);
+              double3 inter = prev + t * (curr - prev);
+              double len = inter.length();
+              if (len > 1.0e-12) inter = inter / len;
+              nextPoly.push_back(inter);
+            }
+          }
+          poly.swap(nextPoly);
+          if (poly.size() < 3)
+          {
+            poly.clear();
+            break;
+          }
+        }
+        if (poly.size() < 3) continue;
+
+        if (wrapIntoCell)
+        {
+          // Clip in fractional space against [0, 1]^3
+          struct VertexFracNorm
+          {
+            double3 frac;
+            double3 unitNorm;
+          };
+          std::vector<VertexFracNorm> fPoly;
+          std::vector<VertexFracNorm> fNext;
+          fPoly.reserve(poly.size() + 6);
+          fNext.reserve(poly.size() + 6);
+          for (const double3 &u : poly)
+          {
+            double3 cart = copy.center + patch.radius * u;
+            fPoly.push_back({inverseUnitCell * cart, u});
+          }
+
+          auto clipCoord = [&](auto evalDist)
+          {
+            if (fPoly.size() < 3) return;
+            bool allIn = true;
+            bool allOut = true;
+            for (const VertexFracNorm &v : fPoly)
+            {
+              double d = evalDist(v.frac);
+              if (d < 0.0) allIn = false;
+              if (d >= 0.0) allOut = false;
+            }
+            if (allOut) { fPoly.clear(); return; }
+            if (allIn) return;
+            fNext.clear();
+            std::size_t n = fPoly.size();
+            for (std::size_t k = 0; k < n; ++k)
+            {
+              const VertexFracNorm &curr = fPoly[k];
+              const VertexFracNorm &prev = fPoly[(k + n - 1) % n];
+              double dCurr = evalDist(curr.frac);
+              double dPrev = evalDist(prev.frac);
+              if (dCurr >= 0.0)
+              {
+                if (dPrev < 0.0)
+                {
+                  double t = dPrev / (dPrev - dCurr);
+                  double3 f = prev.frac + t * (curr.frac - prev.frac);
+                  double3 u = prev.unitNorm + t * (curr.unitNorm - prev.unitNorm);
+                  double len = u.length();
+                  if (len > 1.0e-12) u = u / len;
+                  fNext.push_back({f, u});
+                }
+                fNext.push_back(curr);
+              }
+              else if (dPrev >= 0.0)
+              {
+                double t = dPrev / (dPrev - dCurr);
+                double3 f = prev.frac + t * (curr.frac - prev.frac);
+                double3 u = prev.unitNorm + t * (curr.unitNorm - prev.unitNorm);
+                double len = u.length();
+                if (len > 1.0e-12) u = u / len;
+                fNext.push_back({f, u});
+              }
+            }
+            fPoly.swap(fNext);
+          };
+
+          clipCoord([](const double3 &f) { return f.x; });
+          clipCoord([](const double3 &f) { return 1.0 - f.x; });
+          clipCoord([](const double3 &f) { return f.y; });
+          clipCoord([](const double3 &f) { return 1.0 - f.y; });
+          clipCoord([](const double3 &f) { return f.z; });
+          clipCoord([](const double3 &f) { return 1.0 - f.z; });
+
+          if (fPoly.size() < 3) continue;
+          for (std::size_t k = 1; k + 1 < fPoly.size(); ++k)
+          {
+            const VertexFracNorm *verts[3] = {&fPoly[0], &fPoly[k], &fPoly[k + 1]};
+            for (int vi = 0; vi < 3; ++vi)
+            {
+              const double3 &f = verts[vi]->frac;
+              double3 nf = unitCellTranspose * verts[vi]->unitNorm;
+              triangleData.push_back(float4(float(f.x), float(f.y), float(f.z), 1.0f));
+              triangleData.push_back(float4(float(nf.x), float(nf.y), float(nf.z), 0.0f));
+              triangleData.push_back(float4(0.0f, 0.0f, 0.0f, 0.0f));
+            }
+          }
+        }
+        else
+        {
+          for (std::size_t k = 1; k + 1 < poly.size(); ++k)
+          {
+            const double3 *verts[3] = {&poly[0], &poly[k], &poly[k + 1]};
+            for (int vi = 0; vi < 3; ++vi)
+            {
+              const double3 &u = *verts[vi];
+              double3 f = inverseUnitCell * (copy.center + patch.radius * u);
+              double3 nf = unitCellTranspose * u;
+              triangleData.push_back(float4(float(f.x), float(f.y), float(f.z), 1.0f));
+              triangleData.push_back(float4(float(nf.x), float(nf.y), float(nf.z), 0.0f));
+              triangleData.push_back(float4(0.0f, 0.0f, 0.0f, 0.0f));
+            }
+          }
+        }
+      }
+    }
+  }
+  return triangleData;
 }
 
 
 void Structure::setRepresentationStyle(RepresentationStyle style)
 {
-	if (int(style) >= 0 && style < RepresentationStyle::multiple_values)
-	{
-		_atomRepresentationStyle = style;
+  if (int(style) >= 0 && style < RepresentationStyle::multiple_values)
+  {
+    _atomRepresentationStyle = style;
+    bool preserveAtomBondVisibility = (this->structureType() == ObjectType::protein || this->structureType() == ObjectType::proteinCrystal);
 
-		switch (style)
-		{
-		case RepresentationStyle::defaultStyle:
-			_drawAtoms = true;
+    if (style != RepresentationStyle::custom)
+    {
+      _atomEdgeCueing = (style == RepresentationStyle::quteMol) ? RKEdgeCueing::contoursAndHalos : RKEdgeCueing::off;
+    }
+
+    switch (style)
+    {
+    case RepresentationStyle::defaultStyle:
+      if (!preserveAtomBondVisibility)
+      {
+        _drawAtoms = true;
+      }
       _atomAmbientOcclusion = false;
-			_atomScaleFactor = 0.7;
-			_atomHue = 1.0;
-			_atomSaturation = 1.0;
-			_atomValue = 1.0;
-			_atomAmbientColor = QColor(255, 255, 255, 255);
-			_atomSpecularColor = QColor(255, 255, 255, 255);
-			_atomHDR = true;
-			_atomHDRExposure = 1.5;
-			_atomAmbientIntensity = 0.2;
-			_atomDiffuseIntensity = 1.0;
-			_atomSpecularIntensity = 1.0;
-			_atomShininess = 6.0;
-			_atomForceFieldIdentifier = QString("Default");
-			_atomColorSchemeIdentifier = QString("Jmol");
+      _atomScaleFactor = 0.7;
+      _atomHue = 1.0;
+      _atomSaturation = 1.0;
+      _atomValue = 1.0;
+      _atomAmbientColor = QColor(255, 255, 255, 255);
+      _atomSpecularColor = QColor(255, 255, 255, 255);
+      _atomHDR = true;
+      _atomHDRExposure = 1.5;
+      _atomAmbientIntensity = 0.2;
+      _atomDiffuseIntensity = 1.0;
+      _atomSpecularIntensity = 1.0;
+      _atomShininess = 6.0;
+      _atomColorSchemeIdentifier = QString("Jmol");
       _atomColorSchemeOrder = SKColorSet::ColorSchemeOrder::elementOnly;
 
-			_drawBonds = true;
+      if (!preserveAtomBondVisibility)
+      {
+        _drawBonds = true;
+      }
       _bondAmbientOcclusion = false;
-			_bondColorMode = RKBondColorMode::uniform;;
+      _bondColorMode = RKBondColorMode::uniform;
       _bondScaleFactor = 0.15;
-			_bondAmbientColor = QColor(255, 255, 255, 255);
-			_bondDiffuseColor = QColor(205, 205, 205, 255);
-			_bondSpecularColor = QColor(255, 255, 255, 255);
-			_bondAmbientIntensity = 0.35;
-			_bondDiffuseIntensity = 1.0;
-			_bondSpecularIntensity = 1.0;
-			_bondShininess = 4.0;
-			_bondHDR = true;
-			_bondHDRExposure = 1.5;
+      _bondAmbientColor = QColor(255, 255, 255, 255);
+      _bondDiffuseColor = QColor(205, 205, 205, 255);
+      _bondSpecularColor = QColor(255, 255, 255, 255);
+      _bondAmbientIntensity = 0.35;
+      _bondDiffuseIntensity = 1.0;
+      _bondSpecularIntensity = 1.0;
+      _bondShininess = 4.0;
+      _bondHDR = true;
+      _bondHDRExposure = 1.5;
       _bondSelectionIntensity = 1.0;
-			_bondHue = 1.0;
-			_bondSaturation = 1.0;
-			_bondValue = 1.0;
+      _bondHue = 1.0;
+      _bondSaturation = 1.0;
+      _bondValue = 1.0;
 
-      _atomSelectionStyle = RKSelectionStyle::striped;
-      _atomSelectionScaling = 1.0;
+      _atomSelectionStyle = RKSelectionStyle::WorleyNoise3D;
+      _atomSelectionScaling = 1.2;
       _atomSelectionIntensity = 0.7;
       _atomSelectionStripesDensity = 0.25;
       _atomSelectionStripesFrequency = 12.0;
+      _atomSelectionWorleyNoise3DFrequency = 2.0;
+      _atomSelectionWorleyNoise3DJitter = 1.0;
 
-      _bondSelectionStyle = RKSelectionStyle::striped;
+      _bondSelectionStyle = RKSelectionStyle::WorleyNoise3D;
       _bondSelectionScaling = 1.0;
       _bondSelectionIntensity = 0.7;
       _bondSelectionStripesDensity = 0.25;
       _bondSelectionStripesFrequency = 12.0;
+      _bondSelectionWorleyNoise3DFrequency = 2.0;
+      _bondSelectionWorleyNoise3DJitter = 1.0;
 
-			setRepresentationType(RepresentationType::sticks_and_balls);
-
-			break;
-		case RepresentationStyle::fancy:
-			_drawAtoms = true;
+      setRepresentationType(RepresentationType::sticks_and_balls);
+      break;
+    case RepresentationStyle::fancy:
+    case RepresentationStyle::quteMol:
+      if (!preserveAtomBondVisibility)
+      {
+        _drawAtoms = true;
+      }
       _atomAmbientOcclusion = true;
-			_atomScaleFactor = 1.0;
-			_atomHue = 1.0;
-			_atomSaturation = 0.5;
-			_atomValue = 1.0;
-			_atomAmbientColor = QColor(255, 255, 255, 255);
-			_atomSpecularColor = QColor(255, 255, 255, 255);
-			_atomHDR = false;
-			_atomAmbientIntensity = 1.0;
-			_atomDiffuseIntensity = 0.0;
-			_atomSpecularIntensity = 0.2;
+      _atomScaleFactor = 1.0;
+      _atomHue = 1.0;
+      _atomSaturation = 0.5;
+      _atomValue = 1.0;
+      _atomAmbientColor = QColor(255, 255, 255, 255);
+      _atomSpecularColor = QColor(255, 255, 255, 255);
+      _atomHDR = false;
+      _atomAmbientIntensity = 1.0;
+      _atomDiffuseIntensity = 0.0;
+      _atomSpecularIntensity = 0.2;
       _atomShininess = 4.0;
-			_atomScaleFactor = 1.0;
-			_atomForceFieldIdentifier = QString("Default");
-			_atomColorSchemeIdentifier = QString("Rasmol");
+      _atomScaleFactor = 1.0;
+      _atomColorSchemeIdentifier = QString("Rasmol");
       _atomColorSchemeOrder = SKColorSet::ColorSchemeOrder::elementOnly;
 
-			_drawBonds = false;
-			_bondAmbientOcclusion = false;
+      if (!preserveAtomBondVisibility)
+      {
+        _drawBonds = false;
+      }
+      _bondAmbientOcclusion = true;
 
-      _atomSelectionStyle = RKSelectionStyle::striped;
+      _atomSelectionStyle = RKSelectionStyle::WorleyNoise3D;
       _atomSelectionScaling = 1.0;
       _atomSelectionIntensity = 0.4;
       _atomSelectionStripesDensity = 0.25;
       _atomSelectionStripesFrequency = 12.0;
+      _atomSelectionWorleyNoise3DFrequency = 2.0;
+      _atomSelectionWorleyNoise3DJitter = 1.0;
 
-      _bondSelectionStyle = RKSelectionStyle::striped;
+      _bondSelectionStyle = RKSelectionStyle::WorleyNoise3D;
       _bondSelectionScaling = 1.0;
       _bondSelectionIntensity = 0.4;
       _bondSelectionStripesDensity = 0.25;
       _bondSelectionStripesFrequency = 12.0;
+      _bondSelectionWorleyNoise3DFrequency = 2.0;
+      _bondSelectionWorleyNoise3DJitter = 1.0;
 
-			setRepresentationType(RepresentationType::vdw);
-			break;
-		case RepresentationStyle::licorice:
-      _drawAtoms = true;
+      setRepresentationType(RepresentationType::vdw);
+      break;
+    case RepresentationStyle::licorice:
+      if (!preserveAtomBondVisibility)
+      {
+        _drawAtoms = true;
+      }
       _atomAmbientOcclusion = false;
-			_atomHue = 1.0;
-			_atomSaturation = 1.0;
-			_atomValue = 1.0;
-			_atomAmbientColor = QColor(255, 255, 255, 255);
-			_atomSpecularColor = QColor(255, 255, 255, 255);
+      _atomHue = 1.0;
+      _atomSaturation = 1.0;
+      _atomValue = 1.0;
+      _atomAmbientColor = QColor(255, 255, 255, 255);
+      _atomSpecularColor = QColor(255, 255, 255, 255);
       _atomAmbientIntensity = 0.1;
-			_atomDiffuseIntensity = 1.0;
-			_atomSpecularIntensity = 1.0;
+      _atomDiffuseIntensity = 1.0;
+      _atomSpecularIntensity = 1.0;
       _atomShininess = 4.0;
       _atomHDR = true;
       _atomHDRExposure = 1.5;
       _atomScaleFactor = 1.0;
-			_atomForceFieldIdentifier = QString("Default");
-			_atomColorSchemeIdentifier = QString("Jmol");
+      _atomColorSchemeIdentifier = QString("Jmol");
       _atomColorSchemeOrder = SKColorSet::ColorSchemeOrder::elementOnly;
 
-			_drawBonds = true;
+      if (!preserveAtomBondVisibility)
+      {
+        _drawBonds = true;
+      }
       _bondAmbientOcclusion = false;
-			_bondColorMode = RKBondColorMode::split;;
+      _bondColorMode = RKBondColorMode::split;
       _bondScaleFactor = 0.25;
-			_bondAmbientColor = QColor(255, 255, 255, 255);
-			_bondDiffuseColor = QColor(205, 205, 205, 255);
-			_bondSpecularColor = QColor(255, 255, 255, 255);
-			_bondAmbientIntensity = 0.1;
-			_bondDiffuseIntensity = 1.0;
-			_bondSpecularIntensity = 1.0;
-			_bondShininess = 4.0;
-			_bondHDR = true;
-			_bondHDRExposure = 1.5;
+      _bondAmbientColor = QColor(255, 255, 255, 255);
+      _bondDiffuseColor = QColor(205, 205, 205, 255);
+      _bondSpecularColor = QColor(255, 255, 255, 255);
+      _bondAmbientIntensity = 0.1;
+      _bondDiffuseIntensity = 1.0;
+      _bondSpecularIntensity = 1.0;
+      _bondShininess = 4.0;
+      _bondHDR = true;
+      _bondHDRExposure = 1.5;
       _bondSelectionIntensity = 1.0;
-			_bondHue = 1.0;
-			_bondSaturation = 1.0;
-			_bondValue = 1.0;
-			_bondAmbientOcclusion = false;
+      _bondHue = 1.0;
+      _bondSaturation = 1.0;
+      _bondValue = 1.0;
 
-      _atomSelectionStyle = RKSelectionStyle::striped;
-      _atomSelectionScaling = 1.0;
+      _atomSelectionStyle = RKSelectionStyle::WorleyNoise3D;
+      _atomSelectionScaling = 1.5;
       _atomSelectionIntensity = 0.8;
       _atomSelectionStripesDensity = 0.25;
       _atomSelectionStripesFrequency = 12.0;
+      _atomSelectionWorleyNoise3DFrequency = 2.0;
+      _atomSelectionWorleyNoise3DJitter = 1.0;
 
-      _bondSelectionStyle = RKSelectionStyle::striped;
+      _bondSelectionStyle = RKSelectionStyle::WorleyNoise3D;
       _bondSelectionScaling = 1.0;
       _bondSelectionIntensity = 0.8;
       _bondSelectionStripesDensity = 0.25;
       _bondSelectionStripesFrequency = 12.0;
+      _bondSelectionWorleyNoise3DFrequency = 2.0;
+      _bondSelectionWorleyNoise3DJitter = 1.0;
 
-			setRepresentationType(RepresentationType::unity);
-			break;
-    case RepresentationStyle::objects:
+      setRepresentationType(RepresentationType::unity);
       break;
-		case RepresentationStyle::multiple_values:
-			break;
-		default:
-			break;
-		}
-	}
+    case RepresentationStyle::objects:
+      if (!preserveAtomBondVisibility)
+      {
+        _drawAtoms = true;
+      }
+      _atomScaleFactor = 1.0;
+      _atomColorSchemeIdentifier = QString("Jmol");
+      _atomColorSchemeOrder = SKColorSet::ColorSchemeOrder::elementOnly;
+      _atomAmbientOcclusion = false;
+      _atomHDR = true;
+      _atomHDRExposure = 1.5;
+      _atomAmbientIntensity = 0.1;
+      _atomDiffuseIntensity = 0.6;
+      _atomSpecularIntensity = 0.1;
+      _atomShininess = 4.0;
+      setRepresentationType(RepresentationType::unity);
+      break;
+    case RepresentationStyle::multiple_values:
+      break;
+    default:
+      break;
+    }
+  }
 
-	std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-
-    for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
-	{
-		if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
-		{
-			double radius = 0.0;
-			switch (_atomRepresentationType)
-			{
-			case RepresentationType::sticks_and_balls:
-				radius = PredefinedElements::predefinedElements[atom->elementIdentifier()]._covalentRadius;
-				atom->setDrawRadius(radius);
-				break;
-			case RepresentationType::vdw:
-				radius = PredefinedElements::predefinedElements[atom->elementIdentifier()]._VDWRadius;
-				atom->setDrawRadius(radius);
-				break;
-			case RepresentationType::unity:
-        atom->setDrawRadius(_bondScaleFactor);
-				break;
-			default:
-				break;
-			}
-		}
-	}
+  std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms;
+  asymmetricAtoms.reserve(asymmetricAtomNodes.size());
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
+  {
+    if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
+    {
+      asymmetricAtoms.push_back(atom);
+    }
+  }
+  applyRepresentationDrawRadius(asymmetricAtoms);
 }
 
 void Structure::setRepresentationStyle(RepresentationStyle style, const SKColorSets &colorSets)
 {
-	setRepresentationStyle(style);
+  setRepresentationStyle(style);
 
-	switch (_atomRepresentationStyle)
-	{
-	case RepresentationStyle::defaultStyle:
-		setRepresentationColorSchemeIdentifier("Jmol", colorSets);
-		break;
-	case RepresentationStyle::fancy:
-		setRepresentationColorSchemeIdentifier("Rasmol", colorSets);
-		break;
-	case RepresentationStyle::licorice:
-		setRepresentationColorSchemeIdentifier("Jmol", colorSets);
-		break;
-	case RepresentationStyle::multiple_values:
-		break;
-	default:
-		break;
-	}
+  switch (_atomRepresentationStyle)
+  {
+  case RepresentationStyle::defaultStyle:
+    setRepresentationColorSchemeIdentifier("Jmol", colorSets);
+    break;
+  case RepresentationStyle::fancy:
+  case RepresentationStyle::quteMol:
+    setRepresentationColorSchemeIdentifier("Rasmol", colorSets);
+    break;
+  case RepresentationStyle::licorice:
+  case RepresentationStyle::objects:
+    setRepresentationColorSchemeIdentifier("Jmol", colorSets);
+    break;
+  case RepresentationStyle::multiple_values:
+    break;
+  default:
+    break;
+  }
 }
 
 void Structure::recheckRepresentationStyle()
 {
-  if (_drawAtoms == true &&
+  bool preserveAtomBondVisibility = (this->structureType() == ObjectType::protein || this->structureType() == ObjectType::proteinCrystal);
+  bool atomsDrawn = preserveAtomBondVisibility || (_drawAtoms == true);
+  bool bondsDrawn = preserveAtomBondVisibility || (_drawBonds == true);
+  bool bondsHidden = preserveAtomBondVisibility || (_drawBonds == false);
+
+  if (atomsDrawn &&
      (fabs(_atomHue - 1.0) < 1e-4) &&
      (fabs(_atomSaturation - 1.0) < 1e-4) &&
      (fabs(_atomValue - 1.0) < 1e-4) &&
@@ -1337,13 +1819,13 @@ void Structure::recheckRepresentationStyle()
      (_atomAmbientOcclusion == false) &&
      (fabs(_atomAmbientIntensity - 0.2) < 1e-4) &&
      (fabs(_atomDiffuseIntensity - 1.0) < 1e-4) &&
-     (fabs(_atomSpecularIntensity - 1.0)) < 1e-4 &&
+     (fabs(_atomSpecularIntensity - 1.0) < 1e-4) &&
      (fabs(_atomShininess - 6.0) < 1e-4) &&
+     (fabs(_atomScaleFactor - 0.7) < 1e-4) &&
      (_atomRepresentationType == RepresentationType::sticks_and_balls) &&
-     (QString::compare(_atomForceFieldIdentifier, "Default", Qt::CaseInsensitive) == 0) &&
      (QString::compare(_atomColorSchemeIdentifier, "Jmol", Qt::CaseInsensitive) == 0) &&
      (_atomColorSchemeOrder == SKColorSet::ColorSchemeOrder::elementOnly) &&
-     (_drawBonds == true) &&
+     bondsDrawn &&
      (_bondColorMode == RKBondColorMode::uniform) &&
      (fabs(_bondScaleFactor - 0.15) < 1e-4) &&
      (_bondAmbientOcclusion == false) &&
@@ -1367,11 +1849,11 @@ void Structure::recheckRepresentationStyle()
      (fabs(_bondShininess - 4.0) < 1e-4) &&
      (fabs(_bondHue - 1.0) < 1e-4) &&
      (fabs(_bondSaturation - 1.0) < 1e-4) &&
-     (fabs(_bondValue - 1.0) < 1e-4)  &&
+     (fabs(_bondValue - 1.0) < 1e-4) &&
      (_atomSelectionStyle == RKSelectionStyle::WorleyNoise3D) &&
-     (fabs(_atomSelectionScaling - 1.2) < 1e-4))
+     (fabs(_atomSelectionScaling - 1.2) < 1e-4) &&
+     (_atomEdgeCueing == RKEdgeCueing::off))
      {
-       qDebug() << "FOUND DEFAULT";
        _atomRepresentationStyle = RepresentationStyle::defaultStyle;
      }
   else if ((fabs(_atomHue - 1.0) < 1e-4) &&
@@ -1385,37 +1867,36 @@ void Structure::recheckRepresentationStyle()
      (fabs(_atomSpecularColor.greenF() - 1.0) < 1e-4) &&
      (fabs(_atomSpecularColor.blueF() - 1.0) < 1e-4) &&
      (fabs(_atomSpecularColor.alphaF() - 1.0) < 1e-4) &&
-     (_drawAtoms == true) &&
-     (_drawBonds == false) &&
+     atomsDrawn &&
+     bondsHidden &&
      (_atomHDR == false) &&
      (_atomAmbientOcclusion == true) &&
+     (_bondAmbientOcclusion == true) &&
      (fabs(_atomAmbientIntensity - 1.0) < 1e-4) &&
      (fabs(_atomDiffuseIntensity - 0.0) < 1e-4) &&
      (fabs(_atomSpecularIntensity - 0.2) < 1e-4) &&
-     (fabs(_atomShininess - 6.0) < 1e-4) &&
+     (fabs(_atomShininess - 4.0) < 1e-4) &&
      (fabs(_atomScaleFactor - 1.0) < 1e-4) &&
      (_atomRepresentationType == RepresentationType::vdw) &&
-     (QString::compare(_atomForceFieldIdentifier, "Default", Qt::CaseInsensitive) == 0) &&
      (QString::compare(_atomColorSchemeIdentifier, "Rasmol", Qt::CaseInsensitive) == 0) &&
      (_atomColorSchemeOrder == SKColorSet::ColorSchemeOrder::elementOnly) &&
      (_atomSelectionStyle == RKSelectionStyle::WorleyNoise3D) &&
-     (fabs(_atomSelectionScaling - 1.0) < 1e-4))
+     (fabs(_atomSelectionScaling - 1.0) < 1e-4) &&
+     (_atomEdgeCueing == RKEdgeCueing::off || _atomEdgeCueing == RKEdgeCueing::contoursAndHalos))
      {
-       qDebug() << "FOUND FANCY";
-       _atomRepresentationStyle = RepresentationStyle::fancy;
+       _atomRepresentationStyle = (_atomEdgeCueing == RKEdgeCueing::contoursAndHalos) ? RepresentationStyle::quteMol : RepresentationStyle::fancy;
      }
-  else if ((_drawAtoms == true) &&
+  else if (atomsDrawn &&
      (_atomRepresentationType == RepresentationType::unity) &&
-     (QString::compare(_atomForceFieldIdentifier, "Default", Qt::CaseInsensitive) == 0) &&
      (QString::compare(_atomColorSchemeIdentifier, "Jmol", Qt::CaseInsensitive) == 0) &&
      (_atomColorSchemeOrder == SKColorSet::ColorSchemeOrder::elementOnly) &&
-		(fabs(_atomScaleFactor - 1.0) < 1e-4) &&
-     (_drawBonds == true) &&
+     (fabs(_atomScaleFactor - 1.0) < 1e-4) &&
+     bondsDrawn &&
      (_bondColorMode == RKBondColorMode::split) &&
      (fabs(_bondScaleFactor - 0.25) < 1e-4) &&
      (_bondAmbientOcclusion == false) &&
      (_bondHDR == true) &&
-     ((_bondHDRExposure - 1.5) < 1e-4) &&
+     (fabs(_bondHDRExposure - 1.5) < 1e-4) &&
      (_bondAmbientColor.red() == 255) &&
      (_bondAmbientColor.green() == 255) &&
      (_bondAmbientColor.blue() == 255) &&
@@ -1428,28 +1909,39 @@ void Structure::recheckRepresentationStyle()
      (_bondSpecularColor.green() == 255) &&
      (_bondSpecularColor.blue() == 255) &&
      (_bondSpecularColor.alpha() == 255) &&
-     ((_bondAmbientIntensity - 0.1) < 1e-4) &&
-     ((_bondDiffuseIntensity - 1.0) < 1e-4) &&
-     ((_bondSpecularIntensity - 1.0) < 1e-4) &&
+     (fabs(_bondAmbientIntensity - 0.1) < 1e-4) &&
+     (fabs(_bondDiffuseIntensity - 1.0) < 1e-4) &&
+     (fabs(_bondSpecularIntensity - 1.0) < 1e-4) &&
      (fabs(_bondShininess - 4.0) < 1e-4) &&
      (fabs(_bondHue - 1.0) < 1e-4) &&
      (fabs(_bondSaturation - 1.0) < 1e-4) &&
      (fabs(_bondValue - 1.0) < 1e-4) &&
      (_atomSelectionStyle == RKSelectionStyle::WorleyNoise3D) &&
-     (fabs(_atomSelectionScaling - 1.5) < 1e-4))
+     (fabs(_atomSelectionScaling - 1.5) < 1e-4) &&
+     (_atomEdgeCueing == RKEdgeCueing::off))
      {
-       qDebug() << "FOUND LICORICE";
        _atomRepresentationStyle = RepresentationStyle::licorice;
+     }
+  else if (atomsDrawn &&
+     (_atomRepresentationType == RepresentationType::unity) &&
+     (QString::compare(_atomColorSchemeIdentifier, "Jmol", Qt::CaseInsensitive) == 0) &&
+     (_atomColorSchemeOrder == SKColorSet::ColorSchemeOrder::elementOnly) &&
+     (fabs(_atomScaleFactor - 1.0) < 1e-4) &&
+     (_atomAmbientOcclusion == false) &&
+     (_atomHDR == true) &&
+     (fabs(_atomHDRExposure - 1.5) < 1e-4) &&
+     (fabs(_atomAmbientIntensity - 0.1) < 1e-4) &&
+     (fabs(_atomDiffuseIntensity - 0.6) < 1e-4) &&
+     (fabs(_atomSpecularIntensity - 0.1) < 1e-4) &&
+     (fabs(_atomShininess - 4.0) < 1e-4) &&
+     (_atomEdgeCueing == RKEdgeCueing::off))
+     {
+       _atomRepresentationStyle = RepresentationStyle::objects;
      }
   else
   {
-		qDebug() << "FOUND CUSTOM";
     _atomRepresentationStyle = RepresentationStyle::custom;
   }
-
-  qDebug() << "FOUND: " << int(_atomRepresentationStyle);
-
-	
 }
 
 void Structure::setRepresentationType(RepresentationType type)
@@ -1458,35 +1950,58 @@ void Structure::setRepresentationType(RepresentationType type)
   {
     _atomRepresentationType = type;
     std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-
+    std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms;
+    asymmetricAtoms.reserve(asymmetricAtomNodes.size());
     for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
     {
       if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
       {
-        double radius = 0.0;
-        switch(type)
-        {
-          case RepresentationType::sticks_and_balls:
-            radius = PredefinedElements::predefinedElements[atom->elementIdentifier()]._covalentRadius;
-            atom->setDrawRadius(radius);
-            _atomScaleFactor = 0.7;
-            _bondScaleFactor = 0.15;
-            break;
-          case RepresentationType::vdw:
-            radius = PredefinedElements::predefinedElements[atom->elementIdentifier()]._VDWRadius;
-            atom->setDrawRadius(radius);
-            _atomScaleFactor = 1.0;
-            _bondScaleFactor = 0.15;
-            break;
-          case RepresentationType::unity:
-            _atomScaleFactor = 1.0;
-            _bondScaleFactor = 0.25;
-            atom->setDrawRadius(_bondScaleFactor);
-            break;
-          default:
-            break;
-        }
+        asymmetricAtoms.push_back(atom);
       }
+    }
+    applyRepresentationType(type, asymmetricAtoms);
+  }
+}
+
+void Structure::applyRepresentationType(RepresentationType type, const std::vector<std::shared_ptr<SKAsymmetricAtom>> &atoms)
+{
+  switch(type)
+  {
+    case RepresentationType::sticks_and_balls:
+    case RepresentationType::vdw:
+    case RepresentationType::forcefield:
+      _bondScaleFactor = 0.15;
+      break;
+    case RepresentationType::unity:
+      _bondScaleFactor = 0.25;
+      break;
+    default:
+      break;
+  }
+  applyRepresentationDrawRadius(atoms);
+}
+
+void Structure::applyRepresentationDrawRadius(const std::vector<std::shared_ptr<SKAsymmetricAtom>> &atoms)
+{
+  for (const std::shared_ptr<SKAsymmetricAtom> &atom : atoms)
+  {
+    if (!atom) continue;
+    switch (_atomRepresentationType)
+    {
+    case RepresentationType::sticks_and_balls:
+      atom->setDrawRadius(PredefinedElements::predefinedElements[atom->elementIdentifier()]._covalentRadius);
+      break;
+    case RepresentationType::vdw:
+      atom->setDrawRadius(PredefinedElements::predefinedElements[atom->elementIdentifier()]._VDWRadius);
+      break;
+    case RepresentationType::unity:
+      atom->setDrawRadius(_bondScaleFactor);
+      break;
+    case RepresentationType::forcefield:
+      atom->setDrawRadius(SKGeometricSurface::inflatedRadius(atom->potentialParameters().y, 0.0));
+      break;
+    default:
+      break;
     }
   }
 }
@@ -1531,6 +2046,7 @@ void Structure::setRepresentationColorSchemeIdentifier(const QString colorScheme
             break;
           }
           atom->setColor(QColor(0,0,0,255));
+          break;
         }
         case SKColorSet::ColorSchemeOrder::forceFieldOnly:
         {
@@ -1559,85 +2075,133 @@ void Structure::setAtomForceFieldIdentifier(QString identifier, ForceFieldSets& 
   updateForceField(forceFieldSets);
 }
 
+std::optional<ForceFieldType> Structure::resolvedForceFieldType(const std::shared_ptr<SKAsymmetricAtom> &atom, const ForceFieldSet &forceFieldSet) const
+{
+  if (!atom) return std::nullopt;
+  const QString elementString = PredefinedElements::predefinedElements[atom->elementIdentifier()]._chemicalSymbol;
+  switch (_atomForceFieldOrder)
+  {
+  case ForceFieldSet::ForceFieldSchemeOrder::elementOnly:
+  case ForceFieldSet::ForceFieldSchemeOrder::forceFieldFirst:
+    if (const ForceFieldType *type = forceFieldSet[atom->uniqueForceFieldName()])
+    {
+      return *type;
+    }
+    if (const ForceFieldType *type = forceFieldSet[elementString])
+    {
+      return *type;
+    }
+    return ForceFieldSet::defaultType(elementString);
+  case ForceFieldSet::ForceFieldSchemeOrder::forceFieldOnly:
+    if (const ForceFieldType *type = forceFieldSet[atom->uniqueForceFieldName()])
+    {
+      return *type;
+    }
+    return ForceFieldSet::defaultType(elementString);
+  case ForceFieldSet::ForceFieldSchemeOrder::multiple_values:
+    return std::nullopt;
+  }
+  return std::nullopt;
+}
+
+void Structure::assignAluminosilicateOxygenTypes(const std::vector<std::shared_ptr<SKAsymmetricAtom>> &asymmetricAtoms)
+{
+  if (!_cell) return;
+  const std::set<int> &trivalentNumbers = ForceFieldSet::trivalentTAtomAtomicNumbers;
+  std::vector<double3> tPositions;
+  for (const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
+  {
+    if (!atom || trivalentNumbers.find(atom->elementIdentifier()) == trivalentNumbers.end()) continue;
+    if (atom->copies().empty())
+    {
+      tPositions.push_back(atom->position());
+    }
+    else
+    {
+      for (const std::shared_ptr<SKAtomCopy> &copy : atom->copies())
+      {
+        tPositions.push_back(copy->position());
+      }
+    }
+  }
+
+  double3x3 unitCell = _cell->unitCell();
+  for (const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
+  {
+    if (!atom || atom->elementIdentifier() != 8) continue;
+    if (atom->uniqueForceFieldName() != "O" && atom->uniqueForceFieldName() != ForceFieldSet::bridgingAluminumOxygenIdentifier)
+    {
+      continue;
+    }
+    std::vector<double3> oxygenPositions;
+    if (atom->copies().empty())
+    {
+      oxygenPositions.push_back(atom->position());
+    }
+    else
+    {
+      for (const std::shared_ptr<SKAtomCopy> &copy : atom->copies())
+      {
+        oxygenPositions.push_back(copy->position());
+      }
+    }
+    bool bridgesAluminum = false;
+    for (const double3 &pos : oxygenPositions)
+    {
+      if (ForceFieldSet::isBridgingAluminumOxygen(pos, tPositions, unitCell))
+      {
+        bridgesAluminum = true;
+        break;
+      }
+    }
+    atom->setUniqueForceFieldName(bridgesAluminum ? ForceFieldSet::bridgingAluminumOxygenIdentifier : "O");
+  }
+}
 
 void Structure::updateForceField(ForceFieldSets &forceFieldSets)
 {
-  qDebug() << "Structure::updateForceField";
-  if(ForceFieldSet* forceField = forceFieldSets[_atomForceFieldIdentifier])
+  ForceFieldSet forceFieldSet = forceFieldSets.resolvedSet(_atomForceFieldIdentifier);
+  std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
+  std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms;
+  asymmetricAtoms.reserve(asymmetricAtomNodes.size());
+  for (const std::shared_ptr<SKAtomTreeNode> &node : asymmetricAtomNodes)
   {
-    std::vector<std::shared_ptr<SKAtomTreeNode>> asymmetricAtomNodes = _atomsTreeController->flattenedLeafNodes();
-
-    switch(_atomForceFieldOrder)
+    if (std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
     {
-    case ForceFieldSet::ForceFieldSchemeOrder::elementOnly:
-      for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
-      {
-        if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
-        {
-          SKElement& element = PredefinedElements::predefinedElements[atom->elementIdentifier()];
-          const QString chemicalElement = element._chemicalSymbol;
-          ForceFieldType* forceFieldType = (*forceField)[chemicalElement];
-          if(forceFieldType)
-          {
-            atom->setPotentialParameters(forceFieldType->potentialParameters());
-            atom->setBondDistanceCriteria(forceFieldType->userDefinedRadius());
-          }
-        }
-      }
-      break;
-    case ForceFieldSet::ForceFieldSchemeOrder::forceFieldFirst:
-      for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
-      {
-        if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
-        {
-          ForceFieldType* forceFieldType = (*forceField)[atom->uniqueForceFieldName()];
-          if(forceFieldType)
-          {
-            atom->setPotentialParameters(forceFieldType->potentialParameters());
-            atom->setBondDistanceCriteria(forceFieldType->userDefinedRadius());
-            break;
-          }
-          else
-          {
-            SKElement& element = PredefinedElements::predefinedElements[atom->elementIdentifier()];
-            const QString chemicalElement = element._chemicalSymbol;
-            forceFieldType = (*forceField)[chemicalElement];
-            if(forceFieldType)
-            {
-              atom->setPotentialParameters(forceFieldType->potentialParameters());
-              atom->setBondDistanceCriteria(forceFieldType->userDefinedRadius());
-            }
-          }
-        }
-      }
-      break;
-    case ForceFieldSet::ForceFieldSchemeOrder::forceFieldOnly:
-      for(const std::shared_ptr<SKAtomTreeNode> &node: asymmetricAtomNodes)
-      {
-        if(std::shared_ptr<SKAsymmetricAtom> atom = node->representedObject())
-        {
-          ForceFieldType* forceFieldType = (*forceField)[atom->uniqueForceFieldName()];
-          if(forceFieldType)
-          {
-            qDebug() << "Setting force field for " << atom->uniqueForceFieldName() << " to: " << forceFieldType->potentialParameters().x;
-            atom->setPotentialParameters(forceFieldType->potentialParameters());
-            atom->setBondDistanceCriteria(forceFieldType->userDefinedRadius());
-          }
-          else
-          {
-            atom->setPotentialParameters(double2(0.0, 1.0));
-          }
-        }
-      }
-      break;
-    case ForceFieldSet::ForceFieldSchemeOrder::multiple_values:
-      break;
+      asymmetricAtoms.push_back(atom);
     }
+  }
+
+  bool isAluminosilicate = ForceFieldSet::isAluminosilicateFamily(forceFieldSet.displayName());
+  if (isAluminosilicate)
+  {
+    assignAluminosilicateOxygenTypes(asymmetricAtoms);
   }
   else
   {
-      std::cout << "No force field present" << std::endl;
+    for (const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
+    {
+      if (atom && atom->uniqueForceFieldName() == ForceFieldSet::bridgingAluminumOxygenIdentifier &&
+          forceFieldSet[ForceFieldSet::bridgingAluminumOxygenIdentifier] == nullptr)
+      {
+        atom->setUniqueForceFieldName("O");
+      }
+    }
   }
+
+  for (const std::shared_ptr<SKAsymmetricAtom> &atom : asymmetricAtoms)
+  {
+    if (!atom) continue;
+    std::optional<ForceFieldType> type = resolvedForceFieldType(atom, forceFieldSet);
+    atom->setPotentialParameters(type ? type->potentialParameters() : double2(0.0, 0.0));
+    atom->setBondDistanceCriteria(type ? type->userDefinedRadius() : ((_atomForceFieldOrder == ForceFieldSet::ForceFieldSchemeOrder::forceFieldOnly) ? 1.0 : 0.0));
+    if (isAluminosilicate)
+    {
+      atom->setCharge(type ? type->charge() : 0.0);
+    }
+  }
+
+  applyRepresentationDrawRadius(asymmetricAtoms);
 }
 
 double Structure::atomSelectionFrequency() const
@@ -1899,6 +2463,180 @@ void Structure::setStructureNitrogenSurfaceArea(double value)
 {
   _structureGravimetricNitrogenSurfaceArea = value * Constants::AvogadroConstantPerAngstromSquared / _structureMass;
   _structureVolumetricNitrogenSurfaceArea = value * 1e4 / cell()->volume();
+}
+
+void Structure::setStructureWellSurfaceArea(double value)
+{
+  _structureGravimetricWellSurfaceArea = value * Constants::AvogadroConstantPerAngstromSquared / _structureMass;
+  _structureVolumetricWellSurfaceArea = value * 1e4 / cell()->volume();
+}
+
+void Structure::setStructureGeometricSurfaceArea(double value)
+{
+  _structureGravimetricGeometricSurfaceArea = value * Constants::AvogadroConstantPerAngstromSquared / _structureMass;
+  _structureVolumetricGeometricSurfaceArea = value * 1e4 / cell()->volume();
+}
+
+void Structure::setStructureVanDerWaalsGeometricSurfaceArea(double value)
+{
+  _structureGravimetricVanDerWaalsGeometricSurfaceArea = value * Constants::AvogadroConstantPerAngstromSquared / _structureMass;
+  _structureVolumetricVanDerWaalsGeometricSurfaceArea = value * 1e4 / cell()->volume();
+}
+
+double2 Structure::structureWindowSize(int index) const
+{
+  switch (index)
+  {
+  case 0: return _structureWindow1Size;
+  case 1: return _structureWindow2Size;
+  default: return _structureWindow3Size;
+  }
+}
+
+void Structure::setStructureWindowSize(int index, double2 value)
+{
+  switch (index)
+  {
+  case 0: _structureWindow1Size = value; break;
+  case 1: _structureWindow2Size = value; break;
+  default: _structureWindow3Size = value; break;
+  }
+}
+
+qint64 Structure::structureWindowRingAtoms(int index) const
+{
+  switch (index)
+  {
+  case 0: return _structureWindow1RingAtoms;
+  case 1: return _structureWindow2RingAtoms;
+  default: return _structureWindow3RingAtoms;
+  }
+}
+
+void Structure::setStructureWindowRingAtoms(int index, qint64 value)
+{
+  switch (index)
+  {
+  case 0: _structureWindow1RingAtoms = value; break;
+  case 1: _structureWindow2RingAtoms = value; break;
+  default: _structureWindow3RingAtoms = value; break;
+  }
+}
+
+std::vector<double4> Structure::parseBlockingPockets(const QString &contents)
+{
+  std::vector<double4> pockets;
+  const QStringList lines = contents.split(QRegularExpression("[\r\n]"), Qt::SkipEmptyParts);
+  const QStringList commentMarkers = {"#", "//", "!", ";"};
+  const QRegularExpression separatorRegex("[ \t,]+");
+
+  for (const QString &line : lines)
+  {
+    QString strippedLine = line;
+    for (const QString &marker : commentMarkers)
+    {
+      int idx = strippedLine.indexOf(marker);
+      if (idx >= 0)
+      {
+        strippedLine = strippedLine.left(idx);
+      }
+    }
+    const QStringList words = strippedLine.split(separatorRegex, Qt::SkipEmptyParts);
+    if (words.size() < 4)
+    {
+      continue;
+    }
+    bool ok0 = false, ok1 = false, ok2 = false, ok3 = false;
+    double x = words[0].toDouble(&ok0);
+    double y = words[1].toDouble(&ok1);
+    double z = words[2].toDouble(&ok2);
+    double radius = words[3].toDouble(&ok3);
+    if (ok0 && ok1 && ok2 && ok3)
+    {
+      pockets.emplace_back(x, y, z, radius);
+    }
+  }
+  return pockets;
+}
+
+std::vector<RKInPerInstanceAttributesAtoms> Structure::renderBlockingPockets() const
+{
+  if (_blockingPockets.empty() || !_cell)
+  {
+    return {};
+  }
+
+  std::vector<RKInPerInstanceAttributesAtoms> data;
+  int minimumReplicaX = _cell->minimumReplicaX();
+  int minimumReplicaY = _cell->minimumReplicaY();
+  int minimumReplicaZ = _cell->minimumReplicaZ();
+  int maximumReplicaX = _cell->maximumReplicaX();
+  int maximumReplicaY = _cell->maximumReplicaY();
+  int maximumReplicaZ = _cell->maximumReplicaZ();
+
+  auto wrapRange = [this](double center, double radius, double width, int replicaMin, int replicaMax) -> std::pair<int, int>
+  {
+    if (!_periodic || width <= 1.0e-12 || radius <= 0.0)
+    {
+      return {replicaMin, replicaMax};
+    }
+    double fractionalRadius = radius / width;
+    double boxMin = double(replicaMin);
+    double boxMax = double(replicaMax) + 1.0;
+    int wrappedMin = int(std::ceil(boxMin - center - fractionalRadius + 1.0e-12));
+    int wrappedMax = int(std::floor(boxMax - center + fractionalRadius - 1.0e-12));
+    int lower = std::min(replicaMin, wrappedMin);
+    int upper = std::max(replicaMax, wrappedMax);
+    return {lower, std::max(lower, upper)};
+  };
+
+  double3 widths = _cell->perpendicularWidths();
+  float4 ambient = float4(_blockingPocketsFrontSideAmbientColor.redF(),
+                          _blockingPocketsFrontSideAmbientColor.greenF(),
+                          _blockingPocketsFrontSideAmbientColor.blueF(),
+                          _blockingPocketsFrontSideAmbientColor.alphaF());
+  float4 diffuse = float4(_blockingPocketsFrontSideDiffuseColor.redF(),
+                          _blockingPocketsFrontSideDiffuseColor.greenF(),
+                          _blockingPocketsFrontSideDiffuseColor.blueF(),
+                          _blockingPocketsFrontSideDiffuseColor.alphaF());
+  float4 specular = float4(_blockingPocketsFrontSideSpecularColor.redF(),
+                           _blockingPocketsFrontSideSpecularColor.greenF(),
+                           _blockingPocketsFrontSideSpecularColor.blueF(),
+                           _blockingPocketsFrontSideSpecularColor.alphaF());
+
+  for (const double4 &blockingPocket : _blockingPockets)
+  {
+    double3 position = double3::flip(double3(blockingPocket.x, blockingPocket.y, blockingPocket.z), _cell->contentFlip(), double3(1.0, 1.0, 1.0));
+    double3 base = position + _cell->contentShift();
+    double radius = blockingPocket.w;
+
+    auto [minX, maxX] = wrapRange(base.x, radius, widths.x, minimumReplicaX, maximumReplicaX);
+    auto [minY, maxY] = wrapRange(base.y, radius, widths.y, minimumReplicaY, maximumReplicaY);
+    auto [minZ, maxZ] = wrapRange(base.z, radius, widths.z, minimumReplicaZ, maximumReplicaZ);
+
+    for (int k1 = minX; k1 <= maxX; ++k1)
+    {
+      for (int k2 = minY; k2 <= maxY; ++k2)
+      {
+        for (int k3 = minZ; k3 <= maxZ; ++k3)
+        {
+          double3 fractionalPosition = double3(position.x + double(k1), position.y + double(k2), position.z + double(k3)) + _cell->contentShift();
+          double3 cartesianPosition = _cell->convertToCartesian(fractionalPosition);
+          float r = float(radius);
+          RKInPerInstanceAttributesAtoms instance(
+              float4(float(cartesianPosition.x), float(cartesianPosition.y), float(cartesianPosition.z), 1.0f),
+              ambient,
+              diffuse,
+              specular,
+              float4(r, r, r, 1.0f),
+              static_cast<int32_t>(data.size()));
+          data.push_back(instance);
+        }
+      }
+    }
+  }
+
+  return data;
 }
 
 void Structure::recomputeDensityProperties()
@@ -2208,6 +2946,55 @@ QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<Structure> &s
   stream << structure->_citationDatebaseCodes;
 
   stream << qint64(0x6f6b6182);
+
+  stream << static_cast<typename std::underlying_type<RKEdgeCueing>::type>(structure->_atomEdgeCueing);
+
+  stream << qint64(structure->_blockingPockets.size());
+  for (const double4 &pocket : structure->_blockingPockets)
+  {
+    stream << pocket;
+  }
+  stream << structure->_drawBlockingPockets;
+  stream << structure->_applyBlockingPockets;
+
+  stream << structure->_blockingPocketsFrontSideHDR;
+  stream << structure->_blockingPocketsFrontSideHDRExposure;
+  stream << structure->_blockingPocketsFrontSideAmbientColor;
+  stream << structure->_blockingPocketsFrontSideDiffuseColor;
+  stream << structure->_blockingPocketsFrontSideSpecularColor;
+  stream << structure->_blockingPocketsFrontSideAmbientIntensity;
+  stream << structure->_blockingPocketsFrontSideDiffuseIntensity;
+  stream << structure->_blockingPocketsFrontSideSpecularIntensity;
+  stream << structure->_blockingPocketsFrontSideShininess;
+
+  stream << structure->_structureVolumetricWellSurfaceArea;
+  stream << structure->_structureGravimetricWellSurfaceArea;
+
+  stream << structure->_structureVolumetricGeometricSurfaceArea;
+  stream << structure->_structureGravimetricGeometricSurfaceArea;
+
+  stream << structure->_frameworkProbeEpsilon;
+  stream << structure->_frameworkProbeSigma;
+
+  stream << structure->_adsorptionSurfaceProbeEpsilon;
+  stream << structure->_adsorptionSurfaceProbeSigma;
+
+  stream << structure->_structureVolumetricVanDerWaalsGeometricSurfaceArea;
+  stream << structure->_structureGravimetricVanDerWaalsGeometricSurfaceArea;
+
+  stream << structure->_structureWindow1Size;
+  stream << structure->_structureWindow2Size;
+  stream << structure->_structureWindow3Size;
+  stream << qint64(structure->_structureWindow1RingAtoms);
+  stream << qint64(structure->_structureWindow2RingAtoms);
+  stream << qint64(structure->_structureWindow3RingAtoms);
+
+  stream << static_cast<typename std::underlying_type<ProbeMolecule>::type>(structure->_blockingPocketProbeMolecule);
+  stream << structure->_blockingPocketProbeEpsilon;
+  stream << structure->_blockingPocketProbeSigma;
+
+  stream << structure->_structureRestrictingPoreLimitingDiameter2;
+  stream << structure->_structureLargestCavityDiameterAlongAViablePath2;
 
   // handle super class
   stream << std::static_pointer_cast<Object>(structure);
@@ -2531,7 +3318,16 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
   qint64 structureType;
   stream >> structureType;
   structure->_structureType = Structure::StructureType(structureType);
-  stream >> structure->_structureMaterialType;
+  QString decodedMaterialType;
+  stream >> decodedMaterialType;
+  if (std::optional<SKStructure::MaterialType> canonicalType = SKStructure::materialTypeFromDisplayName(decodedMaterialType))
+  {
+    structure->_structureMaterialType = SKStructure::materialTypeDisplayName(*canonicalType);
+  }
+  else
+  {
+    structure->_structureMaterialType = decodedMaterialType;
+  }
   stream >> structure->_structureMass;
   stream >> structure->_structureDensity;
   stream >> structure->_structureHeliumVoidFraction;
@@ -2629,7 +3425,157 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
   structure->_citationPublicationDate = QDate(int(year),int(month),int(day));
   stream >> structure->_citationDatebaseCodes;
 
+  if(versionNumber >= 9)
+  {
+    qint64 magicNumber;
+    stream >> magicNumber;
+    if(magicNumber != qint64(0x6f6b6182))
+    {
+      throw InvalidArchiveVersionException(__FILE__, __LINE__, "Structure invalid magic-number");
+    }
+
+    if (versionNumber >= 11)
+    {
+      qint64 atomEdgeCueing;
+      stream >> atomEdgeCueing;
+      structure->_atomEdgeCueing = RKEdgeCueing(atomEdgeCueing);
+    }
+
+    if (versionNumber >= 12)
+    {
+      qint64 numberOfBlockingPockets;
+      stream >> numberOfBlockingPockets;
+      structure->_blockingPockets.clear();
+      structure->_blockingPockets.reserve(std::max<qint64>(0, numberOfBlockingPockets));
+      for (qint64 i = 0; i < std::max<qint64>(0, numberOfBlockingPockets); ++i)
+      {
+        double4 pocket;
+        stream >> pocket;
+        structure->_blockingPockets.push_back(pocket);
+      }
+      stream >> structure->_drawBlockingPockets;
+      stream >> structure->_applyBlockingPockets;
+
+      stream >> structure->_blockingPocketsFrontSideHDR;
+      stream >> structure->_blockingPocketsFrontSideHDRExposure;
+      stream >> structure->_blockingPocketsFrontSideAmbientColor;
+      stream >> structure->_blockingPocketsFrontSideDiffuseColor;
+      stream >> structure->_blockingPocketsFrontSideSpecularColor;
+      stream >> structure->_blockingPocketsFrontSideAmbientIntensity;
+      stream >> structure->_blockingPocketsFrontSideDiffuseIntensity;
+      stream >> structure->_blockingPocketsFrontSideSpecularIntensity;
+      stream >> structure->_blockingPocketsFrontSideShininess;
+    }
+
+    if (versionNumber >= 13)
+    {
+      stream >> structure->_structureVolumetricWellSurfaceArea;
+      stream >> structure->_structureGravimetricWellSurfaceArea;
+    }
+
+    if (versionNumber >= 14)
+    {
+      stream >> structure->_structureVolumetricGeometricSurfaceArea;
+      stream >> structure->_structureGravimetricGeometricSurfaceArea;
+    }
+
+    if (versionNumber >= 15)
+    {
+      stream >> structure->_frameworkProbeEpsilon;
+      stream >> structure->_frameworkProbeSigma;
+    }
+
+    if (versionNumber >= 16)
+    {
+      stream >> structure->_adsorptionSurfaceProbeEpsilon;
+      stream >> structure->_adsorptionSurfaceProbeSigma;
+    }
+
+    if (versionNumber >= 17)
+    {
+      stream >> structure->_structureVolumetricVanDerWaalsGeometricSurfaceArea;
+      stream >> structure->_structureGravimetricVanDerWaalsGeometricSurfaceArea;
+    }
+
+    if (versionNumber >= 18)
+    {
+      stream >> structure->_structureWindow1Size;
+      stream >> structure->_structureWindow2Size;
+      stream >> structure->_structureWindow3Size;
+    }
+
+    if (versionNumber >= 19)
+    {
+      qint64 ring1, ring2, ring3;
+      stream >> ring1;
+      stream >> ring2;
+      stream >> ring3;
+      structure->_structureWindow1RingAtoms = int(ring1);
+      structure->_structureWindow2RingAtoms = int(ring2);
+      structure->_structureWindow3RingAtoms = int(ring3);
+    }
+
+    if (versionNumber >= 20)
+    {
+      qint64 blockingPocketProbeMolecule;
+      stream >> blockingPocketProbeMolecule;
+      structure->_blockingPocketProbeMolecule = ProbeMolecule(blockingPocketProbeMolecule);
+    }
+
+    if (versionNumber >= 21)
+    {
+      stream >> structure->_blockingPocketProbeEpsilon;
+      stream >> structure->_blockingPocketProbeSigma;
+    }
+
+    if (versionNumber >= 22)
+    {
+      stream >> structure->_structureRestrictingPoreLimitingDiameter2;
+      stream >> structure->_structureLargestCavityDiameterAlongAViablePath2;
+    }
+
+    std::shared_ptr<Object> object = std::static_pointer_cast<Object>(structure);
+    stream >> object;
+  }
+
+  if (versionNumber < 15)
+  {
+    if (std::optional<double2> parameters = probeNamedParameters(structure->_frameworkProbeMolecule))
+    {
+      structure->_frameworkProbeEpsilon = parameters->x;
+      structure->_frameworkProbeSigma = parameters->y;
+    }
+  }
+
+  if (versionNumber < 16)
+  {
+    if (std::optional<double2> parameters = probeNamedParameters(structure->_adsorptionSurfaceProbeMolecule))
+    {
+      structure->_adsorptionSurfaceProbeEpsilon = parameters->x;
+      structure->_adsorptionSurfaceProbeSigma = parameters->y;
+    }
+  }
+
+  if (versionNumber < 21)
+  {
+    if (std::optional<double2> parameters = probeNamedParameters(structure->_blockingPocketProbeMolecule))
+    {
+      structure->_blockingPocketProbeEpsilon = parameters->x;
+      structure->_blockingPocketProbeSigma = parameters->y;
+    }
+  }
+
+  RKEdgeCueing archivedAtomEdgeCueing = structure->_atomEdgeCueing;
   structure->setRepresentationStyle(structure->atomRepresentationStyle());
+  if (versionNumber >= 11)
+  {
+    structure->_atomEdgeCueing = archivedAtomEdgeCueing;
+    if (structure->_atomRepresentationStyle == Structure::RepresentationStyle::fancy &&
+        archivedAtomEdgeCueing == RKEdgeCueing::contoursAndHalos)
+    {
+      structure->_atomRepresentationStyle = Structure::RepresentationStyle::quteMol;
+    }
+  }
 
   if(versionNumber <= 4)
   {
@@ -2641,19 +3587,6 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<Structure> &structu
 
   structure->atomsTreeController()->setTags();
   structure->bondSetController()->setTags();
-
-  if(versionNumber >= 9)
-  {
-    qint64 magicNumber;
-    stream >> magicNumber;
-    if(magicNumber != qint64(0x6f6b6182))
-    {
-      throw InvalidArchiveVersionException(__FILE__, __LINE__, "Structure invalid magic-number");
-    }
-
-    std::shared_ptr<Object> object = std::static_pointer_cast<Object>(structure);
-    stream >> object;
-  }
 
   return stream;
 }

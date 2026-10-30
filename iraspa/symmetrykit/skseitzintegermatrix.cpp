@@ -32,7 +32,17 @@ SKSeitzIntegerMatrix::SKSeitzIntegerMatrix()
 SKSeitzIntegerMatrix::SKSeitzIntegerMatrix(SKRotationMatrix rotation, int3 translation)
 {
   this->rotation = rotation;
-  this->translation = translation;  // denominator = 24
+  this->translation = int3(((translation.x % 24) + 24) % 24,
+                           ((translation.y % 24) + 24) % 24,
+                           ((translation.z % 24) + 24) % 24);  // denominator = 24
+}
+
+SKSeitzIntegerMatrix::SKSeitzIntegerMatrix(SKRotationMatrix rotation, double3 translation)
+{
+  this->rotation = rotation;
+  this->translation = int3(((int(rint(translation.x * 24.0)) % 24) + 24) % 24,
+                           ((int(rint(translation.y * 24.0)) % 24) + 24) % 24,
+                           ((int(rint(translation.z * 24.0)) % 24) + 24) % 24);
 }
 
 SKSeitzIntegerMatrix::SKSeitzIntegerMatrix(char xvalue, char yvalue, char zvalue)
@@ -72,6 +82,24 @@ std::vector<SKSeitzIntegerMatrix> SKSeitzIntegerMatrix::SeitzMatrices(std::strin
     char z = encoding[3 * i + 2];
 
     matrices[i] = SKSeitzIntegerMatrix(x,y,z);
+  }
+
+  return matrices;
+}
+
+std::vector<SKSeitzIntegerMatrix> SKSeitzIntegerMatrix::SeitzMatricesFromGeneratorEncoding(std::string encoding)
+{
+  size_t m = std::min(encoding.size() / 3, size_t(3));
+
+  std::vector<SKSeitzIntegerMatrix> matrices(3, SKSeitzIntegerMatrix(SKRotationMatrix::identity, int3(0, 0, 0)));
+
+  for(size_t i = 0; i < m; i++)
+  {
+    char x = encoding[3 * i];
+    char y = encoding[3 * i + 1];
+    char z = encoding[3 * i + 2];
+
+    matrices[i] = SKSeitzIntegerMatrix(x, y, z);
   }
 
   return matrices;

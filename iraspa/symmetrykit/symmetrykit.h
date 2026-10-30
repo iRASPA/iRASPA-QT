@@ -32,7 +32,9 @@
 #include <skcolorset.h>
 #include <skcolorsets.h>
 #include <skspacegroup.h>
+#include <skstructure.h>
 #include <skcifparser.h>
+#include <skcifsymmetryoperationparser.h>
 #include <skpdbparser.h>
 #include <skposcarparser.h>
 #include <skvtkparser.h>

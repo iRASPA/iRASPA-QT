@@ -266,6 +266,7 @@ std::optional<SKPointGroup> SKPointGroup::findPointGroup(double3x3 unitCell, std
     {
       histogram[std::get<1>(atom)] = histogram[std::get<1>(atom)] + 1;
     }
+    if(histogram.empty()) return std::nullopt;
     std::map<int,int>::iterator index = std::min_element(histogram.begin(), histogram.end(),
                                        [](const auto& l, const auto& r) { return l.second < r.second; });
     int leastOccuringAtomType = index->first;
@@ -282,7 +283,7 @@ std::optional<SKPointGroup> SKPointGroup::findPointGroup(double3x3 unitCell, std
 
     std::vector<std::tuple<double3, int, double> >positionInPrimitiveCell = SKSymmetryCell::trim(atoms, unitCell, *primitiveDelaunayUnitCell, allowPartialOccupancies, symmetryPrecision);
 
-    SKSymmetryOperationSet spaceGroupSymmetries = SKSpaceGroup::findSpaceGroupSymmetry(unitCell, positionInPrimitiveCell, positionInPrimitiveCell, latticeSymmetries, allowPartialOccupancies, symmetryPrecision);
+    SKSymmetryOperationSet spaceGroupSymmetries = SKSpaceGroup::findSpaceGroupSymmetry(*primitiveDelaunayUnitCell, positionInPrimitiveCell, positionInPrimitiveCell, latticeSymmetries, allowPartialOccupancies, symmetryPrecision);
 
     SKPointSymmetrySet pointSymmetry = SKPointSymmetrySet(spaceGroupSymmetries.rotations());
 

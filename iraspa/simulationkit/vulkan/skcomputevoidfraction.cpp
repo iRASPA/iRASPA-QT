@@ -21,7 +21,9 @@
 
 #include "skcomputevoidfraction.h"
 
+#include <algorithm>
 #include <cmath>
+#include <limits>
 #include <stdexcept>
 
 #include <QDebug>
@@ -126,20 +128,36 @@ SKComputeVoidFraction::~SKComputeVoidFraction()
   }
 }
 
-double SKComputeVoidFraction::ComputeVoidFraction(std::vector<float> *voxels)
+double SKComputeVoidFraction::ComputeVoidFraction(std::vector<float> *voxels, const std::vector<bool> *blocked)
 {
+  if (!voxels || voxels->empty()) return 0.0;
+  std::vector<float> modifiedVoxels;
+  std::vector<float> *targetVoxels = voxels;
+  if (blocked && !blocked->empty())
+  {
+    modifiedVoxels = *voxels;
+    std::size_t count = std::min(modifiedVoxels.size(), blocked->size());
+    for (std::size_t i = 0; i < count; ++i)
+    {
+      if ((*blocked)[i])
+      {
+        modifiedVoxels[i] = std::numeric_limits<float>::max();
+      }
+    }
+    targetVoxels = &modifiedVoxels;
+  }
   if (getInstance()._ready)
   {
     try
     {
-      return getInstance().ComputeVoidFractionGPU(voxels);
+      return getInstance().ComputeVoidFractionGPU(targetVoxels);
     }
     catch (const std::exception &error)
     {
       qDebug() << "SKComputeVoidFraction: GPU path failed, using CPU:" << error.what();
     }
   }
-  return ComputeVoidFractionCPU(voxels);
+  return ComputeVoidFractionCPU(targetVoxels);
 }
 
 double SKComputeVoidFraction::ComputeVoidFractionCPU(std::vector<float> *voxels)

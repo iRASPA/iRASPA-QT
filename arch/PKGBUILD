@@ -1,6 +1,6 @@
 # Maintainer: David Dubbeldam <d.dubbeldam@uva.nl>
 pkgname=iraspa
-pkgver=2.3.7
+pkgver=2.3.14
 pkgrel=1
 pkgdesc="Molecular visualizer/editor"
 arch=('x86_64' 'aarch64')

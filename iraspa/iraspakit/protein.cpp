@@ -58,6 +58,11 @@ Protein::Protein(std::shared_ptr<SKStructure> frame): Structure(frame)
 
 Protein::Protein(const std::shared_ptr<Object> object): Structure(object)
 {
+  if (std::shared_ptr<ProteinRibbonMixin> ribbonMixin = std::dynamic_pointer_cast<ProteinRibbonMixin>(object))
+  {
+    cloneRibbonStateFrom(*ribbonMixin);
+  }
+
   if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
   {
     if(atomViewer->isFractional())

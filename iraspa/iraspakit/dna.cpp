@@ -59,6 +59,11 @@ DNA::DNA(std::shared_ptr<SKStructure> frame): Structure(frame)
 
 DNA::DNA(const std::shared_ptr<Object> object): Structure(object)
 {
+  if (std::shared_ptr<DNARibbonMixin> ribbonMixin = std::dynamic_pointer_cast<DNARibbonMixin>(object))
+  {
+    cloneRibbonStateFrom(*ribbonMixin);
+  }
+
   if (std::shared_ptr<AtomViewer> atomViewer = std::dynamic_pointer_cast<AtomViewer>(object))
   {
     if(atomViewer->isFractional())
@@ -951,7 +956,7 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> DNA::rotatedP
 
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<DNA> &protein)
 {
-  stream << qint64(1);
+  stream << protein->_versionNumber;
   stream << qint64(0x444e4187);
   protein->writeCocoaRibbonAppearance(stream);
 
@@ -969,41 +974,17 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<DNA> &protein)
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "DNA");
   }
 
-  if (versionNumber <= 1)
+  qint64 magicNumber;
+  stream >> magicNumber;
+  if(magicNumber != qint64(0x444e4187))
   {
-    qint64 magicNumber;
-    stream >> magicNumber;
-    if(magicNumber != qint64(0x444e4187))
-    {
-      throw InvalidArchiveVersionException(__FILE__, __LINE__, "DNA invalid magic-number");
-    }
-    protein->readCocoaRibbonAppearance(stream);
-
-    std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(protein);
-    stream >> structure;
-    DNAAtomTreeBuilder::applyHierarchyIfNeeded(*protein->atomsTreeController());
-    protein->rebuildBackbone();
-    return stream;
+    throw InvalidArchiveVersionException(__FILE__, __LINE__, "DNA invalid magic-number");
   }
-
-  if(versionNumber >= 2)
-  {
-    qint64 magicNumber;
-    stream >> magicNumber;
-    if(magicNumber != qint64(0x6f6b6187))
-    {
-      throw InvalidArchiveVersionException(__FILE__, __LINE__, "DNA invalid magic-number");
-    }
-  }
+  protein->readCocoaRibbonAppearance(stream, versionNumber);
 
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(protein);
   stream >> structure;
-
-  protein->readRibbonState(stream, versionNumber);
-  if (versionNumber >= 3)
-  {
-    protein->rebuildBackbone();
-  }
-
+  DNAAtomTreeBuilder::applyHierarchyIfNeeded(*protein->atomsTreeController());
+  protein->rebuildBackbone();
   return stream;
 }

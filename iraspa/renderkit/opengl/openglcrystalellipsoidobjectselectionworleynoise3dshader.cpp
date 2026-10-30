@@ -280,9 +280,9 @@ void main(void)
   // Calculate R locally
   vec3 R = reflect(-L, N);
 
-  vec4  ambient = structureUniforms.primitiveAmbientFrontSide;
-  vec4  diffuse = max(dot(N, L), 0.0) * structureUniforms.primitiveDiffuseFrontSide;
-  vec4  specular = pow(max(dot(R, V), 0.0), lightUniforms.lights[0].shininess + structureUniforms.primitiveShininessFrontSide) * structureUniforms.primitiveSpecularFrontSide;
+  vec4  ambient = lightUniforms.lights[0].ambient * structureUniforms.primitiveAmbientFrontSide;
+  vec4  diffuse = max(dot(N, L), 0.0) * lightUniforms.lights[0].diffuse * structureUniforms.primitiveDiffuseFrontSide;
+  vec4  specular = pow(max(dot(R, V), 0.0), lightUniforms.lights[0].shininess + structureUniforms.primitiveShininessFrontSide) * lightUniforms.lights[0].specular * structureUniforms.primitiveSpecularFrontSide;
 
   vec3 t1 = fs_in.Model_N;
   float frequency = structureUniforms.primitiveSelectionWorleyNoise3DFrequency;
@@ -291,7 +291,7 @@ void main(void)
   float n = F.y-F.x;
 
 
-  vec4  color = n * vec4((ambient.xyz + diffuse.xyz + specular.xyz), 1.0);
+  vec4  color = vec4((ambient.xyz + diffuse.xyz + specular.xyz), 1.0);
   if (structureUniforms.primitiveFrontSideHDR)
   {
     vec4 vLdrColor = 1.0 - exp2(-color * structureUniforms.primitiveFrontSideHDRExposure);
@@ -304,6 +304,7 @@ void main(void)
   hsv.y = hsv.y * structureUniforms.primitiveSaturation;
   hsv.z = hsv.z * structureUniforms.primitiveValue;
   float bloomLevel = frameUniforms.bloomLevel * structureUniforms.primitiveSelectionIntensity;
-  vFragColor = bloomLevel * vec4(hsv2rgb(hsv),1.0);
+  float alpha = bloomLevel * n;
+  vFragColor = vec4(hsv2rgb(hsv) * alpha, alpha);
 }
 )foo");

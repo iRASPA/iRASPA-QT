@@ -34,7 +34,7 @@ SphereGeometry::SphereGeometry(double r, int s)
   _vertexes = std::vector<RKVertex>();
   _indices = std::vector<short>();
   _vertexes.reserve(_numberOfVertexes);
-  _vertexes.reserve(_numberOfIndices);
+  _indices.reserve(_numberOfIndices);
 
   for(int stackNumber=0;stackNumber<=_slices;stackNumber++)
   {

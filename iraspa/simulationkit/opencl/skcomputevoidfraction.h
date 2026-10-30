@@ -41,7 +41,8 @@
 class SKComputeVoidFraction: public SKOpenCL
 {
 public:
-  static double ComputeVoidFraction(std::vector<cl_float> *voxels);
+  static double ComputeVoidFraction(std::vector<cl_float> *voxels, const std::vector<bool> *blocked = nullptr);
+  static double ComputeVoidFractionCPUImplementation(std::vector<cl_float> *voxels);
 private:
   SKComputeVoidFraction();
   cl_program _program;

@@ -44,6 +44,7 @@ void ProteinRibbonMixin::cloneRibbonStateFrom(const ProteinRibbonMixin &other)
   _ribbonScaleFactor = other._ribbonScaleFactor;
   _ribbonColorSet = other._ribbonColorSet;
   _ribbonRepresentationStyle = other._ribbonRepresentationStyle;
+  _ribbonEdgeCueing = other._ribbonEdgeCueing;
   _ribbonSecondaryStructureMethod = other._ribbonSecondaryStructureMethod;
   _ribbonSplineType = other._ribbonSplineType;
   _ribbonSubdivisionsPerSegment = other._ribbonSubdivisionsPerSegment;
@@ -84,6 +85,8 @@ ProteinRibbonColorSet ProteinRibbonMixin::ribbonColorSet() const { return _ribbo
 void ProteinRibbonMixin::setRibbonColorSet(ProteinRibbonColorSet value) { _ribbonColorSet = value; }
 ProteinRibbonRepresentationStyle ProteinRibbonMixin::ribbonRepresentationStyle() const { return _ribbonRepresentationStyle; }
 void ProteinRibbonMixin::setRibbonRepresentationStyle(ProteinRibbonRepresentationStyle value) { _ribbonRepresentationStyle = value; }
+RKEdgeCueing ProteinRibbonMixin::ribbonEdgeCueing() const { return _ribbonEdgeCueing; }
+void ProteinRibbonMixin::setRibbonEdgeCueing(RKEdgeCueing value) { _ribbonEdgeCueing = value; }
 ProteinRibbonSecondaryStructureMethod ProteinRibbonMixin::ribbonSecondaryStructureMethod() const { return _ribbonSecondaryStructureMethod; }
 void ProteinRibbonMixin::setRibbonSecondaryStructureMethod(ProteinRibbonSecondaryStructureMethod value) { _ribbonSecondaryStructureMethod = value; }
 ProteinRibbonSplineType ProteinRibbonMixin::ribbonSplineType() const { return _ribbonSplineType; }
@@ -393,6 +396,8 @@ void ProteinRibbonMixin::writeCocoaRibbonAppearance(QDataStream &stream) const
   stream << static_cast<qint64>(_ribbonNormalSmoothingRadius);
   stream << proteinRibbonRepresentationStyleRawValue(_ribbonRepresentationStyle);
   stream << proteinRibbonSecondaryStructureMethodRawValue(_ribbonSecondaryStructureMethod);
+  stream << static_cast<qint64>(_ribbonEdgeCueing);
+  stream << _drawRibbon;
 }
 
 void ProteinRibbonMixin::readCocoaRibbonAppearance(QDataStream &stream, qint64 versionNumber)
@@ -458,6 +463,26 @@ void ProteinRibbonMixin::readCocoaRibbonAppearance(QDataStream &stream, qint64 v
     QString secondaryStructureMethodIdentifier;
     stream >> secondaryStructureMethodIdentifier;
     _ribbonSecondaryStructureMethod = proteinRibbonSecondaryStructureMethodFromRawValue(secondaryStructureMethodIdentifier);
+  }
+
+  if (versionNumber >= 8)
+  {
+    qint64 edgeCueingValue = 0;
+    stream >> edgeCueingValue;
+    _ribbonEdgeCueing = static_cast<RKEdgeCueing>(edgeCueingValue);
+    if (_ribbonRepresentationStyle == ProteinRibbonRepresentationStyle::fancy && _ribbonEdgeCueing == RKEdgeCueing::contoursAndHalos)
+    {
+      _ribbonRepresentationStyle = ProteinRibbonRepresentationStyle::illustrative;
+    }
+  }
+  else
+  {
+    _ribbonEdgeCueing = RKEdgeCueing::off;
+  }
+
+  if (versionNumber >= 9)
+  {
+    stream >> _drawRibbon;
   }
 
   migrateLegacySheetArrowDefaultsIfNeeded(*this);

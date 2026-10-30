@@ -513,6 +513,11 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceGPUImplementation(int3
 
 std::vector<float4> SKComputeIsosurface::computeIsosurfaceCPUImplementation(int3 dimensions, std::vector<float> *voxels, double isoValue) noexcept
 {
+  if (!voxels || voxels->empty() || dimensions.x <= 0 || dimensions.y <= 0 || dimensions.z <= 0)
+  {
+    return {};
+  }
+
   const int largestSize = std::max({dimensions.x, dimensions.y, dimensions.z});
   int powerOfTwo = 1;
   while (largestSize > (1 << powerOfTwo))
@@ -520,16 +525,23 @@ std::vector<float4> SKComputeIsosurface::computeIsosurfaceCPUImplementation(int3
     ++powerOfTwo;
   }
   const size_t size = static_cast<size_t>(1 << powerOfTwo);
+  const size_t tightCount = static_cast<size_t>(dimensions.x) * static_cast<size_t>(dimensions.y) * static_cast<size_t>(dimensions.z);
+  const bool usePowerOfTwoStride = (voxels->size() >= size * size * size && voxels->size() != tightCount);
+  const size_t strideX = usePowerOfTwoStride ? size : static_cast<size_t>(dimensions.x);
+  const size_t strideY = usePowerOfTwoStride ? size : static_cast<size_t>(dimensions.y);
 
-  MarchingCubes cube(dimensions.x, dimensions.y, dimensions.z);
+  MarchingCubes cube(dimensions.x + 1, dimensions.y + 1, dimensions.z + 1);
   cube.init_all();
-  for (int i = 0; i < dimensions.x; ++i)
+  for (int i = 0; i <= dimensions.x; ++i)
   {
-    for (int j = 0; j < dimensions.y; ++j)
+    const int ix = i % dimensions.x;
+    for (int j = 0; j <= dimensions.y; ++j)
     {
-      for (int k = 0; k < dimensions.z; ++k)
+      const int iy = j % dimensions.y;
+      for (int k = 0; k <= dimensions.z; ++k)
       {
-        const double value = (*voxels)[static_cast<size_t>(i) + size * static_cast<size_t>(j) + size * size * static_cast<size_t>(k)];
+        const int iz = k % dimensions.z;
+        const double value = (*voxels)[static_cast<size_t>(ix) + strideX * static_cast<size_t>(iy) + strideX * strideY * static_cast<size_t>(iz)];
         cube.set_data(value, i, j, k);
       }
     }

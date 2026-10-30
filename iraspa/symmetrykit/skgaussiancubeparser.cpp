@@ -59,13 +59,10 @@ void SKGaussianCubeParser::startParsing() noexcept(false)
 
   // skip first two lines
   _scanner.scanLine(scannedLine);
-  qDebug() << "CHECK1" << scannedLine;
   _scanner.scanLine(scannedLine);
-qDebug() << "CHECK2" << scannedLine;
 
   // read number of atoms and origin
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  qDebug() << "CHECK" << scannedLine;
   #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
     termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
   #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -191,10 +188,11 @@ qDebug() << "CHECK2" << scannedLine;
 
     int atomicNumber = termsScannedLined[0].toInt(&succes);
     if(!succes) {throw std::runtime_error("Atomic number not an int");}
+    int validAtomicNumber = (atomicNumber >= 0 && static_cast<size_t>(atomicNumber) < PredefinedElements::predefinedElements.size()) ? atomicNumber : 0;
 
     std::shared_ptr<SKAsymmetricAtom> atom = std::make_shared<SKAsymmetricAtom>();
-    atom->setElementIdentifier(atomicNumber);
-    atom->setDisplayName(PredefinedElements::predefinedElements[atomicNumber]._chemicalSymbol);
+    atom->setElementIdentifier(validAtomicNumber);
+    atom->setDisplayName(PredefinedElements::predefinedElements[validAtomicNumber]._chemicalSymbol);
 
     double3 position;
     succes = false;
@@ -207,10 +205,38 @@ qDebug() << "CHECK2" << scannedLine;
     _frame->atoms.push_back(atom);
   }
 
-  // read orbital line
+  // read orbital line and skip orbital index tokens
   if(numberOfAtoms<0)
   {
     _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
+    #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+      QStringList orbitalWords = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+    #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+      QStringList orbitalWords = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+    #else
+      QStringList orbitalWords = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+    #endif
+    if(!orbitalWords.isEmpty())
+    {
+      bool moSuccess = false;
+      int numberOfMolecularOrbitals = orbitalWords[0].toInt(&moSuccess);
+      if(moSuccess && numberOfMolecularOrbitals > 0)
+      {
+        int remainingOrbitalsToSkip = numberOfMolecularOrbitals - (orbitalWords.size() - 1);
+        double dummyToken = 0.0;
+        while(remainingOrbitalsToSkip > 0 && !_scanner.isAtEnd())
+        {
+          if(_scanner.scanDouble(dummyToken))
+          {
+            remainingOrbitalsToSkip -= 1;
+          }
+          else
+          {
+            break;
+          }
+        }
+      }
+    }
   }
 
   int numberOfElements = dimensions.x * dimensions.y * dimensions.z;
@@ -242,9 +268,10 @@ qDebug() << "CHECK2" << scannedLine;
   _frame->origin = origin;
   _frame->dimensions = dimensions;
   _frame->range = std::pair(minimumValue, maximumValue);
-  _frame->average = sum / (numberOfElements);
-  _frame->variance = sumSquared / (numberOfElements - 1);
+  _frame->average = numberOfElements > 0 ? (sum / double(numberOfElements)) : 0.0;
+  _frame->variance = numberOfElements > 0 ? ((sumSquared - (sum * sum) / double(numberOfElements)) / double(std::max(1, numberOfElements - 1))) : 0.0;
   _frame->byteData = QByteArray(reinterpret_cast<char*>(dataPoints.data()), dataPoints.size() * sizeof(float));
+  _frame->applyInferredMaterialType();
 
   _movies.push_back({_frame});
 }

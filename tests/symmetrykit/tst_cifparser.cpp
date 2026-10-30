@@ -68,3 +68,67 @@ void CIFParser::test_case_elements_from_type_symbol()
   QCOMPARE(occurrences[8], 2);
   QCOMPARE(occurrences[30], 1);
 }
+
+void CIFParser::test_parse_identity_operation()
+{
+  std::optional<SKSeitzIntegerMatrix> operation = SKCIFSymmetryOperationParser::parse("x,y,z");
+  QVERIFY(operation.has_value());
+  QCOMPARE(operation->rotation, SKRotationMatrix::identity);
+  QCOMPARE(operation->translation, int3(0, 0, 0));
+}
+
+void CIFParser::test_parse_body_centered_operation()
+{
+  std::optional<SKSeitzIntegerMatrix> operation = SKCIFSymmetryOperationParser::parse("-x+1/2,-y+1/2,-z+1/2");
+  QVERIFY(operation.has_value());
+  QCOMPARE(operation->rotation, SKRotationMatrix::inversionIdentity);
+  QCOMPARE(operation->translation, int3(12, 12, 12));
+}
+
+void CIFParser::test_hm_symbol_disambiguation_with_symops()
+{
+  std::vector<int> candidates = SKSpaceGroup::candidateHallNumbers(141, std::nullopt, "I 41/a m d");
+  QCOMPARE(candidates, (std::vector<int>{427, 426}));
+
+  std::unordered_set<SKSeitzIntegerMatrix> opsSet = SKSpaceGroup(426).spaceGroupSetting().fullSeitzMatrices().operations;
+  std::vector<SKSeitzIntegerMatrix> ops(opsSet.begin(), opsSet.end());
+  std::optional<int> hallFromOps = SKSpaceGroup::identifyHallNumber(ops, candidates);
+  QVERIFY(hallFromOps.has_value());
+  QCOMPARE(*hallFromOps, 426);
+}
+
+void CIFParser::test_seitz_matrices_from_empty_generator_encoding()
+{
+  std::vector<SKSeitzIntegerMatrix> matrices = SKSeitzIntegerMatrix::SeitzMatricesFromGeneratorEncoding("");
+  QCOMPARE(static_cast<int>(matrices.size()), 3);
+  QCOMPARE(matrices[0].rotation, SKRotationMatrix::identity);
+  QCOMPARE(matrices[1].rotation, SKRotationMatrix::identity);
+  QCOMPARE(matrices[2].rotation, SKRotationMatrix::identity);
+}
+
+void CIFParser::test_get_origin_shift_for_p1()
+{
+  SKSeitzMatrix identity(SKRotationMatrix::identity, double3(0.0, 0.0, 0.0));
+  std::optional<double3> origin = SKSpaceGroup::getOriginShift(
+    1,
+    Centring::primitive,
+    SKRotationalChangeOfBasis(SKRotationMatrix::identity),
+    {identity},
+    1e-2
+  );
+  QVERIFY(origin.has_value());
+  QCOMPARE(origin->x, 0.0);
+  QCOMPARE(origin->y, 0.0);
+  QCOMPARE(origin->z, 0.0);
+}
+
+void CIFParser::test_material_type_inference()
+{
+  // Zeolite (Si + O)
+  QCOMPARE(SKStructure::inferMaterialType({14, 8}, SKStructure::Kind::crystal, {"MFI"}),
+           SKStructure::MaterialType::zeolite);
+
+  // MOF (Zn + C + H + O)
+  QCOMPARE(SKStructure::inferMaterialType({30, 8, 6, 1}, SKStructure::Kind::crystal, {"IRMOF-1"}),
+           SKStructure::MaterialType::mof);
+}

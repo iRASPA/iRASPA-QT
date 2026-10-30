@@ -12,6 +12,7 @@ add_library(symmetrykit STATIC
   skcell.cpp
   skchgcarparser.cpp
   skcifparser.cpp
+  skcifsymmetryoperationparser.cpp
   skcifwriter.cpp
   skcolorset.cpp
   skcolorsets.cpp
@@ -51,6 +52,7 @@ add_library(symmetrykit STATIC
   skspacegroupsetting.cpp
   skstrideramachandranmaps.cpp
   skstridesecondarystructureassigner.cpp
+  skstructure.cpp
   sksymmetrycell.cpp
   sksymmetryoperationset.cpp
   sktransformationmatrix.cpp

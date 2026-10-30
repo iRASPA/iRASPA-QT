@@ -13,9 +13,5 @@ void main()
   vec3 N = normalize(inN);
   vec3 L = normalize(inL);
   vec4 color = max(dot(N, L), 0.0) * structureUniforms.unitCellColor;
-  vec3 hsv = rgb2hsv(color.xyz);
-  hsv.x = hsv.x * structureUniforms.atomHue;
-  hsv.y = hsv.y * structureUniforms.atomSaturation;
-  hsv.z = hsv.z * structureUniforms.atomValue;
-  vFragColor = vec4(hsv2rgb(hsv), 1.0);
+  vFragColor = vec4(color.xyz, 1.0);
 }

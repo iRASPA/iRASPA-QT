@@ -73,6 +73,7 @@ private:
   std::vector<std::vector<GLuint>> _surfaceInstancePositionBuffer;
 
   std::array<QCache<RKRenderObject*, std::vector<cl_float>>,9> _caches;
+  std::array<QCache<RKRenderObject*, std::vector<float>>,9> _wellCaches;
 
   static const std::string _vertexShaderSource;
   static const std::string _fragmentShaderSource;

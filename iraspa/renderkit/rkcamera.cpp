@@ -188,7 +188,7 @@ void RKCamera::increaseDistance(double deltaDistance)
       }
       break;
     case FrustrumType::perspective:
-      if (_distance.z - 0.25 * deltaDistance > 0.0)
+      if (_distance.z - 0.25 * deltaDistance > 0.5 * delta.z)
       {
         _distance.z -= 0.25 * deltaDistance;
         _orthoScale = (_distance.z - 0.5 * delta.z) * tan(0.5 * _angleOfView);
@@ -476,10 +476,6 @@ double4x4 RKCamera::GluLookAt(double3 eye, double3 center, double3 oldup)
   viewMatrix[3][0] = -(viewMatrix[0][0]*eye.x+viewMatrix[1][0]*eye.y+viewMatrix[2][0]*eye.z);
   viewMatrix[3][1] = -(viewMatrix[0][1]*eye.x+viewMatrix[1][1]*eye.y+viewMatrix[2][1]*eye.z);
   viewMatrix[3][2] = -(viewMatrix[0][2]*eye.x+viewMatrix[1][2]*eye.y+viewMatrix[2][2]*eye.z);
-
-  viewMatrix[3][0] = -eye.x;
-  viewMatrix[3][1] = -eye.y;
-  viewMatrix[3][2] = -eye.z;
 
   return viewMatrix;
 }

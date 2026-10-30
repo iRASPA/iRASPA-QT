@@ -118,6 +118,7 @@ void VulkanIsosurfaceShader::invalidateIsosurface(const std::vector<std::shared_
   for (const auto &structure : structures)
   {
     _gridCache.erase(structure.get());
+    _wellCache.erase(structure.get());
   }
 }
 
@@ -137,7 +138,8 @@ void VulkanIsosurfaceShader::reloadData()
       {
         continue;
       }
-      if (!source->drawAdsorptionSurface() || source->adsorptionSurfaceRenderingMethod() != RKEnergySurfaceType::isoSurface)
+      const RKEnergySurfaceType method = source->adsorptionSurfaceRenderingMethod();
+      if (!source->drawAdsorptionSurface() || (!isTriangulatedEnergySurface(method) && !isGeometricEnergySurface(method)))
       {
         continue;
       }
@@ -146,31 +148,61 @@ void VulkanIsosurfaceShader::reloadData()
       const int3 dimensions = source->dimensions();
       RKRenderObject *key = _renderStructures[i][j].get();
 
-      std::shared_ptr<std::vector<float>> energyGrid;
-      auto cacheIt = _gridCache.find(key);
-      if (cacheIt != _gridCache.end())
-      {
-        energyGrid = cacheIt->second;
-      }
-      else
-      {
-        std::vector<float> gridData = source->gridData();
-        if (gridData.empty())
-        {
-          continue;
-        }
-        energyGrid = std::make_shared<std::vector<float>>(std::move(gridData));
-        _gridCache[key] = energyGrid;
-      }
-
       std::vector<float4> triangleData;
-      try
+      if (isGeometricEnergySurface(method))
       {
-        triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGrid.get(), isoValue);
+        triangleData = source->constructGeometricSurfaceTriangles();
       }
-      catch (const std::exception &)
+      else if (method == RKEnergySurfaceType::wellSurface || method == RKEnergySurfaceType::wellSurfaceOverlay)
       {
-        triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, energyGrid.get(), isoValue);
+        std::shared_ptr<std::vector<float>> wellGrid;
+        auto cacheIt = _wellCache.find(key);
+        if (cacheIt != _wellCache.end())
+        {
+          wellGrid = cacheIt->second;
+        }
+        else
+        {
+          std::vector<float> wellData = source->wellFieldData();
+          if (wellData.empty())
+          {
+            continue;
+          }
+          wellGrid = std::make_shared<std::vector<float>>(std::move(wellData));
+          _wellCache[key] = wellGrid;
+        }
+
+        triangleData = (method == RKEnergySurfaceType::wellSurface)
+                           ? source->constructWellSurfaceTriangles(*wellGrid)
+                           : source->constructWellFilamentTriangles(*wellGrid);
+      }
+      else if (method == RKEnergySurfaceType::isoSurface)
+      {
+        std::shared_ptr<std::vector<float>> energyGrid;
+        auto cacheIt = _gridCache.find(key);
+        if (cacheIt != _gridCache.end())
+        {
+          energyGrid = cacheIt->second;
+        }
+        else
+        {
+          std::vector<float> gridData = source->gridData();
+          if (gridData.empty())
+          {
+            continue;
+          }
+          energyGrid = std::make_shared<std::vector<float>>(std::move(gridData));
+          _gridCache[key] = energyGrid;
+        }
+
+        try
+        {
+          triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGrid.get(), isoValue);
+        }
+        catch (const std::exception &)
+        {
+          triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, energyGrid.get(), isoValue);
+        }
       }
 
       _structureBuffers[i][j].triangleCount = static_cast<uint32_t>(triangleData.size() / 9);
@@ -236,7 +268,8 @@ void VulkanIsosurfaceShader::paint(VkCommandBuffer commandBuffer, bool opaque, i
                            buffers.instanceBuffer.buffer;
       const bool isOpaque = source && source->adsorptionSurfaceOpacity() > 0.99999;
       const bool drawThis = visible && (opaque ? isOpaque
-                                               : (!isOpaque && source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::isoSurface)) &&
+                                               : (!isOpaque && (isTriangulatedEnergySurface(source->adsorptionSurfaceRenderingMethod()) ||
+                                                                isGeometricEnergySurface(source->adsorptionSurfaceRenderingMethod())))) &&
                             (sceneIndex < 0 || (static_cast<int>(i) == sceneIndex && static_cast<int>(j) == movieIndex));
       if (drawThis)
       {

@@ -51,6 +51,10 @@ OpenGLEnergySurface::~OpenGLEnergySurface()
   {
     cache.clear();
   }
+  for(QCache<RKRenderObject*, std::vector<float>> & cache: _wellCaches)
+  {
+    cache.clear();
+  }
 }
 
 void OpenGLEnergySurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRenderObject>> structures)
@@ -58,6 +62,10 @@ void OpenGLEnergySurface::invalidateIsosurface(std::vector<std::shared_ptr<RKRen
   for(const std::shared_ptr<RKRenderObject> &structure : structures)
   {
     for(QCache<RKRenderObject*, std::vector<cl_float>> & cache: _caches)
+    {
+      cache.remove(structure.get());
+    }
+    for(QCache<RKRenderObject*, std::vector<float>> & cache: _wellCaches)
     {
       cache.remove(structure.get());
     }
@@ -139,7 +147,8 @@ void OpenGLEnergySurface::paintGLOpaque(GLuint structureUniformBuffer, GLuint is
       if (RKRenderVolumetricDataSource* source = dynamic_cast<RKRenderVolumetricDataSource*>(_renderStructures[i][j].get()))
       {
         if (renderStructure->isVisible() && source->drawAdsorptionSurface() &&
-            source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::isoSurface &&
+            (isTriangulatedEnergySurface(source->adsorptionSurfaceRenderingMethod()) ||
+             isGeometricEnergySurface(source->adsorptionSurfaceRenderingMethod())) &&
             source->adsorptionSurfaceOpacity()>0.99999 && _surfaceNumberOfIndices[i][j] > 0 && _surfaceNumberOfInstances[i][j]>0)
         {
           glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, static_cast<GLintptr>(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
@@ -179,7 +188,9 @@ void OpenGLEnergySurface::paintGLTransparent(GLuint structureUniformBuffer, GLui
       }
       if (RKRenderVolumetricDataSource* source = dynamic_cast<RKRenderVolumetricDataSource*>(_renderStructures[i][j].get()))
       {
-        if (_renderStructures[i][j]->isVisible() && source->drawAdsorptionSurface() && source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::isoSurface &&
+        if (_renderStructures[i][j]->isVisible() && source->drawAdsorptionSurface() &&
+            (isTriangulatedEnergySurface(source->adsorptionSurfaceRenderingMethod()) ||
+             isGeometricEnergySurface(source->adsorptionSurfaceRenderingMethod())) &&
             source->adsorptionSurfaceOpacity()<=0.99999 && _surfaceNumberOfIndices[i][j] > 0 )
         {
           glBindBufferRange(GL_UNIFORM_BUFFER, 1, structureUniformBuffer, static_cast<GLintptr>(index * sizeof(RKStructureUniforms)), sizeof(RKStructureUniforms));
@@ -216,7 +227,9 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
       {
         if (RKRenderVolumetricDataSource* source = dynamic_cast<RKRenderVolumetricDataSource*>(_renderStructures[i][j].get()))
         {
-          if (source->drawAdsorptionSurface() && source->adsorptionSurfaceRenderingMethod() == RKEnergySurfaceType::isoSurface )
+          RKEnergySurfaceType method = source->adsorptionSurfaceRenderingMethod();
+          if (source->drawAdsorptionSurface() &&
+              (isTriangulatedEnergySurface(method) || isGeometricEnergySurface(method)))
           {
             glBindVertexArray(_surfaceVertexArrayObject[i][j]);
             check_gl_error();
@@ -226,84 +239,144 @@ void OpenGLEnergySurface::initializeVertexArrayObject()
             glVertexAttribPointer(_atomSurfaceVertexPositionAttributeLocation, 4, GL_FLOAT, GL_FALSE, kIsosurfaceVertexStride, reinterpret_cast<GLvoid *>(0));
             glVertexAttribPointer(_atomSurfaceVertexNormalAttributeLocation, 4, GL_FLOAT, GL_FALSE, kIsosurfaceVertexStride, reinterpret_cast<GLvoid *>(sizeof(float4)));
 
-            double isoValue = source->adsorptionSurfaceIsoValue();
-            int3 dimensions = source->dimensions();
-            int largestSize = std::max({dimensions.x,dimensions.y,dimensions.z});
-            int powerOfTwo = 1;
-            while(largestSize > pow(2,powerOfTwo))
-            {
-              powerOfTwo += 1;
-            }
-
             _surfaceNumberOfIndices[i][j] = 0;
-            std::vector<cl_float> *energyGridPointer = nullptr;
-            if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
+
+            if (isGeometricEnergySurface(method))
             {
-              energyGridPointer = _caches[powerOfTwo].object(_renderStructures[i][j].get());
-
-              try
+              std::vector<float4> triangleData = source->constructGeometricSurfaceTriangles();
+              _surfaceNumberOfIndices[i][j] = triangleData.size() / (3 * 3);
+              if (!triangleData.empty())
               {
-                std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGridPointer, isoValue);
-                _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
-
-                if(triangleData.size()>0)
-                {
-                  glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
-                  check_gl_error();
-                }
+                glBufferData(GL_ARRAY_BUFFER, triangleData.size() * sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                check_gl_error();
               }
-              catch (std::exception const &e)
+            }
+            else if (method == RKEnergySurfaceType::wellSurface || method == RKEnergySurfaceType::wellSurfaceOverlay)
+            {
+              int3 dimensions = source->dimensions();
+              int largestSize = std::max({dimensions.x,dimensions.y,dimensions.z});
+              int powerOfTwo = 1;
+              while(largestSize > pow(2,powerOfTwo))
               {
-                // fall back to CPU implementation (noexcept) in case of problems with the accelerated version.
-                std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, energyGridPointer, isoValue);
-                _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+                powerOfTwo += 1;
+              }
+              powerOfTwo = std::clamp(powerOfTwo, 0, 8);
 
-                if(triangleData.size()>0)
+              std::vector<float> *wellFieldPointer = nullptr;
+              if (_wellCaches[powerOfTwo].contains(_renderStructures[i][j].get()))
+              {
+                wellFieldPointer = _wellCaches[powerOfTwo].object(_renderStructures[i][j].get());
+              }
+              else
+              {
+                std::vector<float> wellData = source->wellFieldData();
+                if (wellData.empty())
                 {
-                  glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                  _surfaceNumberOfIndices[i][j] = 0;
+                  glBindBuffer(GL_ARRAY_BUFFER, 0);
+                  glBindVertexArray(0);
+                  continue;
+                }
+                wellFieldPointer = new std::vector<float>(std::move(wellData));
+                _wellCaches[powerOfTwo].insert(_renderStructures[i][j].get(), wellFieldPointer);
+                wellFieldPointer = _wellCaches[powerOfTwo].object(_renderStructures[i][j].get());
+              }
+
+              if (wellFieldPointer && !wellFieldPointer->empty())
+              {
+                std::vector<float4> triangleData = (method == RKEnergySurfaceType::wellSurface)
+                    ? source->constructWellSurfaceTriangles(*wellFieldPointer)
+                    : source->constructWellFilamentTriangles(*wellFieldPointer);
+                _surfaceNumberOfIndices[i][j] = triangleData.size() / (3 * 3);
+                if (!triangleData.empty())
+                {
+                  glBufferData(GL_ARRAY_BUFFER, triangleData.size() * sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
                   check_gl_error();
                 }
               }
             }
             else
             {
-              std::vector<cl_float> gridData = source->gridData();
-              if (gridData.empty())
+              double isoValue = source->adsorptionSurfaceIsoValue();
+              int3 dimensions = source->dimensions();
+              int largestSize = std::max({dimensions.x,dimensions.y,dimensions.z});
+              int powerOfTwo = 1;
+              while(largestSize > pow(2,powerOfTwo))
               {
-                _surfaceNumberOfIndices[i][j] = 0;
-                continue;
+                powerOfTwo += 1;
               }
 
-              // move from stack to heap since the cache requires a pointer to the std::vector
-              energyGridPointer = new std::vector<cl_float>();
-              *energyGridPointer = std::move(gridData);
-
-              try
+              std::vector<cl_float> *energyGridPointer = nullptr;
+              if(_caches[powerOfTwo].contains(_renderStructures[i][j].get()))
               {
-                std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGridPointer, isoValue);
-                _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+                energyGridPointer = _caches[powerOfTwo].object(_renderStructures[i][j].get());
 
-                if(triangleData.size()>0)
+                try
                 {
-                  glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
-                  check_gl_error();
+                  std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGridPointer, isoValue);
+                  _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+
+                  if(triangleData.size()>0)
+                  {
+                    glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                    check_gl_error();
+                  }
+                }
+                catch (std::exception const &e)
+                {
+                  // fall back to CPU implementation (noexcept) in case of problems with the accelerated version.
+                  std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, energyGridPointer, isoValue);
+                  _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+
+                  if(triangleData.size()>0)
+                  {
+                    glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                    check_gl_error();
+                  }
                 }
               }
-              catch (std::exception const &e)
+              else
               {
-                // fall back to CPU implementation (noexcept) in case of problems with the accelerated version.
-                std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, energyGridPointer, isoValue);
-                _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
-
-                if(triangleData.size()>0)
+                std::vector<cl_float> gridData = source->gridData();
+                if (gridData.empty())
                 {
-                  glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
-                  check_gl_error();
+                  _surfaceNumberOfIndices[i][j] = 0;
+                  glBindBuffer(GL_ARRAY_BUFFER, 0);
+                  glBindVertexArray(0);
+                  continue;
                 }
-              }
 
-              // insert as last to avoid use of memory after free in case the insertion fails.
-              _caches[powerOfTwo].insert(_renderStructures[i][j].get(), energyGridPointer);
+                // move from stack to heap since the cache requires a pointer to the std::vector
+                energyGridPointer = new std::vector<cl_float>();
+                *energyGridPointer = std::move(gridData);
+
+                try
+                {
+                  std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurface(dimensions, energyGridPointer, isoValue);
+                  _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+
+                  if(triangleData.size()>0)
+                  {
+                    glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                    check_gl_error();
+                  }
+                }
+                catch (std::exception const &e)
+                {
+                  // fall back to CPU implementation (noexcept) in case of problems with the accelerated version.
+                  std::vector<float4> triangleData = SKComputeIsosurface::computeIsosurfaceCPUImplementation(dimensions, energyGridPointer, isoValue);
+                  _surfaceNumberOfIndices[i][j] = triangleData.size()/(3*3);
+
+                  if(triangleData.size()>0)
+                  {
+                    glBufferData(GL_ARRAY_BUFFER, triangleData.size()*sizeof(float4), triangleData.data(), GL_DYNAMIC_DRAW);
+                    check_gl_error();
+                  }
+                }
+
+                // insert as last to avoid use of memory after free in case the insertion fails.
+                _caches[powerOfTwo].insert(_renderStructures[i][j].get(), energyGridPointer);
+              }
             }
 
 
@@ -490,9 +563,9 @@ void main(void)
     vec3 R = reflect(-L, N);
 
     // Compute the diffuse and specular components for each fragment
-    ambient = isosurfaceUniforms.ambientFrontSide;
-    diffuse = max(dot(N, L), 0.0) * isosurfaceUniforms.diffuseFrontSide;
-    specular = pow(max(dot(R, V), 0.0), isosurfaceUniforms.shininessFrontSide) * isosurfaceUniforms.specularFrontSide;
+    ambient = lightUniforms.lights[0].ambient * isosurfaceUniforms.ambientFrontSide;
+    diffuse = max(dot(N, L), 0.0) * lightUniforms.lights[0].diffuse * isosurfaceUniforms.diffuseFrontSide;
+    specular = pow(max(dot(R, V), 0.0), lightUniforms.lights[0].shininess + isosurfaceUniforms.shininessFrontSide) * lightUniforms.lights[0].specular * isosurfaceUniforms.specularFrontSide;
     color = vec4(ambient.xyz + diffuse.xyz + specular.xyz, 1.0);
     if (isosurfaceUniforms.frontHDR)
     {
@@ -507,9 +580,9 @@ void main(void)
     vec3 R = reflect(-L, -N);
 
     // Compute the diffuse and specular components for each fragment
-    ambient = isosurfaceUniforms.ambientBackSide;
-    diffuse = max(dot(-N, L), 0.0) * isosurfaceUniforms.diffuseBackSide;
-    specular = pow(max(dot(R, V), 0.0), isosurfaceUniforms.shininessBackSide) * isosurfaceUniforms.specularBackSide;
+    ambient = lightUniforms.lights[0].ambient * isosurfaceUniforms.ambientBackSide;
+    diffuse = max(dot(-N, L), 0.0) * lightUniforms.lights[0].diffuse * isosurfaceUniforms.diffuseBackSide;
+    specular = pow(max(dot(R, V), 0.0), lightUniforms.lights[0].shininess + isosurfaceUniforms.shininessBackSide) * lightUniforms.lights[0].specular * isosurfaceUniforms.specularBackSide;
     color = vec4(ambient.xyz + diffuse.xyz + specular.xyz, 1.0);
     if (isosurfaceUniforms.backHDR)
     {
@@ -523,6 +596,7 @@ void main(void)
   hsv.x = hsv.x * isosurfaceUniforms.hue;
   hsv.y = hsv.y * isosurfaceUniforms.saturation;
   hsv.z = hsv.z * isosurfaceUniforms.value;
-  vFragColor = vec4(hsv2rgb(hsv) * isosurfaceUniforms.diffuseFrontSide.w,isosurfaceUniforms.diffuseFrontSide.w);
+  float opacity = gl_FrontFacing ? isosurfaceUniforms.diffuseFrontSide.w : isosurfaceUniforms.ambientBackSide.w;
+  vFragColor = vec4(hsv2rgb(hsv) * opacity, opacity);
 }
 )foo";

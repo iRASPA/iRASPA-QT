@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <QString>
+#include <symmetrykit.h>
 #include "forcefieldset.h"
 
 class ForceFieldSets
@@ -31,13 +32,21 @@ public:
   ForceFieldSets();
   ForceFieldSet& operator[] (const int index) {return _forceFieldSets[index];}
   ForceFieldSet* operator[] (const QString name);
-  ForceFieldSet* operator[] (const QString name) const;
+  const ForceFieldSet* operator[] (const QString name) const;
   std::vector<ForceFieldSet>& forceFieldSets() {return _forceFieldSets;}
-  void append(ForceFieldSet forceField) {_forceFieldSets.push_back(forceField);}
+  const std::vector<ForceFieldSet>& forceFieldSets() const {return _forceFieldSets;}
+  void append(ForceFieldSet forceField);
+  ForceFieldSet resolvedSet(const QString &displayName);
+  void ensurePredefinedSets();
+
+  static QString suggestedDisplayName(SKStructure::MaterialType materialType);
+  static QString suggestedDisplayNameForMaterialTypeName(const QString &name);
 private:
   qint64 _versionNumber{1};
-  qint64 _numberOfPredefinedSets = 1;
+  qint64 _numberOfPredefinedSets = 4;
   std::vector<ForceFieldSet> _forceFieldSets;
+  std::optional<size_t> firstIndexNamed(const QString &name) const;
+  void restoreDefaultFrameworkTypesIfTraPPE();
 
   friend QDataStream &operator<<(QDataStream& stream, const std::vector<ForceFieldSet>& val);
   friend QDataStream &operator>>(QDataStream& stream, std::vector<ForceFieldSet>& val);

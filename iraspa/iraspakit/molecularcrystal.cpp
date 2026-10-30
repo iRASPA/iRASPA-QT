@@ -40,6 +40,7 @@ MolecularCrystal::MolecularCrystal()
 
 MolecularCrystal::MolecularCrystal(const MolecularCrystal &molecularCrystal): Structure(molecularCrystal)
 {
+  _spaceGroup = molecularCrystal._spaceGroup;
 }
 
 
@@ -1438,7 +1439,8 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> MolecularCrys
 
 double3 MolecularCrystal::centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms) const
 {
-  double3  centerOfMassCosTheta = double3(0.0, 0.0, 0.0);
+  double3 centerOfMass = double3(0.0, 0.0, 0.0);
+  double3 centerOfMassCosTheta = double3(0.0, 0.0, 0.0);
   double3 centerOfMassSinTheta = double3(0.0, 0.0, 0.0);
   double M = 0.0;
 
@@ -1456,18 +1458,25 @@ double3 MolecularCrystal::centerOfMassOfSelectionAsymmetricAtoms(std::vector<std
         double3 sinTheta = double3(sin(pos.x), sin(pos.y), sin(pos.z));
         centerOfMassCosTheta = centerOfMassCosTheta + mass * cosTheta;
         centerOfMassSinTheta = centerOfMassSinTheta + mass * sinTheta;
+        centerOfMass = centerOfMass + mass * copy->position();
         M += mass;
       }
     }
   }
   centerOfMassCosTheta = centerOfMassCosTheta / M;
   centerOfMassSinTheta = centerOfMassSinTheta / M;
+  centerOfMass = centerOfMass / M;
 
   double3 com = double3((atan2(-centerOfMassSinTheta.x, -centerOfMassCosTheta.x) + M_PI)/(2.0 * M_PI),
                         (atan2(-centerOfMassSinTheta.y, -centerOfMassCosTheta.y) + M_PI)/(2.0 * M_PI),
                         (atan2(-centerOfMassSinTheta.z, -centerOfMassCosTheta.z) + M_PI)/(2.0 * M_PI));
 
-  return  _cell->convertToCartesian(com);
+  double3 periodicCOM = _cell->convertToCartesian(com);
+  if((_cell->applyFullCellBoundaryCondition(periodicCOM - centerOfMass)).length_squared() < 1e-6)
+  {
+    return centerOfMass;
+  }
+  return periodicCOM;
 }
 
 double3x3 MolecularCrystal::matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const
@@ -1570,7 +1579,7 @@ std::vector<float> MolecularCrystal::gridData()
 
     const auto [min, max] = std::minmax_element(begin(gridData), end(gridData));
             qDebug() << "FOUND min/max: " << *min << *max;
-    _range = std::pair(double(*min), 0.0);
+    _range = std::pair(double(*min), double(*max));
     return gridData;
   }
   catch (std::exception const& e)

@@ -49,10 +49,12 @@ public:
 
   static std::vector<float> computeEnergyGrid(int3 size, double2 probeParameter,
                                               std::vector<double3> positions, std::vector<double2> potentialParameters,
-                                              double3x3 unitCell, int3 numberOfReplicas) noexcept(false);
+                                              double3x3 unitCell, int3 numberOfReplicas,
+                                              const std::vector<double4> &blockingPockets = {}) noexcept(false);
   static std::vector<float> computeEnergyGridCPUImplementation(int3 size, double2 probeParameter,
                                                                std::vector<double3> positions, std::vector<double2> potentialParameters,
                                                                double3x3 unitCell, int3 numberOfReplicas) noexcept;
+  static std::vector<bool> blockedGridPoints(int3 size, double3x3 unitCell, const std::vector<double4> &blockingPockets) noexcept;
 
 private:
   SKComputeEnergyGrid();

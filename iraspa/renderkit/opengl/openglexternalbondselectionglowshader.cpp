@@ -280,9 +280,9 @@ void main(void)
   }
 
   vec3 hsv = rgb2hsv(color.xyz);
-  hsv.x = hsv.x * structureUniforms.atomHue;
-  hsv.y = hsv.y * structureUniforms.atomSaturation;
-  hsv.z = hsv.z * structureUniforms.atomValue;
+  hsv.x = hsv.x * structureUniforms.bondHue;
+  hsv.y = hsv.y * structureUniforms.bondSaturation;
+  hsv.z = hsv.z * structureUniforms.bondValue;
   float bloomLevel = frameUniforms.bloomLevel * structureUniforms.bondSelectionIntensity;
   vFragColor = bloomLevel * vec4(hsv2rgb(hsv), 1.0);
 }

@@ -16,9 +16,6 @@ CMAKE_PATTERN = r'(^[ \t]*set\(IRASPA_VERSION[ \t]+")\d+\.\d+\.\d+(?=")'
 def version_targets():
     targets = [
         (CMAKE_FILE, CMAKE_PATTERN),
-        # "Version 2.3.2 (build 142)" in the about box; the build number is a
-        # separate counter and is left alone.
-        ("iraspa/iraspagui/aboutdialog.ui", r"(Version[ \t]+)\d+\.\d+\.\d+"),
         ("iraspa/snapcraft.yaml", r"(^version:[ \t]*)\d+\.\d+\.\d+"),
         ("arch/PKGBUILD", r"(^pkgver=)\d+\.\d+\.\d+"),
         ("arch/from-github/PKGBUILD", r"(^pkgver=)\d+\.\d+\.\d+"),

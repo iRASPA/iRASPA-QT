@@ -29,7 +29,7 @@ class SKComputeVoidFraction
 public:
   SKComputeVoidFraction(const SKComputeVoidFraction &) = delete;
   void operator=(const SKComputeVoidFraction &) = delete;
-  static double ComputeVoidFraction(std::vector<float> *voxels);
+  static double ComputeVoidFraction(std::vector<float> *voxels, const std::vector<bool> *blocked = nullptr);
 
 private:
   SKComputeVoidFraction();

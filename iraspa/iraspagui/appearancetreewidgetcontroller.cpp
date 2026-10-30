@@ -402,6 +402,11 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceRibbonsForm->ribbonColorSetComboBox->insertItem(2, proteinRibbonColorSetDisplayName(ProteinRibbonColorSet::biophysicalProperties));
   _appearanceRibbonsForm->ribbonColorSetComboBox->insertItem(3, proteinRibbonColorSetDisplayName(ProteinRibbonColorSet::infographic));
 
+  _appearanceRibbonsForm->ribbonEdgeCueingComboBox->insertItem(0, tr("Off"));
+  _appearanceRibbonsForm->ribbonEdgeCueingComboBox->insertItem(1, tr("Contours"));
+  _appearanceRibbonsForm->ribbonEdgeCueingComboBox->insertItem(2, tr("Contours + Halos"));
+  _appearanceRibbonsForm->ribbonEdgeCueingComboBox->insertItem(3, tr("Lighting + Contours"));
+
   _appearanceRibbonsForm->ribbonSelectionStyleComboBox->insertItem(0, tr("None"));
   _appearanceRibbonsForm->ribbonSelectionStyleComboBox->insertItem(1, tr("Worley Noise 3D"));
   _appearanceRibbonsForm->ribbonSelectionStyleComboBox->insertItem(2, tr("Striped"));
@@ -435,6 +440,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QObject::connect(_appearanceRibbonsForm->ribbonSplineTypeComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonSplineType);
   QObject::connect(_appearanceRibbonsForm->ribbonRepresentationStyleComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonRepresentationStyle);
   QObject::connect(_appearanceRibbonsForm->ribbonColorSetComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonColorSet);
+  QObject::connect(_appearanceRibbonsForm->ribbonEdgeCueingComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonEdgeCueing);
   QObject::connect(_appearanceRibbonsForm->ribbonSelectionStyleComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionStyle);
   QObject::connect(_appearanceRibbonsForm->ribbonSelectionStyleNuDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionStyleNu);
   QObject::connect(_appearanceRibbonsForm->ribbonSelectionStyleRhoDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setRibbonSelectionStyleRho);
@@ -501,6 +507,11 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceRibbonsDNAForm->dnaLadderRadiusDoubleSpinBox->setMinimum(0.02);
   _appearanceRibbonsDNAForm->dnaLadderRadiusDoubleSpinBox->setMaximum(1.0);
 
+  _appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox->insertItem(0, tr("Off"));
+  _appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox->insertItem(1, tr("Contours"));
+  _appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox->insertItem(2, tr("Contours + Halos"));
+  _appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox->insertItem(3, tr("Lighting + Contours"));
+
   _appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox->insertItem(0, tr("None"));
   _appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox->insertItem(1, tr("Worley Noise 3D"));
   _appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox->insertItem(2, tr("Striped"));
@@ -537,6 +548,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   QObject::connect(_appearanceRibbonsDNAForm->dnaOvalWidthDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNAOvalWidth);
   QObject::connect(_appearanceRibbonsDNAForm->dnaRingWidthDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARingWidth);
   QObject::connect(_appearanceRibbonsDNAForm->dnaLadderRadiusDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNALadderRadius);
+  QObject::connect(_appearanceRibbonsDNAForm->ribbonEdgeCueingComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setDNARibbonEdgeCueing);
   QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionStyleComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionStyle);
   QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionStyleNuDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionStyleNu);
   QObject::connect(_appearanceRibbonsDNAForm->ribbonSelectionStyleRhoDoubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &AppearanceTreeWidgetController::setDNARibbonSelectionStyleRho);
@@ -585,11 +597,18 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceAtomsForm->atomRepresentationType->insertItem(0,tr("Ball and Stick"));
   _appearanceAtomsForm->atomRepresentationType->insertItem(1,tr("Van der Waals"));
   _appearanceAtomsForm->atomRepresentationType->insertItem(2, tr("Unity"));
+  _appearanceAtomsForm->atomRepresentationType->insertItem(3, tr("Force Field"));
 
   _appearanceAtomsForm->atomRepresentationStyle->insertItem(0,tr("Default"));
   _appearanceAtomsForm->atomRepresentationStyle->insertItem(1,tr("Fancy"));
   _appearanceAtomsForm->atomRepresentationStyle->insertItem(2,tr("Licorice"));
   _appearanceAtomsForm->atomRepresentationStyle->insertItem(3,tr("Objects"));
+  _appearanceAtomsForm->atomRepresentationStyle->insertItem(4,tr("QuteMol"));
+
+  _appearanceAtomsForm->atomEdgeCueingComboBox->insertItem(0, tr("Off"));
+  _appearanceAtomsForm->atomEdgeCueingComboBox->insertItem(1, tr("Contours"));
+  _appearanceAtomsForm->atomEdgeCueingComboBox->insertItem(2, tr("Contours + Halos"));
+  _appearanceAtomsForm->atomEdgeCueingComboBox->insertItem(3, tr("Lighting + Contours"));
 
   _appearanceAtomsForm->colorSchemeComboBox->insertItem(0,tr("Jmol"));
   _appearanceAtomsForm->colorSchemeComboBox->insertItem(1,tr("Rasmol Modern"));
@@ -641,6 +660,7 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
 
   QObject::connect(_appearanceAtomsForm->atomRepresentationType,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setRepresentationType);
   QObject::connect(_appearanceAtomsForm->atomRepresentationStyle,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setRepresentationStyle);
+  QObject::connect(_appearanceAtomsForm->atomEdgeCueingComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setAtomEdgeCueing);
   QObject::connect(_appearanceAtomsForm->colorSchemeComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setColorSchemeComboBoxIndex);
   QObject::connect(_appearanceAtomsForm->colorSchemeOrderComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setColorSchemeOrder);
   QObject::connect(_appearanceAtomsForm->forceFieldComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setForcefieldSchemeComboBoxIndex);
@@ -897,6 +917,9 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
 
   _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(0, tr("Isosurface"));
   _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(1, tr("Volume Rendering"));
+  _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(2, tr("Well Surface"));
+  _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(3, tr("Well Filament"));
+  _appearanceAdsorptionSurfaceForm->renderingMethodComboBox->insertItem(4, tr("Geometric Surface"));
 
   _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(0, tr("RASPA PES"));
   _appearanceAdsorptionSurfaceForm->transferFunctionComboBox->insertItem(1, tr("CoolWarm"));
@@ -931,6 +954,8 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(6, tr("Xenon"));
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(7, tr("Krypton"));
   _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(8, tr("Argon"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(9, tr("Custom"));
+  _appearanceAdsorptionSurfaceForm->probeParticleComboBox->insertItem(10, tr("Connolly"));
 
   _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setMinimum(0.00001);
   _appearanceAdsorptionSurfaceForm->stepLengthDoubleSpinBox->setMaximum(0.1);
@@ -1081,6 +1106,8 @@ AppearanceTreeWidgetController::AppearanceTreeWidgetController(QWidget* parent):
 
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceCheckBox,static_cast<void (QCheckBox::*)(int)>(&QCheckBox::stateChanged),this,&AppearanceTreeWidgetController::setDrawAdsorptionSurface);
   QObject::connect(_appearanceAdsorptionSurfaceForm->probeParticleComboBox,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule);
+  QObject::connect(_appearanceAdsorptionSurfaceForm->probeEpsilonDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceProbeEpsilon);
+  QObject::connect(_appearanceAdsorptionSurfaceForm->probeSigmaDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceProbeSigma);
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue);
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceIsovalueDoubleSlider,static_cast<void (QDoubleSlider::*)(double)>(&QDoubleSlider::sliderMoved),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceIsovalue);
   QObject::connect(_appearanceAdsorptionSurfaceForm->adsorptionSurfaceOpacityDoubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),this,&AppearanceTreeWidgetController::setAdsorptionSurfaceOpacity);
@@ -4463,6 +4490,7 @@ void AppearanceTreeWidgetController::reloadAtomProperties()
   reloadAtomDiffuseLight();
   reloadAtomSpecularLight();
   reloadAtomShininess();
+  reloadAtomEdgeCueing();
 }
 
 // reload atom properties
@@ -5212,6 +5240,85 @@ void AppearanceTreeWidgetController::reloadAtomShininess()
       }
     }
   }
+}
+
+void AppearanceTreeWidgetController::reloadAtomEdgeCueing()
+{
+  _appearanceAtomsForm->atomEdgeCueingComboBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      if (std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> values = atomEdgeCueing(); values)
+      {
+        _appearanceAtomsForm->atomEdgeCueingComboBox->setEnabled(_projectTreeNode->isEditable());
+
+        if(values->size()==1)
+        {
+          if(int index = _appearanceAtomsForm->atomEdgeCueingComboBox->findText("Multiple values"); index>=0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomEdgeCueingComboBox)->removeItem(index);
+          }
+          whileBlocking(_appearanceAtomsForm->atomEdgeCueingComboBox)->setCurrentIndex(int(*(values->begin())));
+        }
+        else
+        {
+          if(int index = _appearanceAtomsForm->atomEdgeCueingComboBox->findText("Multiple values"); index<0)
+          {
+            whileBlocking(_appearanceAtomsForm->atomEdgeCueingComboBox)->addItem("Multiple values");
+          }
+          whileBlocking(_appearanceAtomsForm->atomEdgeCueingComboBox)->setCurrentText("Multiple values");
+        }
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::setAtomEdgeCueing(int value)
+{
+  if(value>=0 && value<int(RKEdgeCueing::multiple_values))
+  {
+    for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+    {
+      if (std::shared_ptr<AtomStructureEditor> atomViewer = std::dynamic_pointer_cast<AtomStructureEditor>(iraspa_structure->object()))
+      {
+        atomViewer->setAtomEdgeCueing(RKEdgeCueing(value));
+      }
+      if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+      {
+        structure->recheckRepresentationStyle();
+      }
+    }
+    reloadAtomProperties();
+    emit rendererReloadStructureUniforms();
+    emit rendererReloadData();
+    emit redrawRenderer();
+
+    _mainWindow->documentWasModified();
+  }
+}
+
+std::optional<std::unordered_set<RKEdgeCueing, enum_hash>> AppearanceTreeWidgetController::atomEdgeCueing()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<RKEdgeCueing, enum_hash> set = std::unordered_set<RKEdgeCueing, enum_hash>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<AtomStructureViewer> atomViewer = std::dynamic_pointer_cast<AtomStructureViewer>(iraspa_structure->object()))
+    {
+      set.insert(atomViewer->atomEdgeCueing());
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
 }
 
 
@@ -8691,6 +8798,7 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProperties()
   reloadDrawAdsorptionSurfaceCheckBox();
   reloadAdsorptionSurfaceRenderingMethod();
   reloadAdsorptionSurfaceProbeMolecule();
+  reloadAdsorptionSurfaceProbeParameters();
   reloadAdsorptionVolumeTransferFunction();
   reloadAdsorptionVolumeStepLength();
   reloadAdsorptionSurfaceIsovalue();
@@ -8817,6 +8925,46 @@ void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProbeMolecule()
             whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->addItem("Mult. Val.");
           }
           whileBlocking(_appearanceAdsorptionSurfaceForm->probeParticleComboBox)->setCurrentText("Mult. Val.");
+        }
+      }
+    }
+  }
+}
+
+void AppearanceTreeWidgetController::reloadAdsorptionSurfaceProbeParameters()
+{
+  _appearanceAdsorptionSurfaceForm->probeEpsilonDoubleSpinBox->setDisabled(true);
+  _appearanceAdsorptionSurfaceForm->probeSigmaDoubleSpinBox->setDisabled(true);
+
+  if(_projectTreeNode)
+  {
+    if(std::shared_ptr<ProjectStructure> projectStructure = std::dynamic_pointer_cast<ProjectStructure>(_projectTreeNode->representedObject()->project()))
+    {
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceProbeEpsilon(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->probeEpsilonDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->probeEpsilonDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->probeEpsilonDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->probeEpsilonDoubleSpinBox)->setText("Mult. Val.");
+        }
+      }
+
+      if (std::optional<std::unordered_set<double>> values = adsorptionSurfaceProbeSigma(); values)
+      {
+        _appearanceAdsorptionSurfaceForm->probeSigmaDoubleSpinBox->setEnabled(true);
+        _appearanceAdsorptionSurfaceForm->probeSigmaDoubleSpinBox->setReadOnly(!_projectTreeNode->isEditable());
+        if(values->size()==1)
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->probeSigmaDoubleSpinBox)->setValue(*(values->begin()));
+        }
+        else
+        {
+          whileBlocking(_appearanceAdsorptionSurfaceForm->probeSigmaDoubleSpinBox)->setText("Mult. Val.");
         }
       }
     }
@@ -9609,7 +9757,7 @@ std::optional<std::unordered_set<bool>> AppearanceTreeWidgetController::drawAdso
 
 void AppearanceTreeWidgetController::setAdsorptionSurfaceRenderingMethod(int value)
 {
-  if(value>=0 && value<int(ProbeMolecule::multiple_values))
+  if(value>=0 && value<int(RKEnergySurfaceType::multiple_values))
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {
@@ -9626,7 +9774,7 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceRenderingMethod(int val
     emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
     emit _mainWindow->rendererReloadData();
 
-    reloadAdsorptionSurfaceIsovalue();
+    reloadAdsorptionSurfaceProperties();
 
     _mainWindow->documentWasModified();
   }
@@ -9677,10 +9825,104 @@ void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeMolecule(int value
     emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
     emit _mainWindow->rendererReloadData();
 
+    reloadAdsorptionSurfaceProbeMolecule();
+    reloadAdsorptionSurfaceProbeParameters();
     reloadAdsorptionSurfaceIsovalue();
 
     _mainWindow->documentWasModified();
   }
+}
+
+void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeEpsilon(double value)
+{
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceProbeEpsilon(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
+  }
+
+  emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
+  emit _mainWindow->rendererReloadData();
+
+  reloadAdsorptionSurfaceProbeMolecule();
+  reloadAdsorptionSurfaceProbeParameters();
+  reloadAdsorptionSurfaceIsovalue();
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceProbeEpsilon()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      set.insert(adsorptionViewer->adsorptionSurfaceProbeEpsilon());
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
+}
+
+void AppearanceTreeWidgetController::setAdsorptionSurfaceProbeSigma(double value)
+{
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      adsorptionViewer->setAdsorptionSurfaceProbeSigma(value);
+    }
+    if (std::shared_ptr<Structure> structure = std::dynamic_pointer_cast<Structure>(iraspa_structure->object()))
+    {
+      structure->recheckRepresentationStyle();
+    }
+  }
+
+  emit _mainWindow->invalidateCachedIsoSurfaces({_iraspa_structures});
+  emit _mainWindow->rendererReloadData();
+
+  reloadAdsorptionSurfaceProbeMolecule();
+  reloadAdsorptionSurfaceProbeParameters();
+  reloadAdsorptionSurfaceIsovalue();
+
+  _mainWindow->documentWasModified();
+}
+
+std::optional<std::unordered_set<double>> AppearanceTreeWidgetController::adsorptionSurfaceProbeSigma()
+{
+  if(_iraspa_structures.empty())
+  {
+    return std::nullopt;
+  }
+  std::unordered_set<double> set = std::unordered_set<double>{};
+  for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
+  {
+    if (std::shared_ptr<VolumetricDataViewer> adsorptionViewer = std::dynamic_pointer_cast<VolumetricDataViewer>(iraspa_structure->object()))
+    {
+      set.insert(adsorptionViewer->adsorptionSurfaceProbeSigma());
+    }
+  }
+
+  if(!set.empty())
+  {
+    return set;
+  }
+  return std::nullopt;
 }
 
 std::optional<std::unordered_set<ProbeMolecule, enum_hash> > AppearanceTreeWidgetController::adsorptionSurfaceProbeMolecule()
@@ -9709,7 +9951,7 @@ std::optional<std::unordered_set<ProbeMolecule, enum_hash> > AppearanceTreeWidge
 
 void AppearanceTreeWidgetController::setAdsorptionVolumeTransferFunction(int value)
 {
-  if(value>=0 && value<int(ProbeMolecule::multiple_values))
+  if(value>=0 && value<int(RKPredefinedVolumeRenderingTransferFunction::multiple_values))
   {
     for(const std::shared_ptr<iRASPAObject> &iraspa_structure: _iraspa_structures)
     {

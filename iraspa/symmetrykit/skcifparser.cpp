@@ -98,6 +98,7 @@ void SKCIFParser::startParsing() noexcept(false)
     }
   }
 
+  resolveSpaceGroupFromCIFSymmetryOperations();
   resolvePolymerChainsFromEntityTables();
 
   std::vector<std::shared_ptr<SKStructure>> movieFrames{};
@@ -136,26 +137,103 @@ void SKCIFParser::startParsing() noexcept(false)
     break;
   }
 
+  structure->cifSymmetryOperations = _cifSymmetryOperations.empty() ? std::nullopt : std::make_optional(_cifSymmetryOperations);
+  structure->creationDate = _creationDate;
+  structure->creationMethod = _creationMethod;
+  structure->chemicalFormulaSum = _chemicalFormulaSum;
+  structure->chemicalFormulaStructural = _chemicalFormulaStructural;
+  structure->cellFormulaUnitsZ = _cellFormulaUnitsZ;
+  structure->numberOfChannels = _numberOfChannels;
+  structure->numberOfPockets = _numberOfPockets;
+  structure->dimensionality = _dimensionality;
+  structure->Di = _Di;
+  structure->Df = _Df;
+  structure->Dif = _Dif;
+
+  std::vector<QString> extraNames;
+  if(_chemicalNameCommon) extraNames.push_back(*_chemicalNameCommon);
+  if(_chemicalNameSystematic) extraNames.push_back(*_chemicalNameSystematic);
+  if(_chemicalNameStructureType) extraNames.push_back(*_chemicalNameStructureType);
+  structure->applyInferredMaterialType(extraNames);
+
   movieFrames.push_back(structure);
   _movies.push_back(movieFrames);
 }
 
 void SKCIFParser::parseAudit(QString& string)
 {
-  Q_UNUSED(string);
-  parseValue();
+  if(string == QString("_audit_creation_date"))
+  {
+    _creationDate = parseValue();
+  }
+  else if(string == QString("_audit_creation_method"))
+  {
+    _creationMethod = parseValue();
+  }
+  else
+  {
+    parseValue();
+  }
 }
 
 void SKCIFParser::parseiRASPA(QString& string)
 {
-  Q_UNUSED(string);
-  parseValue();
+  if(string == QString("_iraspa_number_of_channels"))
+  {
+    _numberOfChannels = static_cast<int>(scanInt());
+  }
+  else if(string == QString("_iraspa_number_of_pockets"))
+  {
+    _numberOfPockets = static_cast<int>(scanInt());
+  }
+  else if(string == QString("_iraspa_dimensionality"))
+  {
+    _dimensionality = static_cast<int>(scanInt());
+  }
+  else if(string == QString("_iraspa_di"))
+  {
+    _Di = scanDouble();
+  }
+  else if(string == QString("_iraspa_df"))
+  {
+    _Df = scanDouble();
+  }
+  else if(string == QString("_iraspa_dif"))
+  {
+    _Dif = scanDouble();
+  }
+  else
+  {
+    parseValue();
+  }
 }
 
 void SKCIFParser::parseChemical(QString& string)
 {
-  Q_UNUSED(string);
-  parseValue();
+  if(string == QString("_chemical_formula_structural"))
+  {
+    _chemicalFormulaStructural = parseValue();
+  }
+  else if(string == QString("_chemical_formula_sum"))
+  {
+    _chemicalFormulaSum = parseValue();
+  }
+  else if(string == QString("_chemical_name_common"))
+  {
+    _chemicalNameCommon = parseValue();
+  }
+  else if(string == QString("_chemical_name_systematic"))
+  {
+    _chemicalNameSystematic = parseValue();
+  }
+  else if(string == QString("_chemical_name_structure_type"))
+  {
+    _chemicalNameStructureType = parseValue();
+  }
+  else
+  {
+    parseValue();
+  }
 }
 
 void SKCIFParser::parseCell(QString& string)
@@ -187,6 +265,10 @@ void SKCIFParser::parseCell(QString& string)
   {
     _gamma = scanDouble();
   }
+  else if (string == QString("_cell_formula_units_z") || string == QString("_cell.z_pdb"))
+  {
+    _cellFormulaUnitsZ = static_cast<int>(scanInt());
+  }
   else
   {
     // ignore unrecognized mmCIF/coreCIF cell tags (e.g. _cell.entry_id, *_esd)
@@ -209,7 +291,12 @@ void SKCIFParser::parseSymmetry(QString& string)
   {
     if(std::optional<QString> possibleString = scanString())
     {
-      _spaceGroupHallNumber = SKSpaceGroup::HallNumber(*possibleString);
+      if(std::optional<int> hall = SKSpaceGroup::HallNumber(*possibleString))
+      {
+        _spaceGroupHallNumber = *hall;
+        _spaceGroupFound = SpaceGroupStatus::HallSymbolFound;
+        _spaceGroupITNumber = SKSpaceGroup(*hall).spaceGroupSetting().number();
+      }
     }
     return;
   }
@@ -220,9 +307,14 @@ void SKCIFParser::parseSymmetry(QString& string)
      (string == QString("_symmetry.pdbx_full_space_group_name_H-M").toLower()))
   {
     std::optional<QString> possibleString = scanString();
-    if(!_spaceGroupHallNumber && possibleString && *possibleString != QString("?"))
+    if(_spaceGroupFound != SpaceGroupStatus::HallSymbolFound && possibleString && *possibleString != QString("?"))
     {
-      _spaceGroupHallNumber = SKSpaceGroup::HallNumberFromHMString(*possibleString);
+      if(std::optional<int> hall = SKSpaceGroup::HallNumberFromHMString(*possibleString))
+      {
+        _spaceGroupHallNumber = *hall;
+        _spaceGroupFound = SpaceGroupStatus::HMSymbolFound;
+        _spaceGroupITNumber = SKSpaceGroup(*hall).spaceGroupSetting().number();
+      }
     }
     return;
   }
@@ -232,14 +324,67 @@ void SKCIFParser::parseSymmetry(QString& string)
      (string == QString("_symmetry.Int_Tables_number").toLower()))
   {
     const int spaceGroupNumber = static_cast<int>(scanInt());
-    if(!_spaceGroupHallNumber)
+    _spaceGroupITNumber = spaceGroupNumber;
+    if(_spaceGroupFound == SpaceGroupStatus::notFound)
     {
-      _spaceGroupHallNumber = SKSpaceGroup::HallNumberFromSpaceGroupNumber(spaceGroupNumber);
+      if(std::optional<int> hall = SKSpaceGroup::HallNumberFromSpaceGroupNumber(spaceGroupNumber))
+      {
+        _spaceGroupHallNumber = *hall;
+        _spaceGroupFound = SpaceGroupStatus::NumberFound;
+      }
+    }
+    return;
+  }
+
+  if((string == QString("_symmetry_equiv_pos_as_xyz").toLower()) ||
+     (string == QString("_space_group_symop_operation_xyz").toLower()) ||
+     (string == QString("_space_group_symop.operation_xyz").toLower()))
+  {
+    if(std::optional<QString> val = parseValue())
+    {
+      parseSymmetryEquivPos(*val);
     }
     return;
   }
 
   parseValue();
+}
+
+void SKCIFParser::parseSymmetryEquivPos(const QString &xyz)
+{
+  const QString trimmed = xyz.trimmed();
+  if(trimmed.isEmpty() || trimmed == QString("?") || trimmed == QString(".")) return;
+  _cifSymmetryOperationStrings.push_back(trimmed);
+}
+
+void SKCIFParser::resolveSpaceGroupFromCIFSymmetryOperations()
+{
+  if(_cifSymmetryOperationStrings.empty()) return;
+
+  std::optional<std::vector<SKSeitzIntegerMatrix>> parsed = SKCIFSymmetryOperationParser::parseOperations(_cifSymmetryOperationStrings);
+  if(!parsed)
+  {
+    _cifSymmetryOperations.clear();
+    return;
+  }
+  _cifSymmetryOperations = *parsed;
+
+  std::optional<int> declaredHallNumber = (_spaceGroupFound == SpaceGroupStatus::HallSymbolFound) ? _spaceGroupHallNumber : std::nullopt;
+  std::optional<QString> declaredHMSymbol = std::nullopt;
+  if((_spaceGroupFound == SpaceGroupStatus::HMSymbolFound || _spaceGroupFound == SpaceGroupStatus::HallSymbolFound) && _spaceGroupHallNumber)
+  {
+    declaredHMSymbol = SKSpaceGroup(*_spaceGroupHallNumber).spaceGroupSetting().HMString();
+  }
+  const std::vector<int> candidates = SKSpaceGroup::candidateHallNumbers(_spaceGroupITNumber, declaredHallNumber, declaredHMSymbol);
+  if(std::optional<int> identifiedHallNumber = SKSpaceGroup::identifyHallNumber(_cifSymmetryOperations, candidates))
+  {
+    _spaceGroupHallNumber = *identifiedHallNumber;
+  }
+  else if(!_spaceGroupHallNumber)
+  {
+    _spaceGroupHallNumber = 1;
+  }
+  _spaceGroupFound = SpaceGroupStatus::CIFSymmetryOperationsFound;
 }
 
 void SKCIFParser::parseName(QString& string)
@@ -414,7 +559,13 @@ void SKCIFParser::parseLoop(QString& string)
 
     if (value)
     {
-      if (const std::optional<QString> chemicalSymbol = normalizedChemicalElement(dictionaryValue(dictionary, {QString("_atom_site_type_symbol"), QString("_atom_site.type_symbol")})))
+      if (const std::optional<QString> symmetryXYZ = dictionaryValue(dictionary, {QString("_symmetry_equiv_pos_as_xyz"),
+                                                                                  QString("_space_group_symop_operation_xyz"),
+                                                                                  QString("_space_group_symop.operation_xyz")}))
+      {
+        parseSymmetryEquivPos(*symmetryXYZ);
+      }
+      else if (const std::optional<QString> chemicalSymbol = normalizedChemicalElement(dictionaryValue(dictionary, {QString("_atom_site_type_symbol"), QString("_atom_site.type_symbol")})))
       {
         appendAtomSite(dictionary, *chemicalSymbol);
       }

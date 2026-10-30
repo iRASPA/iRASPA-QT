@@ -6,6 +6,7 @@
 #pragma once
 
 #include <QColor>
+#include "rkrenderkitprotocols.h"
 #include "proteinnucleicacidcartoon.h"
 #include "proteinribbonmeshparameters.h"
 
@@ -16,6 +17,8 @@ public:
 
   virtual bool drawRibbon() const = 0;
   virtual void setDrawRibbon(bool value) = 0;
+  virtual RKEdgeCueing ribbonEdgeCueing() const = 0;
+  virtual void setRibbonEdgeCueing(RKEdgeCueing value) = 0;
   virtual double ribbonScaleFactor() const = 0;
   virtual void setRibbonScaleFactor(double value) = 0;
   virtual int ribbonSubdivisionsPerSegment() const = 0;
@@ -85,3 +88,4 @@ ProteinRibbonMeshParameters dnaRibbonMeshParameters(const DNARibbonStructureEdit
 void setDnaRibbonMeshParameters(DNARibbonStructureEditor &editor, const ProteinRibbonMeshParameters &parameters);
 void applyDefaultDnaRibbonAppearance(DNARibbonStructureEditor &editor);
 void applyFancyDnaRibbonAppearanceDefault(DNARibbonStructureEditor &editor);
+void applyIllustrativeDnaRibbonAppearanceDefault(DNARibbonStructureEditor &editor);

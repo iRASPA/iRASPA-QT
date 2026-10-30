@@ -74,8 +74,16 @@ double3 ProteinBSpline::evaluate(double t) const
 
 double3 ProteinBSpline::evaluateOrientation(double t) const
 {
-  if (t <= 0.0) return double3::normalize(_orientationVectors.front());
-  if (t >= 1.0) return double3::normalize(_orientationVectors.back());
+  if (t <= 0.0)
+  {
+    const double3 &v = _orientationVectors.front();
+    return v.length_squared() > 1.0e-12 ? double3::normalize(v) : double3(0.0, 0.0, 0.0);
+  }
+  if (t >= 1.0)
+  {
+    const double3 &v = _orientationVectors.back();
+    return v.length_squared() > 1.0e-12 ? double3::normalize(v) : double3(0.0, 0.0, 0.0);
+  }
 
   const int controlPointCount = static_cast<int>(_controlPoints.size());
   const double clampedT = std::min(std::max(t, _knots[_degree]), _knots[controlPointCount] - 1.0e-12);

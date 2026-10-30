@@ -37,6 +37,7 @@ void DNARibbonMixin::cloneRibbonStateFrom(const DNARibbonMixin &other)
   _dnaBackbone = other._dnaBackbone;
   _ribbonMesh = other._ribbonMesh;
   _drawRibbon = other._drawRibbon;
+  _ribbonEdgeCueing = other._ribbonEdgeCueing;
   _ribbonScaleFactor = other._ribbonScaleFactor;
   _ribbonSubdivisionsPerSegment = other._ribbonSubdivisionsPerSegment;
   _ribbonCrossSectionRingResolution = other._ribbonCrossSectionRingResolution;
@@ -74,6 +75,8 @@ void DNARibbonMixin::cloneRibbonStateFrom(const DNARibbonMixin &other)
 
 bool DNARibbonMixin::drawRibbon() const { return _drawRibbon; }
 void DNARibbonMixin::setDrawRibbon(bool value) { _drawRibbon = value; }
+RKEdgeCueing DNARibbonMixin::ribbonEdgeCueing() const { return _ribbonEdgeCueing; }
+void DNARibbonMixin::setRibbonEdgeCueing(RKEdgeCueing value) { _ribbonEdgeCueing = value; }
 double DNARibbonMixin::ribbonScaleFactor() const { return _ribbonScaleFactor; }
 void DNARibbonMixin::setRibbonScaleFactor(double value) { _ribbonScaleFactor = value; }
 int DNARibbonMixin::ribbonSubdivisionsPerSegment() const { return _ribbonSubdivisionsPerSegment; }
@@ -320,9 +323,11 @@ void DNARibbonMixin::writeCocoaRibbonAppearance(QDataStream &stream) const
   stream << _ribbonDiffuseIntensity;
   stream << _ribbonSpecularIntensity;
   stream << _ribbonShininess;
+  stream << static_cast<qint64>(_ribbonEdgeCueing);
+  stream << _drawRibbon;
 }
 
-void DNARibbonMixin::readCocoaRibbonAppearance(QDataStream &stream)
+void DNARibbonMixin::readCocoaRibbonAppearance(QDataStream &stream, qint64 versionNumber)
 {
   stream >> _ribbonScaleFactor;
   qint64 subdivisions = 0;
@@ -360,6 +365,22 @@ void DNARibbonMixin::readCocoaRibbonAppearance(QDataStream &stream)
   stream >> _ribbonDiffuseIntensity;
   stream >> _ribbonSpecularIntensity;
   stream >> _ribbonShininess;
+
+  if (versionNumber >= 2)
+  {
+    qint64 edgeCueingValue = 0;
+    stream >> edgeCueingValue;
+    _ribbonEdgeCueing = static_cast<RKEdgeCueing>(edgeCueingValue);
+  }
+  else
+  {
+    _ribbonEdgeCueing = RKEdgeCueing::off;
+  }
+
+  if (versionNumber >= 3)
+  {
+    stream >> _drawRibbon;
+  }
 }
 
 void DNARibbonMixin::writeRibbonState(QDataStream &stream, qint64 versionNumber) const

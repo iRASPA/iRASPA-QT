@@ -104,51 +104,7 @@ std::ostream& operator<<(std::ostream& os, const SKSpaceGroupSetting& setting)
 SKIntegerSymmetryOperationSet SKSpaceGroupSetting::fullSeitzMatrices() const
 {
   assert(_encodedSeitz.size() % 3 == 0);
-  assert(_encodedSeitz.size()>0);
-
-  bool centrosymmetric = SKPointGroup::pointGroupData[_pointGroupNumber].centrosymmetric();
-  size_t m = _encodedSeitz.size()/3;
-
-  size_t size = centrosymmetric ? 2 * m : m;
-  std::vector<int3> translationVectors = _latticeTranslations;
-  std::vector<SKSeitzIntegerMatrix> matrices = std::vector<SKSeitzIntegerMatrix>();
-  matrices.resize(size * translationVectors.size());
-
-  for(size_t i=0;i<m;i++)
-  {
-    char x = _encodedSeitz[3 * i];
-    char y = _encodedSeitz[3 * i + 1];
-    char z = _encodedSeitz[3 * i + 2];
-
-    matrices[i] = SKSeitzIntegerMatrix(x,y,z);
-  }
-
-  if (centrosymmetric)
-  {
-    for(size_t i=0;i<m;i++)
-    {
-      char x = _encodedSeitz[3 * i];
-      char y = _encodedSeitz[3 * i + 1];
-      char z = _encodedSeitz[3 * i + 2];
-
-      SKSeitzIntegerMatrix seitz = SKSeitzIntegerMatrix(x,y,z);
-
-      int3 translation = seitz.translation + seitz.rotation * _inversionCenter;
-      matrices[m+i] = SKSeitzIntegerMatrix(-seitz.rotation, translation);
-    }
-  }
-
-  // use the translation vectors on all Seitz matrices
-  for(size_t k=1;k<translationVectors.size();k++)
-  {
-    for(size_t i=0;i<size;i++)
-    {
-      matrices[size * k + i] = matrices[i];
-      matrices[size * k + i].translation = matrices[size * k + i].translation + translationVectors[k];
-    }
-  }
-
-  return SKIntegerSymmetryOperationSet(matrices);
+  return SKIntegerSymmetryOperationSet(SKSeitzIntegerMatrix::SeitzMatrices(_encodedSeitz));
 }
 
 std::vector<SKSeitzIntegerMatrix> SKSpaceGroupSetting::SeitzMatricesWithoutTranslation() const

@@ -33,6 +33,8 @@ public:
   // DNARibbonStructureEditor
   bool drawRibbon() const override;
   void setDrawRibbon(bool value) override;
+  RKEdgeCueing ribbonEdgeCueing() const override;
+  void setRibbonEdgeCueing(RKEdgeCueing value) override;
   double ribbonScaleFactor() const override;
   void setRibbonScaleFactor(double value) override;
   int ribbonSubdivisionsPerSegment() const override;
@@ -134,7 +136,7 @@ public:
   void writeRibbonState(QDataStream &stream, qint64 versionNumber) const;
   void readRibbonState(QDataStream &stream, qint64 versionNumber);
   void writeCocoaRibbonAppearance(QDataStream &stream) const;
-  void readCocoaRibbonAppearance(QDataStream &stream);
+  void readCocoaRibbonAppearance(QDataStream &stream, qint64 versionNumber = 1);
 
 protected:
   virtual SKAtomTreeController &ribbonAtomTreeController() = 0;
@@ -145,6 +147,7 @@ protected:
   RKRibbonMesh _ribbonMesh;
 
   bool _drawRibbon = true;
+  RKEdgeCueing _ribbonEdgeCueing = RKEdgeCueing::off;
   double _ribbonScaleFactor = 1.0;
   int _ribbonSubdivisionsPerSegment = 24;
   int _ribbonCrossSectionRingResolution = 32;

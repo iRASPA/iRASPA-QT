@@ -69,10 +69,10 @@ private:
     RKVertex(float4(0.0, 1.0, 1.0, 1.0), float4(-1.0, 0.0, 0.0, 0.0), float2()),
 
     // face 4 (bottom)
-    RKVertex(float4(0.0, 0.0, 0.0, 1.0), float4(0.0, -1.0, 0.0, 0.0), float2()),
-    RKVertex(float4(1.0, 0.0, 0.0, 1.0), float4(0.0, -1.0, 0.0, 0.0), float2()),
     RKVertex(float4(0.0, 0.0, 1.0, 1.0), float4(0.0, -1.0, 0.0, 0.0), float2()),
     RKVertex(float4(1.0, 0.0, 1.0, 1.0), float4(0.0, -1.0, 0.0, 0.0), float2()),
+    RKVertex(float4(0.0, 0.0, 0.0, 1.0), float4(0.0, -1.0, 0.0, 0.0), float2()),
+    RKVertex(float4(1.0, 0.0, 0.0, 1.0), float4(0.0, -1.0, 0.0, 0.0), float2()),
 
     // face 5 (top)
     RKVertex(float4(0.0, 1.0, 1.0, 1.0), float4(0.0, 1.0, 0.0, 0.0), float2()),

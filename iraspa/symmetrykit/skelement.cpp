@@ -176,7 +176,7 @@ std::map<QString, int> PredefinedElements::atomicNumberData =
     {QString("Hg"), 80}, {QString("Tl"), 81}, {QString("Pb"), 82}, {QString("Bi"), 83}, {QString("Po"), 84}, {QString("At"), 85}, {QString("Rn"), 86}, {QString("Fr"), 87}, {QString("Ra"), 88}, {QString("Ac"), 89},
     {QString("Th"), 90}, {QString("Pa"), 91}, {QString("U"), 92}, {QString("Np"), 93}, {QString("Pu"), 94}, {QString("Am"), 95}, {QString("Cm"), 96}, {QString("Bk"), 97}, {QString("Cf"), 98}, {QString("Es"), 99},
     {QString("Fm"), 100}, {QString("Md"), 101}, {QString("No"), 102}, {QString("Lr"), 103}, {QString("Rf"), 104}, {QString("Db"), 105}, {QString("Sg"), 106}, {QString("Bh"), 107}, {QString("Hs"), 108}, {QString("Mt"), 109},
-    {QString("Ds"), 110}, {QString("Rg"), 111}, {QString("Cn"), 112}, {QString("Nh"), 113}, {QString("Fl("), 114}, {QString("Mc"), 115}, {QString("Lv"), 116}, {QString("Ts"), 117}, {QString("Og"), 118}
+    {QString("Ds"), 110}, {QString("Rg"), 111}, {QString("Cn"), 112}, {QString("Nh"), 113}, {QString("Fl"), 114}, {QString("Mc"), 115}, {QString("Lv"), 116}, {QString("Ts"), 117}, {QString("Og"), 118}
 };
 
 std::set<QString> PredefinedElements::residueDefinitions =
@@ -1315,7 +1315,7 @@ std::optional<SKBackboneAtomRole> PredefinedElements::backboneAtomRole(const QSt
 std::optional<SKBackboneAtomRole> PredefinedElements::backboneAtomRoleForType(const QString &type)
 {
   const QString trimmedType = type.trimmed();
-  if (trimmedType == QStringLiteral("NH1"))
+  if (trimmedType == QStringLiteral("NH1") || trimmedType == QStringLiteral("NH") || trimmedType == QStringLiteral("N"))
   {
     return SKBackboneAtomRole::nitrogen;
   }

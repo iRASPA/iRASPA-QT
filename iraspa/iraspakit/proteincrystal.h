@@ -201,7 +201,12 @@ public:
   void setAdsorptionTransparencyThreshold(double value) override final {_adsorptionTransparencyThreshold = value;}
   void setAdsorptionSurfaceIsoValue(double value) override final {_adsorptionSurfaceIsoValue = value;}
   ProbeMolecule adsorptionSurfaceProbeMolecule() const override final {return Structure::adsorptionSurfaceProbeMolecule();}
-  void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) override final {_adsorptionSurfaceProbeMolecule = value;}
+  void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) override final {Structure::setAdsorptionSurfaceProbeMolecule(value);}
+  double adsorptionSurfaceProbeEpsilon() const override final {return Structure::adsorptionSurfaceProbeEpsilon();}
+  void setAdsorptionSurfaceProbeEpsilon(double value) override final {Structure::setAdsorptionSurfaceProbeEpsilon(value);}
+  double adsorptionSurfaceProbeSigma() const override final {return Structure::adsorptionSurfaceProbeSigma();}
+  void setAdsorptionSurfaceProbeSigma(double value) override final {Structure::setAdsorptionSurfaceProbeSigma(value);}
+  double2 adsorptionSurfaceProbeParameters() const override final {return Structure::adsorptionSurfaceProbeParameters();}
 
   void setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType type) override final {_adsorptionSurfaceRenderingMethod = type;}
   void setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction function) override final {_adsorptionVolumeTransferFunction = function;}
@@ -248,6 +253,9 @@ public:
   //   var structureType: Structure.StructureType {get}
   QString structureMaterialType() const override final {return _structureMaterialType;}
   ProbeMolecule frameworkProbeMolecule() const override final {return _frameworkProbeMolecule;}
+  double frameworkProbeEpsilon() const override final {return Structure::frameworkProbeEpsilon();}
+  double frameworkProbeSigma() const override final {return Structure::frameworkProbeSigma();}
+  double2 frameworkProbeParameters() const override final {return Structure::frameworkProbeParameters();}
   double structureMass() const override final {return _structureMass;}
   double structureDensity() const override final {return _structureDensity;}
   double structureHeliumVoidFraction() const override final {return _structureHeliumVoidFraction;}
@@ -255,19 +263,35 @@ public:
   double structureAccessiblePoreVolume() const override final {return _structureAccessiblePoreVolume;}
   double structureVolumetricNitrogenSurfaceArea() const override final {return _structureVolumetricNitrogenSurfaceArea;}
   double structureGravimetricNitrogenSurfaceArea() const override final {return _structureGravimetricNitrogenSurfaceArea;}
+  double structureVolumetricWellSurfaceArea() const override final {return Structure::structureVolumetricWellSurfaceArea();}
+  double structureGravimetricWellSurfaceArea() const override final {return Structure::structureGravimetricWellSurfaceArea();}
+  double structureVolumetricGeometricSurfaceArea() const override final {return Structure::structureVolumetricGeometricSurfaceArea();}
+  double structureGravimetricGeometricSurfaceArea() const override final {return Structure::structureGravimetricGeometricSurfaceArea();}
+  double structureVolumetricVanDerWaalsGeometricSurfaceArea() const override final {return Structure::structureVolumetricVanDerWaalsGeometricSurfaceArea();}
+  double structureGravimetricVanDerWaalsGeometricSurfaceArea() const override final {return Structure::structureGravimetricVanDerWaalsGeometricSurfaceArea();}
   int structureNumberOfChannelSystems() const override final {return _structureNumberOfChannelSystems;}
   int structureNumberOfInaccessiblePockets() const override final {return _structureNumberOfInaccessiblePockets;}
   int structureDimensionalityOfPoreSystem() const override final {return _structureDimensionalityOfPoreSystem;}
   double structureLargestCavityDiameter() const override final {return _structureLargestCavityDiameter;}
   double structureRestrictingPoreLimitingDiameter() const override final {return _structureRestrictingPoreLimitingDiameter;}
   double structureLargestCavityDiameterAlongAViablePath() const override final {return _structureLargestCavityDiameterAlongAViablePath;}
+  double structureRestrictingPoreLimitingDiameter2() const override final {return Structure::structureRestrictingPoreLimitingDiameter2();}
+  double structureLargestCavityDiameterAlongAViablePath2() const override final {return Structure::structureLargestCavityDiameterAlongAViablePath2();}
+  double2 structureWindow1Size() const override final {return Structure::structureWindow1Size();}
+  double2 structureWindow2Size() const override final {return Structure::structureWindow2Size();}
+  double2 structureWindow3Size() const override final {return Structure::structureWindow3Size();}
+  qint64 structureWindow1RingAtoms() const override final {return Structure::structureWindow1RingAtoms();}
+  qint64 structureWindow2RingAtoms() const override final {return Structure::structureWindow2RingAtoms();}
+  qint64 structureWindow3RingAtoms() const override final {return Structure::structureWindow3RingAtoms();}
 
 
   // Protocol: StructuralPropertyEditor
   // ===============================================================================================
 
   void setStructureMaterialType(QString value) override final {_structureMaterialType = value;}
-  void setFrameworkProbeMolecule(ProbeMolecule molecule) override final {_frameworkProbeMolecule = molecule;}
+  void setFrameworkProbeMolecule(ProbeMolecule molecule) override final {Structure::setFrameworkProbeMolecule(molecule);}
+  void setFrameworkProbeEpsilon(double value) override final {Structure::setFrameworkProbeEpsilon(value);}
+  void setFrameworkProbeSigma(double value) override final {Structure::setFrameworkProbeSigma(value);}
   void setStructureMass(double value) override final {_structureMass = value;}
   void setStructureDensity(double value) override final {_structureDensity = value;}
   void setStructureHeliumVoidFraction(double value) override final {_structureHeliumVoidFraction = value;}
@@ -275,12 +299,31 @@ public:
   void setStructureAccessiblePoreVolume(double value) override final {_structureAccessiblePoreVolume = value;}
   void setStructureVolumetricNitrogenSurfaceArea(double value) override final;
   void setStructureGravimetricNitrogenSurfaceArea(double value) override final;
+  void setStructureVolumetricWellSurfaceArea(double value) override final {Structure::setStructureVolumetricWellSurfaceArea(value);}
+  void setStructureGravimetricWellSurfaceArea(double value) override final {Structure::setStructureGravimetricWellSurfaceArea(value);}
+  void setStructureWellSurfaceArea(double value) override final {Structure::setStructureWellSurfaceArea(value);}
+  void setStructureVolumetricGeometricSurfaceArea(double value) override final {Structure::setStructureVolumetricGeometricSurfaceArea(value);}
+  void setStructureGravimetricGeometricSurfaceArea(double value) override final {Structure::setStructureGravimetricGeometricSurfaceArea(value);}
+  void setStructureGeometricSurfaceArea(double value) override final {Structure::setStructureGeometricSurfaceArea(value);}
+  void setStructureVolumetricVanDerWaalsGeometricSurfaceArea(double value) override final {Structure::setStructureVolumetricVanDerWaalsGeometricSurfaceArea(value);}
+  void setStructureGravimetricVanDerWaalsGeometricSurfaceArea(double value) override final {Structure::setStructureGravimetricVanDerWaalsGeometricSurfaceArea(value);}
+  void setStructureVanDerWaalsGeometricSurfaceArea(double value) override final {Structure::setStructureVanDerWaalsGeometricSurfaceArea(value);}
   void setStructureNumberOfChannelSystems(int value) override final {_structureNumberOfChannelSystems = value;}
   void setStructureNumberOfInaccessiblePockets(int value) override final {_structureNumberOfInaccessiblePockets = value;}
   void setStructureDimensionalityOfPoreSystem(int value) override final {_structureDimensionalityOfPoreSystem = value;}
   void setStructureLargestCavityDiameter(double value) override final {_structureLargestCavityDiameter = value;}
   void setStructureRestrictingPoreLimitingDiameter(double value) override final {_structureRestrictingPoreLimitingDiameter = value;}
   void setStructureLargestCavityDiameterAlongAViablePath(double value) override final {_structureLargestCavityDiameterAlongAViablePath = value;}
+  void setStructureRestrictingPoreLimitingDiameter2(double value) override final {Structure::setStructureRestrictingPoreLimitingDiameter2(value);}
+  void setStructureLargestCavityDiameterAlongAViablePath2(double value) override final {Structure::setStructureLargestCavityDiameterAlongAViablePath2(value);}
+  void setStructureWindow1Size(double2 value) override final {Structure::setStructureWindow1Size(value);}
+  void setStructureWindow2Size(double2 value) override final {Structure::setStructureWindow2Size(value);}
+  void setStructureWindow3Size(double2 value) override final {Structure::setStructureWindow3Size(value);}
+  void setStructureWindow1RingAtoms(qint64 value) override final {Structure::setStructureWindow1RingAtoms(value);}
+  void setStructureWindow2RingAtoms(qint64 value) override final {Structure::setStructureWindow2RingAtoms(value);}
+  void setStructureWindow3RingAtoms(qint64 value) override final {Structure::setStructureWindow3RingAtoms(value);}
+
+  std::vector<double3> atomUnitCellPositions() const override final;
 
 protected:
   SKAtomTreeController &ribbonAtomTreeController() override { return *_atomsTreeController; }
@@ -288,7 +331,7 @@ protected:
   double3 ribbonContentShift() const override { return _cell->contentShift(); }
 
 private:
-  qint64 _versionNumber{7};
+  qint64 _versionNumber{9};
 
   SKSpaceGroup _spaceGroup = SKSpaceGroup(1);
 
@@ -298,8 +341,6 @@ private:
   QByteArray _data = QByteArray();
   double _average = 0.0;
   double _variance = 0.0;
-
-  std::vector<double3> atomUnitCellPositions() const;
 
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<ProteinCrystal> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<ProteinCrystal> &);

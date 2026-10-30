@@ -30,7 +30,7 @@ void SmithNormalForm::test_case()
     {
        for(int count=0;count<500;count++)
        {
-         RingMatrix m = RingMatrix::createRandomRingMatrix(rows, rows, 4);
+         RingMatrix m = RingMatrix::createRandomRingMatrix(rows, columns, 4);
          std::tuple<RingMatrix,RingMatrix,RingMatrix> smf = m.SmithNormalForm();
          const RingMatrix U = std::get<0>(smf);
          const RingMatrix V = std::get<1>(smf);

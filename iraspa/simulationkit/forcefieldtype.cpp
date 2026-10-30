@@ -28,20 +28,29 @@ ForceFieldType::ForceFieldType()
 }
 
 ForceFieldType::ForceFieldType(const ForceFieldType& forceFieldType): _editable(forceFieldType._editable), _atomicNumber(forceFieldType._atomicNumber),
-    _forceFieldStringIdentifier(forceFieldType._forceFieldStringIdentifier), _potentialParameters(forceFieldType._potentialParameters),
-    _mass(forceFieldType._mass), _userDefinedRadius(forceFieldType._userDefinedRadius)
+    _sortIndex(forceFieldType._sortIndex), _forceFieldStringIdentifier(forceFieldType._forceFieldStringIdentifier),
+    _potentialParameters(forceFieldType._potentialParameters), _mass(forceFieldType._mass),
+    _userDefinedRadius(forceFieldType._userDefinedRadius), _charge(forceFieldType._charge),
+    _isVisible(forceFieldType._isVisible)
 {
 
 }
 
 ForceFieldType::ForceFieldType(QString forceFieldStringIdentifier, qint64 atomicNumber, double2 potentialParameters, double mass, double userDefinedRadius, bool editable)
+  : ForceFieldType(forceFieldStringIdentifier, atomicNumber, atomicNumber, potentialParameters, mass, userDefinedRadius, editable, 0.0)
+{
+}
+
+ForceFieldType::ForceFieldType(QString forceFieldStringIdentifier, qint64 atomicNumber, qint64 sortIndex, double2 potentialParameters, double mass, double userDefinedRadius, bool editable, double charge)
 {
   _forceFieldStringIdentifier = forceFieldStringIdentifier;
   _editable = editable;
   _atomicNumber = atomicNumber;
+  _sortIndex = sortIndex;
   _potentialParameters = potentialParameters;
   _mass = mass;
   _userDefinedRadius = userDefinedRadius;
+  _charge = charge;
 }
 
 QDataStream &operator<<(QDataStream &stream, const ForceFieldType &forcefieldType)
@@ -54,6 +63,8 @@ QDataStream &operator<<(QDataStream &stream, const ForceFieldType &forcefieldTyp
   stream << forcefieldType._mass;
   stream << forcefieldType._userDefinedRadius;
   stream << forcefieldType._isVisible;
+  stream << forcefieldType._charge;
+  stream << forcefieldType._sortIndex;
   return stream;
 }
 
@@ -68,14 +79,27 @@ QDataStream &operator>>(QDataStream &stream, ForceFieldType &forcefieldType)
 
   stream >> forcefieldType._editable;
   stream >> forcefieldType._atomicNumber;
+  forcefieldType._sortIndex = forcefieldType._atomicNumber;
   stream >> forcefieldType._forceFieldStringIdentifier;
   stream >> forcefieldType._potentialParameters;
   stream >> forcefieldType._mass;
   stream >> forcefieldType._userDefinedRadius;
 
+  forcefieldType._isVisible = true;
   if(versionNumber >= 2)
   {
     stream >> forcefieldType._isVisible;
+  }
+
+  forcefieldType._charge = 0.0;
+  if(versionNumber >= 3)
+  {
+    stream >> forcefieldType._charge;
+  }
+
+  if(versionNumber >= 4)
+  {
+    stream >> forcefieldType._sortIndex;
   }
 
   return stream;

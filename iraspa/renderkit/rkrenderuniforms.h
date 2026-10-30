@@ -41,7 +41,35 @@ class RKRenderDataSource;
 
 enum class RKEnergySurfaceType: qint64
 {
-  isoSurface = 0, volumeRendering = 1, multiple_values = 2
+  isoSurface = 0,
+  volumeRendering = 1,
+  wellSurface = 2,
+  wellSurfaceOverlay = 3,
+  geometricSurface = 4,
+  vdwGeometricSurface = 5,
+  multiple_values = 6
+};
+
+inline bool isTriangulatedEnergySurface(RKEnergySurfaceType type)
+{
+  return type == RKEnergySurfaceType::isoSurface ||
+         type == RKEnergySurfaceType::wellSurface ||
+         type == RKEnergySurfaceType::wellSurfaceOverlay;
+}
+
+inline bool isGeometricEnergySurface(RKEnergySurfaceType type)
+{
+  return type == RKEnergySurfaceType::geometricSurface ||
+         type == RKEnergySurfaceType::vdwGeometricSurface;
+}
+
+enum class RKEdgeCueing: qint64
+{
+  off = 0,
+  contours = 1,
+  halos = 2,
+  contoursAndHalos = 3,
+  multiple_values = 4
 };
 
 enum class RKPredefinedVolumeRenderingTransferFunction: qint64
@@ -314,7 +342,7 @@ struct alignas(256) RKStructureUniforms
   float atomSelectionStripesDensity = 0.25f;
   float atomSelectionStripesFrequency = 12.0f;
   float atomSelectionWorleyNoise3DFrequency = 2.0f;
-  float atomSelectionWorleyNoise3DJitter = 0.0f;
+  float atomSelectionWorleyNoise3DJitter = 1.0f;
 
   float4 atomAnnotationTextDisplacement = float4();
   float4 atomAnnotationTextColor = float4(0.0,0.0,0.0,1.0);
@@ -514,3 +542,63 @@ struct RKGlobalAxesUniforms
 
   RKGlobalAxesUniforms(std::shared_ptr<RKRenderDataSource> project);
 };
+
+struct RKGeometricSurfacePatchInstance
+{
+  float4 centerAndRadius = float4();
+  float4 ambientFront = float4();
+  float4 diffuseFront = float4();
+  float4 specularFront = float4();
+  float4 cellOrigin = float4();
+  uint32_t clipStart = 0;
+  uint32_t clipCount = 0;
+  uint32_t atomIdentifier = 0;
+  uint32_t pad0 = 0;
+};
+
+struct RKGeometricSurfaceClip
+{
+  float4 centerAndRadius = float4();
+};
+
+struct alignas(256) RKBlockingPocketUniforms
+{
+  float4x4 transformationMatrix = float4x4(1.0);
+  float4x4 transformationNormalMatrix = float4x4(1.0);
+  float4 ambientFrontSide = float4(0.0f, 0.0f, 0.0f, 1.0f);
+  float4 diffuseFrontSide = float4(0.588235f, 0.670588f, 0.729412f, 1.0f);
+  float4 specularFrontSide = float4(1.0f, 1.0f, 1.0f, 1.0f);
+  int32_t frontSideHDR = 1;
+  float frontSideHDRExposure = 1.5f;
+  float opacity = 0.75f;
+  float shininessFrontSide = 4.0f;
+
+  float4 ambientBackSide = float4(0.0f, 0.0f, 0.0f, 1.0f);
+  float4 diffuseBackSide = float4(0.588235f, 0.670588f, 0.729412f, 1.0f);
+  float4 specularBackSide = float4(0.9f, 0.9f, 0.9f, 1.0f);
+  int32_t backSideHDR = 1;
+  float backSideHDRExposure = 1.5f;
+  float pad6 = 0.0f;
+  float shininessBackSide = 4.0f;
+
+  float selectionStripesDensity = 0.25f;
+  float selectionStripesFrequency = 12.0f;
+  float selectionWorleyNoise3DFrequency = 2.0f;
+  float selectionWorleyNoise3DJitter = 1.0f;
+
+  float selectionScaling = 1.01f;
+  float selectionIntensity = 0.8f;
+  float pad7 = 0.0f;
+  float pad8 = 0.0f;
+
+  float hue = 1.0f;
+  float saturation = 1.0f;
+  float value = 1.0f;
+  float pad9 = 0.0f;
+
+  RKBlockingPocketUniforms() = default;
+  RKBlockingPocketUniforms(std::shared_ptr<RKRenderObject> structure);
+};
+
+static_assert(sizeof(RKBlockingPocketUniforms) % 256 == 0,
+              "RKBlockingPocketUniforms must be a multiple of 256 bytes for UBO array offsets");

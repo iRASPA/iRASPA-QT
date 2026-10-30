@@ -57,6 +57,7 @@ public:
 
   bool isVisible() const override  final{return _isVisible;}
   void setVisibility(bool visibility) {_isVisible = visibility;}
+  bool isPeriodic() const {return _periodic;}
 
   std::shared_ptr<SKCell> cell() const override final {return _cell;}
 

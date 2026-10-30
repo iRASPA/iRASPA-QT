@@ -28,27 +28,27 @@ void main()
   vec4 color;
   if (gl_FrontFacing)
   {
-    ambient = structureUniforms.primitiveAmbientFrontSide;
-    diffuse = max(dot(N, L), 0.0) * structureUniforms.primitiveDiffuseFrontSide;
-    specular = pow(max(dot(R, V), 0.0), structureUniforms.primitiveShininessFrontSide) * structureUniforms.primitiveSpecularFrontSide;
-    color = n * vec4(ambient.xyz + diffuse.xyz + specular.xyz, 1.0);
+    ambient = lightUniforms.lights[0].ambient * structureUniforms.primitiveAmbientFrontSide;
+    diffuse = max(dot(N, L), 0.0) * lightUniforms.lights[0].diffuse * structureUniforms.primitiveDiffuseFrontSide;
+    specular = pow(max(dot(R, V), 0.0), lightUniforms.lights[0].shininess + structureUniforms.primitiveShininessFrontSide) * lightUniforms.lights[0].specular * structureUniforms.primitiveSpecularFrontSide;
+    color = vec4(n * (ambient.xyz + diffuse.xyz + specular.xyz), n);
     if (structureUniforms.primitiveFrontSideHDR != 0)
     {
       vec4 vLdrColor = 1.0 - exp2(-color * structureUniforms.primitiveFrontSideHDRExposure);
-      vLdrColor.a = 1.0;
+      vLdrColor.a = n;
       color = vLdrColor;
     }
   }
   else
   {
-    ambient = structureUniforms.primitiveAmbientBackSide;
-    diffuse = max(dot(-N, L), 0.0) * structureUniforms.primitiveDiffuseBackSide;
-    specular = pow(max(dot(R, V), 0.0), structureUniforms.primitiveShininessBackSide) * structureUniforms.primitiveSpecularBackSide;
-    color = n * vec4(ambient.xyz + diffuse.xyz + specular.xyz, 1.0);
+    ambient = lightUniforms.lights[0].ambient * structureUniforms.primitiveAmbientBackSide;
+    diffuse = max(dot(-N, L), 0.0) * lightUniforms.lights[0].diffuse * structureUniforms.primitiveDiffuseBackSide;
+    specular = pow(max(dot(R, V), 0.0), lightUniforms.lights[0].shininess + structureUniforms.primitiveShininessBackSide) * lightUniforms.lights[0].specular * structureUniforms.primitiveSpecularBackSide;
+    color = vec4(n * (ambient.xyz + diffuse.xyz + specular.xyz), n);
     if (structureUniforms.primitiveBackSideHDR != 0)
     {
       vec4 vLdrColor = 1.0 - exp2(-color * structureUniforms.primitiveBackSideHDRExposure);
-      vLdrColor.a = 1.0;
+      vLdrColor.a = n;
       color = vLdrColor;
     }
   }
@@ -58,5 +58,5 @@ void main()
   hsv.y = hsv.y * structureUniforms.primitiveSaturation;
   hsv.z = hsv.z * structureUniforms.primitiveValue;
   float bloomLevel = frameUniforms.bloomLevel * structureUniforms.primitiveSelectionIntensity;
-  vFragColor = bloomLevel * vec4(hsv2rgb(hsv), 1.0);
+  vFragColor = vec4(hsv2rgb(hsv) * bloomLevel * color.a, bloomLevel * color.a);
 }

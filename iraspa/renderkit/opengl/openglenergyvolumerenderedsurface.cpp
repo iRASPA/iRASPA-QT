@@ -605,7 +605,9 @@ void main()
 {
   vec3 ambient, diffuse, specular;
   vec3 numberOfReplicas = structureUniforms.numberOfReplicas.xyz;
-  vec3 direction = normalize(fs_in.position.xyz - frameUniforms.cameraPosition.xyz);
+  vec3 direction = (frameUniforms.projectionMatrix[3][3] != 0.0)
+      ? normalize((frameUniforms.viewMatrixInverse * vec4(0.0, 0.0, -1.0, 0.0)).xyz)
+      : normalize(fs_in.position.xyz - frameUniforms.cameraPosition.xyz);
   vec4 dir = vec4(direction.x,direction.y,direction.z,0.0);
   vec3 ray_direction = (structureUniforms.inverseBoxMatrix * structureUniforms.inverseModelMatrix * dir).xyz;
 
@@ -623,12 +625,16 @@ void main()
 
   vec3 ray = ray_stop - ray_start;
   float ray_length = length(ray);
+  if (ray_length <= 1e-6)
+  {
+    discard;
+  }
   vec3 step_vector = stepLength * ray / ray_length;
 
   float depth = texelFetch(depthTexture, ivec2(gl_FragCoord.xy),0).r;
   //gl_FragDepth = depth;  // at least write a value once (required)
   float newDepth = 1.0;
-  mat4 m = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * isosurfaceUniforms.boxMatrix;
+  mat4 m = frameUniforms.mvpMatrix * structureUniforms.modelMatrix * structureUniforms.boxMatrix;
 
   vec4 scaleToEncompassing = isosurfaceUniforms.scaleToEncompassing;
 

@@ -34,11 +34,12 @@ class SKColorSets
 public:
   SKColorSets();
 public:
-  std::vector<SKColorSet>& colorSets() {return _colorSets;}
-  SKColorSet& operator[] (size_t index) {return _colorSets[index];}
+  std::vector<SKColorSet>& colorSets() { ensurePredefinedSets(); return _colorSets;}
+  SKColorSet& operator[] (size_t index) { ensurePredefinedSets(); return _colorSets[index];}
   SKColorSet* operator[] (QString);
   const SKColorSet* operator[] (QString) const;
   void append(SKColorSet colorSet) { _colorSets.push_back(colorSet);}
+  void ensurePredefinedSets();
 private:
   qint64 _versionNumber{1};
   std::vector<SKColorSet> _colorSets;

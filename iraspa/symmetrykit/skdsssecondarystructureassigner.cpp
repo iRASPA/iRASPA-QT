@@ -348,6 +348,7 @@ void computePhiPsiFlags(std::vector<DssResidue> &residues)
                                                                    residues[static_cast<size_t>(index)].alphaCarbon.value(),
                                                                    residues[static_cast<size_t>(index)].nitrogen.value(),
                                                                    residues[static_cast<size_t>(index - 1)].carbonylCarbon.value());
+    bool hasPsi = false;
     if (index + 1 < count && residues[static_cast<size_t>(index + 1)].isReal &&
         residues[static_cast<size_t>(index + 1)].nitrogen.has_value())
     {
@@ -355,30 +356,56 @@ void computePhiPsiFlags(std::vector<DssResidue> &residues)
                                                                      residues[static_cast<size_t>(index)].carbonylCarbon.value(),
                                                                      residues[static_cast<size_t>(index)].alphaCarbon.value(),
                                                                      residues[static_cast<size_t>(index)].nitrogen.value());
+      hasPsi = true;
     }
-    residues[static_cast<size_t>(index)].flags |= kGotPhiPsi;
 
-    const double helixPsiDelta = wrappedDelta(residues[static_cast<size_t>(index)].psiDegrees, kHelixPsiTarget);
     const double helixPhiDelta = wrappedDelta(residues[static_cast<size_t>(index)].phiDegrees, kHelixPhiTarget);
-    const double strandPsiDelta = wrappedDelta(residues[static_cast<size_t>(index)].psiDegrees, kStrandPsiTarget);
     const double strandPhiDelta = wrappedDelta(residues[static_cast<size_t>(index)].phiDegrees, kStrandPhiTarget);
 
-    if (helixPsiDelta > kHelixPsiExclude || helixPhiDelta > kHelixPhiExclude)
+    if (hasPsi)
     {
-      residues[static_cast<size_t>(index)].flags |= kPhiPsiNotHelix;
-    }
-    else if (helixPsiDelta < kHelixPsiInclude && helixPhiDelta < kHelixPhiInclude)
-    {
-      residues[static_cast<size_t>(index)].flags |= kPhiPsiHelix;
-    }
+      residues[static_cast<size_t>(index)].flags |= kGotPhiPsi;
 
-    if (strandPsiDelta > kStrandPsiExclude || strandPhiDelta > kStrandPhiExclude)
-    {
-      residues[static_cast<size_t>(index)].flags |= kPhiPsiNotStrand;
+      const double helixPsiDelta = wrappedDelta(residues[static_cast<size_t>(index)].psiDegrees, kHelixPsiTarget);
+      const double strandPsiDelta = wrappedDelta(residues[static_cast<size_t>(index)].psiDegrees, kStrandPsiTarget);
+
+      if (helixPsiDelta > kHelixPsiExclude || helixPhiDelta > kHelixPhiExclude)
+      {
+        residues[static_cast<size_t>(index)].flags |= kPhiPsiNotHelix;
+      }
+      else if (helixPsiDelta < kHelixPsiInclude && helixPhiDelta < kHelixPhiInclude)
+      {
+        residues[static_cast<size_t>(index)].flags |= kPhiPsiHelix;
+      }
+
+      if (strandPsiDelta > kStrandPsiExclude || strandPhiDelta > kStrandPhiExclude)
+      {
+        residues[static_cast<size_t>(index)].flags |= kPhiPsiNotStrand;
+      }
+      else if (strandPsiDelta < kStrandPsiInclude && strandPhiDelta < kStrandPhiInclude)
+      {
+        residues[static_cast<size_t>(index)].flags |= kPhiPsiStrand;
+      }
     }
-    else if (strandPsiDelta < kStrandPsiInclude && strandPhiDelta < kStrandPhiInclude)
+    else
     {
-      residues[static_cast<size_t>(index)].flags |= kPhiPsiStrand;
+      if (helixPhiDelta > kHelixPhiExclude)
+      {
+        residues[static_cast<size_t>(index)].flags |= kPhiPsiNotHelix;
+      }
+      else if (helixPhiDelta < kHelixPhiInclude)
+      {
+        residues[static_cast<size_t>(index)].flags |= kPhiPsiHelix;
+      }
+
+      if (strandPhiDelta > kStrandPhiExclude)
+      {
+        residues[static_cast<size_t>(index)].flags |= kPhiPsiNotStrand;
+      }
+      else if (strandPhiDelta < kStrandPhiInclude)
+      {
+        residues[static_cast<size_t>(index)].flags |= kPhiPsiStrand;
+      }
     }
   }
 }

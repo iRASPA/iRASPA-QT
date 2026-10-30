@@ -30,7 +30,7 @@ void HermiteNormalForm::test_case()
     {
        for(int count=0;count<500;count++)
        {
-         RingMatrix m = RingMatrix::createRandomRingMatrix(rows, rows, 4);
+         RingMatrix m = RingMatrix::createRandomRingMatrix(rows, columns, 4);
          std::tuple<RingMatrix,RingMatrix,std::vector<int>> hnf = m.HermiteNormalForm();
          const RingMatrix U = std::get<0>(hnf);
          const RingMatrix A = std::get<1>(hnf);

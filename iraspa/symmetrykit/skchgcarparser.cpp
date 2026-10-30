@@ -54,13 +54,23 @@ void SKCHGCARParser::startParsing()
   QString scannedLine;
   QStringList termsScannedLined{};
 
-  // skip first line
-  _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
-  if(scannedLine.isEmpty()) {throw std::runtime_error("Empty file");}
+  // skip first line (comment line may be empty)
+  _scanner.scanLine(scannedLine);
 
-  // skip first line
+  // read scale factor
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
   if(scannedLine.isEmpty()) {throw std::runtime_error("POSCAR file near empty");}
+  #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+    termsScannedLined = scannedLine.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+  #elif (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    termsScannedLined = scannedLine.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+  #else
+    termsScannedLined = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+  #endif
+  if(termsScannedLined.isEmpty()) {throw std::runtime_error("Missing scale factor in CHGCAR");}
+  bool succes = false;
+  double scaleFactor = termsScannedLined[0].toDouble(&succes);
+  if(!succes) {throw std::runtime_error("Could not parse scale factor in CHGCAR");}
 
   // read first lattice vector
   _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
@@ -73,14 +83,14 @@ void SKCHGCARParser::startParsing()
   #endif
   if(termsScannedLined.size()<3) {throw std::runtime_error("Missing first lattice vector in POSCAR");}
 
-  bool succes = false;
-  unitCell.ax = termsScannedLined[0].toDouble(&succes);
+  succes = false;
+  unitCell.ax = scaleFactor * termsScannedLined[0].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of first lattice vector");}
 
-  unitCell.ay = termsScannedLined[1].toDouble(&succes);
+  unitCell.ay = scaleFactor * termsScannedLined[1].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of first lattice vector");}
 
-  unitCell.az = termsScannedLined[2].toDouble(&succes);
+  unitCell.az = scaleFactor * termsScannedLined[2].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of first lattice vector");}
 
   // read second lattice vector
@@ -94,13 +104,13 @@ void SKCHGCARParser::startParsing()
   #endif
   if(termsScannedLined.size()<3) {throw std::runtime_error("Missing second lattice vector in POSCAR");}
 
-  unitCell.bx = termsScannedLined[0].toDouble(&succes);
+  unitCell.bx = scaleFactor * termsScannedLined[0].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of second lattice vector");}
 
-  unitCell.by = termsScannedLined[1].toDouble(&succes);
+  unitCell.by = scaleFactor * termsScannedLined[1].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of second lattice vector");}
 
-  unitCell.bz = termsScannedLined[2].toDouble(&succes);
+  unitCell.bz = scaleFactor * termsScannedLined[2].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of second lattice vector");}
 
   // read third lattice vector
@@ -114,13 +124,13 @@ void SKCHGCARParser::startParsing()
   #endif
   if(termsScannedLined.size()<3) {throw std::runtime_error("Missing third lattice vector in POSCAR");}
 
-  unitCell.cx = termsScannedLined[0].toDouble(&succes);
+  unitCell.cx = scaleFactor * termsScannedLined[0].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the x-coordinate of third lattice vector");}
 
-  unitCell.cy = termsScannedLined[1].toDouble(&succes);
+  unitCell.cy = scaleFactor * termsScannedLined[1].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the y-coordinate of third lattice vector");}
 
-  unitCell.cz = termsScannedLined[2].toDouble(&succes);
+  unitCell.cz = scaleFactor * termsScannedLined[2].toDouble(&succes);
   if(!succes) {throw std::runtime_error("Could not parse the z-coordinate of third lattice vector");}
 
   std::shared_ptr<SKCell> cell = std::make_shared<SKCell>(unitCell);
@@ -159,7 +169,7 @@ void SKCHGCARParser::startParsing()
   #else
     QStringList directOrCartesian = scannedLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
   #endif
-  if(elementList[0].toLower() == "selective") // skip Selective dynamics line
+  if(!directOrCartesian.isEmpty() && directOrCartesian[0].toLower().startsWith("s")) // skip Selective dynamics line
   {
     _scanner.scanUpToCharacters(CharacterSet::newlineCharacterSet(), scannedLine);
     #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
@@ -172,9 +182,13 @@ void SKCHGCARParser::startParsing()
   }
 
   bool cartesian = false;
-  if(directOrCartesian[0].toLower() == "cartesian")
+  if(!directOrCartesian.isEmpty())
   {
-    cartesian = true;
+    QString firstToken = directOrCartesian[0].toLower();
+    if(firstToken.startsWith("c") || firstToken.startsWith("k"))
+    {
+      cartesian = true;
+    }
   }
 
   for(int k=0; k<std::min(amountList.size(),elementList.size()); k++)
@@ -223,7 +237,7 @@ void SKCHGCARParser::startParsing()
       // convert to fractional position if Cartesian coordinates are specified
       if(cartesian)
       {
-        atom->setPosition(inverseUnitCell * position);
+        atom->setPosition(inverseUnitCell * (scaleFactor * position));
       }
       else
       {
@@ -273,13 +287,13 @@ void SKCHGCARParser::startParsing()
       {
         double value;
         _scanner.scanDouble(value);
-        dataPoints[index] = value;
 
         // data in CHGCAR is multiplied by the volume
         double dataPoint = value * inverseVolume;
+        dataPoints[index] = float(dataPoint);
 
-        if(value>maximumValue) maximumValue = dataPoint;
-        if(value<minimumValue) minimumValue = dataPoint;
+        if(dataPoint>maximumValue) maximumValue = float(dataPoint);
+        if(dataPoint<minimumValue) minimumValue = float(dataPoint);
         sum += dataPoint;
         sumSquared += dataPoint * dataPoint;
 
@@ -290,9 +304,10 @@ void SKCHGCARParser::startParsing()
   _frame->cell = cell;
   _frame->dimensions = dimensions;
   _frame->range = std::pair(minimumValue, maximumValue);
-  _frame->average = sum / (numberOfElements);
-  _frame->variance = sumSquared / (numberOfElements - 1);
+  _frame->average = numberOfElements > 0 ? (sum / double(numberOfElements)) : 0.0;
+  _frame->variance = numberOfElements > 0 ? ((sumSquared - (sum * sum) / double(numberOfElements)) / double(std::max(1, numberOfElements - 1))) : 0.0;
   _frame->byteData = QByteArray(reinterpret_cast<char*>(dataPoints.data()), dataPoints.size() * sizeof(float));
+  _frame->applyInferredMaterialType();
 
   _movies.push_back({_frame});
 }

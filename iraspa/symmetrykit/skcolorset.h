@@ -37,7 +37,9 @@ public:
 
   enum class ColorScheme: qint64
   {
-    jmol = 0, rasmol_modern = 1, rasmol = 2, vesta = 3, multiple_values = 4
+    jmol = 0, rasmol_modern = 1, rasmol = 2, vesta = 3,
+    crystal_maker = 4, mercury = 5, pubchem = 6, pymol = 7, vmd_cpk = 8,
+    multiple_values = 9
   };
 
   enum class ColorSchemeOrder: qint64
@@ -62,6 +64,11 @@ private:
   static std::map<QString, QColor> rasmol;
   static std::map<QString, QColor> rasmolModern;
   static std::map<QString, QColor> vesta;
+  static std::map<QString, QColor> crystalMaker;
+  static std::map<QString, QColor> mercury;
+  static std::map<QString, QColor> pubChem;
+  static std::map<QString, QColor> pymol;
+  static std::map<QString, QColor> vmdCpk;
 
   friend QDataStream &operator<<(QDataStream& stream, const std::map<QString, QColor>& table);
   friend QDataStream &operator>>(QDataStream& stream, std::map<QString, QColor>& table);

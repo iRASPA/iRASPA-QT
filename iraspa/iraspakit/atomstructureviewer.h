@@ -31,18 +31,19 @@ class AtomStructureViewer
 public:
   enum class RepresentationType: qint64
   {
-    sticks_and_balls = 0, vdw = 1, unity = 2, multiple_values = 3
+    sticks_and_balls = 0, vdw = 1, unity = 2, forcefield = 3, multiple_values = 4
   };
 
   enum class RepresentationStyle: qint64
   {
-    custom = -1, defaultStyle = 0, fancy = 1, licorice = 2, objects = 3, multiple_values = 4
+    custom = -1, defaultStyle = 0, fancy = 1, licorice = 2, objects = 3, quteMol = 4, multiple_values = 5
   };
 
   virtual ~AtomStructureViewer() = 0;
 
   virtual RepresentationType atomRepresentationType() = 0;
   virtual RepresentationStyle atomRepresentationStyle() = 0;
+  virtual RKEdgeCueing atomEdgeCueing() const = 0;
   virtual QString atomColorSchemeIdentifier() = 0;
   virtual SKColorSet::ColorSchemeOrder colorSchemeOrder() = 0;
   virtual QString atomForceFieldIdentifier() = 0;
@@ -90,6 +91,7 @@ public:
   virtual void setRepresentationType(RepresentationType) = 0;
   virtual void setRepresentationStyle(RepresentationStyle style) = 0;
   virtual void setRepresentationStyle(RepresentationStyle style, const SKColorSets &colorSets) = 0;
+  virtual void setAtomEdgeCueing(RKEdgeCueing value) = 0;
   virtual void setRepresentationColorSchemeIdentifier(const QString colorSchemeName, const SKColorSets &colorSets) = 0;
   virtual void setColorSchemeOrder(SKColorSet::ColorSchemeOrder order) = 0;
   virtual void setAtomForceFieldIdentifier(QString identifier, ForceFieldSets &forceFieldSets) = 0;

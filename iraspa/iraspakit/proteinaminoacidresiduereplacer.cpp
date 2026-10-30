@@ -39,6 +39,7 @@ namespace
       switch (viewer->atomRepresentationType())
       {
       case AtomStructureViewer::RepresentationType::vdw:
+      case AtomStructureViewer::RepresentationType::forcefield:
         return PredefinedElements::predefinedElements[elementId]._VDWRadius;
       case AtomStructureViewer::RepresentationType::sticks_and_balls:
         return PredefinedElements::predefinedElements[elementId]._covalentRadius;

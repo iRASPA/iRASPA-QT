@@ -101,9 +101,12 @@ QString AboutDialog::creditsHtml() const
   html += credit(QStringLiteral("Stefan Gustavson"),
                  QStringLiteral("https://github.com/stegu"),
                  QStringLiteral(": GLSL 2D and 3D cellular noise"));
+  html += credit(QStringLiteral("Thomas Lewiner et al."),
+                 QStringLiteral("https://thomas.lewiner.org/pdfs/marching_cubes_jgt.pdf"),
+                 QStringLiteral(": Marching Cubes 33 (topologically correct isosurfaces)"));
   html += credit(QStringLiteral("Erik Smistad"),
                  QStringLiteral("https://www.eriksmistad.no/marching-cubes-implementation-using-opencl-and-opengl/"),
-                 QStringLiteral(": OpenCL/GL implementation Marching Cubes"));
+                 QStringLiteral(": histo-pyramid compaction for GPU Marching Cubes"));
   html += credit(QStringLiteral("Mario Holubar"),
                  QStringLiteral("https://github.com/mario-holubar"),
                  QStringLiteral(": Protein Ribbons"));

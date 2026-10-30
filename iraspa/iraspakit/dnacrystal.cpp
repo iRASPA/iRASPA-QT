@@ -63,6 +63,11 @@ DNACrystal::DNACrystal(std::shared_ptr<SKStructure> frame): Structure(frame)
 
 DNACrystal::DNACrystal(const std::shared_ptr<Object> object): Structure(object)
 {
+  if (std::shared_ptr<DNARibbonMixin> ribbonMixin = std::dynamic_pointer_cast<DNARibbonMixin>(object))
+  {
+    cloneRibbonStateFrom(*ribbonMixin);
+  }
+
   if (std::shared_ptr<SpaceGroupViewer> spaceGroupViewer = std::dynamic_pointer_cast<SpaceGroupViewer>(object))
   {
     _spaceGroup = spaceGroupViewer->spaceGroup();
@@ -1444,7 +1449,8 @@ std::vector<std::pair<std::shared_ptr<SKAsymmetricAtom>, double3>> DNACrystal::t
 
 double3 DNACrystal::centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shared_ptr<SKAsymmetricAtom>> asymmetricAtoms) const
 {
-  double3  centerOfMassCosTheta = double3(0.0, 0.0, 0.0);
+  double3 centerOfMass = double3(0.0, 0.0, 0.0);
+  double3 centerOfMassCosTheta = double3(0.0, 0.0, 0.0);
   double3 centerOfMassSinTheta = double3(0.0, 0.0, 0.0);
   double M = 0.0;
 
@@ -1462,18 +1468,25 @@ double3 DNACrystal::centerOfMassOfSelectionAsymmetricAtoms(std::vector<std::shar
         double3 sinTheta = double3(sin(pos.x), sin(pos.y), sin(pos.z));
         centerOfMassCosTheta = centerOfMassCosTheta + mass * cosTheta;
         centerOfMassSinTheta = centerOfMassSinTheta + mass * sinTheta;
+        centerOfMass = centerOfMass + mass * copy->position();
         M += mass;
       }
     }
   }
   centerOfMassCosTheta = centerOfMassCosTheta / M;
   centerOfMassSinTheta = centerOfMassSinTheta / M;
+  centerOfMass = centerOfMass / M;
 
   double3 com = double3((atan2(-centerOfMassSinTheta.x, -centerOfMassCosTheta.x) + M_PI)/(2.0 * M_PI),
                         (atan2(-centerOfMassSinTheta.y, -centerOfMassCosTheta.y) + M_PI)/(2.0 * M_PI),
                         (atan2(-centerOfMassSinTheta.z, -centerOfMassCosTheta.z) + M_PI)/(2.0 * M_PI));
 
-  return  _cell->convertToCartesian(com);
+  double3 periodicCOM = _cell->convertToCartesian(com);
+  if((_cell->applyFullCellBoundaryCondition(periodicCOM - centerOfMass)).length_squared() < 1e-6)
+  {
+    return centerOfMass;
+  }
+  return periodicCOM;
 }
 
 double3x3 DNACrystal::matrixOfInertia(std::vector<std::shared_ptr<SKAsymmetricAtom>> atoms) const
@@ -1575,7 +1588,7 @@ std::vector<float> DNACrystal::gridData()
     _adsorptionVolumeStepLength = 0.25 / double(size);
 
     const auto [min, max] = std::minmax_element(begin(gridData), end(gridData));
-    _range = std::pair(double(*min), 1000.0);
+    _range = std::pair(double(*min), double(*max));
     return gridData;
   }
   catch (std::exception const& e)
@@ -1769,7 +1782,7 @@ void DNACrystal::setStructureGravimetricNitrogenSurfaceArea(double value)
 
 QDataStream &operator<<(QDataStream &stream, const std::shared_ptr<DNACrystal> &proteinCrystal)
 {
-  stream << qint64(1);
+  stream << proteinCrystal->_versionNumber;
   stream << proteinCrystal->_spaceGroup;
   stream << qint64(0x444e4185);
   proteinCrystal->writeCocoaRibbonAppearance(stream);
@@ -1788,44 +1801,18 @@ QDataStream &operator>>(QDataStream &stream, std::shared_ptr<DNACrystal> &protei
     throw InvalidArchiveVersionException(__FILE__, __LINE__, "DNACrystal");
   }
 
-  if (versionNumber <= 1)
+  stream >> proteinCrystal->_spaceGroup;
+  qint64 magicNumber;
+  stream >> magicNumber;
+  if(magicNumber != qint64(0x444e4185))
   {
-    stream >> proteinCrystal->_spaceGroup;
-    qint64 magicNumber;
-    stream >> magicNumber;
-    if(magicNumber != qint64(0x444e4185))
-    {
-      throw InvalidArchiveVersionException(__FILE__, __LINE__, "DNACrystal invalid magic-number");
-    }
-    proteinCrystal->readCocoaRibbonAppearance(stream);
-
-    std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(proteinCrystal);
-    stream >> structure;
-    DNAAtomTreeBuilder::applyHierarchyIfNeeded(*proteinCrystal->atomsTreeController());
-    proteinCrystal->rebuildBackbone();
-    return stream;
+    throw InvalidArchiveVersionException(__FILE__, __LINE__, "DNACrystal invalid magic-number");
   }
-
-  if(versionNumber >= 2)
-  {
-    stream >> proteinCrystal->_spaceGroup;
-
-    qint64 magicNumber;
-    stream >> magicNumber;
-    if(magicNumber != qint64(0x6f6b6185))
-    {
-      throw InvalidArchiveVersionException(__FILE__, __LINE__, "DNACrystal invalid magic-number");
-    }
-  }
+  proteinCrystal->readCocoaRibbonAppearance(stream, versionNumber);
 
   std::shared_ptr<Structure> structure = std::static_pointer_cast<Structure>(proteinCrystal);
   stream >> structure;
-
-  proteinCrystal->readRibbonState(stream, versionNumber);
-  if (versionNumber >= 3)
-  {
-    proteinCrystal->rebuildBackbone();
-  }
-
+  DNAAtomTreeBuilder::applyHierarchyIfNeeded(*proteinCrystal->atomsTreeController());
+  proteinCrystal->rebuildBackbone();
   return stream;
 }

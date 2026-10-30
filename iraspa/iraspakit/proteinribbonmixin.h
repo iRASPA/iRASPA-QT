@@ -41,6 +41,8 @@ public:
   void setRibbonColorSet(ProteinRibbonColorSet value) override;
   ProteinRibbonRepresentationStyle ribbonRepresentationStyle() const override;
   void setRibbonRepresentationStyle(ProteinRibbonRepresentationStyle value) override;
+  RKEdgeCueing ribbonEdgeCueing() const override;
+  void setRibbonEdgeCueing(RKEdgeCueing value) override;
   ProteinRibbonSecondaryStructureMethod ribbonSecondaryStructureMethod() const override;
   void setRibbonSecondaryStructureMethod(ProteinRibbonSecondaryStructureMethod value) override;
   ProteinRibbonSplineType ribbonSplineType() const override;
@@ -177,6 +179,7 @@ protected:
   double _ribbonScaleFactor = 1.2;
   ProteinRibbonColorSet _ribbonColorSet = ProteinRibbonColorSet::standardAcademic;
   ProteinRibbonRepresentationStyle _ribbonRepresentationStyle = ProteinRibbonRepresentationStyle::defaultStyle;
+  RKEdgeCueing _ribbonEdgeCueing = RKEdgeCueing::off;
   ProteinRibbonSecondaryStructureMethod _ribbonSecondaryStructureMethod = ProteinRibbonSecondaryStructureMethod::stride;
   ProteinRibbonSplineType _ribbonSplineType = ProteinRibbonSplineType::bSpline;
   int _ribbonSubdivisionsPerSegment = 24;

@@ -135,6 +135,7 @@ public:
   virtual double atomSelectionWorleyNoise3DJitter() const = 0;
   virtual double atomSelectionIntensity() const = 0;
   virtual double atomSelectionScaling() const = 0;
+  virtual RKEdgeCueing atomEdgeCueing() const { return RKEdgeCueing::off; }
 };
 
 class RKRenderRibbonSource
@@ -191,6 +192,7 @@ public:
   virtual double ribbonShininess() const = 0;
   virtual void rebuildBackbone() = 0;
   virtual void rebuildRibbonMesh() = 0;
+  virtual RKEdgeCueing ribbonEdgeCueing() const { return RKEdgeCueing::off; }
 };
 
 class RKRenderBondSource
@@ -237,6 +239,7 @@ public:
   virtual double bondSelectionWorleyNoise3DJitter() const = 0;
   virtual double bondSelectionIntensity() const = 0;
   virtual double bondSelectionScaling() const = 0;
+  virtual RKEdgeCueing atomEdgeCueing() const { return RKEdgeCueing::off; }
 };
 
 class RKRenderVolumetricDataSource
@@ -282,6 +285,55 @@ public:
   virtual double adsorptionSurfaceBackSideAmbientIntensity() const = 0;
   virtual double adsorptionSurfaceBackSideSpecularIntensity() const = 0;
   virtual double adsorptionSurfaceBackSideShininess() const = 0;
+
+  virtual std::vector<float> wellFieldData() { return {}; }
+  virtual double2 adsorptionSurfaceProbeParameters() const { return double2(10.9, 2.64); }
+  virtual std::vector<float4> constructWellSurfaceTriangles(const std::vector<float> &) { return {}; }
+  virtual std::vector<float4> constructWellFilamentTriangles(const std::vector<float> &) { return {}; }
+  virtual std::vector<float4> constructGeometricSurfaceTriangles() { return {}; }
+};
+
+class RKRenderBlockingPocketsSource
+{
+public:
+  virtual ~RKRenderBlockingPocketsSource() = 0;
+
+  virtual bool drawBlockingPockets() const { return false; }
+  virtual std::vector<RKInPerInstanceAttributesAtoms> renderBlockingPockets() const { return {}; }
+  virtual std::vector<RKInPerInstanceAttributesAtoms> renderSelectedBlockingPockets() const { return {}; }
+
+  virtual double blockingPocketOpacity() const { return 0.75; }
+  virtual double blockingPocketHue() const { return 1.0; }
+  virtual double blockingPocketSaturation() const { return 1.0; }
+  virtual double blockingPocketValue() const { return 1.0; }
+
+  virtual bool blockingPocketFrontSideHDR() const { return true; }
+  virtual double blockingPocketFrontSideHDRExposure() const { return 1.5; }
+  virtual QColor blockingPocketFrontSideAmbientColor() const { return QColor(255, 255, 255, 255); }
+  virtual QColor blockingPocketFrontSideDiffuseColor() const { return QColor(150, 171, 186, 255); }
+  virtual QColor blockingPocketFrontSideSpecularColor() const { return QColor(255, 255, 255, 255); }
+  virtual double blockingPocketFrontSideAmbientIntensity() const { return 0.0; }
+  virtual double blockingPocketFrontSideDiffuseIntensity() const { return 1.0; }
+  virtual double blockingPocketFrontSideSpecularIntensity() const { return 1.0; }
+  virtual double blockingPocketFrontSideShininess() const { return 4.0; }
+
+  virtual bool blockingPocketBackSideHDR() const { return true; }
+  virtual double blockingPocketBackSideHDRExposure() const { return 1.5; }
+  virtual QColor blockingPocketBackSideAmbientColor() const { return QColor(255, 255, 255, 255); }
+  virtual QColor blockingPocketBackSideDiffuseColor() const { return QColor(150, 171, 186, 255); }
+  virtual QColor blockingPocketBackSideSpecularColor() const { return QColor(230, 230, 230, 255); }
+  virtual double blockingPocketBackSideAmbientIntensity() const { return 0.0; }
+  virtual double blockingPocketBackSideDiffuseIntensity() const { return 1.0; }
+  virtual double blockingPocketBackSideSpecularIntensity() const { return 0.9; }
+  virtual double blockingPocketBackSideShininess() const { return 4.0; }
+
+  virtual RKSelectionStyle blockingPocketSelectionStyle() const { return RKSelectionStyle::WorleyNoise3D; }
+  virtual double blockingPocketSelectionScaling() const { return 1.01; }
+  virtual double blockingPocketSelectionIntensity() const { return 0.8; }
+  virtual double blockingPocketSelectionStripesDensity() const { return 0.25; }
+  virtual double blockingPocketSelectionStripesFrequency() const { return 12.0; }
+  virtual double blockingPocketSelectionWorleyNoise3DFrequency() const { return 2.0; }
+  virtual double blockingPocketSelectionWorleyNoise3DJitter() const { return 1.0; }
 };
 
 class RKRenderPrimitiveObjectsSource

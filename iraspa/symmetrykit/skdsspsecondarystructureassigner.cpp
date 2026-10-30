@@ -114,7 +114,13 @@ std::vector<ResidueState> buildStates(const std::vector<SKStrideBackboneResidue>
     const double3 alphaCarbon = states[index].alphaCarbon;
     const double3 carbonToNitrogen = normalizeVector(nitrogen - previousCarbon);
     const double3 alphaCarbonToNitrogen = normalizeVector(nitrogen - alphaCarbon);
-    const double3 hydrogenDirection = normalizeVector(carbonToNitrogen + alphaCarbonToNitrogen);
+    const double3 rawDirection = carbonToNitrogen + alphaCarbonToNitrogen;
+    const double directionLength = rawDirection.length();
+    if (directionLength <= 1.0e-12)
+    {
+      continue;
+    }
+    const double3 hydrogenDirection = rawDirection / directionLength;
     states[index].implicitHydrogen = nitrogen + kNitrogenHydrogenBondLength * hydrogenDirection;
   }
   return states;

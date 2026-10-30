@@ -22,14 +22,73 @@
 #include "skcolorsets.h"
 #include <iostream>
 
-SKColorSets::SKColorSets(): _colorSets{SKColorSet(SKColorSet::ColorScheme::jmol), SKColorSet(SKColorSet::ColorScheme::rasmol_modern),
-                                       SKColorSet(SKColorSet::ColorScheme::rasmol),SKColorSet(SKColorSet::ColorScheme::vesta)}
+SKColorSets::SKColorSets(): _colorSets{
+  SKColorSet(SKColorSet::ColorScheme::jmol),
+  SKColorSet(SKColorSet::ColorScheme::rasmol_modern),
+  SKColorSet(SKColorSet::ColorScheme::rasmol),
+  SKColorSet(SKColorSet::ColorScheme::vesta),
+  SKColorSet(SKColorSet::ColorScheme::crystal_maker),
+  SKColorSet(SKColorSet::ColorScheme::mercury),
+  SKColorSet(SKColorSet::ColorScheme::pubchem),
+  SKColorSet(SKColorSet::ColorScheme::pymol),
+  SKColorSet(SKColorSet::ColorScheme::vmd_cpk)}
 {
 
 }
 
+void SKColorSets::ensurePredefinedSets()
+{
+  const std::vector<SKColorSet::ColorScheme> schemes = {
+    SKColorSet::ColorScheme::jmol,
+    SKColorSet::ColorScheme::rasmol_modern,
+    SKColorSet::ColorScheme::rasmol,
+    SKColorSet::ColorScheme::vesta,
+    SKColorSet::ColorScheme::crystal_maker,
+    SKColorSet::ColorScheme::mercury,
+    SKColorSet::ColorScheme::pubchem,
+    SKColorSet::ColorScheme::pymol,
+    SKColorSet::ColorScheme::vmd_cpk
+  };
+
+  auto firstIndexNamed = [this](const QString &name) -> std::optional<size_t> {
+    for(size_t i = 0; i < _colorSets.size(); ++i)
+    {
+      if(QString::compare(_colorSets[i].displayName(), name, Qt::CaseInsensitive) == 0)
+      {
+        return i;
+      }
+    }
+    return std::nullopt;
+  };
+
+  for(size_t s = 0; s < schemes.size(); ++s)
+  {
+    SKColorSet candidate(schemes[s]);
+    if(firstIndexNamed(candidate.displayName()).has_value())
+    {
+      continue;
+    }
+    std::optional<size_t> afterPrevious;
+    for(size_t prev = 0; prev < s; ++prev)
+    {
+      SKColorSet prevSet(schemes[prev]);
+      if(auto idx = firstIndexNamed(prevSet.displayName()); idx.has_value())
+      {
+        size_t candidateIdx = *idx + 1;
+        if(!afterPrevious.has_value() || candidateIdx > *afterPrevious)
+        {
+          afterPrevious = candidateIdx;
+        }
+      }
+    }
+    size_t insertIndex = std::min(afterPrevious.value_or(_colorSets.size()), _colorSets.size());
+    _colorSets.insert(_colorSets.begin() + static_cast<std::ptrdiff_t>(insertIndex), candidate);
+  }
+}
+
 SKColorSet* SKColorSets::operator[] (QString name)
 {
+  ensurePredefinedSets();
   for(SKColorSet& colorSet: _colorSets)
   {
     if(QString::compare(colorSet.displayName(), name, Qt::CaseInsensitive) == 0)
@@ -94,6 +153,7 @@ QDataStream &operator>>(QDataStream &stream, SKColorSets &colorSets)
   }
 
   stream >> colorSets._colorSets;
+  colorSets.ensurePredefinedSets();
 
   return stream;
 }

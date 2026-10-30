@@ -241,7 +241,7 @@ namespace
 
   double3 safeNormalize(const double3 &vector, const double3 &fallback)
   {
-    if (length_squared(vector) < 1.0e-12) return fallback;
+    if (!(length_squared(vector) >= 1.0e-12) || std::isnan(vector.x) || std::isnan(vector.y) || std::isnan(vector.z)) return fallback;
     return normalize(vector);
   }
 
@@ -650,7 +650,7 @@ namespace
     if (count < 2 || static_cast<int>(tangents.size()) != count) return;
     if (static_cast<int>(secondaryStructure.size()) != count) return;
 
-    for (int index = 1; index < count - 1; ++index)
+    for (int index = 1; index < count; ++index)
     {
       orientations[static_cast<size_t>(index)] =
         orientationOrthogonalToTangent(orientations[static_cast<size_t>(index)], tangents[static_cast<size_t>(index)]);
@@ -667,7 +667,7 @@ namespace
       }
     }
 
-    for (int index = 1; index < count - 1; ++index)
+    for (int index = 1; index < count; ++index)
     {
       const double3 previousOrientation =
         orientationOrthogonalToTangent(orientations[static_cast<size_t>(index - 1)], tangents[static_cast<size_t>(index)]);
@@ -687,11 +687,13 @@ namespace
     std::vector<double3> softenedAlternatives(static_cast<size_t>(count) * 2, double3(0.0, 0.0, 0.0));
     for (int index = 1; index < count - 1; ++index)
     {
-      const double kinkMetric = dot(orientations[static_cast<size_t>(index)], orientations[static_cast<size_t>(index + 1)]) *
-                                dot(orientations[static_cast<size_t>(index)], orientations[static_cast<size_t>(index - 1)]);
+      const int previousIndex = std::max(0, index - 1);
+      const int nextIndex = std::min(count - 1, index + 1);
+      const double kinkMetric = dot(orientations[static_cast<size_t>(index)], orientations[static_cast<size_t>(nextIndex)]) *
+                                dot(orientations[static_cast<size_t>(index)], orientations[static_cast<size_t>(previousIndex)]);
       if (kinkMetric < -0.10)
       {
-        double3 blended = orientations[static_cast<size_t>(index + 1)] + orientations[static_cast<size_t>(index - 1)];
+        double3 blended = orientations[static_cast<size_t>(nextIndex)] + orientations[static_cast<size_t>(previousIndex)];
         blended += orientations[static_cast<size_t>(index)] * 0.001;
         blended = orientationOrthogonalToTangent(blended, tangents[static_cast<size_t>(index)]);
         double3 adjusted = dot(orientations[static_cast<size_t>(index)], blended) < 0.0

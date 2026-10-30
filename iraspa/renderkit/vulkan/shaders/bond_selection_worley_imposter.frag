@@ -55,11 +55,11 @@ void main()
   vec2 F = cellular3D(frequency * vec3(t1.x, 2.0 * t1.y, t1.z), jitter);
   float n = F.y - F.x;
 
-  vec4 color = n * (ambient + diffuse + specular);
+  vec4 color = vec4(n * (ambient.xyz + diffuse.xyz + specular.xyz), n);
   if (structureUniforms.bondHDR != 0)
   {
     vec4 vLdrColor = 1.0 - exp2(-color * structureUniforms.bondHDRExposure);
-    vLdrColor.a = 1.0;
+    vLdrColor.a = n;
     color = vLdrColor;
   }
 
@@ -68,5 +68,5 @@ void main()
   hsv.y = hsv.y * structureUniforms.bondSaturation;
   hsv.z = hsv.z * structureUniforms.bondValue;
   float bloomLevel = frameUniforms.bloomLevel * structureUniforms.bondSelectionIntensity;
-  vFragColor = vec4(hsv2rgb(hsv) * bloomLevel, bloomLevel);
+  vFragColor = vec4(hsv2rgb(hsv) * bloomLevel * color.a, bloomLevel * color.a);
 }

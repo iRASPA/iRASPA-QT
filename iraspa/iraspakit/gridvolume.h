@@ -35,6 +35,7 @@ class GridVolume: public Object, public VolumetricDataViewer,
 {
 public:
   GridVolume();
+  GridVolume(const GridVolume &gridVolume);
   GridVolume(std::shared_ptr<SKStructure> frame);
 
   // Object
@@ -57,8 +58,13 @@ public:
   void setAdsorptionSurfaceOpacity(double value) override final {_adsorptionSurfaceOpacity = value;}
   void setAdsorptionTransparencyThreshold(double value) override final {_adsorptionTransparencyThreshold = value;}
   void setAdsorptionSurfaceIsoValue(double value) override final {_adsorptionSurfaceIsoValue = value;}
-  ProbeMolecule adsorptionSurfaceProbeMolecule() const override final {return ProbeMolecule::helium;} // TODO: change to 'none'
-  void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) override final {_adsorptionSurfaceProbeMolecule = value;}
+  ProbeMolecule adsorptionSurfaceProbeMolecule() const override final {return _adsorptionSurfaceProbeMolecule;}
+  void setAdsorptionSurfaceProbeMolecule(ProbeMolecule value) override final;
+  double adsorptionSurfaceProbeEpsilon() const override final {return _adsorptionSurfaceProbeEpsilon;}
+  void setAdsorptionSurfaceProbeEpsilon(double value) override final;
+  double adsorptionSurfaceProbeSigma() const override final {return _adsorptionSurfaceProbeSigma;}
+  void setAdsorptionSurfaceProbeSigma(double value) override final;
+  double2 adsorptionSurfaceProbeParameters() const override final {return double2(_adsorptionSurfaceProbeEpsilon, _adsorptionSurfaceProbeSigma);}
 
   void setAdsorptionSurfaceRenderingMethod(RKEnergySurfaceType type) override final {_adsorptionSurfaceRenderingMethod = type;}
   void setAdsorptionVolumeTransferFunction(RKPredefinedVolumeRenderingTransferFunction function) override final {_adsorptionVolumeTransferFunction = function;}
@@ -160,6 +166,8 @@ protected:
   qint64 _encompassingPowerOfTwoCubicGridSize= 7;
 
   ProbeMolecule _adsorptionSurfaceProbeMolecule = ProbeMolecule::helium;
+  double _adsorptionSurfaceProbeEpsilon = 10.9;
+  double _adsorptionSurfaceProbeSigma = 2.64;
 
   int _adsorptionSurfaceNumberOfTriangles = 0;
 
@@ -197,13 +205,13 @@ protected:
 
   inline float Images(const std::vector<float4> &data, size_t x,size_t y,size_t z)
   {
-    size_t index = modulo(x,_dimensions.x)+modulo(y,_dimensions.y)*_dimensions.y+modulo(z,_dimensions.z)*_dimensions.x*_dimensions.y;
+    size_t index = modulo(x,_dimensions.x)+modulo(y,_dimensions.y)*_dimensions.x+modulo(z,_dimensions.z)*_dimensions.x*_dimensions.y;
 
     return data[index].x;
   }
 
 private:
-  qint64 _versionNumber{2};
+  qint64 _versionNumber{3};
 
   friend QDataStream &operator<<(QDataStream &, const std::shared_ptr<GridVolume> &);
   friend QDataStream &operator>>(QDataStream &, std::shared_ptr<GridVolume> &);

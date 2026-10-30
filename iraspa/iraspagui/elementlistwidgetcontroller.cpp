@@ -196,6 +196,10 @@ void ElementListWidgetController::reloadData()
 
        // set color
        QColor color = colorSet[forceFieldStringIdentifier];
+       if(!color.isValid())
+       {
+         color = colorSet[chemicalElement];
+       }
        whileBlocking(form->colorPushButton)->setColor(color);
        form->colorPushButton->setEnabled(colorSetEditable);
        const QString  style = QString("QPushButton { background-color: rgb(") + QString::number(color.red()) + QString(",") +
@@ -300,6 +304,11 @@ void ElementListWidgetController::reloadColorData()
        mainItem->setSizeHint(form->sizeHint());
 
        QColor color = colorSet[forceFieldStringIdentifier];
+       if(!color.isValid())
+       {
+         SKElement& element = PredefinedElements::predefinedElements[atomType.atomicNumber()];
+         color = colorSet[element._chemicalSymbol];
+       }
 
 
        const QString  style = QString("QPushButton { background-color: rgb(") + QString::number(color.red()) + QString(",") +

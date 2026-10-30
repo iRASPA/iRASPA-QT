@@ -51,6 +51,13 @@ union int3
   inline int3 operator-() const {return int3(-this->x, -this->y, -this->z);}
 
   inline bool operator==(const int3& rhs) const {return (this->x == rhs.x) && (this->y == rhs.y) && (this->z == rhs.z);}
+  inline bool operator!=(const int3& rhs) const {return !(*this == rhs);}
+  inline bool operator<(const int3& rhs) const
+  {
+    if (this->x != rhs.x) return this->x < rhs.x;
+    if (this->y != rhs.y) return this->y < rhs.y;
+    return this->z < rhs.z;
+  }
 
   friend QDebug operator<<(QDebug debug, const int3 &m);
   friend QDataStream &operator<<(QDataStream &, const int3 &);
